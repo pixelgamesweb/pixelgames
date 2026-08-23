@@ -1,453 +1,234 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width,initial-scale=1,user-scalable=no">
-  <title>Spirit Wilds</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Spirit 3000</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-    }
+<style>
+*{box-sizing:border-box;user-select:none}
+html,body,#game{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#02030a;color:white;font-family:Arial,sans-serif}
+#game{position:fixed;inset:0}
 
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #02030a;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
+button{
+  border:1px solid #ffffff25;
+  border-radius:14px;
+  background:#050505;
+  color:#62aaff;
+  font-weight:bold;
+  padding:14px 18px;
+  cursor:pointer
+}
 
-    #game {
-      position: fixed;
-      inset: 0;
-    }
+.screen{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 15% 20%,#713cff66,transparent 30%),
+    radial-gradient(circle at 85% 25%,#168bff55,transparent 30%),
+    radial-gradient(circle at 50% 90%,#c03cff44,transparent 35%),
+    linear-gradient(135deg,#020208,#16102e,#03040a)
+}
 
-    button {
-      border: 1px solid #ffffff30;
-      border-radius: 14px;
-      background: #050505;
-      color: #62aaff;
-      font-weight: bold;
-      padding: 13px 18px;
-      cursor: pointer;
-    }
+.panel{
+  width:min(92vw,650px);
+  padding:30px;
+  border-radius:28px;
+  background:#050509ed;
+  border:1px solid #ffffff22;
+  box-shadow:0 30px 100px #000
+}
 
-    button:active {
-      transform: scale(.97);
-    }
+h1{text-align:center;font-size:clamp(48px,10vw,82px);margin:0}
+.subtitle{text-align:center;opacity:.75;line-height:1.6}
+.main{display:block;width:100%;margin:10px 0;padding:17px;font-size:18px}
+.row{display:flex;gap:10px}.row button{flex:1}
 
-    /* MENÚ */
+#hud{
+  display:none;
+  position:fixed;
+  z-index:10;
+  top:12px;
+  left:12px;
+  right:12px;
+  justify-content:space-between;
+  pointer-events:none
+}
 
-    .screen {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+#stats{
+  min-width:300px;
+  padding:11px;
+  border-radius:15px;
+  background:#000b;
+  border:1px solid #ffffff25;
+  font-size:13px;
+  line-height:1.6
+}
 
-      background:
-        radial-gradient(
-          circle at 20% 20%,
-          #7d4cff55,
-          transparent 30%
-        ),
-        radial-gradient(
-          circle at 80% 25%,
-          #258cff44,
-          transparent 30%
-        ),
-        radial-gradient(
-          circle at 50% 100%,
-          #bd45ff33,
-          transparent 40%
-        ),
-        linear-gradient(
-          135deg,
-          #02020a,
-          #15102e,
-          #03040a
-        );
-    }
+#health-bg{
+  height:10px;
+  background:#40151a;
+  border-radius:10px;
+  overflow:hidden
+}
 
-    .panel {
-      width: min(92vw, 720px);
-      max-height: 90vh;
-      overflow: auto;
-      padding: 30px;
-      border-radius: 28px;
-      background: #050509e8;
-      border: 1px solid #ffffff22;
-      box-shadow: 0 30px 100px #000;
-    }
+#health{
+  width:100%;
+  height:100%;
+  background:#42e37a;
+  transition:width .15s
+}
 
-    h1 {
-      margin: 0;
-      text-align: center;
-      font-size: clamp(45px, 9vw, 80px);
-      letter-spacing: -3px;
-    }
+#top{
+  display:flex;
+  gap:7px;
+  pointer-events:auto
+}
 
-    .subtitle {
-      text-align: center;
-      opacity: .75;
-      line-height: 1.6;
-      margin: 10px auto 25px;
-      max-width: 600px;
-    }
+#top button{width:46px;height:46px;padding:0}
 
-    .mainButton {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 17px;
-      font-size: 18px;
-    }
+#controls{
+  display:none;
+  position:fixed;
+  z-index:11;
+  left:0;right:0;bottom:12px;
+  height:160px;
+  pointer-events:none
+}
 
-    .row {
-      display: flex;
-      gap: 10px;
-    }
+#joystick{
+  position:absolute;
+  left:15px;bottom:0;
+  width:145px;height:145px;
+  border-radius:50%;
+  background:#000a;
+  border:2px solid #ffffff22;
+  pointer-events:auto
+}
 
-    .row button {
-      flex: 1;
-    }
+#knob{
+  position:absolute;
+  left:43px;top:43px;
+  width:58px;height:58px;
+  border-radius:50%;
+  background:#111;
+  border:2px solid #ffffff35
+}
 
-    /* HUD */
+#actions{
+  position:absolute;
+  right:14px;bottom:4px;
+  display:grid;
+  grid-template-columns:repeat(2,82px);
+  gap:8px;
+  pointer-events:auto
+}
 
-    #hud {
-      display: none;
-      position: fixed;
-      z-index: 10;
-      top: 12px;
-      left: 12px;
-      right: 12px;
-      justify-content: space-between;
-      align-items: flex-start;
-      pointer-events: none;
-    }
+#actions button{height:62px;padding:4px;font-size:10px}
 
-    #stats {
-      background: #000b;
-      border: 1px solid #ffffff25;
-      border-radius: 15px;
-      padding: 11px;
-      min-width: 300px;
-      font-size: 13px;
-      line-height: 1.6;
-    }
+#gameOver{display:none}
 
-    .health {
-      height: 10px;
-      width: 100%;
-      margin: 3px 0 5px;
-      background: #42151b;
-      border-radius: 10px;
-      overflow: hidden;
-    }
+.monster-info{
+  padding:10px;
+  margin:6px 0;
+  border-radius:10px;
+  background:#11111a
+}
 
-    #healthBar {
-      width: 100%;
-      height: 100%;
-      background: #42e37a;
-      transition: width .2s;
-    }
-
-    #topButtons {
-      display: flex;
-      gap: 7px;
-      pointer-events: auto;
-    }
-
-    #topButtons button {
-      width: 46px;
-      height: 46px;
-      padding: 0;
-      font-size: 18px;
-    }
-
-    /* CONTROLES TABLET */
-
-    #controls {
-      display: none;
-      position: fixed;
-      z-index: 11;
-      left: 0;
-      right: 0;
-      bottom: 12px;
-      height: 160px;
-      pointer-events: none;
-    }
-
-    #joystick {
-      position: absolute;
-      left: 15px;
-      bottom: 0;
-      width: 145px;
-      height: 145px;
-      border-radius: 50%;
-      background: #000a;
-      border: 2px solid #ffffff22;
-      pointer-events: auto;
-    }
-
-    #joystickKnob {
-      position: absolute;
-      left: 43px;
-      top: 43px;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: #111;
-      border: 2px solid #ffffff35;
-    }
-
-    #actionButtons {
-      position: absolute;
-      right: 14px;
-      bottom: 4px;
-      display: grid;
-      grid-template-columns: repeat(2, 82px);
-      gap: 8px;
-      pointer-events: auto;
-    }
-
-    #actionButtons button {
-      height: 62px;
-      padding: 5px;
-      font-size: 10px;
-    }
-
-    /* MAPA */
-
-    #miniMap {
-      display: none;
-      position: fixed;
-      z-index: 15;
-      right: 65px;
-      top: 65px;
-      width: 210px;
-      height: 210px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #07100ddd;
-      border: 2px solid #ffffff30;
-    }
-
-    #miniMap canvas {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* PAUSA */
-
-    #pauseScreen {
-      display: none;
-    }
-
-    /* INFORMACIÓN */
-
-    #infoScreen,
-    #shopScreen {
-      display: none;
-    }
-
-    .spiritItem {
-      margin: 7px 0;
-      padding: 11px;
-      border-radius: 12px;
-      background: #11111a;
-      border: 1px solid #ffffff10;
-    }
-
-    .close {
-      float: right;
-      color: white;
-    }
-
-    @media(max-width:600px) {
-      #stats {
-        min-width: 245px;
-        font-size: 11px;
-      }
-
-      .panel {
-        padding: 20px;
-      }
-    }
-  </style>
+@media(max-width:600px){
+  #stats{min-width:245px;font-size:11px}
+  .panel{padding:20px}
+}
+</style>
 </head>
 
 <body>
 
 <div id="game"></div>
 
+<!-- MENÚ -->
 
-<!-- =========================
-     MENÚ PRINCIPAL
-========================= -->
-
-<section id="menuScreen" class="screen">
-
+<section id="menu" class="screen">
   <div class="panel">
 
-    <h1>Spirit Wilds</h1>
+    <h1>Spirit 3000</h1>
 
     <p class="subtitle">
-      Explora un enorme mundo 3D, descubre zonas diferentes,
-      encuentra espíritus, recoge Éter y consigue capturarlos.
+      Explora un mundo abierto, encuentra monstruos
+      espirituales y atrápalos antes de que acaben contigo.
     </p>
 
-    <button
-      id="playButton"
-      class="mainButton">
-      JUGAR
-    </button>
+    <button id="play" class="main">JUGAR</button>
 
     <div class="row">
-
-      <button id="characterButton">
-        CAMBIAR PERSONAJE
-      </button>
-
-      <button id="informationButton">
-        ESPÍRITUS
-      </button>
-
+      <button id="characters">CAMBIAR PERSONAJE</button>
+      <button id="info">ESPÍRITUS</button>
     </div>
 
-    <button
-      id="shopButton"
-      class="mainButton">
-      TIENDA
-    </button>
-
   </div>
-
 </section>
 
+<!-- INFORMACIÓN -->
 
-<!-- =========================
-     INFORMACIÓN
-========================= -->
-
-<section
-  id="infoScreen"
-  class="screen">
-
+<section id="information" class="screen" style="display:none">
   <div class="panel">
 
-    <button
-      id="closeInfo"
-      class="close">
-      CERRAR
-    </button>
+    <button id="closeInfo">CERRAR</button>
 
-    <h2>Los 50 espíritus</h2>
+    <h2>50 monstruos espirituales</h2>
 
-    <p>
-      Cada espíritu tiene un nivel diferente.
-      Acércate, debilítalo y utiliza una Étercápsula.
-    </p>
-
-    <div id="spiritList"></div>
+    <div id="monsterList"></div>
 
   </div>
-
 </section>
 
+<!-- PAUSA -->
 
-<!-- =========================
-     TIENDA
-========================= -->
-
-<section
-  id="shopScreen"
-  class="screen">
-
-  <div class="panel">
-
-    <button
-      id="closeShop"
-      class="close">
-      CERRAR
-    </button>
-
-    <h2>Tienda</h2>
-
-    <div class="spiritItem">
-      <b>Skin Astral</b><br>
-      2,99 €
-      <button
-        class="buyButton"
-        data-product="skin_astral">
-        COMPRAR
-      </button>
-    </div>
-
-    <div class="spiritItem">
-      <b>100 Étercápsulas</b><br>
-      0,99 €
-      <button
-        class="buyButton"
-        data-product="capsulas_100">
-        COMPRAR
-      </button>
-    </div>
-
-    <div class="spiritItem">
-      <b>Pase Guardián</b><br>
-      2,99 €
-      <button
-        class="buyButton"
-        data-product="pase_guardian">
-        COMPRAR
-      </button>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =========================
-     PAUSA
-========================= -->
-
-<section
-  id="pauseScreen"
-  class="screen">
-
+<section id="pause" class="screen" style="display:none">
   <div class="panel">
 
     <h2>PAUSA</h2>
 
-    <button
-      id="resumeButton"
-      class="mainButton">
-      CONTINUAR
+    <button id="resume" class="main">CONTINUAR</button>
+    <button id="back" class="main">VOLVER</button>
+
+  </div>
+</section>
+
+<!-- MUERTE -->
+
+<section id="gameOver" class="screen">
+  <div class="panel">
+
+    <h2>HAS MUERTO</h2>
+
+    <p>
+      El espíritu te derrotó.
+      Puedes volver a empezar o preparar una futura
+      resurrección mediante la tienda.
+    </p>
+
+    <button id="restart" class="main">
+      VOLVER A EMPEZAR
     </button>
 
-    <button
-      id="backButton"
-      class="mainButton">
-      VOLVER
+    <button id="revive" class="main">
+      REVIVIR — 0,99 €
+    </button>
+
+    <button id="deathBack" class="main">
+      VOLVER AL MENÚ
     </button>
 
   </div>
-
 </section>
 
-
-<!-- =========================
-     HUD
-========================= -->
+<!-- HUD -->
 
 <div id="hud">
 
@@ -456,99 +237,62 @@
     ❤️ Vida:
     <b id="healthText">100%</b>
 
-    <div class="health">
-      <div id="healthBar"></div>
+    <div id="health-bg">
+      <div id="health"></div>
     </div>
 
     🔮 Cápsulas:
-    <b id="capsulesText">25</b>
+    <b id="capsules">25</b>
 
     · ✨ Éter:
-    <b id="etherText">0</b>
+    <b id="ether">0</b>
 
     · 👻 Capturados:
-    <b id="caughtText">0</b>
-
-    · ⭐ Nivel:
-    <b id="levelText">1</b>
+    <b id="captured">0</b>
 
     <br>
 
     🌍 Zona:
-    <b id="zoneText">Pradera Central</b>
+    <b id="zone">Pradera Central</b>
 
   </div>
 
-
-  <div id="topButtons">
-
-    <button id="saveButton">
-      💾
-    </button>
-
-    <button id="mapButton">
-      ▦
-    </button>
-
-    <button id="pauseButton">
-      Ⅱ
-    </button>
-
+  <div id="top">
+    <button id="pauseButton">Ⅱ</button>
   </div>
 
 </div>
 
-
-<!-- =========================
-     MAPA
-========================= -->
-
-<div id="miniMap">
-  <canvas
-    id="mapCanvas"
-    width="210"
-    height="210">
-  </canvas>
-</div>
-
-
-<!-- =========================
-     CONTROLES TABLET
-========================= -->
+<!-- CONTROLES -->
 
 <div id="controls">
 
   <div id="joystick">
-    <div id="joystickKnob"></div>
+    <div id="knob"></div>
   </div>
 
+  <div id="actions">
 
-  <div id="actionButtons">
-
-    <button id="throwButton">
-      LANZAR<br>Q
+    <button id="throw">
+      LANZAR
     </button>
 
-    <button id="captureButton">
-      ATRAPAR<br>E
+    <button id="capture">
+      ATRAPAR
     </button>
 
-    <button id="collectButton">
-      RECOGER<br>ÉTER
+    <button id="etherButton">
+      ÉTER
     </button>
 
-    <button id="cameraButton">
-      CÁMARA<br>C
+    <button id="camera">
+      CÁMARA
     </button>
 
   </div>
 
 </div>
 
-
-<!-- =========================
-     MOTOR 3D
-========================= -->
 
 <script type="module">
 
@@ -556,9 +300,9 @@ import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
 
-/* ==================================
+/* =========================
    ESCENA
-================================== */
+========================= */
 
 const scene =
   new THREE.Scene();
@@ -570,36 +314,34 @@ scene.fog =
   new THREE.Fog(
     0x07101b,
     30,
-    280
+    300
   );
 
 
-/* ==================================
+/* =========================
    CÁMARA
-================================== */
+========================= */
 
 const camera =
   new THREE.PerspectiveCamera(
     65,
     innerWidth / innerHeight,
-    0.1,
+    .1,
     1200
   );
 
 camera.position.set(
-  0,
-  5,
-  10
+  0,5,10
 );
 
 
-/* ==================================
+/* =========================
    RENDER
-================================== */
+========================= */
 
 const renderer =
   new THREE.WebGLRenderer({
-    antialias: true
+    antialias:true
   });
 
 renderer.setSize(
@@ -608,518 +350,593 @@ renderer.setSize(
 );
 
 renderer.setPixelRatio(
-  Math.min(
-    devicePixelRatio,
-    2
-  )
+  Math.min(devicePixelRatio,2)
 );
 
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled=true;
 
 document
   .getElementById("game")
-  .appendChild(
-    renderer.domElement
-  );
+  .appendChild(renderer.domElement);
 
 
-/* ==================================
-   ILUMINACIÓN
-================================== */
+/* =========================
+   LUCES
+========================= */
 
 scene.add(
   new THREE.HemisphereLight(
-    0xaacaff,
-    0x162315,
-    1.5
+    0xb9d5ff,
+    0x152416,
+    1.7
   )
 );
 
 const sun =
   new THREE.DirectionalLight(
     0xffedc4,
-    2.4
+    2.5
   );
 
 sun.position.set(
-  -70,
-  100,
-  40
+  -80,110,50
 );
 
-sun.castShadow = true;
+sun.castShadow=true;
 
 scene.add(sun);
 
 
-/* ==================================
+/* =========================
    TERRENO
-================================== */
-
-const WORLD_SIZE = 520;
+========================= */
 
 const ground =
   new THREE.Mesh(
+
     new THREE.PlaneGeometry(
-      WORLD_SIZE,
-      WORLD_SIZE
+      560,
+      560
     ),
+
     new THREE.MeshStandardMaterial({
-      color: 0x183625,
-      roughness: 1
+      color:0x183625,
+      roughness:1
     })
+
   );
 
 ground.rotation.x =
-  -Math.PI / 2;
+  -Math.PI/2;
 
-ground.receiveShadow = true;
+ground.receiveShadow=true;
 
 scene.add(ground);
 
 
-/* ==================================
-   ZONAS DEL MAPA
-================================== */
+/* =========================
+   ZONAS
+========================= */
 
-const zones = [
+const zones=[
 
-  {
-    name: "Pradera Central",
-    x: 0,
-    z: 0,
-    radius: 105,
-    color: 0x355e2e
-  },
+  ["Pradera Central",0,0,110,0x355e2e],
 
-  {
-    name: "Bosque Sombrío",
-    x: -150,
-    z: -135,
-    radius: 110,
-    color: 0x123b25
-  },
+  ["Bosque Sombrío",-155,-135,115,0x123b25],
 
-  {
-    name: "Valle de Nieve",
-    x: 155,
-    z: -135,
-    radius: 105,
-    color: 0xb8d4dc
-  },
+  ["Valle de Nieve",160,-140,108,0xb8d4dc],
 
-  {
-    name: "Desierto Dorado",
-    x: -155,
-    z: 155,
-    radius: 105,
-    color: 0x9b7047
-  },
+  ["Desierto Dorado",-160,160,108,0x9b7047],
 
-  {
-    name: "Tierras Volcánicas",
-    x: 155,
-    z: 155,
-    radius: 105,
-    color: 0x451b1b
-  },
+  ["Tierras Volcánicas",160,160,108,0x451b1b],
 
-  {
-    name: "Pantano Azul",
-    x: 0,
-    z: 205,
-    radius: 75,
-    color: 0x173d45
-  },
+  ["Pantano Azul",0,215,78,0x173d45],
 
-  {
-    name: "Montañas",
-    x: 0,
-    z: -220,
-    radius: 90,
-    color: 0x394454
-  }
+  ["Montañas",0,-225,95,0x394454]
 
 ];
 
 
-for (const zone of zones) {
+for(const z of zones){
 
   const mesh =
     new THREE.Mesh(
+
       new THREE.CircleGeometry(
-        zone.radius,
-        72
+        z[3],80
       ),
+
       new THREE.MeshStandardMaterial({
-        color: zone.color,
-        roughness: 1
+        color:z[4],
+        roughness:1
       })
+
     );
 
-  mesh.rotation.x =
-    -Math.PI / 2;
+  mesh.rotation.x=-Math.PI/2;
 
   mesh.position.set(
-    zone.x,
-    0.01,
-    zone.z
+    z[1],
+    .02,
+    z[2]
   );
 
   scene.add(mesh);
 }
 
 
-/* ==================================
+/* =========================
    ÁRBOLES
-================================== */
+========================= */
 
-function createTree(
-  x,
-  z,
-  scale
-) {
+function tree(x,z,s){
 
-  const tree =
+  const group =
     new THREE.Group();
-
 
   const trunk =
     new THREE.Mesh(
+
       new THREE.CylinderGeometry(
-        .25,
-        .48,
-        3.4,
-        10
+        .3,.55,3.8,10
       ),
+
       new THREE.MeshStandardMaterial({
-        color: 0x50321e
+        color:0x50321e
       })
+
     );
 
-  trunk.position.y = 1.7;
+  trunk.position.y=1.9;
 
-  tree.add(trunk);
+  group.add(trunk);
 
 
-  for (
-    let i = 0;
-    i < 4;
-    i++
-  ) {
+  for(let i=0;i<4;i++){
 
     const leaves =
       new THREE.Mesh(
+
         new THREE.ConeGeometry(
-          2.1 - i * .28,
-          3.1,
+          2.2-i*.3,
+          3.2,
           12
         ),
+
         new THREE.MeshStandardMaterial({
-          color:
-            i % 2
-              ? 0x155c31
-              : 0x0d4c2b
+          color:i%2
+            ?0x155c31
+            :0x0d4c2b
         })
+
       );
 
-    leaves.position.y =
-      3.2 + i * 1.2;
+    leaves.position.y=
+      3.2+i*1.2;
 
-    tree.add(leaves);
+    group.add(leaves);
+
   }
 
+  group.position.set(x,0,z);
 
-  tree.position.set(
-    x,
-    0,
-    z
-  );
+  group.scale.setScalar(s);
 
-  tree.scale.setScalar(
-    scale
-  );
-
-  scene.add(tree);
+  scene.add(group);
 }
 
 
-/* ==================================
-   ROCAS
-================================== */
+for(let i=0;i<360;i++){
 
-function createRock(
-  x,
-  z,
-  scale
-) {
+  const x=
+    (Math.random()-.5)*530;
 
-  const rock =
-    new THREE.Mesh(
-      new THREE.DodecahedronGeometry(
-        1.5 * scale
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0x62686d
-      })
-    );
+  const z=
+    (Math.random()-.5)*530;
 
-  rock.position.set(
-    x,
-    .7 * scale,
-    z
-  );
+  if(Math.hypot(x,z)<18)continue;
 
-  scene.add(rock);
-}
-
-
-/* ==================================
-   ARBUSTOS
-================================== */
-
-function createBush(
-  x,
-  z
-) {
-
-  const bush =
-    new THREE.Group();
-
-  for (
-    let i = 0;
-    i < 6;
-    i++
-  ) {
-
-    const leaf =
-      new THREE.Mesh(
-        new THREE.SphereGeometry(
-          .7,
-          10,
-          8
-        ),
-        new THREE.MeshStandardMaterial({
-          color: 0x0d6a36
-        })
-      );
-
-    leaf.position.set(
-      (Math.random() - .5) * 1.6,
-      .6 + Math.random() * .6,
-      (Math.random() - .5) * 1.6
-    );
-
-    bush.add(leaf);
-  }
-
-  bush.position.set(
-    x,
-    0,
-    z
-  );
-
-  scene.add(bush);
-}
-
-
-/* ==================================
-   GENERAR NATURALEZA
-================================== */
-
-for (
-  let i = 0;
-  i < 330;
-  i++
-) {
-
-  const x =
-    (Math.random() - .5) * 500;
-
-  const z =
-    (Math.random() - .5) * 500;
-
-  if (
-    Math.hypot(x, z) < 15
-  ) {
-    continue;
-  }
-
-  createTree(
+  tree(
     x,
     z,
-    .5 + Math.random()
+    .55+Math.random()
   );
-
-  if (i % 3 === 0) {
-
-    createRock(
-      x + 2,
-      z + 2,
-      .5 + Math.random()
-    );
-
-  }
-
-  if (i % 4 === 0) {
-
-    createBush(
-      x - 2,
-      z + 3
-    );
-
-  }
 }
 
 
-/* ==================================
-   50 ESPÍRITUS
-================================== */
+/* =========================
+   TIPOS DE MONSTRUO
+========================= */
 
-const spiritNames = [
+const monsterTypes=[
 
-  "Bruma",
-  "Frost",
-  "Volt",
-  "Umbra",
-  "Terra",
-  "Luma",
-  "Nébula",
-  "Rayo",
-  "Moss",
-  "Flare",
-  "Aqua",
-  "Cinder",
-  "Gale",
-  "Bloom",
-  "Rune",
-  "Echo",
-  "Nova",
-  "Glace",
-  "Ember",
-  "Mistral",
-  "Solaris",
-  "Lunar",
-  "Thorn",
-  "Pebble",
-  "Mist",
-  "Spark",
-  "Coral",
-  "Shade",
-  "Breeze",
-  "Flint",
-  "Willow",
-  "Comet",
-  "Dusk",
-  "Aurora",
-  "Vine",
-  "Storm",
-  "Quartz",
-  "Ash",
-  "River",
-  "Cloud",
-  "Pyro",
-  "Frostbite",
-  "Glow",
-  "Magma",
-  "Leaf",
-  "Star",
-  "Thunder",
-  "Crystal",
-  "Spiritus",
-  "Zen"
+  {
+    name:"Bestia",
+    color:0x9e4bff,
+    size:1.2,
+    horns:true,
+    wings:false
+  },
+
+  {
+    name:"Dragón",
+    color:0xff553d,
+    size:1.5,
+    horns:true,
+    wings:true
+  },
+
+  {
+    name:"Lobo Espectral",
+    color:0x7ccfff,
+    size:1,
+    horns:false,
+    wings:false
+  },
+
+  {
+    name:"Gólem",
+    color:0x777777,
+    size:1.7,
+    horns:true,
+    wings:false
+  },
+
+  {
+    name:"Demonio",
+    color:0xff205c,
+    size:1.2,
+    horns:true,
+    wings:true
+  },
+
+  {
+    name:"Araña Astral",
+    color:0x55e69b,
+    size:1,
+    horns:false,
+    wings:false
+  },
+
+  {
+    name:"Serpiente",
+    color:0xffd43d,
+    size:1.1,
+    horns:false,
+    wings:false
+  },
+
+  {
+    name:"Guardián",
+    color:0x55a8ff,
+    size:1.5,
+    horns:true,
+    wings:true
+  }
 
 ];
 
-const spiritColors = [
-  0x8effc4,
-  0x9eeaff,
-  0xfff34d,
-  0xb66cff,
-  0xff835d
-];
 
-const spirits = [];
+/* =========================
+   CREAR MONSTRUO
+========================= */
 
+function createMonster(type){
 
-for (
-  let i = 0;
-  i < 50;
-  i++
-) {
-
-  const spirit =
+  const group=
     new THREE.Group();
 
-  const color =
-    spiritColors[
-      i % spiritColors.length
-    ];
+  const material=
+    new THREE.MeshStandardMaterial({
+      color:type.color,
+      emissive:type.color,
+      emissiveIntensity:.18,
+      roughness:.75
+    });
 
 
-  const light =
-    new THREE.PointLight(
-      color,
-      1.5,
-      9
-    );
+  /* CUERPO */
 
-  light.position.y = 2;
-
-  spirit.add(light);
-
-
-  const body =
+  const body=
     new THREE.Mesh(
-      new THREE.IcosahedronGeometry(
-        .72,
-        2
+
+      new THREE.SphereGeometry(
+        1,
+        16,
+        12
       ),
-      new THREE.MeshStandardMaterial({
-        color,
-        emissive: color,
-        emissiveIntensity: 1,
-        transparent: true,
-        opacity: .83
-      })
+
+      material
+
     );
 
-  body.position.y = 1.8;
-
-  spirit.add(body);
-
-
-  spirit.position.set(
-    (Math.random() - .5) * 490,
-    0,
-    (Math.random() - .5) * 490
+  body.scale.set(
+    1,
+    1.15,
+    .8
   );
 
-  scene.add(spirit);
+  body.position.y=1.3;
+
+  group.add(body);
 
 
-  spirits.push({
+  /* CABEZA */
 
-    object: spirit,
+  const head=
+    new THREE.Mesh(
 
-    name: spiritNames[i],
+      new THREE.SphereGeometry(
+        .7,
+        16,
+        12
+      ),
+
+      material
+
+    );
+
+  head.position.set(
+    0,
+    2.35,
+    -.25
+  );
+
+  group.add(head);
+
+
+  /* OJOS */
+
+  const eyeMaterial=
+    new THREE.MeshBasicMaterial({
+      color:0xffffff
+    });
+
+  const pupilMaterial=
+    new THREE.MeshBasicMaterial({
+      color:0x080808
+    });
+
+
+  for(const x of[-.25,.25]){
+
+    const eye=
+      new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+          .13,10,8
+        ),
+
+        eyeMaterial
+
+      );
+
+    eye.position.set(
+      x,
+      2.4,
+      -.88
+    );
+
+    group.add(eye);
+
+
+    const pupil=
+      new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+          .06,8,8
+        ),
+
+        pupilMaterial
+
+      );
+
+    pupil.position.set(
+      x,
+      2.4,
+      -.98
+    );
+
+    group.add(pupil);
+
+  }
+
+
+  /* PATAS */
+
+  for(const x of[-.55,.55]){
+
+    for(const z of[-.3,.3]){
+
+      const leg=
+        new THREE.Mesh(
+
+          new THREE.CylinderGeometry(
+            .15,.22,.9,8
+          ),
+
+          material
+
+        );
+
+      leg.position.set(
+        x,
+        .45,
+        z
+      );
+
+      group.add(leg);
+
+    }
+
+  }
+
+
+  /* CUERNOS */
+
+  if(type.horns){
+
+    for(const x of[-.35,.35]){
+
+      const horn=
+        new THREE.Mesh(
+
+          new THREE.ConeGeometry(
+            .15,
+            .8,
+            8
+          ),
+
+          material
+
+        );
+
+      horn.position.set(
+        x,
+        2.95,
+        -.2
+      );
+
+      horn.rotation.z=
+        x>0 ? -.3 : .3;
+
+      group.add(horn);
+
+    }
+
+  }
+
+
+  /* ALAS */
+
+  if(type.wings){
+
+    for(const x of[-1,1]){
+
+      const wing=
+        new THREE.Mesh(
+
+          new THREE.ConeGeometry(
+            .75,
+            1.8,
+            5
+          ),
+
+          material
+
+        );
+
+      wing.position.set(
+        x,
+        1.9,
+        .2
+      );
+
+      wing.rotation.z=
+        x>0 ? -.8 : .8;
+
+      group.add(wing);
+
+    }
+
+  }
+
+
+  /* COLA */
+
+  const tail=
+    new THREE.Mesh(
+
+      new THREE.ConeGeometry(
+        .22,
+        1.6,
+        8
+      ),
+
+      material
+
+    );
+
+  tail.position.set(
+    0,
+    1,
+    .9
+  );
+
+  tail.rotation.x=
+    Math.PI/2;
+
+  group.add(tail);
+
+
+  group.scale.setScalar(
+    type.size
+  );
+
+
+  return group;
+
+}
+
+
+/* =========================
+   CREAR 50 MONSTRUOS
+========================= */
+
+const monsters=[];
+
+for(let i=0;i<50;i++){
+
+  const type=
+    monsterTypes[
+      i%monsterTypes.length
+    ];
+
+  const object=
+    createMonster(type);
+
+  object.position.set(
+
+    (Math.random()-.5)*510,
+
+    0,
+
+    (Math.random()-.5)*510
+
+  );
+
+  scene.add(object);
+
+
+  monsters.push({
+
+    object,
+
+    name:
+      type.name+
+      " "+(i+1),
 
     level:
-      1 + Math.floor(i / 10),
+      1+Math.floor(i/7),
 
     health:
-      100 + Math.floor(i / 10) * 25,
+      100+Math.floor(i/7)*30,
 
-    active: true,
+    maxHealth:
+      100+Math.floor(i/7)*30,
 
-    phase:
-      Math.random() * 10,
+    damage:
+      5+Math.floor(i/8)*2,
+
+    active:true,
+
+    attackCooldown:0,
 
     direction:
       new THREE.Vector3(
-        Math.random() - .5,
+        Math.random()-.5,
         0,
-        Math.random() - .5
+        Math.random()-.5
       ).normalize()
 
   });
@@ -1127,694 +944,361 @@ for (
 }
 
 
-/* ==================================
-   ÉTER Y CÁPSULAS
-================================== */
+/* =========================
+   PERSONAJE
+========================= */
 
-const etherItems = [];
-const capsules = [];
-
-
-function createResource(
-  type,
-  x,
-  z
-) {
-
-  const group =
-    new THREE.Group();
-
-  const color =
-    type === "ether"
-      ? 0x7f6cff
-      : 0xffd45a;
+const player=
+  new THREE.Group();
 
 
-  const crystal =
-    new THREE.Mesh(
-      new THREE.IcosahedronGeometry(
-        .35,
-        1
-      ),
-      new THREE.MeshStandardMaterial({
-        color,
-        emissive: color,
-        emissiveIntensity: 1.4
-      })
-    );
+const playerBody=
+  new THREE.Mesh(
 
-  crystal.position.y = .8;
+    new THREE.BoxGeometry(
+      .8,1.1,.55
+    ),
 
-  group.add(crystal);
+    new THREE.MeshStandardMaterial({
+      color:0x327bd8
+    })
 
-  group.position.set(
-    x,
-    0,
-    z
   );
 
-  scene.add(group);
+playerBody.position.y=1.5;
 
-  return group;
-}
-
-
-for (
-  let i = 0;
-  i < 140;
-  i++
-) {
-
-  etherItems.push({
-
-    object:
-      createResource(
-        "ether",
-        (Math.random() - .5) * 500,
-        (Math.random() - .5) * 500
-      ),
-
-    active: true
-
-  });
-
-}
+player.add(playerBody);
 
 
-for (
-  let i = 0;
-  i < 90;
-  i++
-) {
+const playerHead=
+  new THREE.Mesh(
 
-  capsules.push({
+    new THREE.SphereGeometry(
+      .5,16,12
+    ),
 
-    object:
-      createResource(
-        "capsule",
-        (Math.random() - .5) * 500,
-        (Math.random() - .5) * 500
-      ),
-
-    active: true
-
-  });
-
-}
-
-
-/* ==================================
-   PERSONAJE
-================================== */
-
-const characters = [
-
-  {
-    name: "Explorador",
-    speed: 5.2,
-    color: 0x2e78d8
-  },
-
-  {
-    name: "Guardabosques",
-    speed: 6.3,
-    color: 0x3b9b54
-  },
-
-  {
-    name: "Nómada",
-    speed: 5.7,
-    color: 0xc28a3a
-  },
-
-  {
-    name: "Astral",
-    speed: 5.1,
-    color: 0x7d54e8
-  }
-
-];
-
-let selectedCharacter = 0;
-
-
-function createPlayer() {
-
-  const player =
-    new THREE.Group();
-
-
-  const skin =
     new THREE.MeshStandardMaterial({
-      color: 0xd79b74
-    });
+      color:0xd79b74
+    })
 
-  const clothes =
-    new THREE.MeshStandardMaterial({
-      color:
-        characters[
-          selectedCharacter
-        ].color
-    });
+  );
 
-  const pants =
-    new THREE.MeshStandardMaterial({
-      color: 0x202638
-    });
+playerHead.position.y=2.45;
 
+player.add(playerHead);
 
-  const head =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        .5,
-        20,
-        16
-      ),
-      skin
-    );
-
-  head.position.y = 2.45;
-
-  player.add(head);
-
-
-  const body =
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        .78,
-        1.05,
-        .54
-      ),
-      clothes
-    );
-
-  body.position.y = 1.55;
-
-  player.add(body);
-
-
-  for (
-    const x of [-.24, .24]
-  ) {
-
-    const leg =
-      new THREE.Mesh(
-        new THREE.BoxGeometry(
-          .25,
-          .9,
-          .3
-        ),
-        pants
-      );
-
-    leg.position.set(
-      x,
-      .63,
-      0
-    );
-
-    player.add(leg);
-
-  }
-
-
-  return player;
-}
-
-
-const player =
-  createPlayer();
 
 scene.add(player);
 
 
-/* ==================================
-   ESTADO DEL JUEGO
-================================== */
+/* =========================
+   ESTADO
+========================= */
 
-let health = 100;
-let capsuleCount = 25;
-let etherCount = 0;
-let capturedCount = 0;
-let playerLevel = 1;
+let hp=100;
 
-let playing = false;
-let paused = false;
+let capsules=25;
 
-let gameTime = 0;
+let ether=0;
 
-let cameraMode = 0;
+let captured=0;
 
-const keys = {
-  w: false,
-  a: false,
-  s: false,
-  d: false
+let playing=false;
+
+let paused=false;
+
+let cameraMode=0;
+
+let gameTime=0;
+
+const keys={
+  w:false,
+  a:false,
+  s:false,
+  d:false
 };
 
 
-/* ==================================
-   ZONA ACTUAL
-================================== */
+/* =========================
+   MOVIMIENTO RÁPIDO
+========================= */
 
-function getCurrentZone(
-  x,
-  z
-) {
-
-  let closest =
-    zones[0];
-
-  let distance =
-    Infinity;
-
-  for (
-    const zone of zones
-  ) {
-
-    const d =
-      (x - zone.x) ** 2 +
-      (z - zone.z) ** 2;
-
-    if (d < distance) {
-
-      distance = d;
-      closest = zone;
-
-    }
-
-  }
-
-  return closest.name;
-}
+const PLAYER_SPEED=11;
 
 
-/* ==================================
-   ACTUALIZAR HUD
-================================== */
+/* =========================
+   ATAQUE DE MONSTRUOS
+========================= */
 
-function updateHUD() {
+function updateMonsters(delta){
 
-  document.getElementById(
-    "healthText"
-  ).textContent =
-    Math.round(health) + "%";
+  for(const monster of monsters){
 
-
-  document.getElementById(
-    "healthBar"
-  ).style.width =
-    health + "%";
-
-
-  document.getElementById(
-    "capsulesText"
-  ).textContent =
-    capsuleCount;
-
-
-  document.getElementById(
-    "etherText"
-  ).textContent =
-    etherCount;
-
-
-  document.getElementById(
-    "caughtText"
-  ).textContent =
-    capturedCount;
-
-
-  document.getElementById(
-    "levelText"
-  ).textContent =
-    playerLevel;
-
-
-  document.getElementById(
-    "zoneText"
-  ).textContent =
-    getCurrentZone(
-      player.position.x,
-      player.position.z
-    );
-
-}
-
-
-/* ==================================
-   RECOGER OBJETOS
-================================== */
-
-function collectItems() {
-
-  for (
-    const item of etherItems
-  ) {
-
-    if (
-      item.active &&
-      player.position.distanceTo(
-        item.object.position
-      ) < 2.5
-    ) {
-
-      item.active = false;
-      item.object.visible = false;
-
-      etherCount += 5;
-
-    }
-
-  }
-
-
-  for (
-    const item of capsules
-  ) {
-
-    if (
-      item.active &&
-      player.position.distanceTo(
-        item.object.position
-      ) < 2.5
-    ) {
-
-      item.active = false;
-      item.object.visible = false;
-
-      capsuleCount += 2;
-
-    }
-
-  }
-
-}
-
-
-/* ==================================
-   ESPÍRITU MÁS CERCANO
-================================== */
-
-function nearestSpirit() {
-
-  let closest = null;
-  let distance = Infinity;
-
-  for (
-    const spirit of spirits
-  ) {
-
-    if (!spirit.active)
+    if(!monster.active)
       continue;
 
-    const d =
-      player.position.distanceTo(
-        spirit.object.position
+
+    monster.attackCooldown=
+      Math.max(
+        0,
+        monster.attackCooldown-delta
       );
 
-    if (d < distance) {
 
-      distance = d;
-      closest = spirit;
+    const distance=
+      monster.object.position.distanceTo(
+        player.position
+      );
+
+
+    /* PERSEGUIR */
+
+    if(distance<38){
+
+      const direction=
+        player.position.clone()
+        .sub(
+          monster.object.position
+        );
+
+      direction.y=0;
+
+      if(direction.length()>0)
+        direction.normalize();
+
+
+      monster.object.position
+        .addScaledVector(
+          direction,
+          delta*
+          (
+            3.2+
+            monster.level*.15
+          )
+        );
+
+    }
+
+
+    /* ATAQUE */
+
+    if(
+      distance<3.2 &&
+      monster.attackCooldown<=0
+    ){
+
+      hp=
+        Math.max(
+          0,
+          hp-monster.damage
+        );
+
+      monster.attackCooldown=
+        1.0;
 
     }
 
   }
 
-  return {
-    spirit: closest,
+}
+
+
+/* =========================
+   CAPTURAR
+========================= */
+
+function nearestMonster(){
+
+  let nearest=null;
+  let distance=Infinity;
+
+  for(const monster of monsters){
+
+    if(!monster.active)
+      continue;
+
+    const d=
+      monster.object.position
+      .distanceTo(
+        player.position
+      );
+
+    if(d<distance){
+
+      distance=d;
+      nearest=monster;
+
+    }
+
+  }
+
+  return{
+    monster:nearest,
     distance
   };
 
 }
 
 
-/* ==================================
-   LANZAR
-================================== */
+function captureMonster(){
 
-function throwSpirit() {
+  if(capsules<=0)
+    return;
 
-  if (
-    capsuleCount <= 0
+
+  const result=
+    nearestMonster();
+
+
+  if(
+    !result.monster ||
+    result.distance>7
   )
     return;
 
 
-  const result =
-    nearestSpirit();
+  capsules--;
 
 
-  if (
-    !result.spirit ||
-    result.distance > 10
-  )
-    return;
-
-
-  capsuleCount--;
-
-  result.spirit.health =
+  result.monster.health=
     Math.max(
       0,
-      result.spirit.health - 40
+      result.monster.health-45
+    );
+
+
+  if(
+    result.monster.health<=0
+  ){
+
+    result.monster.active=false;
+
+    result.monster.object.visible=false;
+
+    captured++;
+
+  }
+
+}
+
+
+/* =========================
+   LANZAR
+========================= */
+
+function throwCapsule(){
+
+  if(capsules<=0)
+    return;
+
+  const result=
+    nearestMonster();
+
+  if(
+    !result.monster ||
+    result.distance>12
+  )
+    return;
+
+  capsules--;
+
+  result.monster.health=
+    Math.max(
+      0,
+      result.monster.health-65
     );
 
 }
 
 
-/* ==================================
-   ATRAPAR
-================================== */
-
-function captureSpirit() {
-
-  if (
-    capsuleCount <= 0
-  )
-    return;
-
-
-  const result =
-    nearestSpirit();
-
-
-  if (
-    !result.spirit ||
-    result.distance > 7
-  )
-    return;
-
-
-  capsuleCount--;
-
-
-  const chance =
-    .32 +
-    playerLevel * .055 +
-    (result.spirit.health < 70
-      ? .22
-      : 0);
-
-
-  if (
-    Math.random() < chance
-  ) {
-
-    result.spirit.active =
-      false;
-
-    result.spirit.object.visible =
-      false;
-
-    capturedCount++;
-
-    playerLevel =
-      1 +
-      Math.floor(
-        capturedCount / 10
-      );
-
-  } else {
-
-    health =
-      Math.max(
-        0,
-        health -
-        (5 + result.spirit.level)
-      );
-
-  }
-
-}
-
-
-/* ==================================
+/* =========================
    TECLADO
-================================== */
+========================= */
 
-window.addEventListener(
+addEventListener(
   "keydown",
-  event => {
+  e=>{
 
-    const key =
-      event.key.toLowerCase();
+    const k=
+      e.key.toLowerCase();
 
+    if(k==="w"||k==="arrowup")
+      keys.w=true;
 
-    if (
-      key === "w" ||
-      key === "arrowup"
-    )
-      keys.w = true;
+    if(k==="a"||k==="arrowleft")
+      keys.a=true;
 
+    if(k==="s"||k==="arrowdown")
+      keys.s=true;
 
-    if (
-      key === "a" ||
-      key === "arrowleft"
-    )
-      keys.a = true;
+    if(k==="d"||k==="arrowright")
+      keys.d=true;
 
+    if(k==="q")
+      throwCapsule();
 
-    if (
-      key === "s" ||
-      key === "arrowdown"
-    )
-      keys.s = true;
+    if(k==="e")
+      captureMonster();
 
-
-    if (
-      key === "d" ||
-      key === "arrowright"
-    )
-      keys.d = true;
-
-
-    if (key === "q")
-      throwSpirit();
-
-
-    if (key === "e")
-      captureSpirit();
-
-
-    if (key === "c")
-      cameraMode =
-        (cameraMode + 1) % 3;
+    if(k==="c")
+      cameraMode=
+        (cameraMode+1)%3;
 
   }
 );
 
 
-window.addEventListener(
+addEventListener(
   "keyup",
-  event => {
+  e=>{
 
-    const key =
-      event.key.toLowerCase();
+    const k=
+      e.key.toLowerCase();
 
+    if(k==="w"||k==="arrowup")
+      keys.w=false;
 
-    if (
-      key === "w" ||
-      key === "arrowup"
-    )
-      keys.w = false;
+    if(k==="a"||k==="arrowleft")
+      keys.a=false;
 
+    if(k==="s"||k==="arrowdown")
+      keys.s=false;
 
-    if (
-      key === "a" ||
-      key === "arrowleft"
-    )
-      keys.a = false;
-
-
-    if (
-      key === "s" ||
-      key === "arrowdown"
-    )
-      keys.s = false;
-
-
-    if (
-      key === "d" ||
-      key === "arrowright"
-    )
-      keys.d = false;
+    if(k==="d"||k==="arrowright")
+      keys.d=false;
 
   }
 );
 
 
-/* ==================================
-   BOTONES
-================================== */
-
-document
-  .getElementById("throwButton")
-  .addEventListener(
-    "pointerdown",
-    throwSpirit
-  );
-
-
-document
-  .getElementById("captureButton")
-  .addEventListener(
-    "pointerdown",
-    captureSpirit
-  );
-
-
-document
-  .getElementById("collectButton")
-  .addEventListener(
-    "pointerdown",
-    collectItems
-  );
-
-
-document
-  .getElementById("cameraButton")
-  .addEventListener(
-    "pointerdown",
-    () => {
-
-      cameraMode =
-        (cameraMode + 1) % 3;
-
-    }
-  );
-
-
-/* ==================================
+/* =========================
    JOYSTICK
-================================== */
+========================= */
 
-const joystick =
+const joystick=
   document.getElementById(
     "joystick"
   );
 
-const knob =
+const knob=
   document.getElementById(
-    "joystickKnob"
+    "knob"
   );
 
-let joystickPointer = null;
+let pointer=null;
 
 
 joystick.addEventListener(
   "pointerdown",
-  event => {
+  e=>{
 
-    joystickPointer =
-      event.pointerId;
+    pointer=e.pointerId;
 
     joystick.setPointerCapture(
-      joystickPointer
+      pointer
     );
 
-    moveJoystick(event);
+    joystickMove(e);
 
   }
 );
@@ -1822,16 +1306,10 @@ joystick.addEventListener(
 
 joystick.addEventListener(
   "pointermove",
-  event => {
+  e=>{
 
-    if (
-      event.pointerId ===
-      joystickPointer
-    ) {
-
-      moveJoystick(event);
-
-    }
+    if(e.pointerId===pointer)
+      joystickMove(e);
 
   }
 );
@@ -1839,414 +1317,133 @@ joystick.addEventListener(
 
 joystick.addEventListener(
   "pointerup",
-  resetJoystick
+  joystickReset
 );
 
 
-joystick.addEventListener(
-  "pointercancel",
-  resetJoystick
-);
+function joystickMove(e){
 
-
-function moveJoystick(
-  event
-) {
-
-  const rect =
+  const r=
     joystick.getBoundingClientRect();
 
+  const dx=
+    e.clientX-
+    r.left-
+    r.width/2;
 
-  const dx =
-    event.clientX -
-    rect.left -
-    rect.width / 2;
+  const dy=
+    e.clientY-
+    r.top-
+    r.height/2;
 
-
-  const dy =
-    event.clientY -
-    rect.top -
-    rect.height / 2;
-
-
-  const length =
+  const length=
     Math.min(
       50,
-      Math.hypot(dx, dy)
+      Math.hypot(dx,dy)
     );
 
+  const angle=
+    Math.atan2(dy,dx);
 
-  const angle =
-    Math.atan2(
-      dy,
-      dx
-    );
-
-
-  knob.style.left =
-    43 +
-    Math.cos(angle) *
-      length +
+  knob.style.left=
+    43+
+    Math.cos(angle)*length+
     "px";
 
-
-  knob.style.top =
-    43 +
-    Math.sin(angle) *
-      length +
+  knob.style.top=
+    43+
+    Math.sin(angle)*length+
     "px";
 
-
-  keys.a = dx < -18;
-  keys.d = dx > 18;
-  keys.w = dy < -18;
-  keys.s = dy > 18;
-
-}
-
-
-function resetJoystick() {
-
-  joystickPointer = null;
-
-  knob.style.left =
-    "43px";
-
-  knob.style.top =
-    "43px";
-
-  keys.a =
-    keys.d =
-    keys.w =
-    keys.s =
-      false;
+  keys.a=dx<-18;
+  keys.d=dx>18;
+  keys.w=dy<-18;
+  keys.s=dy>18;
 
 }
 
 
-/* ==================================
-   MAPA
-================================== */
+function joystickReset(){
 
-function drawMap() {
+  pointer=null;
 
-  const canvas =
-    document.getElementById(
-      "mapCanvas"
-    );
+  knob.style.left="43px";
+  knob.style.top="43px";
 
-  const context =
-    canvas.getContext(
-      "2d"
-    );
-
-
-  context.clearRect(
-    0,
-    0,
-    210,
-    210
-  );
-
-
-  context.fillStyle =
-    "#173b2a";
-
-  context.fillRect(
-    0,
-    0,
-    210,
-    210
-  );
-
-
-  for (
-    const zone of zones
-  ) {
-
-    context.fillStyle =
-      "#ffffff18";
-
-    context.beginPath();
-
-    context.arc(
-      (zone.x + 260) /
-        520 * 210,
-
-      (zone.z + 260) /
-        520 * 210,
-
-      zone.radius / 3,
-
-      0,
-      Math.PI * 2
-    );
-
-    context.fill();
-
-  }
-
-
-  for (
-    const spirit of spirits
-  ) {
-
-    if (
-      !spirit.active
-    )
-      continue;
-
-
-    context.fillStyle =
-      "#b66cff";
-
-
-    context.fillRect(
-      (spirit.object.position.x + 260) /
-        520 * 210,
-
-      (spirit.object.position.z + 260) /
-        520 * 210,
-
-      2,
-      2
-    );
-
-  }
-
-
-  context.fillStyle =
-    "#58a6ff";
-
-
-  context.beginPath();
-
-  context.arc(
-    (player.position.x + 260) /
-      520 * 210,
-
-    (player.position.z + 260) /
-      520 * 210,
-
-    5,
-    0,
-    Math.PI * 2
-  );
-
-  context.fill();
+  keys.w=
+  keys.a=
+  keys.s=
+  keys.d=false;
 
 }
 
 
-/* ==================================
-   GUARDAR
-================================== */
+/* =========================
+   ACTUALIZAR
+========================= */
 
-function saveGame() {
+function update(delta){
 
-  localStorage.setItem(
-    "spiritWildsSave",
-    JSON.stringify({
-
-      x: player.position.x,
-      z: player.position.z,
-
-      health,
-
-      capsuleCount,
-
-      etherCount,
-
-      capturedCount,
-
-      playerLevel
-
-    })
-  );
-
-}
-
-
-/* ==================================
-   ACTUALIZACIÓN DEL JUEGO
-================================== */
-
-function updateGame() {
-
-  if (
-    !playing ||
-    paused
-  )
+  if(!playing||paused)
     return;
 
 
-  const delta = 0.016;
+  const forward=
+    (keys.w?1:0)-
+    (keys.s?1:0);
+
+  const sideways=
+    (keys.d?1:0)-
+    (keys.a?1:0);
 
 
-  const forward =
-    (keys.w ? 1 : 0) -
-    (keys.s ? 1 : 0);
-
-
-  const sideways =
-    (keys.d ? 1 : 0) -
-    (keys.a ? 1 : 0);
-
-
-  const speed =
-    characters[
-      selectedCharacter
-    ].speed;
-
-
-  player.position.z +=
-    forward *
-    speed *
+  player.position.z+=
+    forward*
+    PLAYER_SPEED*
     delta;
 
 
-  player.position.x +=
-    sideways *
-    speed *
+  player.position.x+=
+    sideways*
+    PLAYER_SPEED*
     delta;
 
 
-  player.position.x =
-    Math.max(
-      -255,
-      Math.min(
-        255,
-        player.position.x
-      )
+  player.position.x=
+    THREE.MathUtils.clamp(
+      player.position.x,
+      -270,270
+    );
+
+  player.position.z=
+    THREE.MathUtils.clamp(
+      player.position.z,
+      -270,270
     );
 
 
-  player.position.z =
-    Math.max(
-      -255,
-      Math.min(
-        255,
-        player.position.z
-      )
-    );
+  updateMonsters(delta);
 
 
-  collectItems();
+  gameTime+=delta;
 
 
-  /* Movimiento de espíritus */
-
-  for (
-    const spirit of spirits
-  ) {
-
-    if (
-      !spirit.active
-    )
-      continue;
+  const daylight=
+    (Math.sin(
+      gameTime*.12
+    )+1)/2;
 
 
-    spirit.phase +=
-      delta;
-
-
-    if (
-      Math.random() < .006
-    ) {
-
-      spirit.direction
-        .applyAxisAngle(
-          new THREE.Vector3(
-            0,
-            1,
-            0
-          ),
-          (Math.random() - .5) * 1.8
-        )
-        .normalize();
-
-    }
-
-
-    spirit.object
-      .position
-      .addScaledVector(
-        spirit.direction,
-        delta *
-        (.7 +
-        spirit.level * .14)
-      );
-
-
-    spirit.object.position.x =
-      Math.max(
-        -255,
-        Math.min(
-          255,
-          spirit.object.position.x
-        )
-      );
-
-
-    spirit.object.position.z =
-      Math.max(
-        -255,
-        Math.min(
-          255,
-          spirit.object.position.z
-        )
-      );
-
-
-    spirit.object.position.y =
-      .3 +
-      Math.sin(
-        spirit.phase * 2
-      ) * .25;
-
-
-    if (
-      player.position.distanceTo(
-        spirit.object.position
-      ) < 2.4
-    ) {
-
-      health =
-        Math.max(
-          0,
-          health -
-          delta *
-          (1 +
-          spirit.level * .3)
-        );
-
-    }
-
-  }
-
-
-  /* Día y noche */
-
-  gameTime += delta;
-
-  const daylight =
-    (
-      Math.sin(
-        gameTime * .12
-      ) + 1
-    ) / 2;
-
-
-  sun.intensity =
-    .35 +
-    daylight * 2.2;
+  sun.intensity=
+    .35+
+    daylight*2.2;
 
 
   scene.background.setHSL(
     .62,
     .44,
-    .025 +
-    daylight * .055
+    .025+
+    daylight*.055
   );
 
 
@@ -2255,55 +1452,22 @@ function updateGame() {
   );
 
 
-  /* Si se queda sin vida */
+  /* CÁMARA */
 
-  if (
-    health <= 0
-  ) {
-
-    health = 100;
-
-    player.position.set(
-      0,
-      0,
-      0
-    );
-
-  }
-
-
-  updateHUD();
-
-  drawMap();
-
-
-  /* Cámara */
-
-  const target =
+  const target=
     new THREE.Vector3(
       player.position.x,
-      1.3,
+      1.4,
       player.position.z
     );
 
 
-  let distance = 9;
-
-  if (
-    cameraMode === 1
-  )
-    distance = 16;
-
-  if (
-    cameraMode === 2
-  )
-    distance = 4;
-
-
-  const height =
-    cameraMode === 2
-      ? 2.8
-      : 5;
+  const distance=
+    cameraMode===2
+      ?4
+      :cameraMode===1
+        ?16
+        :10;
 
 
   camera.position.lerp(
@@ -2311,34 +1475,344 @@ function updateGame() {
     target.clone().add(
       new THREE.Vector3(
         0,
-        height,
+        cameraMode===2?2.8:5,
         distance
       )
     ),
 
-    .09
+    .1
 
   );
 
 
-  camera.lookAt(
-    target
-  );
+  camera.lookAt(target);
+
+
+  /* HUD */
+
+  document.getElementById(
+    "healthText"
+  ).textContent=
+    Math.round(hp)+"%";
+
+  document.getElementById(
+    "health"
+  ).style.width=
+    hp+"%";
+
+  document.getElementById(
+    "capsules"
+  ).textContent=
+    capsules;
+
+  document.getElementById(
+    "ether"
+  ).textContent=
+    ether;
+
+  document.getElementById(
+    "captured"
+  ).textContent=
+    captured;
+
+
+  /* MUERTE */
+
+  if(hp<=0){
+
+    die();
+
+  }
 
 }
 
 
-/* ==================================
-   BUCLE PRINCIPAL
-================================== */
+/* =========================
+   MORIR
+========================= */
 
-function gameLoop() {
+function die(){
 
-  requestAnimationFrame(
-    gameLoop
+  playing=false;
+
+  document.getElementById(
+    "hud"
+  ).style.display="none";
+
+  document.getElementById(
+    "controls"
+  ).style.display="none";
+
+  document.getElementById(
+    "gameOver"
+  ).style.display="flex";
+
+}
+
+
+/* =========================
+   REINICIAR
+========================= */
+
+function restart(){
+
+  hp=100;
+
+  player.position.set(
+    0,0,0
   );
 
-  updateGame();
+  for(const monster of monsters){
+
+    monster.active=true;
+    monster.health=
+      monster.maxHealth;
+
+    monster.object.visible=true;
+
+  }
+
+  playing=true;
+
+  document.getElementById(
+    "gameOver"
+  ).style.display="none";
+
+  document.getElementById(
+    "hud"
+  ).style.display="flex";
+
+  document.getElementById(
+    "controls"
+  ).style.display="block";
+
+}
+
+
+/* =========================
+   BOTONES
+========================= */
+
+document.getElementById(
+  "play"
+).onclick=()=>{
+
+  playing=true;
+
+  document.getElementById(
+    "menu"
+  ).style.display="none";
+
+  document.getElementById(
+    "hud"
+  ).style.display="flex";
+
+  document.getElementById(
+    "controls"
+  ).style.display="block";
+
+};
+
+
+document.getElementById(
+  "throw"
+).onclick=
+  throwCapsule;
+
+
+document.getElementById(
+  "capture"
+).onclick=
+  captureMonster;
+
+
+document.getElementById(
+  "camera"
+).onclick=()=>{
+
+  cameraMode=
+    (cameraMode+1)%3;
+
+};
+
+
+document.getElementById(
+  "pauseButton"
+).onclick=()=>{
+
+  paused=true;
+
+  document.getElementById(
+    "pause"
+  ).style.display="flex";
+
+};
+
+
+document.getElementById(
+  "resume"
+).onclick=()=>{
+
+  paused=false;
+
+  document.getElementById(
+    "pause"
+  ).style.display="none";
+
+};
+
+
+document.getElementById(
+  "back"
+).onclick=()=>{
+
+  paused=false;
+  playing=false;
+
+  document.getElementById(
+    "pause"
+  ).style.display="none";
+
+  document.getElementById(
+    "hud"
+  ).style.display="none";
+
+  document.getElementById(
+    "controls"
+  ).style.display="none";
+
+  document.getElementById(
+    "menu"
+  ).style.display="flex";
+
+};
+
+
+document.getElementById(
+  "restart"
+).onclick=
+  restart;
+
+
+document.getElementById(
+  "deathBack"
+).onclick=()=>{
+
+  document.getElementById(
+    "gameOver"
+  ).style.display="none";
+
+  document.getElementById(
+    "menu"
+  ).style.display="flex";
+
+};
+
+
+/*
+  IMPORTANTE:
+
+  Este botón NO cobra todavía.
+
+  El pago real de 0,99 € se conectará
+  en server.js mediante un proveedor
+  de pagos seguro.
+*/
+
+document.getElementById(
+  "revive"
+).onclick=()=>{
+
+  alert(
+    "La compra de resurrección se conectará en server.js."
+  );
+
+};
+
+
+/* =========================
+   INFORMACIÓN
+========================= */
+
+document.getElementById(
+  "info"
+).onclick=()=>{
+
+  const section=
+    document.getElementById(
+      "information"
+    );
+
+  section.style.display="flex";
+
+
+  const list=
+    document.getElementById(
+      "monsterList"
+    );
+
+  list.innerHTML="";
+
+
+  monsters.forEach(
+    (monster,i)=>{
+
+      const item=
+        document.createElement(
+          "div"
+        );
+
+      item.className=
+        "monster-info";
+
+      item.innerHTML=
+        "<b>"+
+        (i+1)+
+        ". "+
+        monster.name+
+        "</b><br>Nivel "+
+        monster.level+
+        " · Vida "+
+        monster.maxHealth;
+
+      list.appendChild(item);
+
+    }
+  );
+
+};
+
+
+document.getElementById(
+  "closeInfo"
+).onclick=()=>{
+
+  document.getElementById(
+    "information"
+  ).style.display="none";
+
+};
+
+
+/* =========================
+   BUCLE
+========================= */
+
+let last=performance.now();
+
+function loop(now){
+
+  requestAnimationFrame(loop);
+
+  const delta=
+    Math.min(
+      .05,
+      (now-last)/1000
+    );
+
+  last=now;
+
+  update(delta);
 
   renderer.render(
     scene,
@@ -2347,331 +1821,19 @@ function gameLoop() {
 
 }
 
-gameLoop();
+requestAnimationFrame(loop);
 
 
-/* ==================================
-   MENÚ
-================================== */
+/* =========================
+   RESIZE
+========================= */
 
-document
-  .getElementById("playButton")
-  .onclick = () => {
-
-    playing = true;
-
-    document
-      .getElementById(
-        "menuScreen"
-      )
-      .style.display =
-      "none";
-
-
-    document
-      .getElementById(
-        "hud"
-      )
-      .style.display =
-      "flex";
-
-
-    document
-      .getElementById(
-        "controls"
-      )
-      .style.display =
-      "block";
-
-  };
-
-
-/* PAUSA */
-
-document
-  .getElementById("pauseButton")
-  .onclick = () => {
-
-    paused = true;
-
-    document
-      .getElementById(
-        "pauseScreen"
-      )
-      .style.display =
-      "flex";
-
-  };
-
-
-document
-  .getElementById("resumeButton")
-  .onclick = () => {
-
-    paused = false;
-
-    document
-      .getElementById(
-        "pauseScreen"
-      )
-      .style.display =
-      "none";
-
-  };
-
-
-/* VOLVER */
-
-document
-  .getElementById("backButton")
-  .onclick = () => {
-
-    paused = false;
-    playing = false;
-
-    document
-      .getElementById(
-        "pauseScreen"
-      )
-      .style.display =
-      "none";
-
-
-    document
-      .getElementById(
-        "hud"
-      )
-      .style.display =
-      "none";
-
-
-    document
-      .getElementById(
-        "controls"
-      )
-      .style.display =
-      "none";
-
-
-    document
-      .getElementById(
-        "menuScreen"
-      )
-      .style.display =
-      "flex";
-
-  };
-
-
-/* GUARDAR */
-
-document
-  .getElementById("saveButton")
-  .onclick =
-  saveGame;
-
-
-/* MAPA */
-
-document
-  .getElementById("mapButton")
-  .onclick = () => {
-
-    const map =
-      document.getElementById(
-        "miniMap"
-      );
-
-    map.style.display =
-      map.style.display ===
-      "block"
-        ? "none"
-        : "block";
-
-    drawMap();
-
-  };
-
-
-/* INFORMACIÓN */
-
-document
-  .getElementById("informationButton")
-  .onclick = () => {
-
-    document
-      .getElementById(
-        "infoScreen"
-      )
-      .style.display =
-      "flex";
-
-  };
-
-
-document
-  .getElementById("closeInfo")
-  .onclick = () => {
-
-    document
-      .getElementById(
-        "infoScreen"
-      )
-      .style.display =
-      "none";
-
-  };
-
-
-/* LISTA DE ESPÍRITUS */
-
-const spiritList =
-  document.getElementById(
-    "spiritList"
-  );
-
-
-spirits.forEach(
-  (spirit, index) => {
-
-    const item =
-      document.createElement(
-        "div"
-      );
-
-    item.className =
-      "spiritItem";
-
-    item.innerHTML =
-
-      "<b>" +
-      (index + 1) +
-      ". " +
-      spirit.name +
-      "</b> — Nivel " +
-      spirit.level;
-
-    spiritList.appendChild(
-      item
-    );
-
-  }
-);
-
-
-/* TIENDA */
-
-document
-  .getElementById("shopButton")
-  .onclick = () => {
-
-    document
-      .getElementById(
-        "shopScreen"
-      )
-      .style.display =
-      "flex";
-
-  };
-
-
-document
-  .getElementById("closeShop")
-  .onclick = () => {
-
-    document
-      .getElementById(
-        "shopScreen"
-      )
-      .style.display =
-      "none";
-
-  };
-
-
-/* PAGOS */
-
-document
-  .querySelectorAll(
-    ".buyButton"
-  )
-  .forEach(
-    button => {
-
-      button.onclick =
-        async () => {
-
-          const response =
-            await fetch(
-              "/api/create-checkout-session",
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
-
-                body:
-                  JSON.stringify({
-                    item:
-                      button.dataset.product
-                  })
-              }
-            );
-
-
-          const data =
-            await response.json();
-
-
-          if (
-            data.url
-          ) {
-
-            window.location.href =
-              data.url;
-
-          }
-
-        };
-
-    }
-  );
-
-
-/* CAMBIAR PERSONAJE */
-
-document
-  .getElementById(
-    "characterButton"
-  )
-  .onclick = () => {
-
-    selectedCharacter =
-      (
-        selectedCharacter + 1
-      ) %
-      characters.length;
-
-    alert(
-      "Personaje: " +
-      characters[
-        selectedCharacter
-      ].name
-    );
-
-  };
-
-
-/* REDIMENSIONAR */
-
-window.addEventListener(
+addEventListener(
   "resize",
-  () => {
+  ()=>{
 
-    camera.aspect =
-      innerWidth /
+    camera.aspect=
+      innerWidth/
       innerHeight;
 
     camera.updateProjectionMatrix();
