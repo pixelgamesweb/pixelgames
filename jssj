@@ -1,0 +1,1102 @@
+// ==========================================
+// JUEGO 3 - SERVIDOR ONLINE
+// Archivo: JS
+// ==========================================
+
+const http = require("http");
+const crypto = require("crypto");
+const WebSocket = require("ws");
+
+const PORT = process.env.PORT || 3000;
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "application/json"
+  });
+
+  res.end(JSON.stringify({
+    game: "Juego 3 - Futbol 3D",
+    status: "online",
+    players: players.size,
+    rooms: rooms.size
+  }));
+});
+
+const wss = new WebSocket.Server({
+  server
+});
+
+
+// ==========================================
+// DATOS DEL JUEGO
+// ==========================================
+
+const players = new Map();
+const rooms = new Map();
+
+
+// ==========================================
+// CREAR ID
+// ==========================================
+
+function createId() {
+  return crypto.randomBytes(8).toString("hex");
+}
+
+
+// ==========================================
+// ENVIAR MENSAJE
+// ==========================================
+
+function send(socket, type, data = {}) {
+
+  if (
+    socket.readyState !==
+    WebSocket.OPEN
+  ) {
+    return;
+  }
+
+  socket.send(
+    JSON.stringify({
+      type,
+      ...data
+    })
+  );
+}
+
+
+// ==========================================
+// ENVIAR A TODOS LOS JUGADORES
+// DE UNA SALA
+// ==========================================
+
+function broadcast(room, type, data = {}, except = null) {
+
+  if (!room) return;
+
+  for (const playerId of room.players) {
+
+    const player =
+      players.get(playerId);
+
+    if (!player) continue;
+
+    if (
+      except &&
+      playerId === except
+    ) {
+      continue;
+    }
+
+    send(
+      player.socket,
+      type,
+      data
+    );
+  }
+}
+
+
+// ==========================================
+// CREAR SALA
+// ==========================================
+
+function createRoom() {
+
+  let code;
+
+  do {
+
+    code =
+      Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
+
+  } while (
+    rooms.has(code)
+  );
+
+
+  const room = {
+
+    code,
+
+    players: new Set(),
+
+    score: {
+      home: 0,
+      away: 0
+    },
+
+    matchTime: 0,
+
+    ball: {
+      x: 0,
+      y: 0.55,
+      z: 0,
+      vx: 0,
+      vy: 0,
+      vz: 0
+    }
+
+  };
+
+
+  rooms.set(
+    code,
+    room
+  );
+
+
+  return room;
+}
+
+
+// ==========================================
+// ENTRAR EN UNA SALA
+// ==========================================
+
+function joinRoom(
+  player,
+  code
+) {
+
+  const room =
+    rooms.get(
+      code
+    );
+
+  if (!room) {
+
+    send(
+      player.socket,
+      "error",
+      {
+        message:
+          "La sala no existe."
+      }
+    );
+
+    return false;
+  }
+
+
+  // Máximo 10 jugadores
+  if (
+    room.players.size >= 10
+  ) {
+
+    send(
+      player.socket,
+      "error",
+      {
+        message:
+          "La sala está llena."
+      }
+    );
+
+    return false;
+  }
+
+
+  room.players.add(
+    player.id
+  );
+
+  player.room =
+    room.code;
+
+
+  send(
+    player.socket,
+    "roomJoined",
+    {
+      room: room.code,
+      playerId: player.id
+    }
+  );
+
+
+  broadcast(
+    room,
+    "playerJoined",
+    {
+      player: {
+        id: player.id,
+        name: player.name,
+        team: player.team,
+        x: player.x,
+        y: player.y,
+        z: player.z
+      }
+    },
+    player.id
+  );
+
+
+  // Mandar al nuevo jugador
+  // todos los jugadores existentes
+
+  for (
+    const id of room.players
+  ) {
+
+    if (
+      id === player.id
+    ) continue;
+
+
+    const other =
+      players.get(id);
+
+    if (!other) continue;
+
+
+    send(
+      player.socket,
+      "existingPlayer",
+      {
+        player: {
+          id: other.id,
+          name: other.name,
+          team: other.team,
+          x: other.x,
+          y: other.y,
+          z: other.z
+        }
+      }
+    );
+
+  }
+
+
+  // Estado actual del partido
+
+  send(
+    player.socket,
+    "gameState",
+    {
+      score: room.score,
+      matchTime: room.matchTime,
+      ball: room.ball
+    }
+  );
+
+
+  return true;
+}
+
+
+// ==========================================
+// SALIR DE UNA SALA
+// ==========================================
+
+function leaveRoom(
+  player
+) {
+
+  if (!player.room) {
+    return;
+  }
+
+
+  const room =
+    rooms.get(
+      player.room
+    );
+
+
+  if (!room) {
+    player.room = null;
+    return;
+  }
+
+
+  room.players.delete(
+    player.id
+  );
+
+
+  broadcast(
+    room,
+    "playerLeft",
+    {
+      playerId:
+        player.id
+    }
+  );
+
+
+  player.room = null;
+
+
+  // Si queda vacía,
+  // eliminar la sala
+
+  if (
+    room.players.size === 0
+  ) {
+
+    rooms.delete(
+      room.code
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// CONEXIONES
+// ==========================================
+
+wss.on(
+  "connection",
+  socket => {
+
+    const player = {
+
+      id: createId(),
+
+      socket,
+
+      name:
+        "Jugador",
+
+      team:
+        "home",
+
+      room:
+        null,
+
+      x: 0,
+
+      y: 0,
+
+      z: 20,
+
+      rotation: 0,
+
+      sprinting: false
+
+    };
+
+
+    players.set(
+      player.id,
+      player
+    );
+
+
+    send(
+      socket,
+      "connected",
+      {
+        playerId:
+          player.id
+      }
+    );
+
+
+    // ======================================
+    // MENSAJES
+    // ======================================
+
+    socket.on(
+      "message",
+      raw => {
+
+        let message;
+
+        try {
+
+          message =
+            JSON.parse(
+              raw.toString()
+            );
+
+        } catch {
+
+          send(
+            socket,
+            "error",
+            {
+              message:
+                "Mensaje inválido."
+            }
+          );
+
+          return;
+        }
+
+
+        // ==================================
+        // CREAR SALA
+        // ==================================
+
+        if (
+          message.type ===
+          "createRoom"
+        ) {
+
+          const room =
+            createRoom();
+
+
+          player.name =
+            sanitizeName(
+              message.name
+            );
+
+
+          player.team =
+            "home";
+
+
+          joinRoom(
+            player,
+            room.code
+          );
+
+
+          return;
+        }
+
+
+        // ==================================
+        // ENTRAR EN SALA
+        // ==================================
+
+        if (
+          message.type ===
+          "joinRoom"
+        ) {
+
+          player.name =
+            sanitizeName(
+              message.name
+            );
+
+
+          const code =
+            String(
+              message.room || ""
+            )
+              .trim()
+              .toUpperCase();
+
+
+          // El primer jugador
+          // será local y el segundo visitante
+
+          const room =
+            rooms.get(code);
+
+
+          if (
+            room &&
+            room.players.size > 0
+          ) {
+
+            player.team =
+              "away";
+
+          } else {
+
+            player.team =
+              "home";
+
+          }
+
+
+          joinRoom(
+            player,
+            code
+          );
+
+
+          return;
+        }
+
+
+        // ==================================
+        // MOVIMIENTO
+        // ==================================
+
+        if (
+          message.type ===
+          "playerMove"
+        ) {
+
+          if (
+            !player.room
+          ) return;
+
+
+          const room =
+            rooms.get(
+              player.room
+            );
+
+
+          if (!room) return;
+
+
+          // Validar valores
+          // antes de guardarlos
+
+          player.x =
+            clamp(
+              Number(
+                message.x
+              ),
+              -34,
+              34
+            );
+
+
+          player.y =
+            clamp(
+              Number(
+                message.y
+              ),
+              0,
+              5
+            );
+
+
+          player.z =
+            clamp(
+              Number(
+                message.z
+              ),
+              -52,
+              52
+            );
+
+
+          player.rotation =
+            Number(
+              message.rotation
+            ) || 0;
+
+
+          player.sprinting =
+            Boolean(
+              message.sprinting
+            );
+
+
+          broadcast(
+            room,
+            "playerMoved",
+            {
+              playerId:
+                player.id,
+
+              x:
+                player.x,
+
+              y:
+                player.y,
+
+              z:
+                player.z,
+
+              rotation:
+                player.rotation,
+
+              sprinting:
+                player.sprinting
+            },
+            player.id
+          );
+
+
+          return;
+        }
+
+
+        // ==================================
+        // PASE
+        // ==================================
+
+        if (
+          message.type ===
+          "pass"
+        ) {
+
+          if (
+            !player.room
+          ) return;
+
+
+          const room =
+            rooms.get(
+              player.room
+            );
+
+
+          if (!room) return;
+
+
+          broadcast(
+            room,
+            "ballAction",
+            {
+              action:
+                "pass",
+
+              playerId:
+                player.id,
+
+              x:
+                Number(message.x) || 0,
+
+              y:
+                Number(message.y) || .55,
+
+              z:
+                Number(message.z) || 0,
+
+              vx:
+                Number(message.vx) || 0,
+
+              vy:
+                Number(message.vy) || 0,
+
+              vz:
+                Number(message.vz) || 0
+            }
+          );
+
+
+          return;
+        }
+
+
+        // ==================================
+        // TIRO
+        // ==================================
+
+        if (
+          message.type ===
+          "shoot"
+        ) {
+
+          if (
+            !player.room
+          ) return;
+
+
+          const room =
+            rooms.get(
+              player.room
+            );
+
+
+          if (!room) return;
+
+
+          broadcast(
+            room,
+            "ballAction",
+            {
+              action:
+                "shoot",
+
+              playerId:
+                player.id,
+
+              x:
+                Number(message.x) || 0,
+
+              y:
+                Number(message.y) || .55,
+
+              z:
+                Number(message.z) || 0,
+
+              vx:
+                Number(message.vx) || 0,
+
+              vy:
+                Number(message.vy) || 0,
+
+              vz:
+                Number(message.vz) || 0
+            }
+          );
+
+
+          return;
+        }
+
+
+        // ==================================
+        // ACTUALIZAR BALÓN
+        // ==================================
+
+        if (
+          message.type ===
+          "ballUpdate"
+        ) {
+
+          if (
+            !player.room
+          ) return;
+
+
+          const room =
+            rooms.get(
+              player.room
+            );
+
+
+          if (!room) return;
+
+
+          room.ball.x =
+            clamp(
+              Number(message.x),
+              -40,
+              40
+            );
+
+
+          room.ball.y =
+            clamp(
+              Number(message.y),
+              0,
+              20
+            );
+
+
+          room.ball.z =
+            clamp(
+              Number(message.z),
+              -60,
+              60
+            );
+
+
+          room.ball.vx =
+            clamp(
+              Number(message.vx),
+              -100,
+              100
+            );
+
+
+          room.ball.vy =
+            clamp(
+              Number(message.vy),
+              -100,
+              100
+            );
+
+
+          room.ball.vz =
+            clamp(
+              Number(message.vz),
+              -100,
+              100
+            );
+
+
+          broadcast(
+            room,
+            "ballUpdate",
+            {
+              ball:
+                room.ball
+            },
+            player.id
+          );
+
+
+          return;
+        }
+
+
+        // ==================================
+        // GOL
+        // ==================================
+
+        if (
+          message.type ===
+          "goal"
+        ) {
+
+          if (
+            !player.room
+          ) return;
+
+
+          const room =
+            rooms.get(
+              player.room
+            );
+
+
+          if (!room) return;
+
+
+          const team =
+            message.team ===
+            "away"
+              ? "away"
+              : "home";
+
+
+          room.score[team]++;
+
+
+          room.ball = {
+
+            x: 0,
+
+            y: .55,
+
+            z: 0,
+
+            vx: 0,
+
+            vy: 0,
+
+            vz: 0
+
+          };
+
+
+          broadcast(
+            room,
+            "goal",
+            {
+              team,
+              score:
+                room.score,
+
+              ball:
+                room.ball
+            }
+          );
+
+
+          return;
+        }
+
+
+        // ==================================
+        // NOMBRE
+        // ==================================
+
+        if (
+          message.type ===
+          "setName"
+        ) {
+
+          player.name =
+            sanitizeName(
+              message.name
+            );
+
+
+          return;
+        }
+
+
+        // ==================================
+        // EQUIPO
+        // ==================================
+
+        if (
+          message.type ===
+          "setTeam"
+        ) {
+
+          if (
+            message.team ===
+            "home" ||
+            message.team ===
+            "away"
+          ) {
+
+            player.team =
+              message.team;
+
+          }
+
+
+          return;
+        }
+
+
+        // ==================================
+        // PING
+        // ==================================
+
+        if (
+          message.type ===
+          "ping"
+        ) {
+
+          send(
+            socket,
+            "pong"
+          );
+
+        }
+
+      }
+    );
+
+
+    // ======================================
+    // DESCONEXIÓN
+    // ======================================
+
+    socket.on(
+      "close",
+      () => {
+
+        leaveRoom(
+          player
+        );
+
+        players.delete(
+          player.id
+        );
+
+      }
+    );
+
+
+    socket.on(
+      "error",
+      () => {
+
+        leaveRoom(
+          player
+        );
+
+        players.delete(
+          player.id
+        );
+
+      }
+    );
+
+  }
+);
+
+
+// ==========================================
+// FUNCIONES DE SEGURIDAD
+// ==========================================
+
+function clamp(
+  value,
+  min,
+  max
+) {
+
+  if (
+    !Number.isFinite(value)
+  ) {
+
+    return min;
+
+  }
+
+
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
+    )
+  );
+
+}
+
+
+function sanitizeName(
+  name
+) {
+
+  if (
+    typeof name !==
+    "string"
+  ) {
+
+    return "Jugador";
+
+  }
+
+
+  return name
+    .trim()
+    .replace(
+      /[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ _-]/g,
+      ""
+    )
+    .slice(
+      0,
+      20
+    ) || "Jugador";
+
+}
+
+
+// ==========================================
+// RELOJ DEL PARTIDO
+// ==========================================
+
+setInterval(
+  () => {
+
+    for (
+      const room of rooms.values()
+    ) {
+
+      if (
+        room.players.size === 0
+      ) continue;
+
+
+      room.matchTime += 1;
+
+
+      broadcast(
+        room,
+        "matchTime",
+        {
+          matchTime:
+            room.matchTime
+        }
+      );
+
+    }
+
+  },
+  1000
+);
+
+
+// ==========================================
+// SERVIDOR
+// ==========================================
+
+server.listen(
+  PORT,
+  () => {
+
+    console.log(
+      `Servidor de Juego 3 funcionando en el puerto ${PORT}`
+    );
+
+  }
+);
