@@ -2,189 +2,214 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pixel Games</title>
 
 <style>
-
 *{
-  box-sizing:border-box;
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 html,body{
-  margin:0;
-  min-height:100%;
-  font-family:Arial,sans-serif;
-  color:white;
+    min-height:100%;
+    font-family:Arial,Helvetica,sans-serif;
+    color:white;
 }
 
 body{
-
-  background:
-    radial-gradient(
-      circle at 20% 20%,
-      rgba(100,50,255,.35),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 80% 30%,
-      rgba(0,160,255,.25),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 50% 90%,
-      rgba(220,40,255,.25),
-      transparent 35%
-    ),
-    linear-gradient(
-      135deg,
-      #020207,
-      #100820,
-      #02030a
-    );
-
-  background-attachment:fixed;
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 15% 20%,rgba(105,40,255,.35),transparent 28%),
+        radial-gradient(circle at 85% 25%,rgba(0,130,255,.30),transparent 28%),
+        radial-gradient(circle at 50% 85%,rgba(210,40,255,.25),transparent 32%),
+        radial-gradient(circle at 70% 70%,rgba(30,80,255,.18),transparent 25%),
+        linear-gradient(135deg,#020207,#0b0718,#02030a);
+    background-attachment:fixed;
 }
+
+/* ESTRELLAS */
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.45;
+
+    background-image:
+        radial-gradient(circle,#fff 1px,transparent 1px),
+        radial-gradient(circle,#8ab4ff 1px,transparent 1px);
+
+    background-size:
+        95px 95px,
+        145px 145px;
+
+    background-position:
+        10px 20px,
+        50px 70px;
+}
+
+/* CABECERA */
 
 header{
-
-  padding:35px 20px 20px;
-  text-align:center;
-
+    position:relative;
+    z-index:2;
+    text-align:center;
+    padding:42px 18px 25px;
 }
 
-h1{
+.logo{
+    font-size:clamp(48px,10vw,86px);
+    font-weight:900;
+    letter-spacing:-3px;
 
-  margin:0;
-
-  font-size:
-    clamp(45px,9vw,80px);
-
-  color:#fff;
-
-  text-shadow:
-    0 0 20px #7c4dff,
-    0 0 45px #168bff;
-
+    text-shadow:
+        0 0 12px #744cff,
+        0 0 30px #426cff,
+        0 0 60px #a52cff;
 }
 
 .subtitle{
-
-  opacity:.7;
-  margin-top:10px;
-
+    margin-top:10px;
+    opacity:.72;
+    font-size:17px;
 }
+
+/* CONTENEDOR */
+
+.container{
+    position:relative;
+    z-index:2;
+
+    width:min(1200px,94%);
+    margin:auto;
+    padding-bottom:60px;
+}
+
+/* CONTADOR */
+
+.counter{
+    text-align:center;
+    margin:10px 0 24px;
+    opacity:.65;
+}
+
+/* JUEGOS */
 
 #games{
+    display:grid;
 
-  width:min(
-    1100px,
-    94%
-  );
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(230px,1fr)
+        );
 
-  margin:25px auto 50px;
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(230px,1fr)
-    );
-
-  gap:14px;
-
+    gap:15px;
 }
 
+/* TARJETA */
+
 .game{
+    min-height:145px;
 
-  min-height:110px;
+    padding:18px;
 
-  padding:18px;
+    border-radius:19px;
 
-  border-radius:18px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,0,0,.90),
+            rgba(15,15,20,.92)
+        );
 
-  background:
-    linear-gradient(
-      145deg,
-      #050505ee,
-      #111111ee
-    );
+    border:1px solid rgba(255,255,255,.12);
 
-  border:
-    1px solid
-    rgba(255,255,255,.12);
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.55);
 
-  box-shadow:
-    0 12px 35px #0008;
-
-  transition:
-    transform .18s,
-    border-color .18s;
-
+    transition:
+        transform .18s,
+        border-color .18s,
+        box-shadow .18s;
 }
 
 .game:hover{
+    transform:translateY(-5px);
 
-  transform:
-    translateY(-4px);
+    border-color:
+        rgba(110,160,255,.65);
 
-  border-color:
-    #5c8cffaa;
+    box-shadow:
+        0 18px 45px rgba(30,70,180,.25);
+}
 
+.number{
+    font-size:12px;
+    opacity:.45;
+    margin-bottom:7px;
 }
 
 .name{
-
-  font-size:18px;
-  font-weight:bold;
-  margin-bottom:8px;
-
+    font-size:19px;
+    font-weight:800;
+    line-height:1.2;
+    min-height:46px;
 }
 
 .status{
-
-  font-size:12px;
-  opacity:.55;
-
+    margin-top:5px;
+    font-size:12px;
+    opacity:.55;
 }
 
 .play{
+    width:100%;
+    margin-top:13px;
 
-  margin-top:12px;
+    border:1px solid #ffffff20;
+    border-radius:11px;
 
-  width:100%;
+    background:#000;
+    color:#6faaff;
 
-  padding:10px;
+    padding:11px;
 
-  border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
 
-  border:
-    1px solid
-    #ffffff20;
-
-  background:#000;
-
-  color:#6daaff;
-
-  font-weight:bold;
-
+    transition:
+        background .15s,
+        transform .15s;
 }
 
-.available{
+.play:hover{
+    background:#101010;
+    transform:scale(1.02);
+}
 
-  cursor:pointer;
-
+.available .status{
+    color:#64d98a;
 }
 
 .coming{
-
-  opacity:.55;
-
+    opacity:.58;
 }
 
+.coming .play{
+    color:#777;
+    cursor:default;
+}
+
+footer{
+    text-align:center;
+    margin-top:35px;
+    opacity:.4;
+    font-size:12px;
+}
 </style>
 </head>
 
@@ -192,312 +217,718 @@ h1{
 
 <header>
 
-  <h1>Pixel Games</h1>
+    <div class="logo">
+        Pixel Games
+    </div>
 
-  <div class="subtitle">
-    100 juegos · un solo universo
-  </div>
+    <div class="subtitle">
+        Tu universo de videojuegos
+    </div>
 
 </header>
 
 
-<main id="games"></main>
+<div class="container">
+
+    <div class="counter">
+        <span id="gameCount">100</span>
+        juegos
+    </div>
+
+    <main id="games"></main>
+
+    <footer>
+        Pixel Games · 100 juegos
+    </footer>
+
+</div>
 
 
 <script>
 
+/*
+====================================================
+PIXEL GAMES
+====================================================
+
+IMPORTANTE:
+
+Los nombres de los archivos de los juegos están
+escritos aquí.
+
+Si un juego tiene un archivo .html con ese nombre,
+el botón JUGAR lo abrirá.
+
+Ejemplo:
+
+spirit3000.html
+futbol3donline.html
+galaxybattle.html
+ultra3dkart.html
+
+====================================================
+*/
+
+
 const games = [
 
-  ["Spirit 3000", "ready"],
-  ["Fútbol 3D Online", "ready"],
-  ["Galaxy Battle", "ready"],
-  ["Ultra 3D Kart", "ready"],
+    /* 1 - 10 */
 
-  ["Isla Perdida", "soon"],
-  ["Supervivencia Zombie", "soon"],
-  ["Defensa del Reino", "soon"],
-  ["Ninja Arena", "soon"],
-  ["Mega Run 3D", "soon"],
-  ["Escape Lab", "soon"],
-  ["Cazador de Monstruos", "soon"],
-  ["Street Racing", "soon"],
-  ["Helicopter Rescue", "soon"],
-  ["Ocean Explorer", "soon"],
-  ["Piratas del Horizonte", "soon"],
-  ["Dragon World", "soon"],
-  ["Robot Wars", "soon"],
-  ["Planet Explorer", "soon"],
-  ["Academia de Magia", "soon"],
-  ["Mega Constructor", "soon"],
+    {
+        name:"Spirit 3000",
+        file:"spirit3000.html",
+        ready:true
+    },
 
-  ["Arqueros Legendarios", "soon"],
-  ["Boxeo 3D", "soon"],
-  ["Baloncesto Street", "soon"],
-  ["Volleyball Arena", "soon"],
-  ["Tennis Masters", "soon"],
-  ["Golf World", "soon"],
-  ["Snowboard Rush", "soon"],
-  ["Surf Challenge", "soon"],
-  ["Escalada Extrema", "soon"],
-  ["Aqua Race", "soon"],
+    {
+        name:"Fútbol 3D Online",
+        file:"futbol3donline.html",
+        ready:true
+    },
 
-  ["Zombie City", "soon"],
-  ["City Driver", "soon"],
-  ["Taxi Simulator", "soon"],
-  ["Firefighter Rescue", "soon"],
-  ["Emergency Rescue", "soon"],
-  ["Police Chase", "soon"],
-  ["Farm World", "soon"],
-  ["Truck Simulator", "soon"],
-  ["Train Adventure", "soon"],
-  ["Flight Simulator", "soon"],
+    {
+        name:"Galaxy Battle",
+        file:"galaxybattle.html",
+        ready:true
+    },
 
-  ["Hospital Simulator", "soon"],
-  ["Burger Master", "soon"],
-  ["Pizza Factory", "soon"],
-  ["Hotel Empire", "soon"],
-  ["Supermarket Tycoon", "soon"],
-  ["City Builder", "soon"],
-  ["Island Builder", "soon"],
-  ["Castle Builder", "soon"],
-  ["Mine World", "soon"],
-  ["Treasure Hunter", "soon"],
+    {
+        name:"Ultra 3D Kart",
+        file:"ultra3dkart.html",
+        ready:true
+    },
 
-  ["Lost Temple", "soon"],
-  ["Desert Expedition", "soon"],
-  ["Volcano Escape", "soon"],
-  ["Arctic Survival", "soon"],
-  ["Forest Mystery", "soon"],
-  ["Underwater City", "soon"],
-  ["Dinosaur Island", "soon"],
-  ["Wild Nature", "soon"],
-  ["Ocean Life", "soon"],
-  ["Sky Explorer", "soon"],
+    {
+        name:"Isla Perdida",
+        file:"islaperdida.html"
+    },
 
-  ["Night Hunters", "soon"],
-  ["Alien Invasion", "soon"],
-  ["Mech Arena", "soon"],
-  ["UFO Defender", "soon"],
-  ["Space Rangers", "soon"],
-  ["Meteor Storm", "soon"],
-  ["Black Hole Escape", "soon"],
-  ["Space Colony", "soon"],
-  ["Space Station", "soon"],
-  ["Cosmic Runner", "soon"],
+    {
+        name:"Supervivencia Zombie",
+        file:"supervivenciazombie.html"
+    },
 
-  ["Wizard Battle", "soon"],
-  ["Fantasy Quest", "soon"],
-  ["Medieval Warriors", "soon"],
-  ["Kingdom Wars", "soon"],
-  ["Dragon Hunter", "soon"],
-  ["Dungeon Escape", "soon"],
-  ["Sword Arena", "soon"],
-  ["Monster Arena", "soon"],
-  ["Demon Island", "soon"],
-  ["Magic Forest", "soon"],
+    {
+        name:"Defensa del Reino",
+        file:"defensadelreino.html"
+    },
 
-  ["Puzzle World", "soon"],
-  ["Mystery Mansion", "soon"],
-  ["Detective Case", "soon"],
-  ["100 Doors", "soon"],
-  ["Brain Challenge", "soon"],
-  ["Strategy Kingdom", "soon"],
-  ["Aim Master", "soon"],
-  ["Tower Stack", "soon"],
-  ["Bomb Escape", "soon"],
-  ["Portal Runner", "soon"],
+    {
+        name:"Ninja Arena",
+        file:"ninjaarena.html"
+    },
 
-  ["Parkour City", "soon"],
-  ["Olympic Challenge", "soon"],
-  ["World Cup Challenge", "soon"],
-  ["Winter Games", "soon"],
-  ["Grand Prix", "soon"],
-  ["Motorcycle Rush", "soon"],
-  ["Bike Adventure", "soon"],
-  ["Skate City", "soon"],
-  ["Martial Arts Arena", "soon"],
-  ["Pixel World", "soon"]
+    {
+        name:"Mega Run 3D",
+        file:"megarun3d.html"
+    },
+
+    {
+        name:"Escape Lab",
+        file:"escapelab.html"
+    },
+
+
+    /* 11 - 20 */
+
+    {
+        name:"Cazador de Monstruos",
+        file:"cazadordemonstruos.html"
+    },
+
+    {
+        name:"Street Racing",
+        file:"streetracing.html"
+    },
+
+    {
+        name:"Helicopter Rescue",
+        file:"helicopterrescue.html"
+    },
+
+    {
+        name:"Ocean Explorer",
+        file:"oceanexplorer.html"
+    },
+
+    {
+        name:"Piratas del Horizonte",
+        file:"piratasdelhorizonte.html"
+    },
+
+    {
+        name:"Dragon World",
+        file:"dragonworld.html"
+    },
+
+    {
+        name:"Robot Wars",
+        file:"robotwars.html"
+    },
+
+    {
+        name:"Planet Explorer",
+        file:"planetexplorer.html"
+    },
+
+    {
+        name:"Academia de Magia",
+        file:"academiademagia.html"
+    },
+
+    {
+        name:"Mega Constructor",
+        file:"megaconstructor.html"
+    },
+
+
+    /* 21 - 30 */
+
+    {
+        name:"Arqueros Legendarios",
+        file:"arqueroslegendarios.html"
+    },
+
+    {
+        name:"Boxeo 3D",
+        file:"boxeo3d.html"
+    },
+
+    {
+        name:"Baloncesto Street",
+        file:"baloncestostreet.html"
+    },
+
+    {
+        name:"Volleyball Arena",
+        file:"volleyballarena.html"
+    },
+
+    {
+        name:"Tennis Masters",
+        file:"tennismasters.html"
+    },
+
+    {
+        name:"Golf World",
+        file:"golfworld.html"
+    },
+
+    {
+        name:"Snowboard Rush",
+        file:"snowboardrush.html"
+    },
+
+    {
+        name:"Surf Challenge",
+        file:"surfchallenge.html"
+    },
+
+    {
+        name:"Escalada Extrema",
+        file:"escaladaextrema.html"
+    },
+
+    {
+        name:"Aqua Race",
+        file:"aquarace.html"
+    },
+
+
+    /* 31 - 40 */
+
+    {
+        name:"Zombie City",
+        file:"zombiecity.html"
+    },
+
+    {
+        name:"City Driver",
+        file:"citydriver.html"
+    },
+
+    {
+        name:"Taxi Simulator",
+        file:"taxisimulator.html"
+    },
+
+    {
+        name:"Firefighter Rescue",
+        file:"firefighterrescue.html"
+    },
+
+    {
+        name:"Emergency Rescue",
+        file:"emergencyrescue.html"
+    },
+
+    {
+        name:"Police Chase",
+        file:"policechase.html"
+    },
+
+    {
+        name:"Farm World",
+        file:"farmworld.html"
+    },
+
+    {
+        name:"Truck Simulator",
+        file:"trucksimulator.html"
+    },
+
+    {
+        name:"Train Adventure",
+        file:"trainadventure.html"
+    },
+
+    {
+        name:"Flight Simulator",
+        file:"flightsimulator.html"
+    },
+
+
+    /* 41 - 50 */
+
+    {
+        name:"Hospital Simulator",
+        file:"hospitalsimulator.html"
+    },
+
+    {
+        name:"Burger Master",
+        file:"burgermaster.html"
+    },
+
+    {
+        name:"Pizza Factory",
+        file:"pizzafactory.html"
+    },
+
+    {
+        name:"Hotel Empire",
+        file:"hotelempire.html"
+    },
+
+    {
+        name:"Supermarket Tycoon",
+        file:"supermarketycoon.html"
+    },
+
+    {
+        name:"City Builder",
+        file:"citybuilder.html"
+    },
+
+    {
+        name:"Island Builder",
+        file:"islandbuilder.html"
+    },
+
+    {
+        name:"Castle Builder",
+        file:"castlebuilder.html"
+    },
+
+    {
+        name:"Mine World",
+        file:"mineworld.html"
+    },
+
+    {
+        name:"Treasure Hunter",
+        file:"treasurehunter.html"
+    },
+
+
+    /* 51 - 60 */
+
+    {
+        name:"Lost Temple",
+        file:"losttemple.html"
+    },
+
+    {
+        name:"Desert Expedition",
+        file:"desertexpedition.html"
+    },
+
+    {
+        name:"Volcano Escape",
+        file:"volcanoescape.html"
+    },
+
+    {
+        name:"Arctic Survival",
+        file:"arcticsurvival.html"
+    },
+
+    {
+        name:"Forest Mystery",
+        file:"forestmystery.html"
+    },
+
+    {
+        name:"Underwater City",
+        file:"underwatercity.html"
+    },
+
+    {
+        name:"Dinosaur Island",
+        file:"dinosaurisland.html"
+    },
+
+    {
+        name:"Wild Nature",
+        file:"wildnature.html"
+    },
+
+    {
+        name:"Ocean Life",
+        file:"oceanlife.html"
+    },
+
+    {
+        name:"Sky Explorer",
+        file:"skyexplorer.html"
+    },
+
+
+    /* 61 - 70 */
+
+    {
+        name:"Night Hunters",
+        file:"nighthunters.html"
+    },
+
+    {
+        name:"Alien Invasion",
+        file:"alieninvasion.html"
+    },
+
+    {
+        name:"Mech Arena",
+        file:"mecarena.html"
+    },
+
+    {
+        name:"UFO Defender",
+        file:"ufodefender.html"
+    },
+
+    {
+        name:"Space Rangers",
+        file:"spacerangers.html"
+    },
+
+    {
+        name:"Meteor Storm",
+        file:"meteorstorm.html"
+    },
+
+    {
+        name:"Black Hole Escape",
+        file:"blackholeescape.html"
+    },
+
+    {
+        name:"Space Colony",
+        file:"spacecolony.html"
+    },
+
+    {
+        name:"Space Station",
+        file:"spacestation.html"
+    },
+
+    {
+        name:"Cosmic Runner",
+        file:"cosmicrunner.html"
+    },
+
+
+    /* 71 - 80 */
+
+    {
+        name:"Wizard Battle",
+        file:"wizardbattle.html"
+    },
+
+    {
+        name:"Fantasy Quest",
+        file:"fantasyquest.html"
+    },
+
+    {
+        name:"Medieval Warriors",
+        file:"medievalwarriors.html"
+    },
+
+    {
+        name:"Kingdom Wars",
+        file:"kingdomwars.html"
+    },
+
+    {
+        name:"Dragon Hunter",
+        file:"dragonhunter.html"
+    },
+
+    {
+        name:"Dungeon Escape",
+        file:"dungeonescape.html"
+    },
+
+    {
+        name:"Sword Arena",
+        file:"swordarena.html"
+    },
+
+    {
+        name:"Monster Arena",
+        file:"monsterarena.html"
+    },
+
+    {
+        name:"Demon Island",
+        file:"demonisland.html"
+    },
+
+    {
+        name:"Magic Forest",
+        file:"magicforest.html"
+    },
+
+
+    /* 81 - 90 */
+
+    {
+        name:"Puzzle World",
+        file:"puzzleworld.html"
+    },
+
+    {
+        name:"Mystery Mansion",
+        file:"mysterymansion.html"
+    },
+
+    {
+        name:"Detective Case",
+        file:"detectivecase.html"
+    },
+
+    {
+        name:"100 Doors",
+        file:"100doors.html"
+    },
+
+    {
+        name:"Brain Challenge",
+        file:"brainchallenge.html"
+    },
+
+    {
+        name:"Strategy Kingdom",
+        file:"strategykingdom.html"
+    },
+
+    {
+        name:"Aim Master",
+        file:"aimmaster.html"
+    },
+
+    {
+        name:"Tower Stack",
+        file:"towerstack.html"
+    },
+
+    {
+        name:"Bomb Escape",
+        file:"bombescape.html"
+    },
+
+    {
+        name:"Portal Runner",
+        file:"portalrunner.html"
+    },
+
+
+    /* 91 - 100 */
+
+    {
+        name:"Parkour City",
+        file:"parkourcity.html"
+    },
+
+    {
+        name:"Olympic Challenge",
+        file:"olympicchallenge.html"
+    },
+
+    {
+        name:"World Cup Challenge",
+        file:"worldcupchallenge.html"
+    },
+
+    {
+        name:"Winter Games",
+        file:"wintergames.html"
+    },
+
+    {
+        name:"Grand Prix",
+        file:"grandprix.html"
+    },
+
+    {
+        name:"Motorcycle Rush",
+        file:"motorcyclerush.html"
+    },
+
+    {
+        name:"Bike Adventure",
+        file:"bikeadventure.html"
+    },
+
+    {
+        name:"Skate City",
+        file:"skatecity.html"
+    },
+
+    {
+        name:"Martial Arts Arena",
+        file:"martialartsarena.html"
+    },
+
+    {
+        name:"Pixel World",
+        file:"pixelworld.html"
+    }
 
 ];
 
 
-const container =
-  document.getElementById(
-    "games"
-  );
+/* =========================================
+   CREAR LAS 100 TARJETAS
+========================================= */
+
+const gamesContainer =
+    document.getElementById("games");
 
 
 games.forEach(
-  (game,index)=>{
+    (game,index)=>{
 
-    const name =
-      game[0];
+        const card =
+            document.createElement("article");
 
-    const status =
-      game[1];
-
-
-    const card =
-      document.createElement(
-        "article"
-      );
-
-    card.className =
-      "game " +
-      (
-        status==="soon"
-          ? "coming"
-          : "available"
-      );
+        card.className =
+            "game " +
+            (
+                game.ready
+                    ? "available"
+                    : "coming"
+            );
 
 
-    const title =
-      document.createElement(
-        "div"
-      );
+        const number =
+            document.createElement("div");
 
-    title.className =
-      "name";
+        number.className =
+            "number";
 
-    title.textContent =
-      (
-        index+1
-      ) +
-      ". " +
-      name;
+        number.textContent =
+            "JUEGO " +
+            (index + 1);
 
 
-    const info =
-      document.createElement(
-        "div"
-      );
+        const name =
+            document.createElement("div");
 
-    info.className =
-      "status";
+        name.className =
+            "name";
+
+        name.textContent =
+            game.name;
 
 
-    if(
-      status==="ready"
-    ){
+        const status =
+            document.createElement("div");
 
-      info.textContent =
-        "Disponible";
+        status.className =
+            "status";
+
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "play";
+
+
+        if(game.ready){
+
+            status.textContent =
+                "Disponible";
+
+            button.textContent =
+                "JUGAR";
+
+
+            /*
+            ======================================
+            ABRIR VIDEOJUEGO
+            ======================================
+            */
+
+            button.onclick = function(){
+
+                window.location.href =
+                    game.file;
+
+            };
+
+        }
+        else{
+
+            status.textContent =
+                "Próximamente";
+
+            button.textContent =
+                "PRÓXIMAMENTE";
+
+
+            button.onclick = function(){
+
+                alert(
+                    game.name +
+                    " todavía está en desarrollo."
+                );
+
+            };
+
+        }
+
+
+        card.appendChild(number);
+        card.appendChild(name);
+        card.appendChild(status);
+        card.appendChild(button);
+
+        gamesContainer.appendChild(card);
 
     }
-    else{
-
-      info.textContent =
-        "Próximamente";
-
-    }
-
-
-    const button =
-      document.createElement(
-        "button"
-      );
-
-    button.className =
-      "play";
-
-    button.textContent =
-      status==="ready"
-        ? "JUGAR"
-        : "PRÓXIMAMENTE";
-
-
-    button.onclick=()=>{
-
-      if(
-        status==="soon"
-      ){
-
-        alert(
-          name +
-          " todavía está en desarrollo."
-        );
-
-        return;
-
-      }
-
-
-      /*
-        Aquí conectaremos cada juego
-        con su archivo cuando esté
-        terminado.
-      */
-
-      if(
-        name==="Spirit 3000"
-      ){
-
-        window.location.href =
-          "ZZZ";
-
-        return;
-
-      }
-
-
-      if(
-        name==="Fútbol 3D Online"
-      ){
-
-        window.location.href =
-          "ZZZ3";
-
-        return;
-
-      }
-
-
-      if(
-        name==="Galaxy Battle"
-      ){
-
-        window.location.href =
-          "ZZZ4";
-
-        return;
-
-      }
-
-
-      if(
-        name==="Ultra 3D Kart"
-      ){
-
-        window.location.href =
-          "ultra_3d_kart";
-
-        return;
-
-      }
-
-    };
-
-
-    card.appendChild(
-      title
-    );
-
-    card.appendChild(
-      info
-    );
-
-    card.appendChild(
-      button
-    );
-
-
-    container.appendChild(
-      card
-    );
-
-  }
-
 );
+
+
+/* =========================================
+   CONTADOR
+========================================= */
+
+document.getElementById(
+    "gameCount"
+).textContent =
+    games.length;
 
 </script>
 
