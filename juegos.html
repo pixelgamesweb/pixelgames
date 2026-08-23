@@ -2,1365 +2,501 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Galaxy Battle</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>Pixel Games</title>
 
 <style>
+
 *{
   box-sizing:border-box;
-  user-select:none;
 }
 
-html,body,#game{
+html,body{
   margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-}
-
-body{
-  background:#000;
+  min-height:100%;
   font-family:Arial,sans-serif;
   color:white;
 }
 
-#game{
-  position:fixed;
-  inset:0;
-}
+body{
 
-button{
-  background:#050505;
-  color:#65aaff;
-  border:1px solid #ffffff30;
-  border-radius:14px;
-  padding:14px 20px;
-  font-weight:bold;
-}
-
-#menu,
-#pause{
-  position:fixed;
-  inset:0;
-  z-index:20;
-  display:flex;
-  align-items:center;
-  justify-content:center;
   background:
-    radial-gradient(circle at 20% 20%,#6b38ff55,transparent 30%),
-    radial-gradient(circle at 80% 70%,#168bff44,transparent 30%),
-    #020208;
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(100,50,255,.35),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      rgba(0,160,255,.25),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 50% 90%,
+      rgba(220,40,255,.25),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #020207,
+      #100820,
+      #02030a
+    );
+
+  background-attachment:fixed;
 }
 
-.panel{
-  width:min(92vw,650px);
-  padding:30px;
-  background:#050509ed;
-  border:1px solid #ffffff20;
-  border-radius:28px;
+header{
+
+  padding:35px 20px 20px;
   text-align:center;
+
 }
 
 h1{
-  font-size:clamp(45px,10vw,80px);
+
   margin:0;
+
+  font-size:
+    clamp(45px,9vw,80px);
+
+  color:#fff;
+
+  text-shadow:
+    0 0 20px #7c4dff,
+    0 0 45px #168bff;
+
 }
 
-.main{
-  display:block;
-  width:100%;
-  margin:10px 0;
-  font-size:18px;
+.subtitle{
+
+  opacity:.7;
+  margin-top:10px;
+
 }
 
-#hud{
-  display:none;
-  position:fixed;
-  z-index:10;
-  top:12px;
-  left:12px;
-  right:12px;
-  justify-content:space-between;
-  pointer-events:none;
-}
+#games{
 
-#stats{
-  padding:12px;
-  border-radius:15px;
-  background:#000b;
-  border:1px solid #ffffff25;
-  line-height:1.7;
-}
+  width:min(
+    1100px,
+    94%
+  );
 
-.bar{
-  width:180px;
-  height:9px;
-  background:#301015;
-  border-radius:10px;
-  overflow:hidden;
-}
+  margin:25px auto 50px;
 
-.fill{
-  height:100%;
-  transition:width .2s;
-}
-
-#lifeFill{
-  width:100%;
-  background:#38e477;
-}
-
-#fuelFill{
-  width:100%;
-  background:#55aaff;
-}
-
-#pauseButton{
-  pointer-events:auto;
-  width:48px;
-  height:48px;
-  padding:0;
-}
-
-#controls{
-  display:none;
-  position:fixed;
-  z-index:12;
-  left:0;
-  right:0;
-  bottom:12px;
-  pointer-events:none;
-}
-
-#actions{
-  position:absolute;
-  right:15px;
-  bottom:0;
   display:grid;
-  grid-template-columns:85px 85px;
-  gap:8px;
-  pointer-events:auto;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(230px,1fr)
+    );
+
+  gap:14px;
+
 }
 
-#actions button{
-  height:62px;
-  padding:5px;
-  font-size:10px;
+.game{
+
+  min-height:110px;
+
+  padding:18px;
+
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #050505ee,
+      #111111ee
+    );
+
+  border:
+    1px solid
+    rgba(255,255,255,.12);
+
+  box-shadow:
+    0 12px 35px #0008;
+
+  transition:
+    transform .18s,
+    border-color .18s;
+
 }
 
-#pause{
-  display:none;
+.game:hover{
+
+  transform:
+    translateY(-4px);
+
+  border-color:
+    #5c8cffaa;
+
 }
+
+.name{
+
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:8px;
+
+}
+
+.status{
+
+  font-size:12px;
+  opacity:.55;
+
+}
+
+.play{
+
+  margin-top:12px;
+
+  width:100%;
+
+  padding:10px;
+
+  border-radius:10px;
+
+  border:
+    1px solid
+    #ffffff20;
+
+  background:#000;
+
+  color:#6daaff;
+
+  font-weight:bold;
+
+}
+
+.available{
+
+  cursor:pointer;
+
+}
+
+.coming{
+
+  opacity:.55;
+
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="game"></div>
+<header>
 
-<!-- MENÚ -->
+  <h1>Pixel Games</h1>
 
-<section id="menu">
-
-  <div class="panel">
-
-    <h1>Galaxy Battle</h1>
-
-    <p>
-      Viaja rápidamente por el espacio,
-      descubre planetas y sobrevive a los peligros.
-    </p>
-
-    <button id="play" class="main">
-      JUGAR
-    </button>
-
+  <div class="subtitle">
+    100 juegos · un solo universo
   </div>
 
-</section>
-
-
-<!-- PAUSA -->
-
-<section id="pause">
-
-  <div class="panel">
-
-    <h2>PAUSA</h2>
-
-    <button id="resume" class="main">
-      CONTINUAR
-    </button>
-
-    <button id="back" class="main">
-      VOLVER
-    </button>
-
-  </div>
-
-</section>
-
-
-<!-- HUD -->
-
-<div id="hud">
-
-  <div id="stats">
-
-    🚀 Vida de la nave
-
-    <div class="bar">
-      <div id="lifeFill" class="fill"></div>
-    </div>
-
-    ⛽ Combustible
-
-    <div class="bar">
-      <div id="fuelFill" class="fill"></div>
-    </div>
-
-    🪐 Destino:
-    <b id="destination">Planeta Azul</b>
-
-    <br>
-
-    📏 Distancia:
-    <b id="distance">0</b>
-
-  </div>
-
-  <button id="pauseButton">
-    Ⅱ
-  </button>
-
-</div>
-
-
-<!-- CONTROLES -->
-
-<div id="controls">
-
-  <div id="actions">
-
-    <button id="boost">
-      TURBO
-    </button>
-
-    <button id="land">
-      ATERRIZAR
-    </button>
-
-    <button id="refuel">
-      RECARGAR
-    </button>
-
-    <button id="camera">
-      CÁMARA
-    </button>
-
-  </div>
-
-</div>
-
-
-<script type="module">
-
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-
-
-/* =================================
-   ESCENA
-================================= */
-
-const scene =
-  new THREE.Scene();
-
-scene.background =
-  new THREE.Color(0x01020a);
-
-
-/* =================================
-   ESTRELLAS
-================================= */
-
-const starGeometry =
-  new THREE.BufferGeometry();
-
-const starPositions=[];
-
-for(
-  let i=0;
-  i<5000;
-  i++
-){
-
-  starPositions.push(
-    (Math.random()-.5)*2000,
-    (Math.random()-.5)*2000,
-    (Math.random()-.5)*2000
-  );
-
-}
-
-starGeometry.setAttribute(
-  "position",
-  new THREE.Float32BufferAttribute(
-    starPositions,
-    3
-  )
-);
-
-const stars =
-  new THREE.Points(
-
-    starGeometry,
-
-    new THREE.PointsMaterial({
-      color:0xffffff,
-      size:.8
-    })
-
-  );
-
-scene.add(stars);
-
-
-/* =================================
-   CÁMARA
-================================= */
-
-const camera =
-  new THREE.PerspectiveCamera(
-    70,
-    innerWidth/innerHeight,
-    .1,
-    5000
-  );
-
-camera.position.set(
-  0,
-  5,
-  18
-);
-
-
-/* =================================
-   RENDER
-================================= */
-
-const renderer =
-  new THREE.WebGLRenderer({
-    antialias:true
-  });
-
-renderer.setSize(
-  innerWidth,
-  innerHeight
-);
-
-renderer.setPixelRatio(
-  Math.min(
-    devicePixelRatio,
-    2
-  )
-);
-
-renderer.shadowMap.enabled=true;
-
-document
-  .getElementById("game")
-  .appendChild(renderer.domElement);
-
-
-/* =================================
-   LUCES
-================================= */
-
-scene.add(
-  new THREE.AmbientLight(
-    0x8090ff,
-    1.2
-  )
-);
-
-
-/* =================================
-   PLANETAS
-================================= */
-
-function createPlanet(
-  name,
-  color,
-  radius,
-  distance
-){
-
-  const planet =
-    new THREE.Mesh(
-
-      new THREE.SphereGeometry(
-        radius,
-        32,
-        24
-      ),
-
-      new THREE.MeshStandardMaterial({
-        color,
-        roughness:.8
-      })
-
-    );
-
-  planet.position.set(
-    (Math.random()-.5)*300,
-    (Math.random()-.5)*100,
-    -distance
-  );
-
-  scene.add(planet);
-
-  return {
-    name,
-    object:planet,
-    distance
-  };
-
-}
-
-
-const planets=[
-
-  createPlanet(
-    "Planeta Azul",
-    0x2478e8,
-    18,
-    350
-  ),
-
-  createPlanet(
-    "Planeta Rojo",
-    0xd84635,
-    25,
-    800
-  ),
-
-  createPlanet(
-    "Planeta Verde",
-    0x39a85a,
-    30,
-    1300
-  ),
-
-  createPlanet(
-    "Planeta Helado",
-    0x9eeaff,
-    22,
-    1900
-  ),
-
-  createPlanet(
-    "Planeta Dorado",
-    0xd7a53c,
-    35,
-    2600
-  )
+</header>
+
+
+<main id="games"></main>
+
+
+<script>
+
+const games = [
+
+  ["Spirit 3000", "ready"],
+  ["Fútbol 3D Online", "ready"],
+  ["Galaxy Battle", "ready"],
+  ["Ultra 3D Kart", "ready"],
+
+  ["Isla Perdida", "soon"],
+  ["Supervivencia Zombie", "soon"],
+  ["Defensa del Reino", "soon"],
+  ["Ninja Arena", "soon"],
+  ["Mega Run 3D", "soon"],
+  ["Escape Lab", "soon"],
+  ["Cazador de Monstruos", "soon"],
+  ["Street Racing", "soon"],
+  ["Helicopter Rescue", "soon"],
+  ["Ocean Explorer", "soon"],
+  ["Piratas del Horizonte", "soon"],
+  ["Dragon World", "soon"],
+  ["Robot Wars", "soon"],
+  ["Planet Explorer", "soon"],
+  ["Academia de Magia", "soon"],
+  ["Mega Constructor", "soon"],
+
+  ["Arqueros Legendarios", "soon"],
+  ["Boxeo 3D", "soon"],
+  ["Baloncesto Street", "soon"],
+  ["Volleyball Arena", "soon"],
+  ["Tennis Masters", "soon"],
+  ["Golf World", "soon"],
+  ["Snowboard Rush", "soon"],
+  ["Surf Challenge", "soon"],
+  ["Escalada Extrema", "soon"],
+  ["Aqua Race", "soon"],
+
+  ["Zombie City", "soon"],
+  ["City Driver", "soon"],
+  ["Taxi Simulator", "soon"],
+  ["Firefighter Rescue", "soon"],
+  ["Emergency Rescue", "soon"],
+  ["Police Chase", "soon"],
+  ["Farm World", "soon"],
+  ["Truck Simulator", "soon"],
+  ["Train Adventure", "soon"],
+  ["Flight Simulator", "soon"],
+
+  ["Hospital Simulator", "soon"],
+  ["Burger Master", "soon"],
+  ["Pizza Factory", "soon"],
+  ["Hotel Empire", "soon"],
+  ["Supermarket Tycoon", "soon"],
+  ["City Builder", "soon"],
+  ["Island Builder", "soon"],
+  ["Castle Builder", "soon"],
+  ["Mine World", "soon"],
+  ["Treasure Hunter", "soon"],
+
+  ["Lost Temple", "soon"],
+  ["Desert Expedition", "soon"],
+  ["Volcano Escape", "soon"],
+  ["Arctic Survival", "soon"],
+  ["Forest Mystery", "soon"],
+  ["Underwater City", "soon"],
+  ["Dinosaur Island", "soon"],
+  ["Wild Nature", "soon"],
+  ["Ocean Life", "soon"],
+  ["Sky Explorer", "soon"],
+
+  ["Night Hunters", "soon"],
+  ["Alien Invasion", "soon"],
+  ["Mech Arena", "soon"],
+  ["UFO Defender", "soon"],
+  ["Space Rangers", "soon"],
+  ["Meteor Storm", "soon"],
+  ["Black Hole Escape", "soon"],
+  ["Space Colony", "soon"],
+  ["Space Station", "soon"],
+  ["Cosmic Runner", "soon"],
+
+  ["Wizard Battle", "soon"],
+  ["Fantasy Quest", "soon"],
+  ["Medieval Warriors", "soon"],
+  ["Kingdom Wars", "soon"],
+  ["Dragon Hunter", "soon"],
+  ["Dungeon Escape", "soon"],
+  ["Sword Arena", "soon"],
+  ["Monster Arena", "soon"],
+  ["Demon Island", "soon"],
+  ["Magic Forest", "soon"],
+
+  ["Puzzle World", "soon"],
+  ["Mystery Mansion", "soon"],
+  ["Detective Case", "soon"],
+  ["100 Doors", "soon"],
+  ["Brain Challenge", "soon"],
+  ["Strategy Kingdom", "soon"],
+  ["Aim Master", "soon"],
+  ["Tower Stack", "soon"],
+  ["Bomb Escape", "soon"],
+  ["Portal Runner", "soon"],
+
+  ["Parkour City", "soon"],
+  ["Olympic Challenge", "soon"],
+  ["World Cup Challenge", "soon"],
+  ["Winter Games", "soon"],
+  ["Grand Prix", "soon"],
+  ["Motorcycle Rush", "soon"],
+  ["Bike Adventure", "soon"],
+  ["Skate City", "soon"],
+  ["Martial Arts Arena", "soon"],
+  ["Pixel World", "soon"]
 
 ];
 
 
-/* =================================
-   NAVE
-================================= */
-
-const ship =
-  new THREE.Group();
-
-
-const body =
-  new THREE.Mesh(
-
-    new THREE.ConeGeometry(
-      2.1,
-      8,
-      8
-    ),
-
-    new THREE.MeshStandardMaterial({
-      color:0x8b9bb8,
-      metalness:.7,
-      roughness:.3
-    })
-
-  );
-
-body.rotation.x=
-  -Math.PI/2;
-
-ship.add(body);
-
-
-/* Alas */
-
-for(
-  const side of[-1,1]
-){
-
-  const wing =
-    new THREE.Mesh(
-
-      new THREE.BoxGeometry(
-        5,
-        .25,
-        2
-      ),
-
-      new THREE.MeshStandardMaterial({
-        color:0x293b5e,
-        metalness:.7
-      })
-
-    );
-
-  wing.position.x=
-    side*2.5;
-
-  wing.position.z=1;
-
-  wing.rotation.z=
-    side*.15;
-
-  ship.add(wing);
-
-}
-
-
-/* Cabina */
-
-const cockpit =
-  new THREE.Mesh(
-
-    new THREE.SphereGeometry(
-      1.2,
-      16,
-      10
-    ),
-
-    new THREE.MeshStandardMaterial({
-      color:0x39a9ff,
-      emissive:0x1266aa,
-      emissiveIntensity:.8,
-      transparent:true,
-      opacity:.8
-    })
-
-  );
-
-cockpit.scale.z=.6;
-
-cockpit.position.y=.6;
-
-ship.add(cockpit);
-
-
-/* Motores */
-
-for(
-  const side of[-1,1]
-){
-
-  const engine =
-    new THREE.Mesh(
-
-      new THREE.CylinderGeometry(
-        .5,
-        .7,
-        1.5,
-        16
-      ),
-
-      new THREE.MeshBasicMaterial({
-        color:0x48baff
-      })
-
-    );
-
-  engine.rotation.x=
-    Math.PI/2;
-
-  engine.position.set(
-    side*1.5,
-    0,
-    4
-  );
-
-  ship.add(engine);
-
-}
-
-
-ship.position.set(
-  0,
-  0,
-  10
-);
-
-scene.add(ship);
-
-
-/* =================================
-   ESTADO
-================================= */
-
-let playing=false;
-let paused=false;
-
-let life=100;
-let fuel=100;
-
-let shipSpeed=18;
-
-let turbo=false;
-
-let cameraMode=0;
-
-let landed=false;
-
-let currentPlanet=0;
-
-
-/* =================================
-   METEORITOS
-================================= */
-
-const meteors=[];
-
-
-function createMeteor(){
-
-  const meteor =
-    new THREE.Mesh(
-
-      new THREE.DodecahedronGeometry(
-        2+Math.random()*4,
-        1
-      ),
-
-      new THREE.MeshStandardMaterial({
-        color:0x68564d,
-        roughness:1
-      })
-
-    );
-
-
-  meteor.position.set(
-
-    ship.position.x+
-      (Math.random()-.5)*100,
-
-    ship.position.y+
-      (Math.random()-.5)*80,
-
-    ship.position.z-
-      80-
-      Math.random()*300
-
+const container =
+  document.getElementById(
+    "games"
   );
 
 
-  meteor.velocity =
-    new THREE.Vector3(
-      (Math.random()-.5)*4,
-      (Math.random()-.5)*3,
-      8+Math.random()*12
-    );
+games.forEach(
+  (game,index)=>{
+
+    const name =
+      game[0];
+
+    const status =
+      game[1];
 
 
-  scene.add(meteor);
-
-  meteors.push(meteor);
-
-}
-
-
-for(
-  let i=0;
-  i<45;
-  i++
-){
-
-  createMeteor();
-
-}
-
-
-/* =================================
-   ESTACIONES
-================================= */
-
-const stations=[];
-
-
-function createStation(
-  z
-){
-
-  const station =
-    new THREE.Group();
-
-
-  const body =
-    new THREE.Mesh(
-
-      new THREE.BoxGeometry(
-        10,
-        3,
-        5
-      ),
-
-      new THREE.MeshStandardMaterial({
-        color:0x525d75,
-        metalness:.8
-      })
-
-    );
-
-  station.add(body);
-
-
-  const ring =
-    new THREE.Mesh(
-
-      new THREE.TorusGeometry(
-        7,
-        .6,
-        12,
-        32
-      ),
-
-      new THREE.MeshStandardMaterial({
-        color:0x38aaff,
-        emissive:0x1466aa,
-        emissiveIntensity:.8
-      })
-
-    );
-
-  ring.rotation.y=
-    Math.PI/2;
-
-  station.add(ring);
-
-
-  station.position.set(
-    0,
-    0,
-    z
-  );
-
-
-  scene.add(station);
-
-  stations.push(
-    station
-  );
-
-}
-
-
-createStation(-170);
-
-createStation(-1050);
-
-createStation(-2200);
-
-
-/* =================================
-   ACTUALIZAR METEORITOS
-================================= */
-
-function updateMeteors(
-  delta
-){
-
-  if(landed)
-    return;
-
-
-  for(
-    const meteor of meteors
-  ){
-
-    meteor.position.addScaledVector(
-      meteor.velocity,
-      delta
-    );
-
-
-    meteor.rotation.x+=
-      delta;
-
-    meteor.rotation.y+=
-      delta*.7;
-
-
-    const distance =
-      meteor.position.distanceTo(
-        ship.position
+    const card =
+      document.createElement(
+        "article"
       );
 
-
-    if(
-      distance<4
-    ){
-
-      life=
-        Math.max(
-          0,
-          life-15
-        );
-
-
-      meteor.position.z=
-        ship.position.z-
-        300-
-        Math.random()*300;
-
-    }
-
-
-    if(
-      meteor.position.z>
-      ship.position.z+40
-    ){
-
-      meteor.position.z=
-        ship.position.z-
-        300-
-        Math.random()*400;
-
-    }
-
-  }
-
-}
-
-
-/* =================================
-   MOVIMIENTO AUTOMÁTICO
-================================= */
-
-function updateShip(
-  delta
-){
-
-  if(
-    landed
-  )
-    return;
-
-
-  const speed =
-    turbo
-      ? shipSpeed*2.4
-      : shipSpeed;
-
-
-  /*
-    La nave avanza sola.
-  */
-
-  ship.position.z-=
-    speed*delta;
-
-
-  /*
-    El combustible baja
-    mientras viajamos.
-  */
-
-  fuel=
-    Math.max(
-      0,
-      fuel-
-      delta*
+    card.className =
+      "game " +
       (
-        turbo
-          ? .9
-          : .35
-      )
-    );
-
-
-  /*
-    Si no queda combustible,
-    reducimos la velocidad.
-  */
-
-  if(
-    fuel<=0
-  ){
-
-    shipSpeed=5;
-
-  }
-
-
-  /*
-    Destino actual.
-  */
-
-  const target=
-    planets[currentPlanet];
-
-
-  if(
-    target
-  ){
-
-    const distance=
-      Math.abs(
-        target.object.position.z-
-        ship.position.z
+        status==="soon"
+          ? "coming"
+          : "available"
       );
 
 
-    document
-      .getElementById(
-        "distance"
-      )
-      .textContent=
-        Math.round(
-          distance
-        )+" m";
-
-
-    document
-      .getElementById(
-        "destination"
-      )
-      .textContent=
-        target.name;
-
-
-    /*
-      Si llegamos cerca,
-      cambiamos al siguiente planeta.
-    */
-
-    if(
-      distance<30
-    ){
-
-      currentPlanet=
-        (
-          currentPlanet+1
-        )%
-        planets.length;
-
-    }
-
-  }
-
-}
-
-
-/* =================================
-   RECARGAR
-================================= */
-
-function refuel(){
-
-  for(
-    const station of stations
-  ){
-
-    const distance =
-      station.position.distanceTo(
-        ship.position
+    const title =
+      document.createElement(
+        "div"
       );
+
+    title.className =
+      "name";
+
+    title.textContent =
+      (
+        index+1
+      ) +
+      ". " +
+      name;
+
+
+    const info =
+      document.createElement(
+        "div"
+      );
+
+    info.className =
+      "status";
 
 
     if(
-      distance<35
+      status==="ready"
     ){
 
-      fuel=100;
-
-      return;
-
-    }
-
-  }
-
-}
-
-
-/* =================================
-   ATERRIZAR
-================================= */
-
-function land(){
-
-  for(
-    const planet of planets
-  ){
-
-    const distance =
-      planet.object.position.distanceTo(
-        ship.position
-      );
-
-
-    if(
-      distance<
-      planet.object.geometry.parameters.radius+
-      25
-    ){
-
-      landed=true;
-
-      shipSpeed=0;
-
-      return;
-
-    }
-
-  }
-
-}
-
-
-/* =================================
-   VOLVER A DESPEGAR
-================================= */
-
-function takeOff(){
-
-  if(
-    landed
-  ){
-
-    landed=false;
-
-    shipSpeed=18;
-
-  }
-
-}
-
-
-/* =================================
-   CÁMARA
-================================= */
-
-function updateCamera(){
-
-  let desired;
-
-
-  if(
-    cameraMode===0
-  ){
-
-    desired=
-      new THREE.Vector3(
-        ship.position.x,
-        ship.position.y+7,
-        ship.position.z+22
-      );
-
-  }
-  else if(
-    cameraMode===1
-  ){
-
-    desired=
-      new THREE.Vector3(
-        ship.position.x,
-        ship.position.y+2,
-        ship.position.z+8
-      );
-
-  }
-  else{
-
-    desired=
-      new THREE.Vector3(
-        ship.position.x,
-        ship.position.y+30,
-        ship.position.z+35
-      );
-
-  }
-
-
-  camera.position.lerp(
-    desired,
-    .08
-  );
-
-
-  camera.lookAt(
-    ship.position
-  );
-
-}
-
-
-/* =================================
-   HUD
-================================= */
-
-function updateHUD(){
-
-  document
-    .getElementById(
-      "lifeFill"
-    )
-    .style.width=
-      life+"%";
-
-
-  document
-    .getElementById(
-      "fuelFill"
-    )
-    .style.width=
-      fuel+"%";
-
-
-  if(
-    life<=0
-  ){
-
-    playing=false;
-
-    alert(
-      "La nave ha sido destruida."
-    );
-
-  }
-
-}
-
-
-/* =================================
-   BOTONES
-================================= */
-
-document
-  .getElementById("play")
-  .onclick=()=>{
-
-    playing=true;
-
-    document
-      .getElementById("menu")
-      .style.display="none";
-
-    document
-      .getElementById("hud")
-      .style.display="flex";
-
-    document
-      .getElementById("controls")
-      .style.display="block";
-
-  };
-
-
-document
-  .getElementById("boost")
-  .onpointerdown=()=>{
-
-    turbo=true;
-
-  };
-
-
-document
-  .getElementById("boost")
-  .onpointerup=()=>{
-
-    turbo=false;
-
-  };
-
-
-document
-  .getElementById("refuel")
-  .onclick=
-    refuel;
-
-
-document
-  .getElementById("land")
-  .onclick=()=>{
-
-    if(
-      landed
-    ){
-
-      takeOff();
+      info.textContent =
+        "Disponible";
 
     }
     else{
 
-      land();
+      info.textContent =
+        "Próximamente";
 
     }
 
-  };
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+    button.className =
+      "play";
+
+    button.textContent =
+      status==="ready"
+        ? "JUGAR"
+        : "PRÓXIMAMENTE";
 
 
-document
-  .getElementById("camera")
-  .onclick=()=>{
+    button.onclick=()=>{
 
-    cameraMode=
-      (
-        cameraMode+1
-      )%3;
+      if(
+        status==="soon"
+      ){
 
-  };
+        alert(
+          name +
+          " todavía está en desarrollo."
+        );
 
+        return;
 
-/* =================================
-   PAUSA
-================================= */
-
-document
-  .getElementById("pauseButton")
-  .onclick=()=>{
-
-    paused=true;
-
-    document
-      .getElementById("pause")
-      .style.display="flex";
-
-  };
+      }
 
 
-document
-  .getElementById("resume")
-  .onclick=()=>{
+      /*
+        Aquí conectaremos cada juego
+        con su archivo cuando esté
+        terminado.
+      */
 
-    paused=false;
+      if(
+        name==="Spirit 3000"
+      ){
 
-    document
-      .getElementById("pause")
-      .style.display="none";
+        window.location.href =
+          "ZZZ";
 
-  };
+        return;
 
-
-document
-  .getElementById("back")
-  .onclick=()=>{
-
-    playing=false;
-    paused=false;
-
-    document
-      .getElementById("pause")
-      .style.display="none";
-
-    document
-      .getElementById("hud")
-      .style.display="none";
-
-    document
-      .getElementById("controls")
-      .style.display="none";
-
-    document
-      .getElementById("menu")
-      .style.display="flex";
-
-  };
+      }
 
 
-/* =================================
-   BUCLE
-================================= */
+      if(
+        name==="Fútbol 3D Online"
+      ){
 
-let last=
-  performance.now();
+        window.location.href =
+          "ZZZ3";
 
+        return;
 
-function loop(now){
-
-  requestAnimationFrame(
-    loop
-  );
+      }
 
 
-  const delta=
-    Math.min(
-      .05,
-      (now-last)/1000
+      if(
+        name==="Galaxy Battle"
+      ){
+
+        window.location.href =
+          "ZZZ4";
+
+        return;
+
+      }
+
+
+      if(
+        name==="Ultra 3D Kart"
+      ){
+
+        window.location.href =
+          "ultra_3d_kart";
+
+        return;
+
+      }
+
+    };
+
+
+    card.appendChild(
+      title
+    );
+
+    card.appendChild(
+      info
+    );
+
+    card.appendChild(
+      button
     );
 
 
-  last=now;
-
-
-  if(
-    playing &&
-    !paused
-  ){
-
-    updateShip(
-      delta
-    );
-
-    updateMeteors(
-      delta
-    );
-
-    updateCamera();
-
-    updateHUD();
-
-  }
-
-
-  renderer.render(
-    scene,
-    camera
-  );
-
-}
-
-
-requestAnimationFrame(
-  loop
-);
-
-
-/* =================================
-   RESIZE
-================================= */
-
-addEventListener(
-  "resize",
-  ()=>{
-
-    camera.aspect=
-      innerWidth/
-      innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-      innerWidth,
-      innerHeight
+    container.appendChild(
+      card
     );
 
   }
+
 );
 
 </script>
