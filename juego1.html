@@ -2,91 +2,1125 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Juego de carreras</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Juego 1 - Monedas 3D</title>
 
 <style>
-body{
-margin:0;
-background:#2e8b57;
-font-family:Arial;
-text-align:center;
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#050509;
 }
 
-h1{
-color:white;
-font-size:45px;
-margin:15px;
+#juego{
+    width:100vw;
+    height:100vh;
 }
 
-#puntos{
-color:white;
-font-size:28px;
-margin-bottom:10px;
+#hud{
+    position:fixed;
+    top:14px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:10;
+    background:rgba(0,0,0,.75);
+    color:white;
+    padding:12px 24px;
+    border-radius:18px;
+    font-size:19px;
+    font-weight:bold;
+    border:1px solid rgba(255,255,255,.15);
 }
 
-#carretera{
-position:relative;
-width:500px;
-height:700px;
-margin:auto;
-background:#555;
-overflow:hidden;
-border:6px solid white;
+#ayuda{
+    position:fixed;
+    bottom:15px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:10;
+    background:rgba(0,0,0,.7);
+    color:white;
+    padding:10px 18px;
+    border-radius:14px;
 }
 
-.linea{
-position:absolute;
-left:240px;
-width:20px;
-height:80px;
-background:white;
+#gameOver{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:20;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.78);
 }
 
-#coche{
-position:absolute;
-bottom:20px;
-left:210px;
-font-size:60px;
+.panel{
+    background:#111;
+    color:white;
+    padding:35px;
+    border-radius:25px;
+    text-align:center;
+    min-width:300px;
+}
+
+.panel h1{
+    font-size:42px;
+    margin-top:0;
+}
+
+button{
+    border:0;
+    border-radius:14px;
+    padding:14px 25px;
+    background:#000;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
 }
 </style>
-
 </head>
+
 <body>
 
-<h1>🏎️ Juego de carreras</h1>
+<div id="juego"></div>
 
-<div id="puntos">⭐ Puntos: 0</div>
-
-<div id="carretera">
-
-<div class="linea" style="top:0"></div>
-<div class="linea" style="top:140px"></div>
-<div class="linea" style="top:280px"></div>
-<div class="linea" style="top:420px"></div>
-<div class="linea" style="top:560px"></div>
-
-<div id="coche">🏎️</div>
-
+<div id="hud">
+    Monedas: <span id="monedas">0</span>
+    &nbsp; | &nbsp;
+    Vidas: <span id="vidas">3</span>
 </div>
 
-<script>
+<div id="ayuda">
+    ← → mover · ↑ correr · ↓ retroceder
+</div>
 
-let coche=document.getElementById("coche");
-let x=210;
+<div id="gameOver">
+    <div class="panel">
+        <h1>GAME OVER</h1>
+        <p>Has conseguido:</p>
+        <h2><span id="resultado">0</span> monedas</h2>
+        <button onclick="location.reload()">Volver a jugar</button>
+    </div>
+</div>
 
-document.addEventListener("keydown",function(e){
+<script type="module">
 
-if(e.key=="ArrowLeft")x-=40;
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-if(e.key=="ArrowRight")x+=40;
+/* =========================
+   ESCENA
+========================= */
 
-if(x<20)x=20;
+const escena = new THREE.Scene();
 
-if(x>420)x=420;
+escena.background =
+new THREE.Color(0x05060b);
 
-coche.style.left=x+"px";
+escena.fog =
+new THREE.Fog(0x05060b,35,150);
 
+
+/* =========================
+   CAMARA
+========================= */
+
+const camara =
+new THREE.PerspectiveCamera(
+60,
+innerWidth/innerHeight,
+0.1,
+500
+);
+
+camara.position.set(0,5,10);
+
+
+/* =========================
+   RENDER
+========================= */
+
+const renderer =
+new THREE.WebGLRenderer({
+antialias:true
 });
+
+renderer.setSize(
+innerWidth,
+innerHeight
+);
+
+renderer.setPixelRatio(
+Math.min(devicePixelRatio,2)
+);
+
+renderer.shadowMap.enabled=true;
+
+document
+.getElementById("juego")
+.appendChild(renderer.domElement);
+
+
+/* =========================
+   LUCES
+========================= */
+
+const luzAmbiente =
+new THREE.HemisphereLight(
+0x667799,
+0x111111,
+1.3
+);
+
+escena.add(luzAmbiente);
+
+
+const luzLuna =
+new THREE.DirectionalLight(
+0x9bb7ff,
+2
+);
+
+luzLuna.position.set(
+-30,
+40,
+20
+);
+
+luzLuna.castShadow=true;
+
+escena.add(luzLuna);
+
+
+/* =========================
+   SUELO
+========================= */
+
+const suelo =
+new THREE.Mesh(
+new THREE.PlaneGeometry(
+500,
+500
+),
+new THREE.MeshStandardMaterial({
+color:0x101418,
+roughness:1
+})
+);
+
+suelo.rotation.x=-Math.PI/2;
+
+suelo.receiveShadow=true;
+
+escena.add(suelo);
+
+
+/* =========================
+   CARRETERA
+========================= */
+
+const carretera =
+new THREE.Mesh(
+new THREE.PlaneGeometry(
+12,
+500
+),
+new THREE.MeshStandardMaterial({
+color:0x292b30,
+roughness:.9
+})
+);
+
+carretera.rotation.x=-Math.PI/2;
+
+carretera.position.y=.03;
+
+escena.add(carretera);
+
+
+/* =========================
+   LINEAS
+========================= */
+
+const lineas=[];
+
+for(
+let z=-240;
+z<240;
+z+=10
+){
+
+const linea =
+new THREE.Mesh(
+new THREE.BoxGeometry(
+.15,
+.05,
+4
+),
+new THREE.MeshStandardMaterial({
+color:0xeeeeee
+})
+);
+
+linea.position.set(
+0,
+.08,
+z
+);
+
+escena.add(linea);
+
+lineas.push(linea);
+}
+
+
+/* =========================
+   PERSONA
+========================= */
+
+function crearPersona(){
+
+const persona =
+new THREE.Group();
+
+
+const piel =
+new THREE.MeshStandardMaterial({
+color:0xd79a70
+});
+
+
+const camiseta =
+new THREE.MeshStandardMaterial({
+color:0x2879dc
+});
+
+
+const pantalon =
+new THREE.MeshStandardMaterial({
+color:0x252733
+});
+
+
+const zapato =
+new THREE.MeshStandardMaterial({
+color:0x080808
+});
+
+
+/* cabeza */
+
+const cabeza =
+new THREE.Mesh(
+new THREE.BoxGeometry(
+.75,
+.75,
+.75
+),
+piel
+);
+
+cabeza.position.y=2.65;
+
+cabeza.castShadow=true;
+
+persona.add(cabeza);
+
+
+/* ojos */
+
+const ojos =
+new THREE.MeshStandardMaterial({
+color:0x050505
+});
+
+for(
+const x of [-.16,.16]
+){
+
+const ojo =
+new THREE.Mesh(
+new THREE.BoxGeometry(
+.09,
+.11,
+.04
+),
+ojos
+);
+
+ojo.position.set(
+x,
+2.72,
+-.39
+);
+
+persona.add(ojo);
+}
+
+
+/* cuerpo */
+
+const cuerpo =
+new THREE.Mesh(
+new THREE.BoxGeometry(
+1,
+1.2,
+.6
+),
+camiseta
+);
+
+cuerpo.position.y=1.65;
+
+cuerpo.castShadow=true;
+
+persona.add(cuerpo);
+
+
+/* brazos */
+
+for(
+const x of [-.65,.65]
+){
+
+const brazo =
+new THREE.Mesh(
+new THREE.BoxGeometry(
+.3,
+1,
+.3
+),
+piel
+);
+
+brazo.position.set(
+x,
+1.65,
+0
+);
+
+brazo.castShadow=true;
+
+persona.add(brazo);
+}
+
+
+/* piernas */
+
+for(
+const x of [-.27,.27]
+){
+
+const pierna =
+new THREE.Mesh(
+new THREE.BoxGeometry(
+.3,
+.9,
+.35
+),
+pantalon
+);
+
+pierna.position.set(
+x,
+.62,
+0
+);
+
+pierna.castShadow=true;
+
+persona.add(pierna);
+
+
+/* zapatos */
+
+const zapatoMesh =
+new THREE.Mesh(
+new THREE.BoxGeometry(
+.35,
+.2,
+.55
+),
+zapato
+);
+
+zapatoMesh.position.set(
+x,
+.15,
+-.08
+);
+
+persona.add(zapatoMesh);
+
+}
+
+return persona;
+
+}
+
+const jugador =
+crearPersona();
+
+jugador.position.set(
+0,
+0,
+7
+);
+
+escena.add(jugador);
+
+
+/* =========================
+   OBJETOS
+========================= */
+
+const monedas=[];
+
+const peligros=[];
+
+const premios=[];
+
+
+/* MONEDA */
+
+function crearMoneda(
+x,
+z
+){
+
+const moneda =
+new THREE.Mesh(
+new THREE.CylinderGeometry(
+.45,
+.45,
+.15,
+24
+),
+new THREE.MeshStandardMaterial({
+color:0xffc400,
+metalness:.8,
+roughness:.18,
+emissive:0x6b4200,
+emissiveIntensity:.8
+})
+);
+
+moneda.rotation.z=
+Math.PI/2;
+
+moneda.position.set(
+x,
+1,
+z
+);
+
+moneda.castShadow=true;
+
+escena.add(moneda);
+
+monedas.push(moneda);
+
+}
+
+
+/* SACO */
+
+function crearSaco(
+x,
+z
+){
+
+const saco =
+new THREE.Group();
+
+
+const cuerpo =
+new THREE.Mesh(
+new THREE.SphereGeometry(
+.65,
+16,
+12
+),
+new THREE.MeshStandardMaterial({
+color:0x815128,
+roughness:1
+})
+);
+
+cuerpo.scale.y=1.15;
+
+cuerpo.position.y=.65;
+
+cuerpo.castShadow=true;
+
+saco.add(cuerpo);
+
+
+const cuerda =
+new THREE.Mesh(
+new THREE.CylinderGeometry(
+.08,
+.08,
+.5,
+8
+),
+new THREE.MeshStandardMaterial({
+color:0x4b2c15
+})
+);
+
+cuerda.position.y=1.3;
+
+saco.add(cuerda);
+
+
+saco.position.set(
+x,
+0,
+z
+);
+
+escena.add(saco);
+
+peligros.push(saco);
+
+}
+
+
+/* PREMIO */
+
+function crearPremio(
+x,
+z
+){
+
+const premio =
+new THREE.Mesh(
+new THREE.OctahedronGeometry(
+.55
+),
+new THREE.MeshStandardMaterial({
+color:0x38ff7a,
+emissive:0x075c27,
+emissiveIntensity:1.4
+})
+);
+
+premio.position.set(
+x,
+1,
+z
+);
+
+premio.castShadow=true;
+
+escena.add(premio);
+
+premios.push(premio);
+
+}
+
+
+/* =========================
+   GENERAR CARRETERA
+========================= */
+
+const carriles=[
+-3.4,
+0,
+3.4
+];
+
+for(
+let z=-20;
+z>-300;
+z-=13
+){
+
+const carril =
+carriles[
+Math.floor(
+Math.random()*3
+)
+];
+
+crearMoneda(
+carril,
+z
+);
+
+
+if(
+Math.random()<.5
+){
+
+crearMoneda(
+carriles[
+Math.floor(
+Math.random()*3
+)
+],
+z-5
+);
+
+}
+
+
+if(
+Math.random()<.28
+){
+
+crearSaco(
+carriles[
+Math.floor(
+Math.random()*3
+)
+],
+z-7
+);
+
+}
+
+
+if(
+Math.random()<.18
+){
+
+crearPremio(
+carriles[
+Math.floor(
+Math.random()*3
+)
+],
+z-9
+);
+
+}
+
+}
+
+
+/* =========================
+   EDIFICIOS
+========================= */
+
+for(
+let z=-250;
+z<20;
+z+=28
+){
+
+for(
+const x of [-12,12]
+){
+
+const altura=
+5+Math.random()*9;
+
+const edificio =
+new THREE.Mesh(
+new THREE.BoxGeometry(
+4,
+altura,
+6
+),
+new THREE.MeshStandardMaterial({
+color:0x202733,
+roughness:.9
+})
+);
+
+edificio.position.set(
+x,
+altura/2,
+z
+);
+
+edificio.castShadow=true;
+
+escena.add(edificio);
+
+}
+
+}
+
+
+/* =========================
+   CONTROLES
+========================= */
+
+const teclas={
+izquierda:false,
+derecha:false,
+arriba:false,
+abajo:false
+};
+
+addEventListener(
+"keydown",
+e=>{
+
+if(e.key==="ArrowLeft")
+teclas.izquierda=true;
+
+if(e.key==="ArrowRight")
+teclas.derecha=true;
+
+if(e.key==="ArrowUp")
+teclas.arriba=true;
+
+if(e.key==="ArrowDown")
+teclas.abajo=true;
+
+}
+);
+
+addEventListener(
+"keyup",
+e=>{
+
+if(e.key==="ArrowLeft")
+teclas.izquierda=false;
+
+if(e.key==="ArrowRight")
+teclas.derecha=false;
+
+if(e.key==="ArrowUp")
+teclas.arriba=false;
+
+if(e.key==="ArrowDown")
+teclas.abajo=false;
+
+}
+);
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let monedasConseguidas=0;
+
+let vidas=3;
+
+let velocidad=.12;
+
+
+/* =========================
+   COLISION
+========================= */
+
+function colision(
+a,
+b,
+distancia=1.3
+){
+
+return(
+Math.abs(
+a.position.x-
+b.position.x
+)<distancia
+&&
+Math.abs(
+a.position.z-
+b.position.z
+)<1.6
+);
+
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function gameOver(){
+
+document
+.getElementById("resultado")
+.textContent=
+monedasConseguidas;
+
+document
+.getElementById("gameOver")
+.style.display="flex";
+
+}
+
+
+/* =========================
+   ACTUALIZAR
+========================= */
+
+function actualizar(){
+
+/* movimiento */
+
+if(
+teclas.izquierda
+)
+jugador.position.x-=.12;
+
+if(
+teclas.derecha
+)
+jugador.position.x+=.12;
+
+
+jugador.position.x=
+Math.max(
+-4.8,
+Math.min(
+4.8,
+jugador.position.x
+)
+);
+
+
+let movimiento=
+velocidad;
+
+if(
+teclas.arriba
+)
+movimiento=.24;
+
+if(
+teclas.abajo
+)
+movimiento=-.10;
+
+
+/* carretera */
+
+lineas.forEach(
+linea=>{
+
+linea.position.z+=movimiento;
+
+if(
+linea.position.z>20
+)
+linea.position.z=-240;
+
+}
+);
+
+
+/* monedas */
+
+monedas.forEach(
+moneda=>{
+
+moneda.position.z+=
+velocidad-movimiento;
+
+moneda.rotation.y+=.07;
+
+if(
+moneda.position.z>15
+)
+moneda.position.z=
+-300-
+Math.random()*30;
+
+
+if(
+colision(
+jugador,
+moneda,
+1.1
+)
+){
+
+monedasConseguidas++;
+
+document
+.getElementById("monedas")
+.textContent=
+monedasConseguidas;
+
+moneda.position.z=
+-300-
+Math.random()*30;
+
+}
+
+}
+);
+
+
+/* peligros */
+
+peligros.forEach(
+peligro=>{
+
+peligro.position.z+=
+velocidad-movimiento;
+
+peligro.rotation.y+=.02;
+
+if(
+peligro.position.z>15
+)
+peligro.position.z=
+-300-
+Math.random()*40;
+
+
+if(
+colision(
+jugador,
+peligro,
+1.2
+)
+){
+
+vidas--;
+
+document
+.getElementById("vidas")
+.textContent=
+vidas;
+
+peligro.position.z=
+-300-
+Math.random()*40;
+
+if(
+vidas<=0
+)
+gameOver();
+
+}
+
+}
+);
+
+
+/* premios */
+
+premios.forEach(
+premio=>{
+
+premio.position.z+=
+velocidad-movimiento;
+
+premio.rotation.y+=.05;
+
+premio.rotation.x+=.02;
+
+if(
+premio.position.z>15
+)
+premio.position.z=
+-300-
+Math.random()*40;
+
+
+if(
+colision(
+jugador,
+premio,
+1.2
+)
+){
+
+monedasConseguidas+=5;
+
+document
+.getElementById("monedas")
+.textContent=
+monedasConseguidas;
+
+premio.position.z=
+-300-
+Math.random()*40;
+
+}
+
+}
+);
+
+
+/* cámara */
+
+camara.position.x+=
+(
+jugador.position.x*.35-
+camara.position.x
+)*.08;
+
+camara.position.y+=
+(
+5.2-
+camara.position.y
+)*.08;
+
+camara.position.z+=
+(
+10-
+camara.position.z
+)*.08;
+
+camara.lookAt(
+jugador.position.x,
+1.5,
+jugador.position.z-12
+);
+
+}
+
+
+/* =========================
+   ANIMACIÓN
+========================= */
+
+function animar(){
+
+requestAnimationFrame(
+animar
+);
+
+actualizar();
+
+renderer.render(
+escena,
+camara
+);
+
+}
+
+animar();
+
+
+/* =========================
+   PANTALLA
+========================= */
+
+addEventListener(
+"resize",
+()=>{
+
+camara.aspect=
+innerWidth/innerHeight;
+
+camara.updateProjectionMatrix();
+
+renderer.setSize(
+innerWidth,
+innerHeight
+);
+
+}
+);
 
 </script>
 
