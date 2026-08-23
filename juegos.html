@@ -1,109 +1,208 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Juegos</title>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial;
-background:#ff8c2a;
-text-align:center;
+* {
+    box-sizing: border-box;
 }
 
-h1{
-color:white;
-font-size:48px;
-margin-top:30px;
+html, body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, sans-serif;
+    color: white;
 }
 
-.menu{
-width:350px;
-margin:auto;
-margin-top:35px;
+/* FONDO GALAXIA DIFUMINADO */
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(100,70,180,.55), transparent 30%),
+        radial-gradient(circle at 80% 25%, rgba(20,100,180,.45), transparent 32%),
+        radial-gradient(circle at 40% 80%, rgba(170,40,130,.4), transparent 30%),
+        radial-gradient(circle at 90% 90%, rgba(40,50,150,.5), transparent 30%),
+        linear-gradient(135deg, #03030b, #11102b, #050510);
+    background-attachment: fixed;
+    overflow-x: hidden;
 }
 
-button{
-
-width:100%;
-padding:18px;
-margin:12px 0;
-font-size:24px;
-border:none;
-border-radius:20px;
-cursor:pointer;
-background:white;
-transition:.2s;
-
+body::before {
+    content: "";
+    position: fixed;
+    inset: -50px;
+    z-index: -1;
+    background:
+        radial-gradient(circle, rgba(255,255,255,.7) 1px, transparent 2px);
+    background-size: 85px 85px;
+    opacity: .35;
+    filter: blur(1px);
 }
 
-button:hover{
-
-transform:scale(1.03);
-background:#ffe082;
-
+.contenedor {
+    width: min(100%, 900px);
+    margin: auto;
+    padding: 35px 20px 50px;
 }
 
-.volver{
-
-background:#ff4444;
-color:white;
-
+h1 {
+    text-align: center;
+    font-size: clamp(42px, 8vw, 72px);
+    margin: 10px 0 35px;
+    letter-spacing: 3px;
+    text-shadow:
+        0 0 15px rgba(255,255,255,.35),
+        0 0 35px rgba(100,100,255,.35);
 }
 
-a{
-
-text-decoration:none;
-
+.lista-juegos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
 }
 
+.boton-juego {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90px;
+
+    background: #050505;
+    color: white;
+
+    border: 2px solid rgba(255,255,255,.12);
+    border-radius: 18px;
+
+    text-decoration: none;
+    font-size: 25px;
+    font-weight: bold;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.5),
+        inset 0 0 20px rgba(255,255,255,.025);
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+.boton-juego:hover {
+    transform: translateY(-5px) scale(1.015);
+    background: #111111;
+    border-color: rgba(255,255,255,.35);
+    box-shadow:
+        0 14px 35px rgba(0,0,0,.65),
+        0 0 25px rgba(130,120,255,.18);
+}
+
+.boton-juego:active {
+    transform: scale(.97);
+}
+
+/* BOTÓN VOLVER */
+.volver {
+    display: block;
+    width: 220px;
+    margin: 35px auto 0;
+    padding: 15px;
+
+    background: #050505;
+    color: white;
+
+    border: 2px solid rgba(255,255,255,.15);
+    border-radius: 15px;
+
+    text-align: center;
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: bold;
+
+    transition: .2s;
+}
+
+.volver:hover {
+    background: #171717;
+    transform: translateY(-3px);
+}
+
+/* MÓVIL */
+@media (max-width: 650px) {
+
+    .lista-juegos {
+        grid-template-columns: 1fr;
+    }
+
+    .boton-juego {
+        min-height: 75px;
+        font-size: 22px;
+    }
+
+    h1 {
+        margin-bottom: 25px;
+    }
+}
 </style>
-
 </head>
 
 <body>
 
-<h1>🎮 Juegos</h1>
+<div class="contenedor">
 
-<div class="menu">
+    <h1>Juegos</h1>
 
-<a href="juego1.html">
-<button>🍎 Juego de frutas</button>
-</a>
+    <div class="lista-juegos">
 
-<a href="juego2.html">
-<button>🪙 Juego de monedas</button>
-</a>
+        <a class="boton-juego" href="juego1.html">
+            Juego 1
+        </a>
 
-<a href="juego3.html">
-<button>⚽ Juego 3</button>
-</a>
+        <a class="boton-juego" href="juego2.html">
+            Juego 2
+        </a>
 
-<a href="juego4.html">
-<button>🏎️ Juego 4</button>
-</a>
+        <a class="boton-juego" href="juego3.html">
+            Juego 3
+        </a>
 
-<a href="juego5.html">
-<button>🎯 Juego 5</button>
-</a>
+        <a class="boton-juego" href="juego4.html">
+            Juego 4
+        </a>
 
-<a href="juego6.html">
-<button>🚀 Juego 6</button>
-</a>
+        <a class="boton-juego" href="juego5.html">
+            Juego 5
+        </a>
 
-<a href="entrenar.html">
-<button>⚽ Entrenar fútbol</button>
-</a>
+        <a class="boton-juego" href="juego6.html">
+            Juego 6
+        </a>
 
-<a href="index.html">
-<button class="volver">⬅ Volver al inicio</button>
-</a>
+        <a class="boton-juego" href="juego7.html">
+            Juego 7
+        </a>
+
+        <a class="boton-juego" href="juego8.html">
+            Juego 8
+        </a>
+
+        <a class="boton-juego" href="juego9.html">
+            Juego 9
+        </a>
+
+        <a class="boton-juego" href="juego10.html">
+            Juego 10
+        </a>
+
+    </div>
+
+    <a class="volver" href="index.html">
+        Volver
+    </a>
 
 </div>
 
