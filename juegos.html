@@ -7,208 +7,198 @@
 
 <style>
 *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
 html,body{
-    min-height:100%;
-    font-family:Arial,Helvetica,sans-serif;
-    color:white;
+  min-height:100%;
+  font-family:Arial,Helvetica,sans-serif;
+  color:white;
 }
 
 body{
-    min-height:100vh;
-    background:
-        radial-gradient(circle at 15% 20%,rgba(105,40,255,.35),transparent 28%),
-        radial-gradient(circle at 85% 25%,rgba(0,130,255,.30),transparent 28%),
-        radial-gradient(circle at 50% 85%,rgba(210,40,255,.25),transparent 32%),
-        radial-gradient(circle at 70% 70%,rgba(30,80,255,.18),transparent 25%),
-        linear-gradient(135deg,#020207,#0b0718,#02030a);
-    background-attachment:fixed;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 15% 15%,#653cff55,transparent 28%),
+    radial-gradient(circle at 85% 20%,#168bff44,transparent 28%),
+    radial-gradient(circle at 50% 90%,#d52cff38,transparent 35%),
+    radial-gradient(circle at 80% 75%,#2d5cff22,transparent 25%),
+    linear-gradient(135deg,#010106,#0c061c,#02030a);
+  background-attachment:fixed;
 }
 
 /* ESTRELLAS */
 
 body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    opacity:.45;
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.45;
 
-    background-image:
-        radial-gradient(circle,#fff 1px,transparent 1px),
-        radial-gradient(circle,#8ab4ff 1px,transparent 1px);
+  background-image:
+    radial-gradient(circle,#ffffff 1px,transparent 1px),
+    radial-gradient(circle,#8ab4ff 1px,transparent 1px);
 
-    background-size:
-        95px 95px,
-        145px 145px;
+  background-size:
+    90px 90px,
+    150px 150px;
 
-    background-position:
-        10px 20px,
-        50px 70px;
+  background-position:
+    10px 20px,
+    50px 80px;
 }
 
 /* CABECERA */
 
 header{
-    position:relative;
-    z-index:2;
-    text-align:center;
-    padding:42px 18px 25px;
+  position:relative;
+  z-index:2;
+  text-align:center;
+  padding:38px 15px 22px;
 }
 
 .logo{
-    font-size:clamp(48px,10vw,86px);
-    font-weight:900;
-    letter-spacing:-3px;
+  font-size:clamp(48px,10vw,85px);
+  font-weight:900;
+  letter-spacing:-3px;
 
-    text-shadow:
-        0 0 12px #744cff,
-        0 0 30px #426cff,
-        0 0 60px #a52cff;
+  text-shadow:
+    0 0 15px #754cff,
+    0 0 35px #3f7cff,
+    0 0 65px #b32cff;
 }
 
 .subtitle{
-    margin-top:10px;
-    opacity:.72;
-    font-size:17px;
+  margin-top:9px;
+  opacity:.7;
+  font-size:16px;
 }
 
 /* CONTENEDOR */
 
 .container{
-    position:relative;
-    z-index:2;
-
-    width:min(1200px,94%);
-    margin:auto;
-    padding-bottom:60px;
+  position:relative;
+  z-index:2;
+  width:min(1200px,94%);
+  margin:auto;
+  padding-bottom:60px;
 }
-
-/* CONTADOR */
 
 .counter{
-    text-align:center;
-    margin:10px 0 24px;
-    opacity:.65;
+  text-align:center;
+  opacity:.6;
+  margin:10px 0 24px;
 }
 
-/* JUEGOS */
+/* GRID */
 
 #games{
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(230px,1fr)
-        );
-
-    gap:15px;
+  display:grid;
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(230px,1fr)
+    );
+  gap:15px;
 }
 
-/* TARJETA */
+/* TARJETAS */
 
 .game{
-    min-height:145px;
+  min-height:145px;
+  padding:18px;
 
-    padding:18px;
+  border-radius:19px;
 
-    border-radius:19px;
+  background:
+    linear-gradient(
+      145deg,
+      #030303ee,
+      #121218ee
+    );
 
-    background:
-        linear-gradient(
-            145deg,
-            rgba(0,0,0,.90),
-            rgba(15,15,20,.92)
-        );
+  border:1px solid #ffffff18;
 
-    border:1px solid rgba(255,255,255,.12);
+  box-shadow:
+    0 12px 35px #0009;
 
-    box-shadow:
-        0 12px 35px rgba(0,0,0,.55);
-
-    transition:
-        transform .18s,
-        border-color .18s,
-        box-shadow .18s;
+  transition:
+    transform .18s,
+    border-color .18s,
+    box-shadow .18s;
 }
 
 .game:hover{
-    transform:translateY(-5px);
+  transform:translateY(-5px);
 
-    border-color:
-        rgba(110,160,255,.65);
+  border-color:#6c9dff99;
 
-    box-shadow:
-        0 18px 45px rgba(30,70,180,.25);
+  box-shadow:
+    0 18px 45px #2450a533;
 }
 
 .number{
-    font-size:12px;
-    opacity:.45;
-    margin-bottom:7px;
+  font-size:11px;
+  opacity:.4;
+  margin-bottom:7px;
 }
 
 .name{
-    font-size:19px;
-    font-weight:800;
-    line-height:1.2;
-    min-height:46px;
+  font-size:18px;
+  font-weight:800;
+  min-height:44px;
+  line-height:1.2;
 }
 
 .status{
-    margin-top:5px;
-    font-size:12px;
-    opacity:.55;
+  margin-top:5px;
+  font-size:12px;
+  opacity:.55;
 }
 
 .play{
-    width:100%;
-    margin-top:13px;
+  width:100%;
+  margin-top:13px;
 
-    border:1px solid #ffffff20;
-    border-radius:11px;
+  padding:11px;
 
-    background:#000;
-    color:#6faaff;
+  border-radius:11px;
 
-    padding:11px;
+  border:1px solid #ffffff20;
 
-    font-weight:bold;
-    cursor:pointer;
+  background:#000;
 
-    transition:
-        background .15s,
-        transform .15s;
+  color:#6ca9ff;
+
+  font-weight:bold;
+
+  cursor:pointer;
 }
 
 .play:hover{
-    background:#101010;
-    transform:scale(1.02);
+  background:#111;
 }
 
 .available .status{
-    color:#64d98a;
+  color:#55df88;
 }
 
 .coming{
-    opacity:.58;
+  opacity:.55;
 }
 
 .coming .play{
-    color:#777;
-    cursor:default;
+  color:#777;
 }
 
 footer{
-    text-align:center;
-    margin-top:35px;
-    opacity:.4;
-    font-size:12px;
+  text-align:center;
+  margin-top:35px;
+  opacity:.35;
+  font-size:12px;
 }
 </style>
 </head>
@@ -217,29 +207,29 @@ footer{
 
 <header>
 
-    <div class="logo">
-        Pixel Games
-    </div>
+  <div class="logo">
+    Pixel Games
+  </div>
 
-    <div class="subtitle">
-        Tu universo de videojuegos
-    </div>
+  <div class="subtitle">
+    Tu universo de videojuegos
+  </div>
 
 </header>
 
 
 <div class="container">
 
-    <div class="counter">
-        <span id="gameCount">100</span>
-        juegos
-    </div>
+  <div class="counter">
+    <span id="counter">100</span>
+    juegos
+  </div>
 
-    <main id="games"></main>
+  <main id="games"></main>
 
-    <footer>
-        Pixel Games · 100 juegos
-    </footer>
+  <footer>
+    Pixel Games
+  </footer>
 
 </div>
 
@@ -248,676 +238,940 @@ footer{
 
 /*
 ====================================================
-PIXEL GAMES
+PIXEL GAMES — 100 JUEGOS
 ====================================================
 
-IMPORTANTE:
+Los primeros cuatro están conectados con los
+archivos que aparecen en tu GitHub:
 
-Los nombres de los archivos de los juegos están
-escritos aquí.
+1 -> juego1.html
+2 -> juego2.html
+3 -> juego3.html
+4 -> Ultra 3D Kart html
 
-Si un juego tiene un archivo .html con ese nombre,
-el botón JUGAR lo abrirá.
-
-Ejemplo:
-
-spirit3000.html
-futbol3donline.html
-galaxybattle.html
-ultra3dkart.html
+El juego 5 es Mega Laberintos.
 
 ====================================================
 */
 
-
 const games = [
 
-    /* 1 - 10 */
-
-    {
-        name:"Spirit 3000",
-        file:"spirit3000.html",
-        ready:true
-    },
-
-    {
-        name:"Fútbol 3D Online",
-        file:"futbol3donline.html",
-        ready:true
-    },
-
-    {
-        name:"Galaxy Battle",
-        file:"galaxybattle.html",
-        ready:true
-    },
-
-    {
-        name:"Ultra 3D Kart",
-        file:"ultra3dkart.html",
-        ready:true
-    },
-
-    {
-        name:"Isla Perdida",
-        file:"islaperdida.html"
-    },
-
-    {
-        name:"Supervivencia Zombie",
-        file:"supervivenciazombie.html"
-    },
-
-    {
-        name:"Defensa del Reino",
-        file:"defensadelreino.html"
-    },
-
-    {
-        name:"Ninja Arena",
-        file:"ninjaarena.html"
-    },
-
-    {
-        name:"Mega Run 3D",
-        file:"megarun3d.html"
-    },
-
-    {
-        name:"Escape Lab",
-        file:"escapelab.html"
-    },
-
-
-    /* 11 - 20 */
-
-    {
-        name:"Cazador de Monstruos",
-        file:"cazadordemonstruos.html"
-    },
-
-    {
-        name:"Street Racing",
-        file:"streetracing.html"
-    },
-
-    {
-        name:"Helicopter Rescue",
-        file:"helicopterrescue.html"
-    },
-
-    {
-        name:"Ocean Explorer",
-        file:"oceanexplorer.html"
-    },
-
-    {
-        name:"Piratas del Horizonte",
-        file:"piratasdelhorizonte.html"
-    },
-
-    {
-        name:"Dragon World",
-        file:"dragonworld.html"
-    },
-
-    {
-        name:"Robot Wars",
-        file:"robotwars.html"
-    },
-
-    {
-        name:"Planet Explorer",
-        file:"planetexplorer.html"
-    },
-
-    {
-        name:"Academia de Magia",
-        file:"academiademagia.html"
-    },
-
-    {
-        name:"Mega Constructor",
-        file:"megaconstructor.html"
-    },
-
-
-    /* 21 - 30 */
-
-    {
-        name:"Arqueros Legendarios",
-        file:"arqueroslegendarios.html"
-    },
-
-    {
-        name:"Boxeo 3D",
-        file:"boxeo3d.html"
-    },
-
-    {
-        name:"Baloncesto Street",
-        file:"baloncestostreet.html"
-    },
-
-    {
-        name:"Volleyball Arena",
-        file:"volleyballarena.html"
-    },
-
-    {
-        name:"Tennis Masters",
-        file:"tennismasters.html"
-    },
-
-    {
-        name:"Golf World",
-        file:"golfworld.html"
-    },
-
-    {
-        name:"Snowboard Rush",
-        file:"snowboardrush.html"
-    },
-
-    {
-        name:"Surf Challenge",
-        file:"surfchallenge.html"
-    },
-
-    {
-        name:"Escalada Extrema",
-        file:"escaladaextrema.html"
-    },
-
-    {
-        name:"Aqua Race",
-        file:"aquarace.html"
-    },
-
-
-    /* 31 - 40 */
-
-    {
-        name:"Zombie City",
-        file:"zombiecity.html"
-    },
-
-    {
-        name:"City Driver",
-        file:"citydriver.html"
-    },
-
-    {
-        name:"Taxi Simulator",
-        file:"taxisimulator.html"
-    },
-
-    {
-        name:"Firefighter Rescue",
-        file:"firefighterrescue.html"
-    },
-
-    {
-        name:"Emergency Rescue",
-        file:"emergencyrescue.html"
-    },
-
-    {
-        name:"Police Chase",
-        file:"policechase.html"
-    },
-
-    {
-        name:"Farm World",
-        file:"farmworld.html"
-    },
-
-    {
-        name:"Truck Simulator",
-        file:"trucksimulator.html"
-    },
-
-    {
-        name:"Train Adventure",
-        file:"trainadventure.html"
-    },
-
-    {
-        name:"Flight Simulator",
-        file:"flightsimulator.html"
-    },
-
-
-    /* 41 - 50 */
-
-    {
-        name:"Hospital Simulator",
-        file:"hospitalsimulator.html"
-    },
-
-    {
-        name:"Burger Master",
-        file:"burgermaster.html"
-    },
-
-    {
-        name:"Pizza Factory",
-        file:"pizzafactory.html"
-    },
-
-    {
-        name:"Hotel Empire",
-        file:"hotelempire.html"
-    },
-
-    {
-        name:"Supermarket Tycoon",
-        file:"supermarketycoon.html"
-    },
-
-    {
-        name:"City Builder",
-        file:"citybuilder.html"
-    },
-
-    {
-        name:"Island Builder",
-        file:"islandbuilder.html"
-    },
-
-    {
-        name:"Castle Builder",
-        file:"castlebuilder.html"
-    },
-
-    {
-        name:"Mine World",
-        file:"mineworld.html"
-    },
-
-    {
-        name:"Treasure Hunter",
-        file:"treasurehunter.html"
-    },
-
-
-    /* 51 - 60 */
-
-    {
-        name:"Lost Temple",
-        file:"losttemple.html"
-    },
-
-    {
-        name:"Desert Expedition",
-        file:"desertexpedition.html"
-    },
-
-    {
-        name:"Volcano Escape",
-        file:"volcanoescape.html"
-    },
-
-    {
-        name:"Arctic Survival",
-        file:"arcticsurvival.html"
-    },
-
-    {
-        name:"Forest Mystery",
-        file:"forestmystery.html"
-    },
-
-    {
-        name:"Underwater City",
-        file:"underwatercity.html"
-    },
-
-    {
-        name:"Dinosaur Island",
-        file:"dinosaurisland.html"
-    },
-
-    {
-        name:"Wild Nature",
-        file:"wildnature.html"
-    },
-
-    {
-        name:"Ocean Life",
-        file:"oceanlife.html"
-    },
-
-    {
-        name:"Sky Explorer",
-        file:"skyexplorer.html"
-    },
-
-
-    /* 61 - 70 */
-
-    {
-        name:"Night Hunters",
-        file:"nighthunters.html"
-    },
-
-    {
-        name:"Alien Invasion",
-        file:"alieninvasion.html"
-    },
-
-    {
-        name:"Mech Arena",
-        file:"mecarena.html"
-    },
-
-    {
-        name:"UFO Defender",
-        file:"ufodefender.html"
-    },
-
-    {
-        name:"Space Rangers",
-        file:"spacerangers.html"
-    },
-
-    {
-        name:"Meteor Storm",
-        file:"meteorstorm.html"
-    },
-
-    {
-        name:"Black Hole Escape",
-        file:"blackholeescape.html"
-    },
-
-    {
-        name:"Space Colony",
-        file:"spacecolony.html"
-    },
-
-    {
-        name:"Space Station",
-        file:"spacestation.html"
-    },
-
-    {
-        name:"Cosmic Runner",
-        file:"cosmicrunner.html"
-    },
-
-
-    /* 71 - 80 */
-
-    {
-        name:"Wizard Battle",
-        file:"wizardbattle.html"
-    },
-
-    {
-        name:"Fantasy Quest",
-        file:"fantasyquest.html"
-    },
-
-    {
-        name:"Medieval Warriors",
-        file:"medievalwarriors.html"
-    },
-
-    {
-        name:"Kingdom Wars",
-        file:"kingdomwars.html"
-    },
-
-    {
-        name:"Dragon Hunter",
-        file:"dragonhunter.html"
-    },
-
-    {
-        name:"Dungeon Escape",
-        file:"dungeonescape.html"
-    },
-
-    {
-        name:"Sword Arena",
-        file:"swordarena.html"
-    },
-
-    {
-        name:"Monster Arena",
-        file:"monsterarena.html"
-    },
-
-    {
-        name:"Demon Island",
-        file:"demonisland.html"
-    },
-
-    {
-        name:"Magic Forest",
-        file:"magicforest.html"
-    },
-
-
-    /* 81 - 90 */
-
-    {
-        name:"Puzzle World",
-        file:"puzzleworld.html"
-    },
-
-    {
-        name:"Mystery Mansion",
-        file:"mysterymansion.html"
-    },
-
-    {
-        name:"Detective Case",
-        file:"detectivecase.html"
-    },
-
-    {
-        name:"100 Doors",
-        file:"100doors.html"
-    },
-
-    {
-        name:"Brain Challenge",
-        file:"brainchallenge.html"
-    },
-
-    {
-        name:"Strategy Kingdom",
-        file:"strategykingdom.html"
-    },
-
-    {
-        name:"Aim Master",
-        file:"aimmaster.html"
-    },
-
-    {
-        name:"Tower Stack",
-        file:"towerstack.html"
-    },
-
-    {
-        name:"Bomb Escape",
-        file:"bombescape.html"
-    },
-
-    {
-        name:"Portal Runner",
-        file:"portalrunner.html"
-    },
-
-
-    /* 91 - 100 */
-
-    {
-        name:"Parkour City",
-        file:"parkourcity.html"
-    },
-
-    {
-        name:"Olympic Challenge",
-        file:"olympicchallenge.html"
-    },
-
-    {
-        name:"World Cup Challenge",
-        file:"worldcupchallenge.html"
-    },
-
-    {
-        name:"Winter Games",
-        file:"wintergames.html"
-    },
-
-    {
-        name:"Grand Prix",
-        file:"grandprix.html"
-    },
-
-    {
-        name:"Motorcycle Rush",
-        file:"motorcyclerush.html"
-    },
-
-    {
-        name:"Bike Adventure",
-        file:"bikeadventure.html"
-    },
-
-    {
-        name:"Skate City",
-        file:"skatecity.html"
-    },
-
-    {
-        name:"Martial Arts Arena",
-        file:"martialartsarena.html"
-    },
-
-    {
-        name:"Pixel World",
-        file:"pixelworld.html"
-    }
+  /* 1 */
+
+  {
+    name:"Spirit 3000",
+    file:"juego1.html",
+    ready:true
+  },
+
+  /* 2 */
+
+  {
+    name:"Fútbol 3D Online",
+    file:"juego2.html",
+    ready:true
+  },
+
+  /* 3 */
+
+  {
+    name:"Galaxy Battle",
+    file:"juego3.html",
+    ready:true
+  },
+
+  /* 4 */
+
+  {
+    name:"Ultra 3D Kart",
+    file:"Ultra 3D Kart html",
+    ready:true
+  },
+
+  /* 5 */
+
+  {
+    name:"Mega Laberintos",
+    file:"megalaberintos.html",
+    ready:false
+  },
+
+  /* 6 */
+
+  {
+    name:"Supervivencia Zombie",
+    file:"supervivenciazombie.html",
+    ready:false
+  },
+
+  /* 7 */
+
+  {
+    name:"Defensa del Reino",
+    file:"defensadelreino.html",
+    ready:false
+  },
+
+  /* 8 */
+
+  {
+    name:"Ninja Arena",
+    file:"ninjaarena.html",
+    ready:false
+  },
+
+  /* 9 */
+
+  {
+    name:"Mega Run 3D",
+    file:"megarun3d.html",
+    ready:false
+  },
+
+  /* 10 */
+
+  {
+    name:"Escape Lab",
+    file:"escapelab.html",
+    ready:false
+  },
+
+  /* 11 */
+
+  {
+    name:"Cazador de Monstruos",
+    file:"cazadordemonstruos.html",
+    ready:false
+  },
+
+  /* 12 */
+
+  {
+    name:"Street Racing",
+    file:"streetracing.html",
+    ready:false
+  },
+
+  /* 13 */
+
+  {
+    name:"Helicopter Rescue",
+    file:"helicopterrescue.html",
+    ready:false
+  },
+
+  /* 14 */
+
+  {
+    name:"Ocean Explorer",
+    file:"oceanexplorer.html",
+    ready:false
+  },
+
+  /* 15 */
+
+  {
+    name:"Piratas del Horizonte",
+    file:"piratasdelhorizonte.html",
+    ready:false
+  },
+
+  /* 16 */
+
+  {
+    name:"Dragon World",
+    file:"dragonworld.html",
+    ready:false
+  },
+
+  /* 17 */
+
+  {
+    name:"Robot Wars",
+    file:"robotwars.html",
+    ready:false
+  },
+
+  /* 18 */
+
+  {
+    name:"Planet Explorer",
+    file:"planetexplorer.html",
+    ready:false
+  },
+
+  /* 19 */
+
+  {
+    name:"Academia de Magia",
+    file:"academiademagia.html",
+    ready:false
+  },
+
+  /* 20 */
+
+  {
+    name:"Mega Constructor",
+    file:"megaconstructor.html",
+    ready:false
+  },
+
+  /* 21 */
+
+  {
+    name:"Arqueros Legendarios",
+    file:"arqueroslegendarios.html",
+    ready:false
+  },
+
+  /* 22 */
+
+  {
+    name:"Boxeo 3D",
+    file:"boxeo3d.html",
+    ready:false
+  },
+
+  /* 23 */
+
+  {
+    name:"Baloncesto Street",
+    file:"baloncestostreet.html",
+    ready:false
+  },
+
+  /* 24 */
+
+  {
+    name:"Volleyball Arena",
+    file:"volleyballarena.html",
+    ready:false
+  },
+
+  /* 25 */
+
+  {
+    name:"Tennis Masters",
+    file:"tennismasters.html",
+    ready:false
+  },
+
+  /* 26 */
+
+  {
+    name:"Golf World",
+    file:"golfworld.html",
+    ready:false
+  },
+
+  /* 27 */
+
+  {
+    name:"Snowboard Rush",
+    file:"snowboardrush.html",
+    ready:false
+  },
+
+  /* 28 */
+
+  {
+    name:"Surf Challenge",
+    file:"surfchallenge.html",
+    ready:false
+  },
+
+  /* 29 */
+
+  {
+    name:"Escalada Extrema",
+    file:"escaladaextrema.html",
+    ready:false
+  },
+
+  /* 30 */
+
+  {
+    name:"Aqua Race",
+    file:"aquarace.html",
+    ready:false
+  },
+
+  /* 31 */
+
+  {
+    name:"Zombie City",
+    file:"zombiecity.html",
+    ready:false
+  },
+
+  /* 32 */
+
+  {
+    name:"City Driver",
+    file:"citydriver.html",
+    ready:false
+  },
+
+  /* 33 */
+
+  {
+    name:"Taxi Simulator",
+    file:"taxisimulator.html",
+    ready:false
+  },
+
+  /* 34 */
+
+  {
+    name:"Firefighter Rescue",
+    file:"firefighterrescue.html",
+    ready:false
+  },
+
+  /* 35 */
+
+  {
+    name:"Emergency Rescue",
+    file:"emergencyrescue.html",
+    ready:false
+  },
+
+  /* 36 */
+
+  {
+    name:"Police Chase",
+    file:"policechase.html",
+    ready:false
+  },
+
+  /* 37 */
+
+  {
+    name:"Farm World",
+    file:"farmworld.html",
+    ready:false
+  },
+
+  /* 38 */
+
+  {
+    name:"Truck Simulator",
+    file:"trucksimulator.html",
+    ready:false
+  },
+
+  /* 39 */
+
+  {
+    name:"Train Adventure",
+    file:"trainadventure.html",
+    ready:false
+  },
+
+  /* 40 */
+
+  {
+    name:"Flight Simulator",
+    file:"flightsimulator.html",
+    ready:false
+  },
+
+  /* 41 */
+
+  {
+    name:"Hospital Simulator",
+    file:"hospitalsimulator.html",
+    ready:false
+  },
+
+  /* 42 */
+
+  {
+    name:"Burger Master",
+    file:"burgermaster.html",
+    ready:false
+  },
+
+  /* 43 */
+
+  {
+    name:"Pizza Factory",
+    file:"pizzafactory.html",
+    ready:false
+  },
+
+  /* 44 */
+
+  {
+    name:"Hotel Empire",
+    file:"hotelempire.html",
+    ready:false
+  },
+
+  /* 45 */
+
+  {
+    name:"Supermarket Tycoon",
+    file:"supermarketycoon.html",
+    ready:false
+  },
+
+  /* 46 */
+
+  {
+    name:"City Builder",
+    file:"citybuilder.html",
+    ready:false
+  },
+
+  /* 47 */
+
+  {
+    name:"Island Builder",
+    file:"islandbuilder.html",
+    ready:false
+  },
+
+  /* 48 */
+
+  {
+    name:"Castle Builder",
+    file:"castlebuilder.html",
+    ready:false
+  },
+
+  /* 49 */
+
+  {
+    name:"Mine World",
+    file:"mineworld.html",
+    ready:false
+  },
+
+  /* 50 */
+
+  {
+    name:"Treasure Hunter",
+    file:"treasurehunter.html",
+    ready:false
+  },
+
+  /* 51 */
+
+  {
+    name:"Lost Temple",
+    file:"losttemple.html",
+    ready:false
+  },
+
+  /* 52 */
+
+  {
+    name:"Desert Expedition",
+    file:"desertexpedition.html",
+    ready:false
+  },
+
+  /* 53 */
+
+  {
+    name:"Volcano Escape",
+    file:"volcanoescape.html",
+    ready:false
+  },
+
+  /* 54 */
+
+  {
+    name:"Arctic Survival",
+    file:"arcticsurvival.html",
+    ready:false
+  },
+
+  /* 55 */
+
+  {
+    name:"Forest Mystery",
+    file:"forestmystery.html",
+    ready:false
+  },
+
+  /* 56 */
+
+  {
+    name:"Underwater City",
+    file:"underwatercity.html",
+    ready:false
+  },
+
+  /* 57 */
+
+  {
+    name:"Dinosaur Island",
+    file:"dinosaurisland.html",
+    ready:false
+  },
+
+  /* 58 */
+
+  {
+    name:"Wild Nature",
+    file:"wildnature.html",
+    ready:false
+  },
+
+  /* 59 */
+
+  {
+    name:"Ocean Life",
+    file:"oceanlife.html",
+    ready:false
+  },
+
+  /* 60 */
+
+  {
+    name:"Sky Explorer",
+    file:"skyexplorer.html",
+    ready:false
+  },
+
+  /* 61 */
+
+  {
+    name:"Night Hunters",
+    file:"nighthunters.html",
+    ready:false
+  },
+
+  /* 62 */
+
+  {
+    name:"Alien Invasion",
+    file:"alieninvasion.html",
+    ready:false
+  },
+
+  /* 63 */
+
+  {
+    name:"Mech Arena",
+    file:"mecarena.html",
+    ready:false
+  },
+
+  /* 64 */
+
+  {
+    name:"UFO Defender",
+    file:"ufodefender.html",
+    ready:false
+  },
+
+  /* 65 */
+
+  {
+    name:"Space Rangers",
+    file:"spacerangers.html",
+    ready:false
+  },
+
+  /* 66 */
+
+  {
+    name:"Meteor Storm",
+    file:"meteorstorm.html",
+    ready:false
+  },
+
+  /* 67 */
+
+  {
+    name:"Black Hole Escape",
+    file:"blackholeescape.html",
+    ready:false
+  },
+
+  /* 68 */
+
+  {
+    name:"Space Colony",
+    file:"spacecolony.html",
+    ready:false
+  },
+
+  /* 69 */
+
+  {
+    name:"Space Station",
+    file:"spacestation.html",
+    ready:false
+  },
+
+  /* 70 */
+
+  {
+    name:"Cosmic Runner",
+    file:"cosmicrunner.html",
+    ready:false
+  },
+
+  /* 71 */
+
+  {
+    name:"Wizard Battle",
+    file:"wizardbattle.html",
+    ready:false
+  },
+
+  /* 72 */
+
+  {
+    name:"Fantasy Quest",
+    file:"fantasyquest.html",
+    ready:false
+  },
+
+  /* 73 */
+
+  {
+    name:"Medieval Warriors",
+    file:"medievalwarriors.html",
+    ready:false
+  },
+
+  /* 74 */
+
+  {
+    name:"Kingdom Wars",
+    file:"kingdomwars.html",
+    ready:false
+  },
+
+  /* 75 */
+
+  {
+    name:"Dragon Hunter",
+    file:"dragonhunter.html",
+    ready:false
+  },
+
+  /* 76 */
+
+  {
+    name:"Dungeon Escape",
+    file:"dungeonescape.html",
+    ready:false
+  },
+
+  /* 77 */
+
+  {
+    name:"Sword Arena",
+    file:"swordarena.html",
+    ready:false
+  },
+
+  /* 78 */
+
+  {
+    name:"Monster Arena",
+    file:"monsterarena.html",
+    ready:false
+  },
+
+  /* 79 */
+
+  {
+    name:"Demon Island",
+    file:"demonisland.html",
+    ready:false
+  },
+
+  /* 80 */
+
+  {
+    name:"Magic Forest",
+    file:"magicforest.html",
+    ready:false
+  },
+
+  /* 81 */
+
+  {
+    name:"Puzzle World",
+    file:"puzzleworld.html",
+    ready:false
+  },
+
+  /* 82 */
+
+  {
+    name:"Mystery Mansion",
+    file:"mysterymansion.html",
+    ready:false
+  },
+
+  /* 83 */
+
+  {
+    name:"Detective Case",
+    file:"detectivecase.html",
+    ready:false
+  },
+
+  /* 84 */
+
+  {
+    name:"100 Doors",
+    file:"100doors.html",
+    ready:false
+  },
+
+  /* 85 */
+
+  {
+    name:"Brain Challenge",
+    file:"brainchallenge.html",
+    ready:false
+  },
+
+  /* 86 */
+
+  {
+    name:"Strategy Kingdom",
+    file:"strategykingdom.html",
+    ready:false
+  },
+
+  /* 87 */
+
+  {
+    name:"Aim Master",
+    file:"aimmaster.html",
+    ready:false
+  },
+
+  /* 88 */
+
+  {
+    name:"Tower Stack",
+    file:"towerstack.html",
+    ready:false
+  },
+
+  /* 89 */
+
+  {
+    name:"Bomb Escape",
+    file:"bombescape.html",
+    ready:false
+  },
+
+  /* 90 */
+
+  {
+    name:"Portal Runner",
+    file:"portalrunner.html",
+    ready:false
+  },
+
+  /* 91 */
+
+  {
+    name:"Parkour City",
+    file:"parkourcity.html",
+    ready:false
+  },
+
+  /* 92 */
+
+  {
+    name:"Olympic Challenge",
+    file:"olympicchallenge.html",
+    ready:false
+  },
+
+  /* 93 */
+
+  {
+    name:"World Cup Challenge",
+    file:"worldcupchallenge.html",
+    ready:false
+  },
+
+  /* 94 */
+
+  {
+    name:"Winter Games",
+    file:"wintergames.html",
+    ready:false
+  },
+
+  /* 95 */
+
+  {
+    name:"Grand Prix",
+    file:"grandprix.html",
+    ready:false
+  },
+
+  /* 96 */
+
+  {
+    name:"Motorcycle Rush",
+    file:"motorcyclerush.html",
+    ready:false
+  },
+
+  /* 97 */
+
+  {
+    name:"Bike Adventure",
+    file:"bikeadventure.html",
+    ready:false
+  },
+
+  /* 98 */
+
+  {
+    name:"Skate City",
+    file:"skatecity.html",
+    ready:false
+  },
+
+  /* 99 */
+
+  {
+    name:"Martial Arts Arena",
+    file:"martialartsarena.html",
+    ready:false
+  },
+
+  /* 100 */
+
+  {
+    name:"Pixel World",
+    file:"pixelworld.html",
+    ready:false
+  }
 
 ];
 
 
 /* =========================================
-   CREAR LAS 100 TARJETAS
+   CREAR TARJETAS
 ========================================= */
 
-const gamesContainer =
-    document.getElementById("games");
+const container =
+  document.getElementById("games");
 
 
 games.forEach(
-    (game,index)=>{
+  (game,index)=>{
 
-        const card =
-            document.createElement("article");
+    const card =
+      document.createElement("article");
 
-        card.className =
-            "game " +
-            (
-                game.ready
-                    ? "available"
-                    : "coming"
-            );
-
-
-        const number =
-            document.createElement("div");
-
-        number.className =
-            "number";
-
-        number.textContent =
-            "JUEGO " +
-            (index + 1);
+    card.className =
+      "game " +
+      (
+        game.ready
+          ? "available"
+          : "coming"
+      );
 
 
-        const name =
-            document.createElement("div");
+    const number =
+      document.createElement("div");
 
-        name.className =
-            "name";
+    number.className =
+      "number";
 
-        name.textContent =
-            game.name;
-
-
-        const status =
-            document.createElement("div");
-
-        status.className =
-            "status";
+    number.textContent =
+      "JUEGO " +
+      (index + 1);
 
 
-        const button =
-            document.createElement("button");
+    const name =
+      document.createElement("div");
 
-        button.className =
-            "play";
+    name.className =
+      "name";
 
-
-        if(game.ready){
-
-            status.textContent =
-                "Disponible";
-
-            button.textContent =
-                "JUGAR";
+    name.textContent =
+      game.name;
 
 
-            /*
-            ======================================
-            ABRIR VIDEOJUEGO
-            ======================================
-            */
+    const status =
+      document.createElement("div");
 
-            button.onclick = function(){
-
-                window.location.href =
-                    game.file;
-
-            };
-
-        }
-        else{
-
-            status.textContent =
-                "Próximamente";
-
-            button.textContent =
-                "PRÓXIMAMENTE";
+    status.className =
+      "status";
 
 
-            button.onclick = function(){
+    const button =
+      document.createElement("button");
 
-                alert(
-                    game.name +
-                    " todavía está en desarrollo."
-                );
-
-            };
-
-        }
+    button.className =
+      "play";
 
 
-        card.appendChild(number);
-        card.appendChild(name);
-        card.appendChild(status);
-        card.appendChild(button);
+    if(game.ready){
 
-        gamesContainer.appendChild(card);
+      status.textContent =
+        "Disponible";
+
+      button.textContent =
+        "JUGAR";
+
+
+      button.onclick =
+        function(){
+
+          /*
+          ====================================
+          ABRIR JUEGO
+          ====================================
+          */
+
+          window.location.href =
+            game.file;
+
+        };
 
     }
+
+    else{
+
+      status.textContent =
+        "Próximamente";
+
+      button.textContent =
+        "PRÓXIMAMENTE";
+
+
+      button.onclick =
+        function(){
+
+          alert(
+            game.name +
+            " todavía está en desarrollo."
+          );
+
+        };
+
+    }
+
+
+    card.appendChild(number);
+    card.appendChild(name);
+    card.appendChild(status);
+    card.appendChild(button);
+
+    container.appendChild(card);
+
+  }
 );
 
 
@@ -926,9 +1180,9 @@ games.forEach(
 ========================================= */
 
 document.getElementById(
-    "gameCount"
+  "counter"
 ).textContent =
-    games.length;
+  games.length;
 
 </script>
 
