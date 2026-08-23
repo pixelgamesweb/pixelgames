@@ -2,209 +2,1368 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juegos</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Galaxy Battle</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{
+  box-sizing:border-box;
+  user-select:none;
 }
 
-html, body {
-    margin: 0;
-    width: 100%;
-    min-height: 100%;
-    font-family: Arial, sans-serif;
-    color: white;
+html,body,#game{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
 }
 
-/* FONDO GALAXIA DIFUMINADO */
-body {
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(100,70,180,.55), transparent 30%),
-        radial-gradient(circle at 80% 25%, rgba(20,100,180,.45), transparent 32%),
-        radial-gradient(circle at 40% 80%, rgba(170,40,130,.4), transparent 30%),
-        radial-gradient(circle at 90% 90%, rgba(40,50,150,.5), transparent 30%),
-        linear-gradient(135deg, #03030b, #11102b, #050510);
-    background-attachment: fixed;
-    overflow-x: hidden;
+body{
+  background:#000;
+  font-family:Arial,sans-serif;
+  color:white;
 }
 
-body::before {
-    content: "";
-    position: fixed;
-    inset: -50px;
-    z-index: -1;
-    background:
-        radial-gradient(circle, rgba(255,255,255,.7) 1px, transparent 2px);
-    background-size: 85px 85px;
-    opacity: .35;
-    filter: blur(1px);
+#game{
+  position:fixed;
+  inset:0;
 }
 
-.contenedor {
-    width: min(100%, 900px);
-    margin: auto;
-    padding: 35px 20px 50px;
+button{
+  background:#050505;
+  color:#65aaff;
+  border:1px solid #ffffff30;
+  border-radius:14px;
+  padding:14px 20px;
+  font-weight:bold;
 }
 
-h1 {
-    text-align: center;
-    font-size: clamp(42px, 8vw, 72px);
-    margin: 10px 0 35px;
-    letter-spacing: 3px;
-    text-shadow:
-        0 0 15px rgba(255,255,255,.35),
-        0 0 35px rgba(100,100,255,.35);
+#menu,
+#pause{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 20% 20%,#6b38ff55,transparent 30%),
+    radial-gradient(circle at 80% 70%,#168bff44,transparent 30%),
+    #020208;
 }
 
-.lista-juegos {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
+.panel{
+  width:min(92vw,650px);
+  padding:30px;
+  background:#050509ed;
+  border:1px solid #ffffff20;
+  border-radius:28px;
+  text-align:center;
 }
 
-.boton-juego {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 90px;
-
-    background: #050505;
-    color: white;
-
-    border: 2px solid rgba(255,255,255,.12);
-    border-radius: 18px;
-
-    text-decoration: none;
-    font-size: 25px;
-    font-weight: bold;
-
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.5),
-        inset 0 0 20px rgba(255,255,255,.025);
-
-    transition:
-        transform .18s ease,
-        background .18s ease,
-        border-color .18s ease,
-        box-shadow .18s ease;
+h1{
+  font-size:clamp(45px,10vw,80px);
+  margin:0;
 }
 
-.boton-juego:hover {
-    transform: translateY(-5px) scale(1.015);
-    background: #111111;
-    border-color: rgba(255,255,255,.35);
-    box-shadow:
-        0 14px 35px rgba(0,0,0,.65),
-        0 0 25px rgba(130,120,255,.18);
+.main{
+  display:block;
+  width:100%;
+  margin:10px 0;
+  font-size:18px;
 }
 
-.boton-juego:active {
-    transform: scale(.97);
+#hud{
+  display:none;
+  position:fixed;
+  z-index:10;
+  top:12px;
+  left:12px;
+  right:12px;
+  justify-content:space-between;
+  pointer-events:none;
 }
 
-/* BOTÓN VOLVER */
-.volver {
-    display: block;
-    width: 220px;
-    margin: 35px auto 0;
-    padding: 15px;
-
-    background: #050505;
-    color: white;
-
-    border: 2px solid rgba(255,255,255,.15);
-    border-radius: 15px;
-
-    text-align: center;
-    text-decoration: none;
-    font-size: 19px;
-    font-weight: bold;
-
-    transition: .2s;
+#stats{
+  padding:12px;
+  border-radius:15px;
+  background:#000b;
+  border:1px solid #ffffff25;
+  line-height:1.7;
 }
 
-.volver:hover {
-    background: #171717;
-    transform: translateY(-3px);
+.bar{
+  width:180px;
+  height:9px;
+  background:#301015;
+  border-radius:10px;
+  overflow:hidden;
 }
 
-/* MÓVIL */
-@media (max-width: 650px) {
+.fill{
+  height:100%;
+  transition:width .2s;
+}
 
-    .lista-juegos {
-        grid-template-columns: 1fr;
-    }
+#lifeFill{
+  width:100%;
+  background:#38e477;
+}
 
-    .boton-juego {
-        min-height: 75px;
-        font-size: 22px;
-    }
+#fuelFill{
+  width:100%;
+  background:#55aaff;
+}
 
-    h1 {
-        margin-bottom: 25px;
-    }
+#pauseButton{
+  pointer-events:auto;
+  width:48px;
+  height:48px;
+  padding:0;
+}
+
+#controls{
+  display:none;
+  position:fixed;
+  z-index:12;
+  left:0;
+  right:0;
+  bottom:12px;
+  pointer-events:none;
+}
+
+#actions{
+  position:absolute;
+  right:15px;
+  bottom:0;
+  display:grid;
+  grid-template-columns:85px 85px;
+  gap:8px;
+  pointer-events:auto;
+}
+
+#actions button{
+  height:62px;
+  padding:5px;
+  font-size:10px;
+}
+
+#pause{
+  display:none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="contenedor">
+<div id="game"></div>
 
-    <h1>Juegos</h1>
+<!-- MENÚ -->
 
-    <div class="lista-juegos">
+<section id="menu">
 
-        <a class="boton-juego" href="juego1.html">
-            Juego 1
-        </a>
+  <div class="panel">
 
-        <a class="boton-juego" href="juego2.html">
-            Juego 2
-        </a>
+    <h1>Galaxy Battle</h1>
 
-        <a class="boton-juego" href="juego3.html">
-            Juego 3
-        </a>
+    <p>
+      Viaja rápidamente por el espacio,
+      descubre planetas y sobrevive a los peligros.
+    </p>
 
-        <a class="boton-juego" href="juego4.html">
-            Juego 4
-        </a>
+    <button id="play" class="main">
+      JUGAR
+    </button>
 
-        <a class="boton-juego" href="juego5.html">
-            Juego 5
-        </a>
+  </div>
 
-        <a class="boton-juego" href="juego6.html">
-            Juego 6
-        </a>
+</section>
 
-        <a class="boton-juego" href="juego7.html">
-            Juego 7
-        </a>
 
-        <a class="boton-juego" href="juego8.html">
-            Juego 8
-        </a>
+<!-- PAUSA -->
 
-        <a class="boton-juego" href="juego9.html">
-            Juego 9
-        </a>
+<section id="pause">
 
-        <a class="boton-juego" href="juego10.html">
-            Juego 10
-        </a>
+  <div class="panel">
 
+    <h2>PAUSA</h2>
+
+    <button id="resume" class="main">
+      CONTINUAR
+    </button>
+
+    <button id="back" class="main">
+      VOLVER
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- HUD -->
+
+<div id="hud">
+
+  <div id="stats">
+
+    🚀 Vida de la nave
+
+    <div class="bar">
+      <div id="lifeFill" class="fill"></div>
     </div>
 
-    <a class="volver" href="index.html">
-        Volver
-    </a>
+    ⛽ Combustible
+
+    <div class="bar">
+      <div id="fuelFill" class="fill"></div>
+    </div>
+
+    🪐 Destino:
+    <b id="destination">Planeta Azul</b>
+
+    <br>
+
+    📏 Distancia:
+    <b id="distance">0</b>
+
+  </div>
+
+  <button id="pauseButton">
+    Ⅱ
+  </button>
 
 </div>
+
+
+<!-- CONTROLES -->
+
+<div id="controls">
+
+  <div id="actions">
+
+    <button id="boost">
+      TURBO
+    </button>
+
+    <button id="land">
+      ATERRIZAR
+    </button>
+
+    <button id="refuel">
+      RECARGAR
+    </button>
+
+    <button id="camera">
+      CÁMARA
+    </button>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+
+/* =================================
+   ESCENA
+================================= */
+
+const scene =
+  new THREE.Scene();
+
+scene.background =
+  new THREE.Color(0x01020a);
+
+
+/* =================================
+   ESTRELLAS
+================================= */
+
+const starGeometry =
+  new THREE.BufferGeometry();
+
+const starPositions=[];
+
+for(
+  let i=0;
+  i<5000;
+  i++
+){
+
+  starPositions.push(
+    (Math.random()-.5)*2000,
+    (Math.random()-.5)*2000,
+    (Math.random()-.5)*2000
+  );
+
+}
+
+starGeometry.setAttribute(
+  "position",
+  new THREE.Float32BufferAttribute(
+    starPositions,
+    3
+  )
+);
+
+const stars =
+  new THREE.Points(
+
+    starGeometry,
+
+    new THREE.PointsMaterial({
+      color:0xffffff,
+      size:.8
+    })
+
+  );
+
+scene.add(stars);
+
+
+/* =================================
+   CÁMARA
+================================= */
+
+const camera =
+  new THREE.PerspectiveCamera(
+    70,
+    innerWidth/innerHeight,
+    .1,
+    5000
+  );
+
+camera.position.set(
+  0,
+  5,
+  18
+);
+
+
+/* =================================
+   RENDER
+================================= */
+
+const renderer =
+  new THREE.WebGLRenderer({
+    antialias:true
+  });
+
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
+
+renderer.setPixelRatio(
+  Math.min(
+    devicePixelRatio,
+    2
+  )
+);
+
+renderer.shadowMap.enabled=true;
+
+document
+  .getElementById("game")
+  .appendChild(renderer.domElement);
+
+
+/* =================================
+   LUCES
+================================= */
+
+scene.add(
+  new THREE.AmbientLight(
+    0x8090ff,
+    1.2
+  )
+);
+
+
+/* =================================
+   PLANETAS
+================================= */
+
+function createPlanet(
+  name,
+  color,
+  radius,
+  distance
+){
+
+  const planet =
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        radius,
+        32,
+        24
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color,
+        roughness:.8
+      })
+
+    );
+
+  planet.position.set(
+    (Math.random()-.5)*300,
+    (Math.random()-.5)*100,
+    -distance
+  );
+
+  scene.add(planet);
+
+  return {
+    name,
+    object:planet,
+    distance
+  };
+
+}
+
+
+const planets=[
+
+  createPlanet(
+    "Planeta Azul",
+    0x2478e8,
+    18,
+    350
+  ),
+
+  createPlanet(
+    "Planeta Rojo",
+    0xd84635,
+    25,
+    800
+  ),
+
+  createPlanet(
+    "Planeta Verde",
+    0x39a85a,
+    30,
+    1300
+  ),
+
+  createPlanet(
+    "Planeta Helado",
+    0x9eeaff,
+    22,
+    1900
+  ),
+
+  createPlanet(
+    "Planeta Dorado",
+    0xd7a53c,
+    35,
+    2600
+  )
+
+];
+
+
+/* =================================
+   NAVE
+================================= */
+
+const ship =
+  new THREE.Group();
+
+
+const body =
+  new THREE.Mesh(
+
+    new THREE.ConeGeometry(
+      2.1,
+      8,
+      8
+    ),
+
+    new THREE.MeshStandardMaterial({
+      color:0x8b9bb8,
+      metalness:.7,
+      roughness:.3
+    })
+
+  );
+
+body.rotation.x=
+  -Math.PI/2;
+
+ship.add(body);
+
+
+/* Alas */
+
+for(
+  const side of[-1,1]
+){
+
+  const wing =
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        5,
+        .25,
+        2
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x293b5e,
+        metalness:.7
+      })
+
+    );
+
+  wing.position.x=
+    side*2.5;
+
+  wing.position.z=1;
+
+  wing.rotation.z=
+    side*.15;
+
+  ship.add(wing);
+
+}
+
+
+/* Cabina */
+
+const cockpit =
+  new THREE.Mesh(
+
+    new THREE.SphereGeometry(
+      1.2,
+      16,
+      10
+    ),
+
+    new THREE.MeshStandardMaterial({
+      color:0x39a9ff,
+      emissive:0x1266aa,
+      emissiveIntensity:.8,
+      transparent:true,
+      opacity:.8
+    })
+
+  );
+
+cockpit.scale.z=.6;
+
+cockpit.position.y=.6;
+
+ship.add(cockpit);
+
+
+/* Motores */
+
+for(
+  const side of[-1,1]
+){
+
+  const engine =
+    new THREE.Mesh(
+
+      new THREE.CylinderGeometry(
+        .5,
+        .7,
+        1.5,
+        16
+      ),
+
+      new THREE.MeshBasicMaterial({
+        color:0x48baff
+      })
+
+    );
+
+  engine.rotation.x=
+    Math.PI/2;
+
+  engine.position.set(
+    side*1.5,
+    0,
+    4
+  );
+
+  ship.add(engine);
+
+}
+
+
+ship.position.set(
+  0,
+  0,
+  10
+);
+
+scene.add(ship);
+
+
+/* =================================
+   ESTADO
+================================= */
+
+let playing=false;
+let paused=false;
+
+let life=100;
+let fuel=100;
+
+let shipSpeed=18;
+
+let turbo=false;
+
+let cameraMode=0;
+
+let landed=false;
+
+let currentPlanet=0;
+
+
+/* =================================
+   METEORITOS
+================================= */
+
+const meteors=[];
+
+
+function createMeteor(){
+
+  const meteor =
+    new THREE.Mesh(
+
+      new THREE.DodecahedronGeometry(
+        2+Math.random()*4,
+        1
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x68564d,
+        roughness:1
+      })
+
+    );
+
+
+  meteor.position.set(
+
+    ship.position.x+
+      (Math.random()-.5)*100,
+
+    ship.position.y+
+      (Math.random()-.5)*80,
+
+    ship.position.z-
+      80-
+      Math.random()*300
+
+  );
+
+
+  meteor.velocity =
+    new THREE.Vector3(
+      (Math.random()-.5)*4,
+      (Math.random()-.5)*3,
+      8+Math.random()*12
+    );
+
+
+  scene.add(meteor);
+
+  meteors.push(meteor);
+
+}
+
+
+for(
+  let i=0;
+  i<45;
+  i++
+){
+
+  createMeteor();
+
+}
+
+
+/* =================================
+   ESTACIONES
+================================= */
+
+const stations=[];
+
+
+function createStation(
+  z
+){
+
+  const station =
+    new THREE.Group();
+
+
+  const body =
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        10,
+        3,
+        5
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x525d75,
+        metalness:.8
+      })
+
+    );
+
+  station.add(body);
+
+
+  const ring =
+    new THREE.Mesh(
+
+      new THREE.TorusGeometry(
+        7,
+        .6,
+        12,
+        32
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x38aaff,
+        emissive:0x1466aa,
+        emissiveIntensity:.8
+      })
+
+    );
+
+  ring.rotation.y=
+    Math.PI/2;
+
+  station.add(ring);
+
+
+  station.position.set(
+    0,
+    0,
+    z
+  );
+
+
+  scene.add(station);
+
+  stations.push(
+    station
+  );
+
+}
+
+
+createStation(-170);
+
+createStation(-1050);
+
+createStation(-2200);
+
+
+/* =================================
+   ACTUALIZAR METEORITOS
+================================= */
+
+function updateMeteors(
+  delta
+){
+
+  if(landed)
+    return;
+
+
+  for(
+    const meteor of meteors
+  ){
+
+    meteor.position.addScaledVector(
+      meteor.velocity,
+      delta
+    );
+
+
+    meteor.rotation.x+=
+      delta;
+
+    meteor.rotation.y+=
+      delta*.7;
+
+
+    const distance =
+      meteor.position.distanceTo(
+        ship.position
+      );
+
+
+    if(
+      distance<4
+    ){
+
+      life=
+        Math.max(
+          0,
+          life-15
+        );
+
+
+      meteor.position.z=
+        ship.position.z-
+        300-
+        Math.random()*300;
+
+    }
+
+
+    if(
+      meteor.position.z>
+      ship.position.z+40
+    ){
+
+      meteor.position.z=
+        ship.position.z-
+        300-
+        Math.random()*400;
+
+    }
+
+  }
+
+}
+
+
+/* =================================
+   MOVIMIENTO AUTOMÁTICO
+================================= */
+
+function updateShip(
+  delta
+){
+
+  if(
+    landed
+  )
+    return;
+
+
+  const speed =
+    turbo
+      ? shipSpeed*2.4
+      : shipSpeed;
+
+
+  /*
+    La nave avanza sola.
+  */
+
+  ship.position.z-=
+    speed*delta;
+
+
+  /*
+    El combustible baja
+    mientras viajamos.
+  */
+
+  fuel=
+    Math.max(
+      0,
+      fuel-
+      delta*
+      (
+        turbo
+          ? .9
+          : .35
+      )
+    );
+
+
+  /*
+    Si no queda combustible,
+    reducimos la velocidad.
+  */
+
+  if(
+    fuel<=0
+  ){
+
+    shipSpeed=5;
+
+  }
+
+
+  /*
+    Destino actual.
+  */
+
+  const target=
+    planets[currentPlanet];
+
+
+  if(
+    target
+  ){
+
+    const distance=
+      Math.abs(
+        target.object.position.z-
+        ship.position.z
+      );
+
+
+    document
+      .getElementById(
+        "distance"
+      )
+      .textContent=
+        Math.round(
+          distance
+        )+" m";
+
+
+    document
+      .getElementById(
+        "destination"
+      )
+      .textContent=
+        target.name;
+
+
+    /*
+      Si llegamos cerca,
+      cambiamos al siguiente planeta.
+    */
+
+    if(
+      distance<30
+    ){
+
+      currentPlanet=
+        (
+          currentPlanet+1
+        )%
+        planets.length;
+
+    }
+
+  }
+
+}
+
+
+/* =================================
+   RECARGAR
+================================= */
+
+function refuel(){
+
+  for(
+    const station of stations
+  ){
+
+    const distance =
+      station.position.distanceTo(
+        ship.position
+      );
+
+
+    if(
+      distance<35
+    ){
+
+      fuel=100;
+
+      return;
+
+    }
+
+  }
+
+}
+
+
+/* =================================
+   ATERRIZAR
+================================= */
+
+function land(){
+
+  for(
+    const planet of planets
+  ){
+
+    const distance =
+      planet.object.position.distanceTo(
+        ship.position
+      );
+
+
+    if(
+      distance<
+      planet.object.geometry.parameters.radius+
+      25
+    ){
+
+      landed=true;
+
+      shipSpeed=0;
+
+      return;
+
+    }
+
+  }
+
+}
+
+
+/* =================================
+   VOLVER A DESPEGAR
+================================= */
+
+function takeOff(){
+
+  if(
+    landed
+  ){
+
+    landed=false;
+
+    shipSpeed=18;
+
+  }
+
+}
+
+
+/* =================================
+   CÁMARA
+================================= */
+
+function updateCamera(){
+
+  let desired;
+
+
+  if(
+    cameraMode===0
+  ){
+
+    desired=
+      new THREE.Vector3(
+        ship.position.x,
+        ship.position.y+7,
+        ship.position.z+22
+      );
+
+  }
+  else if(
+    cameraMode===1
+  ){
+
+    desired=
+      new THREE.Vector3(
+        ship.position.x,
+        ship.position.y+2,
+        ship.position.z+8
+      );
+
+  }
+  else{
+
+    desired=
+      new THREE.Vector3(
+        ship.position.x,
+        ship.position.y+30,
+        ship.position.z+35
+      );
+
+  }
+
+
+  camera.position.lerp(
+    desired,
+    .08
+  );
+
+
+  camera.lookAt(
+    ship.position
+  );
+
+}
+
+
+/* =================================
+   HUD
+================================= */
+
+function updateHUD(){
+
+  document
+    .getElementById(
+      "lifeFill"
+    )
+    .style.width=
+      life+"%";
+
+
+  document
+    .getElementById(
+      "fuelFill"
+    )
+    .style.width=
+      fuel+"%";
+
+
+  if(
+    life<=0
+  ){
+
+    playing=false;
+
+    alert(
+      "La nave ha sido destruida."
+    );
+
+  }
+
+}
+
+
+/* =================================
+   BOTONES
+================================= */
+
+document
+  .getElementById("play")
+  .onclick=()=>{
+
+    playing=true;
+
+    document
+      .getElementById("menu")
+      .style.display="none";
+
+    document
+      .getElementById("hud")
+      .style.display="flex";
+
+    document
+      .getElementById("controls")
+      .style.display="block";
+
+  };
+
+
+document
+  .getElementById("boost")
+  .onpointerdown=()=>{
+
+    turbo=true;
+
+  };
+
+
+document
+  .getElementById("boost")
+  .onpointerup=()=>{
+
+    turbo=false;
+
+  };
+
+
+document
+  .getElementById("refuel")
+  .onclick=
+    refuel;
+
+
+document
+  .getElementById("land")
+  .onclick=()=>{
+
+    if(
+      landed
+    ){
+
+      takeOff();
+
+    }
+    else{
+
+      land();
+
+    }
+
+  };
+
+
+document
+  .getElementById("camera")
+  .onclick=()=>{
+
+    cameraMode=
+      (
+        cameraMode+1
+      )%3;
+
+  };
+
+
+/* =================================
+   PAUSA
+================================= */
+
+document
+  .getElementById("pauseButton")
+  .onclick=()=>{
+
+    paused=true;
+
+    document
+      .getElementById("pause")
+      .style.display="flex";
+
+  };
+
+
+document
+  .getElementById("resume")
+  .onclick=()=>{
+
+    paused=false;
+
+    document
+      .getElementById("pause")
+      .style.display="none";
+
+  };
+
+
+document
+  .getElementById("back")
+  .onclick=()=>{
+
+    playing=false;
+    paused=false;
+
+    document
+      .getElementById("pause")
+      .style.display="none";
+
+    document
+      .getElementById("hud")
+      .style.display="none";
+
+    document
+      .getElementById("controls")
+      .style.display="none";
+
+    document
+      .getElementById("menu")
+      .style.display="flex";
+
+  };
+
+
+/* =================================
+   BUCLE
+================================= */
+
+let last=
+  performance.now();
+
+
+function loop(now){
+
+  requestAnimationFrame(
+    loop
+  );
+
+
+  const delta=
+    Math.min(
+      .05,
+      (now-last)/1000
+    );
+
+
+  last=now;
+
+
+  if(
+    playing &&
+    !paused
+  ){
+
+    updateShip(
+      delta
+    );
+
+    updateMeteors(
+      delta
+    );
+
+    updateCamera();
+
+    updateHUD();
+
+  }
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+
+requestAnimationFrame(
+  loop
+);
+
+
+/* =================================
+   RESIZE
+================================= */
+
+addEventListener(
+  "resize",
+  ()=>{
+
+    camera.aspect=
+      innerWidth/
+      innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+  }
+);
+
+</script>
 
 </body>
 </html>
