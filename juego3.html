@@ -1,484 +1,1773 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Football Legends</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Juego 3 - Fútbol 3D</title>
 
 <style>
-
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+  box-sizing:border-box;
+  user-select:none;
+  -webkit-user-select:none;
 }
 
-body{
-
-background:linear-gradient(#ffe600,#ffcc00);
-height:100vh;
-overflow:hidden;
-
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#07100a;
+  font-family:Arial,sans-serif;
 }
 
-#titulo{
-
-text-align:center;
-font-size:60px;
-font-weight:bold;
-color:white;
-text-shadow:4px 4px 8px black;
-margin-top:40px;
-
+#game{
+  position:fixed;
+  inset:0;
 }
 
-#info{
-
-position:absolute;
-top:20px;
-right:20px;
-background:white;
-padding:15px;
-border-radius:15px;
-box-shadow:0 8px 20px rgba(0,0,0,.3);
-font-size:22px;
-
+button{
+  border:1px solid #ffffff25;
+  border-radius:14px;
+  background:#050505;
+  color:#62aaff;
+  font-weight:bold;
+  padding:13px;
 }
 
-#menu{
-
-display:flex;
-flex-direction:column;
-align-items:center;
-margin-top:70px;
-gap:30px;
-
+#menu,
+#pause{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),
+    radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),
+    #05070b;
 }
 
-.boton{
-
-width:420px;
-padding:22px;
-
-background:linear-gradient(#ff5555,#cc0000);
-
-color:white;
-
-font-size:34px;
-
-font-weight:bold;
-
-border:none;
-
-border-radius:20px;
-
-cursor:pointer;
-
-box-shadow:0 12px #880000;
-
-transition:.15s;
-
+.panel{
+  width:min(92vw,620px);
+  padding:30px;
+  border-radius:28px;
+  background:#050509ed;
+  border:1px solid #ffffff20;
+  box-shadow:0 30px 100px #000;
+  color:white;
 }
 
-.boton:hover{
-
-transform:scale(1.05);
-
+h1{
+  margin:0;
+  text-align:center;
+  font-size:clamp(42px,9vw,75px);
 }
 
-.boton:active{
-
-transform:translateY(8px);
-
-box-shadow:0 4px #880000;
-
+.description{
+  text-align:center;
+  line-height:1.6;
+  opacity:.75;
 }
 
-#version{
-
-position:absolute;
-
-bottom:15px;
-
-left:15px;
-
-font-size:20px;
-
-color:#333;
-
+.main{
+  width:100%;
+  margin:8px 0;
+  padding:17px;
+  font-size:18px;
 }
 
+#hud{
+  display:none;
+  position:fixed;
+  z-index:10;
+  top:12px;
+  left:12px;
+  right:12px;
+  justify-content:space-between;
+  pointer-events:none;
+}
+
+#score{
+  padding:12px 20px;
+  border-radius:14px;
+  background:#000b;
+  border:1px solid #ffffff25;
+  font-size:18px;
+}
+
+#hud button{
+  pointer-events:auto;
+  width:48px;
+  height:48px;
+  padding:0;
+}
+
+#controls{
+  display:none;
+  position:fixed;
+  z-index:12;
+  left:0;
+  right:0;
+  bottom:12px;
+  height:155px;
+  pointer-events:none;
+}
+
+#joystick{
+  position:absolute;
+  left:15px;
+  bottom:0;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:#000a;
+  border:2px solid #ffffff25;
+  pointer-events:auto;
+}
+
+#knob{
+  position:absolute;
+  left:41px;
+  top:41px;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:#111;
+}
+
+#actions{
+  position:absolute;
+  right:15px;
+  bottom:0;
+  display:grid;
+  grid-template-columns:82px 82px;
+  gap:8px;
+  pointer-events:auto;
+}
+
+#actions button{
+  height:62px;
+  padding:4px;
+  font-size:10px;
+}
+
+#pause{
+  display:none;
+}
+
+#pause .panel{
+  text-align:center;
+}
 </style>
-
 </head>
 
 <body>
 
-<div id="titulo">
+<div id="game"></div>
 
-⚽ FOOTBALL LEGENDS
+<!-- MENÚ -->
+
+<section id="menu">
+
+  <div class="panel">
+
+    <h1>Fútbol 3D</h1>
+
+    <p class="description">
+      Un juego de fútbol 3D original.
+      Juega partidos, marca goles y domina el campo.
+    </p>
+
+    <button id="play" class="main">
+      JUGAR
+    </button>
+
+    <button id="online" class="main">
+      PARTIDA ONLINE
+    </button>
+
+    <button id="friends" class="main">
+      JUGAR CON AMIGOS
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- PAUSA -->
+
+<section id="pause">
+
+  <div class="panel">
+
+    <h2>PAUSA</h2>
+
+    <button id="resume" class="main">
+      CONTINUAR
+    </button>
+
+    <button id="back" class="main">
+      VOLVER
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- HUD -->
+
+<div id="hud">
+
+  <div id="score">
+    LOCAL 0 — 0 VISITANTE
+    <br>
+    <small id="time">00:00</small>
+  </div>
+
+  <button id="pauseButton">
+    Ⅱ
+  </button>
 
 </div>
 
-<div id="info">
 
-💰 Monedas: <span id="monedas">1000</span><br><br>
+<!-- CONTROLES -->
 
-⭐ Nivel: <span id="nivel">1</span>
+<div id="controls">
 
-</div>
+  <div id="joystick">
 
-<div id="menu">
+    <div id="knob"></div>
 
-<button class="boton" id="jugar">
+  </div>
 
-⚽ JUGAR PARTIDO
+  <div id="actions">
 
-</button>
+    <button id="pass">
+      PASAR
+    </button>
 
-<button class="boton" id="equipacion">
+    <button id="shoot">
+      TIRAR
+    </button>
 
-👕 CAMBIAR EQUIPACIÓN
+    <button id="sprint">
+      SPRINT
+    </button>
 
-</button>
+    <button id="switch">
+      JUGADOR
+    </button>
 
-<button class="boton" id="club">
-
-📊 MI CLUB
-
-</button>
-
-</div>
-
-<div id="version">
-
-Versión Alpha 0.1
+  </div>
 
 </div>
 
-<script// ----- TIENDA DE EQUIPACIONES -----
 
-const equipaciones = [
-  {nombre:"🔵 Equipación Azul", precio:500},
-  {nombre:"🔴 Equipación Roja", precio:750},
-  {nombre:"⚫ Equipación Negra", precio:1000},
-  {nombre:"🟢 Equipación Verde", precio:1500},
-  {nombre:"⭐ Equipación Legend", precio:3000}
-];
+<script type="module">
 
-document.getElementById("equipacion").onclick = function(){
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-    let html = `
-    <div id="tienda" style="
-        position:absolute;
-        inset:0;
-        background:#ffe600;
-        padding:30px;
-        overflow:auto;
-    ">
 
-    <h1 style="
-        text-align:center;
-        color:#d00000;
-        font-size:50px;
-    ">👕 TIENDA</h1>
+/* =========================
+   ESCENA
+========================= */
 
-    <h2 style="text-align:center">
-        💰 Monedas: <span id="dinero">${monedas}</span>
-    </h2>
-    `;
+const scene =
+  new THREE.Scene();
 
-    equipaciones.forEach((e,i)=>{
+scene.background =
+  new THREE.Color(0x07120b);
 
-        html += `
-        <div style="
-            background:white;
-            margin:20px auto;
-            width:450px;
-            border-radius:20px;
-            padding:20px;
-            box-shadow:0 8px 15px rgba(0,0,0,.25);
-            text-align:center;
-        ">
+scene.fog =
+  new THREE.Fog(
+    0x07120b,
+    80,
+    350
+  );
 
-        <h2>${e.nombre}</h2>
 
-        <p style="font-size:24px">
-            Precio: 💰 ${e.precio}
-        </p>
+/* =========================
+   CÁMARA
+========================= */
 
-        <button
-            onclick="comprar(${i})"
-            style="
-                background:#d40000;
-                color:white;
-                border:none;
-                padding:15px 40px;
-                border-radius:15px;
-                font-size:22px;
-                cursor:pointer;
-            ">
-            COMPRAR
-        </button>
+const camera =
+  new THREE.PerspectiveCamera(
+    60,
+    innerWidth / innerHeight,
+    .1,
+    1000
+  );
 
-        </div>
-        `;
+camera.position.set(
+  0,
+  12,
+  18
+);
 
+
+/* =========================
+   RENDER
+========================= */
+
+const renderer =
+  new THREE.WebGLRenderer({
+    antialias:true
+  });
+
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
+
+renderer.setPixelRatio(
+  Math.min(
+    devicePixelRatio,
+    2
+  )
+);
+
+renderer.shadowMap.enabled=true;
+
+document
+  .getElementById("game")
+  .appendChild(
+    renderer.domElement
+  );
+
+
+/* =========================
+   ILUMINACIÓN
+========================= */
+
+scene.add(
+  new THREE.HemisphereLight(
+    0xcfe7ff,
+    0x142719,
+    1.8
+  )
+);
+
+
+const stadiumLight =
+  new THREE.DirectionalLight(
+    0xffffff,
+    2.5
+  );
+
+stadiumLight.position.set(
+  -50,
+  100,
+  40
+);
+
+stadiumLight.castShadow=true;
+
+scene.add(
+  stadiumLight
+);
+
+
+/* =========================
+   CAMPO
+========================= */
+
+const fieldWidth=68;
+const fieldLength=105;
+
+
+const field =
+  new THREE.Mesh(
+
+    new THREE.PlaneGeometry(
+      fieldWidth,
+      fieldLength
+    ),
+
+    new THREE.MeshStandardMaterial({
+      color:0x176b35,
+      roughness:.9
+    })
+
+  );
+
+
+field.rotation.x=
+  -Math.PI/2;
+
+field.receiveShadow=true;
+
+scene.add(field);
+
+
+/* =========================
+   LÍNEAS DEL CAMPO
+========================= */
+
+function line(
+  x,
+  z,
+  width,
+  depth
+){
+
+  const mesh=
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        width,
+        .025,
+        depth
+      ),
+
+      new THREE.MeshBasicMaterial({
+        color:0xffffff
+      })
+
+    );
+
+  mesh.position.set(
+    x,
+    .03,
+    z
+  );
+
+  scene.add(mesh);
+
+}
+
+
+/* Líneas laterales */
+
+line(
+  -fieldWidth/2,
+  0,
+  .12,
+  fieldLength
+);
+
+line(
+  fieldWidth/2,
+  0,
+  .12,
+  fieldLength
+);
+
+
+/* Líneas de fondo */
+
+line(
+  0,
+  -fieldLength/2,
+  fieldWidth,
+  .12
+);
+
+line(
+  0,
+  fieldLength/2,
+  fieldWidth,
+  .12
+);
+
+
+/* Línea central */
+
+line(
+  0,
+  0,
+  fieldWidth,
+  .12
+);
+
+
+/* Círculo central */
+
+const circle=
+  new THREE.Mesh(
+
+    new THREE.RingGeometry(
+      9.1,
+      9.22,
+      64
+    ),
+
+    new THREE.MeshBasicMaterial({
+      color:0xffffff,
+      side:THREE.DoubleSide
+    })
+
+  );
+
+circle.rotation.x=
+  -Math.PI/2;
+
+circle.position.y=.04;
+
+scene.add(circle);
+
+
+/* =========================
+   PORTERÍAS
+========================= */
+
+function createGoal(
+  z,
+  direction
+){
+
+  const group=
+    new THREE.Group();
+
+  const material=
+    new THREE.MeshStandardMaterial({
+      color:0xffffff
     });
 
-    html += `
-        <div style="text-align:center;margin-top:30px;">
-            <button onclick="location.reload()"
-            style="
-                background:#444;
-                color:white;
-                padding:15px 35px;
-                border:none;
-                border-radius:15px;
-                font-size:22px;
-            ">
-                ⬅️ Volver
-            </button>
-        </div>
 
-    </div>`;
+  const width=14;
+  const height=5;
 
-    document.body.innerHTML = html;
 
+  const post1=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .35,
+        height,
+        .35
+      ),
+      material
+    );
+
+
+  post1.position.set(
+    -width/2,
+    height/2,
+    0
+  );
+
+
+  const post2=
+    post1.clone();
+
+  post2.position.x=
+    width/2;
+
+
+  const crossbar=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        width,
+        .35,
+        .35
+      ),
+      material
+    );
+
+
+  crossbar.position.y=
+    height;
+
+
+  group.add(
+    post1,
+    post2,
+    crossbar
+  );
+
+
+  group.position.z=
+    z;
+
+
+  scene.add(group);
+
+}
+
+
+createGoal(
+  -fieldLength/2,
+  1
+);
+
+createGoal(
+  fieldLength/2,
+  -1
+);
+
+
+/* =========================
+   JUGADOR
+========================= */
+
+function createPlayer(
+  color
+){
+
+  const group=
+    new THREE.Group();
+
+
+  const body=
+    new THREE.Mesh(
+
+      new THREE.CapsuleGeometry(
+        .42,
+        1,
+        8,
+        12
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color
+      })
+
+    );
+
+  body.position.y=
+    1.35;
+
+  body.castShadow=true;
+
+  group.add(body);
+
+
+  const head=
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        .38,
+        16,
+        12
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0xd69a73
+      })
+
+    );
+
+  head.position.y=
+    2.35;
+
+  head.castShadow=true;
+
+  group.add(head);
+
+
+  const legMaterial=
+    new THREE.MeshStandardMaterial({
+      color:0x111111
+    });
+
+
+  for(
+    const x of[-.2,.2]
+  ){
+
+    const leg=
+      new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+          .22,
+          .8,
+          .25
+        ),
+
+        legMaterial
+
+      );
+
+    leg.position.set(
+      x,
+      .45,
+      0
+    );
+
+    group.add(leg);
+
+  }
+
+
+  return group;
+
+}
+
+
+const player=
+  createPlayer(
+    0x2878e8
+  );
+
+player.position.set(
+  0,
+  0,
+  22
+);
+
+scene.add(player);
+
+
+/* =========================
+   JUGADORES IA
+========================= */
+
+const opponents=[];
+
+
+for(
+  let i=0;
+  i<5;
+  i++
+){
+
+  const p=
+    createPlayer(
+      0xe83232
+    );
+
+  p.position.set(
+    (Math.random()-.5)*35,
+    0,
+    -20+
+    Math.random()*35
+  );
+
+  scene.add(p);
+
+  opponents.push(p);
+
+}
+
+
+const teammates=[];
+
+
+for(
+  let i=0;
+  i<4;
+  i++
+){
+
+  const p=
+    createPlayer(
+      0x2878e8
+    );
+
+  p.position.set(
+    (Math.random()-.5)*35,
+    0,
+    5+
+    Math.random()*35
+  );
+
+  scene.add(p);
+
+  teammates.push(p);
+
+}
+
+
+/* =========================
+   BALÓN
+========================= */
+
+const ball=
+  new THREE.Mesh(
+
+    new THREE.SphereGeometry(
+      .55,
+      24,
+      16
+    ),
+
+    new THREE.MeshStandardMaterial({
+      color:0xffffff,
+      roughness:.5
+    })
+
+  );
+
+ball.position.set(
+  0,
+  .55,
+  15
+);
+
+ball.castShadow=true;
+
+scene.add(ball);
+
+
+/* =========================
+   ESTADO DEL BALÓN
+========================= */
+
+const ballVelocity=
+  new THREE.Vector3();
+
+let ballOwner=
+  null;
+
+
+/* =========================
+   ESTADO
+========================= */
+
+let playing=false;
+let paused=false;
+
+let matchTime=0;
+
+let homeScore=0;
+let awayScore=0;
+
+let sprinting=false;
+
+const keys={
+  w:false,
+  a:false,
+  s:false,
+  d:false
 };
 
-// Comprar
 
-function comprar(i){
+/* =========================
+   VELOCIDAD
+========================= */
 
-    if(monedas>=equipaciones[i].precio){
+const normalSpeed=7;
+const sprintSpeed=12;
 
-        monedas-=equipaciones[i].precio;
 
-        alert("¡Has comprado " + equipaciones[i].nombre + "!");
+/* =========================
+   CONTROL DEL JUGADOR
+========================= */
 
-        location.reload();
+function updatePlayer(
+  delta
+){
 
-    }else{
+  const forward=
+    (keys.w?1:0)-
+    (keys.s?1:0);
 
-        alert("No tienes suficientes monedas.");
+  const sideways=
+    (keys.d?1:0)-
+    (keys.a?1:0);
+
+
+  let speed=
+    sprinting
+      ? sprintSpeed
+      : normalSpeed;
+
+
+  player.position.z+=
+    forward*
+    speed*
+    delta;
+
+
+  player.position.x+=
+    sideways*
+    speed*
+    delta;
+
+
+  player.position.x=
+    THREE.MathUtils.clamp(
+      player.position.x,
+      -fieldWidth/2+1,
+      fieldWidth/2-1
+    );
+
+
+  player.position.z=
+    THREE.MathUtils.clamp(
+      player.position.z,
+      -fieldLength/2+1,
+      fieldLength/2-1
+    );
+
+
+  /* Animación sencilla */
+
+  if(
+    forward!==0 ||
+    sideways!==0
+  ){
+
+    player.rotation.y=
+      Math.atan2(
+        sideways,
+        forward
+      );
+
+  }
+
+}
+
+
+/* =========================
+   FÍSICA DEL BALÓN
+========================= */
+
+function updateBall(
+  delta
+){
+
+  ball.position.addScaledVector(
+    ballVelocity,
+    delta
+  );
+
+
+  ballVelocity.multiplyScalar(
+    Math.pow(
+      .94,
+      delta*60
+    )
+  );
+
+
+  if(
+    ball.position.y>.55
+  ){
+
+    ballVelocity.y-=
+      12*
+      delta;
+
+  }
+
+
+  if(
+    ball.position.y<.55
+  ){
+
+    ball.position.y=.55;
+
+    if(
+      Math.abs(
+        ballVelocity.y
+      )>.5
+    ){
+
+      ballVelocity.y*=
+        -.45;
+
+    }
+    else{
+
+      ballVelocity.y=0;
 
     }
 
-}>
+  }
 
-document.getElementById("jugar").onclick=function(){
 
-alert("Próximamente comenzará el partido.");
+  /* Laterales */
 
-};
+  if(
+    Math.abs(
+      ball.position.x
+    )>
+    fieldWidth/2
+  ){
 
-document.getElementById("equipacion").onclick=function(){
+    ball.position.x=
+      Math.sign(
+        ball.position.x
+      )*
+      fieldWidth/2;
 
-alert("Próximamente se abrirá la tienda de equipaciones.");
+    ballVelocity.x*=-.65;
 
-};
+  }
 
-document.getElementById("club").onclick=function(){
 
-alert("Próximamente aparecerán tus estadísticas.");
+  /* Fondos */
 
-};
+  if(
+    Math.abs(
+      ball.position.z
+    )>
+    fieldLength/2
+  ){
 
-</script// ---------- PARTIDO ----------
+    /*
+      Gol si la pelota está
+      dentro de la portería.
+    */
 
-document.getElementById("jugar").onclick = iniciarPartido;
+    if(
+      Math.abs(
+        ball.position.x
+      )<7
+    ){
 
-function iniciarPartido(){
+      if(
+        ball.position.z<
+        -fieldLength/2
+      ){
 
-document.body.innerHTML=`
+        homeScore++;
 
-<div id="pantallaCarga"
-style="
-width:100vw;
-height:100vh;
-background:#157a24;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-color:white;
-">
+      }
+      else{
 
-<h1 style="font-size:70px;">⚽ FOOTBALL LEGENDS</h1>
+        awayScore++;
 
-<h2>Rival: FC Random</h2>
+      }
 
-<h2>Dificultad: ⭐⭐</h2>
+      resetBall();
 
-<div id="cuenta"
-style="
-font-size:140px;
-margin-top:40px;
-font-weight:bold;
-">
-3
-</div>
+    }
+    else{
 
-</div>
+      ball.position.z=
+        Math.sign(
+          ball.position.z
+        )*
+        fieldLength/2;
 
-`;
+      ballVelocity.z*=-.65;
 
-let numero=3;
+    }
 
-const tiempo=setInterval(()=>{
-
-numero--;
-
-if(numero>0){
-
-document.getElementById("cuenta").textContent=numero;
-
-}else if(numero==0){
-
-document.getElementById("cuenta").textContent="¡YA!";
-
-}else{
-
-clearInterval(tiempo);
-
-mostrarCampo();
+  }
 
 }
 
-},1000);
+
+/* =========================
+   REINICIAR BALÓN
+========================= */
+
+function resetBall(){
+
+  ball.position.set(
+    0,
+    .55,
+    0
+  );
+
+  ballVelocity.set(
+    0,
+    0,
+    0
+  );
 
 }
 
-function mostrarCampo(){
-// =========================
-// PARTE 4 - EQUIPOS Y CAMPO
-// =========================
 
-function crearJugador(x,y,color){
+/* =========================
+   CONTROL BALÓN
+========================= */
 
-    const j=document.createElement("div");
+function checkBall(){
 
-    j.style.position="absolute";
-    j.style.left=x+"px";
-    j.style.top=y+"px";
+  const distance=
+    player.position.distanceTo(
+      ball.position
+    );
 
-    j.style.width="30px";
-    j.style.height="30px";
 
-    j.style.borderRadius="50%";
+  if(
+    distance<2.3 &&
+    ball.position.y<2
+  ){
 
-    j.style.background=color;
+    ballOwner=
+      player;
 
-    j.style.border="2px solid white";
+  }
 
-    j.style.boxShadow="0 0 10px rgba(0,0,0,.5)";
 
-    document.body.appendChild(j);
+  if(
+    ballOwner===player
+  ){
+
+    const target=
+      player.position.clone();
+
+
+    target.z-=
+      1.2;
+
+
+    target.y=
+      .55;
+
+
+    ball.position.lerp(
+      target,
+      .25
+    );
+
+  }
 
 }
 
-const azul=[
-[120,100],[180,180],[180,280],[180,380],
-[300,120],[300,220],[300,340],
-[430,150],[430,250],[430,350],
-[520,250]
-];
 
-const rojo=[
-[1000,100],[940,180],[940,280],[940,380],
-[820,120],[820,220],[820,340],
-[700,150],[700,250],[700,350],
-[620,250]
-];
+/* =========================
+   PASE
+========================= */
 
-azul.forEach(p=>{
+function pass(){
 
-crearJugador(p[0],p[1],"dodgerblue");
+  if(
+    ballOwner!==player
+  )
+    return;
 
-});
 
-rojo.forEach(p=>{
+  ballOwner=null;
 
-crearJugador(p[0],p[1],"crimson");
 
-});
+  ballVelocity.set(
+    0,
+    0,
+    -12
+  );
 
-// ---------- PORTERÍAS ----------
+}
 
-const porteriaIzq=document.createElement("div");
 
-porteriaIzq.style.position="absolute";
-porteriaIzq.style.left="0px";
-porteriaIzq.style.top="220px";
-porteriaIzq.style.width="14px";
-porteriaIzq.style.height="180px";
-porteriaIzq.style.background="white";
+/* =========================
+   TIRO
+========================= */
 
-document.body.append
-document.body.innerHTML=`
+function shoot(){
 
-<div
-style="
-background:#1d8d36;
-width:100vw;
-height:100vh;
-position:relative;
-overflow:hidden;
-">
+  if(
+    ballOwner!==player
+  )
+    return;
 
-<div id="marcador"
-style="
-position:absolute;
-top:10px;
-left:50%;
-transform:translateX(-50%);
-background:black;
-color:white;
-padding:12px 30px;
-border-radius:15px;
-font-size:28px;
-">
-🔵 0 - 0 🔴 &nbsp;&nbsp; ⏱ 00:00
-</div>
-</div>
 
-<div
-style="
-position:absolute;
-left:50%;
-top:0;
-bottom:0;
-width:4px;
-background:white;
-transform:translateX(-50%);
-"></div>
+  ballOwner=null;
 
-<div
-style="
-position:absolute;
-left:50%;
-top:50%;
-width:180px;
-height:180px;
-border:4px solid white;
-border-radius:50%;
-transform:translate(-50%,-50%);
-"></div>
 
-<div id="jugador"
-style="
-position:absolute;
-left:250px;
-top:300px;
-width:34px;
-height:34px;
-background:deepskyblue;
-border-radius:50%;
-border:>
+  ballVelocity.set(
+    0,
+    2.5,
+    -25
+  );
+
+}
+
+
+/* =========================
+   IA
+========================= */
+
+function updateAI(
+  delta
+){
+
+  for(
+    const opponent of opponents
+  ){
+
+    const target=
+      ball.position.clone();
+
+    target.x=
+      THREE.MathUtils.clamp(
+        target.x,
+        -fieldWidth/2+2,
+        fieldWidth/2-2
+      );
+
+    target.z=
+      THREE.MathUtils.clamp(
+        target.z,
+        -fieldLength/2+2,
+        fieldLength/2-2
+      );
+
+
+    const direction=
+      target
+      .sub(
+        opponent.position
+      );
+
+
+    direction.y=0;
+
+
+    if(
+      direction.length()>1
+    ){
+
+      direction.normalize();
+
+      opponent.position
+        .addScaledVector(
+          direction,
+          3.8*delta
+        );
+
+    }
+
+  }
+
+
+  for(
+    const teammate of teammates
+  ){
+
+    const direction=
+      ball.position.clone()
+      .sub(
+        teammate.position
+      );
+
+    direction.y=0;
+
+
+    if(
+      direction.length()>4
+    ){
+
+      direction.normalize();
+
+      teammate.position
+        .addScaledVector(
+          direction,
+          3*delta
+        );
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   TECLADO
+========================= */
+
+addEventListener(
+  "keydown",
+  e=>{
+
+    const key=
+      e.key.toLowerCase();
+
+    if(
+      key==="w"||
+      key==="arrowup"
+    )
+      keys.w=true;
+
+    if(
+      key==="a"||
+      key==="arrowleft"
+    )
+      keys.a=true;
+
+    if(
+      key==="s"||
+      key==="arrowdown"
+    )
+      keys.s=true;
+
+    if(
+      key==="d"||
+      key==="arrowright"
+    )
+      keys.d=true;
+
+    if(
+      key==="shift"
+    )
+      sprinting=true;
+
+    if(
+      key===" "
+    )
+      shoot();
+
+    if(
+      key==="e"
+    )
+      pass();
+
+  }
+);
+
+
+addEventListener(
+  "keyup",
+  e=>{
+
+    const key=
+      e.key.toLowerCase();
+
+    if(
+      key==="w"||
+      key==="arrowup"
+    )
+      keys.w=false;
+
+    if(
+      key==="a"||
+      key==="arrowleft"
+    )
+      keys.a=false;
+
+    if(
+      key==="s"||
+      key==="arrowdown"
+    )
+      keys.s=false;
+
+    if(
+      key==="d"||
+      key==="arrowright"
+    )
+      keys.d=false;
+
+    if(
+      key==="shift"
+    )
+      sprinting=false;
+
+  }
+);
+
+
+/* =========================
+   BOTONES
+========================= */
+
+document
+  .getElementById("pass")
+  .onclick=pass;
+
+document
+  .getElementById("shoot")
+  .onclick=shoot;
+
+document
+  .getElementById("sprint")
+  .onpointerdown=()=>{
+    sprinting=true;
+  };
+
+document
+  .getElementById("sprint")
+  .onpointerup=()=>{
+    sprinting=false;
+  };
+
+
+/* =========================
+   JOYSTICK
+========================= */
+
+const joystick=
+  document.getElementById(
+    "joystick"
+  );
+
+const knob=
+  document.getElementById(
+    "knob"
+  );
+
+let pointerId=null;
+
+
+joystick.addEventListener(
+  "pointerdown",
+  e=>{
+
+    pointerId=e.pointerId;
+
+    joystick.setPointerCapture(
+      pointerId
+    );
+
+    moveJoystick(e);
+
+  }
+);
+
+
+joystick.addEventListener(
+  "pointermove",
+  e=>{
+
+    if(
+      e.pointerId===pointerId
+    ){
+
+      moveJoystick(e);
+
+    }
+
+  }
+);
+
+
+joystick.addEventListener(
+  "pointerup",
+  resetJoystick
+);
+
+
+function moveJoystick(e){
+
+  const r=
+    joystick.getBoundingClientRect();
+
+
+  const dx=
+    e.clientX-
+    r.left-
+    r.width/2;
+
+
+  const dy=
+    e.clientY-
+    r.top-
+    r.height/2;
+
+
+  const length=
+    Math.min(
+      50,
+      Math.hypot(
+        dx,
+        dy
+      )
+    );
+
+
+  const angle=
+    Math.atan2(
+      dy,
+      dx
+    );
+
+
+  knob.style.left=
+    41+
+    Math.cos(angle)*
+    length+
+    "px";
+
+
+  knob.style.top=
+    41+
+    Math.sin(angle)*
+    length+
+    "px";
+
+
+  keys.a=dx<-18;
+  keys.d=dx>18;
+  keys.w=dy<-18;
+  keys.s=dy>18;
+
+}
+
+
+function resetJoystick(){
+
+  pointerId=null;
+
+  knob.style.left="41px";
+  knob.style.top="41px";
+
+  keys.w=
+  keys.a=
+  keys.s=
+  keys.d=false;
+
+}
+
+
+/* =========================
+   CÁMARA
+========================= */
+
+function updateCamera(){
+
+  const target=
+    player.position.clone();
+
+  target.y=1;
+
+
+  const desired=
+    new THREE.Vector3(
+      player.position.x,
+      12,
+      player.position.z+18
+    );
+
+
+  camera.position.lerp(
+    desired,
+    .08
+  );
+
+
+  camera.lookAt(
+    target
+  );
+
+}
+
+
+/* =========================
+   HUD
+========================= */
+
+function updateHUD(){
+
+  document
+    .getElementById("score")
+    .innerHTML=
+      "LOCAL "+
+      homeScore+
+      " — "+
+      awayScore+
+      " VISITANTE"+
+      "<br><small>"+
+      formatTime(matchTime)+
+      "</small>";
+
+}
+
+
+function formatTime(seconds){
+
+  const m=
+    Math.floor(
+      seconds/60
+    )
+    .toString()
+    .padStart(2,"0");
+
+  const s=
+    Math.floor(
+      seconds%60
+    )
+    .toString()
+    .padStart(2,"0");
+
+  return m+":"+s;
+
+}
+
+
+/* =========================
+   JUEGO
+========================= */
+
+function update(delta){
+
+  if(
+    !playing||
+    paused
+  )
+    return;
+
+
+  matchTime+=delta;
+
+
+  updatePlayer(delta);
+
+  updateAI(delta);
+
+  checkBall();
+
+  updateBall(delta);
+
+  updateCamera();
+
+  updateHUD();
+
+}
+
+
+/* =========================
+   MENÚ
+========================= */
+
+document
+  .getElementById("play")
+  .onclick=()=>{
+
+    playing=true;
+
+    document
+      .getElementById("menu")
+      .style.display="none";
+
+    document
+      .getElementById("hud")
+      .style.display="flex";
+
+    document
+      .getElementById("controls")
+      .style.display="block";
+
+  };
+
+
+document
+  .getElementById("online")
+  .onclick=()=>{
+
+    alert(
+      "El modo online se conectará mediante un servidor en el siguiente paso."
+    );
+
+  };
+
+
+document
+  .getElementById("friends")
+  .onclick=()=>{
+
+    alert(
+      "Las salas privadas para amigos se añadirán con el servidor online."
+    );
+
+  };
+
+
+/* =========================
+   PAUSA
+========================= */
+
+document
+  .getElementById("pauseButton")
+  .onclick=()=>{
+
+    paused=true;
+
+    document
+      .getElementById("pause")
+      .style.display="flex";
+
+  };
+
+
+document
+  .getElementById("resume")
+  .onclick=()=>{
+
+    paused=false;
+
+    document
+      .getElementById("pause")
+      .style.display="none";
+
+  };
+
+
+document
+  .getElementById("back")
+  .onclick=()=>{
+
+    playing=false;
+    paused=false;
+
+    document
+      .getElementById("pause")
+      .style.display="none";
+
+    document
+      .getElementById("hud")
+      .style.display="none";
+
+    document
+      .getElementById("controls")
+      .style.display="none";
+
+    document
+      .getElementById("menu")
+      .style.display="flex";
+
+  };
+
+
+/* =========================
+   BUCLE
+========================= */
+
+let last=
+  performance.now();
+
+
+function loop(now){
+
+  requestAnimationFrame(loop);
+
+
+  const delta=
+    Math.min(
+      .05,
+      (now-last)/1000
+    );
+
+
+  last=now;
+
+
+  update(delta);
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+
+requestAnimationFrame(loop);
+
+
+/* =========================
+   RESIZE
+========================= */
+
+addEventListener(
+  "resize",
+  ()=>{
+
+    camera.aspect=
+      innerWidth/
+      innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+  }
+);
+
+</script>
 
 </body>
 </html>
