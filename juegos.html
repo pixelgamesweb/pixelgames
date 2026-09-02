@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Pixel Games - Juegos</title>
 
 <style>
@@ -15,23 +16,28 @@ body {
     min-height: 100vh;
     font-family: Arial, sans-serif;
     color: white;
+
     background:
         radial-gradient(circle at 20% 20%, #35206b 0, transparent 30%),
         radial-gradient(circle at 80% 70%, #182d67 0, transparent 30%),
         linear-gradient(135deg, #080816, #10152d, #080816);
 }
 
+/* CABECERA */
+
 header {
     text-align: center;
-    padding: 35px 20px 20px;
+    padding: 35px 20px 25px;
 }
 
 .logo {
     font-size: 48px;
     font-weight: 900;
     letter-spacing: 2px;
+
     background: linear-gradient(90deg, #9d5cff, #36d9ff);
     -webkit-background-clip: text;
+    background-clip: text;
     color: transparent;
 }
 
@@ -41,80 +47,135 @@ header {
     font-size: 18px;
 }
 
+/* CONTENEDOR */
+
 .container {
-    width: min(1200px, 94%);
+    width: 94%;
+    max-width: 1250px;
     margin: auto;
-    padding-bottom: 50px;
+    padding-bottom: 60px;
 }
 
+/* TITULOS */
+
 .section-title {
-    margin-top: 35px;
+    margin-top: 30px;
     margin-bottom: 8px;
-    font-size: 30px;
+    font-size: 32px;
 }
 
 .section-info {
-    color: #aeb5d8;
+    color: #b5bcdd;
     margin-bottom: 22px;
 }
 
-/* SIEMPRE 4 JUEGOS POR FILA */
+/* ================================================= */
+/* CUADRÍCULA DE JUEGOS */
+/* SIEMPRE 4 JUEGOS POR LÍNEA EN PANTALLAS GRANDES */
+/* ================================================= */
+
 .games-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
+
+    /* EXACTAMENTE 4 COLUMNAS */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 20px;
 }
 
+/* TARJETA */
+
 .game {
-    min-height: 190px;
-    border: 1px solid rgba(150, 120, 255, 0.35);
-    border-radius: 18px;
+    min-height: 200px;
+
     padding: 22px;
-    background: rgba(20, 22, 52, 0.82);
+
+    border-radius: 18px;
+
+    border: 1px solid rgba(150, 120, 255, 0.35);
+
+    background: rgba(20, 22, 52, 0.85);
+
     box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.2s, border-color 0.2s;
+
+    transition:
+        transform 0.2s,
+        border-color 0.2s;
 }
+
+/* EFECTO AL PASAR EL RATÓN */
 
 .game.available:hover {
     transform: translateY(-6px);
     border-color: #9d5cff;
 }
 
+/* ICONO */
+
 .game-icon {
     font-size: 42px;
 }
 
+/* NÚMERO */
+
 .game-number {
-    color: #9fa7d4;
-    font-size: 14px;
     margin-top: 8px;
+
+    color: #9fa7d4;
+
+    font-size: 14px;
+    font-weight: bold;
 }
+
+/* NOMBRE */
 
 .game-name {
-    font-size: 21px;
+    margin-top: 6px;
+
+    font-size: 20px;
     font-weight: bold;
-    margin-top: 5px;
 }
 
+/* BOTÓN JUGAR */
+
 .play-button {
+    display: block;
+
     margin-top: 18px;
+
     padding: 11px 15px;
-    border: 0;
+
+    border: none;
     border-radius: 10px;
+
     color: white;
-    background: linear-gradient(90deg, #8b4dff, #25bce8);
+
+    background: linear-gradient(
+        90deg,
+        #8b4dff,
+        #25bce8
+    );
+
     font-size: 15px;
     font-weight: bold;
-    cursor: pointer;
-    text-decoration: none;
+
     text-align: center;
+    text-decoration: none;
+
+    cursor: pointer;
 }
+
+/* ================================================= */
+/* PRÓXIMAMENTE */
+/* ================================================= */
 
 .coming-soon {
     opacity: 0.62;
+
     background: rgba(15, 17, 38, 0.75);
 }
 
@@ -123,131 +184,284 @@ header {
 }
 
 .soon {
-    color: #9da4c9;
     margin-top: 8px;
+
+    color: #9da4c9;
+
+    font-size: 14px;
 }
 
-@media (max-width: 850px) {
+/* ================================================= */
+/* TABLET */
+/* ================================================= */
+
+@media (max-width: 900px) {
+
     .games-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .logo {
-        font-size: 38px;
+        font-size: 40px;
     }
 }
 
+/* ================================================= */
+/* MÓVIL */
+/* ================================================= */
+
 @media (max-width: 520px) {
+
     .games-grid {
         grid-template-columns: 1fr;
     }
+
+    .logo {
+        font-size: 34px;
+    }
+
+    .section-title {
+        font-size: 27px;
+    }
 }
+
 </style>
 </head>
+
 
 <body>
 
 <header>
-    <div class="logo">PIXEL GAMES</div>
-    <div class="subtitle">Tu idea. Tu juego. Tu aventura.</div>
+
+    <div class="logo">
+        PIXEL GAMES
+    </div>
+
+    <div class="subtitle">
+        Tu idea. Tu juego. Tu aventura.
+    </div>
+
 </header>
+
 
 <main class="container">
 
-    <h1 class="section-title">🎮 Juegos</h1>
+    <!-- =============================== -->
+    <!-- JUEGOS -->
+    <!-- =============================== -->
+
+    <h1 class="section-title">
+        🎮 Juegos
+    </h1>
 
     <div class="section-info">
         <strong>4 juegos disponibles</strong>
     </div>
 
-    <!-- JUEGOS DISPONIBLES -->
+
     <div class="games-grid">
 
         <!-- JUEGO 1 -->
+
         <div class="game available">
+
             <div>
-                <div class="game-icon">🪙</div>
-                <div class="game-number">JUEGO 1</div>
-                <div class="game-name">Juego de Monedas</div>
+
+                <div class="game-icon">
+                    🪙
+                </div>
+
+                <div class="game-number">
+                    JUEGO 1
+                </div>
+
+                <div class="game-name">
+                    Juego de Monedas
+                </div>
+
             </div>
 
-            <a class="play-button" href="juego1.html">
+            <a
+                class="play-button"
+                href="juego1.html"
+            >
                 ▶ JUGAR
             </a>
+
         </div>
+
 
         <!-- JUEGO 2 -->
+
         <div class="game available">
+
             <div>
-                <div class="game-icon">🎮</div>
-                <div class="game-number">JUEGO 2</div>
-                <div class="game-name">Spirit Wilds</div>
+
+                <div class="game-icon">
+                    🎮
+                </div>
+
+                <div class="game-number">
+                    JUEGO 2
+                </div>
+
+                <div class="game-name">
+                    Spirit Wilds
+                </div>
+
             </div>
 
-            <a class="play-button" href="juego2.html">
+            <a
+                class="play-button"
+                href="juego2.html"
+            >
                 ▶ JUGAR
             </a>
+
         </div>
+
 
         <!-- JUEGO 3 -->
+
         <div class="game available">
+
             <div>
-                <div class="game-icon">⚽</div>
-                <div class="game-number">JUEGO 3</div>
-                <div class="game-name">Fútbol 3D Online</div>
+
+                <div class="game-icon">
+                    ⚽
+                </div>
+
+                <div class="game-number">
+                    JUEGO 3
+                </div>
+
+                <div class="game-name">
+                    Fútbol 3D Online
+                </div>
+
             </div>
 
-            <a class="play-button" href="juego3.html">
+            <a
+                class="play-button"
+                href="juego3.html"
+            >
                 ▶ JUGAR
             </a>
+
         </div>
+
 
         <!-- JUEGO 4 -->
+
         <div class="game available">
+
             <div>
-                <div class="game-icon">🏎️</div>
-                <div class="game-number">JUEGO 4</div>
-                <div class="game-name">Ultra 3D Kart</div>
+
+                <div class="game-icon">
+                    🏎️
+                </div>
+
+                <div class="game-number">
+                    JUEGO 4
+                </div>
+
+                <div class="game-name">
+                    Ultra 3D Kart
+                </div>
+
             </div>
 
-            <a class="play-button" href="juego4.html">
+            <a
+                class="play-button"
+                href="juego4.html"
+            >
                 ▶ JUGAR
             </a>
+
         </div>
 
     </div>
 
 
+    <!-- =============================== -->
     <!-- PRÓXIMAMENTE -->
-    <h2 class="section-title">🚀 Próximamente</h2>
+    <!-- =============================== -->
+
+    <h2 class="section-title">
+        🚀 Próximamente
+    </h2>
 
     <div class="section-info">
-        Juegos 5–100 están esperando su momento.
+        Nuevos juegos creados a partir de tus ideas.
     </div>
 
-    <div class="games-grid" id="comingSoonGames"></div>
+
+    <!-- AQUÍ SE CREAN LOS JUEGOS 5-100 -->
+
+    <div
+        class="games-grid"
+        id="comingSoonGames"
+    ></div>
 
 </main>
 
 
 <script>
 
-const container = document.getElementById("comingSoonGames");
+/*
+    Creamos automáticamente
+    los juegos del 5 al 100.
+
+    Como la cuadrícula tiene
+    4 columnas, aparecerán:
+
+    5  6  7  8
+    9 10 11 12
+    13 14 15 16
+    ...
+
+    hasta:
+
+    97 98 99 100
+*/
+
+const container =
+    document.getElementById("comingSoonGames");
+
 
 for (let i = 5; i <= 100; i++) {
 
-    const game = document.createElement("div");
+    const game =
+        document.createElement("div");
 
-    game.className = "game coming-soon";
+    game.className =
+        "game coming-soon";
+
 
     game.innerHTML = `
+
         <div>
-            <div class="lock">🔒</div>
-            <div class="game-number">JUEGO ${i}</div>
-            <div class="game-name">Próximamente</div>
-            <div class="soon">¿Qué juego habrá aquí?</div>
+
+            <div class="lock">
+                🔒
+            </div>
+
+            <div class="game-number">
+                JUEGO ${i}
+            </div>
+
+            <div class="game-name">
+                Próximamente
+            </div>
+
+            <div class="soon">
+                ¿Qué juego habrá aquí?
+            </div>
+
         </div>
+
     `;
+
 
     container.appendChild(game);
 }
