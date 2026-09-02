@@ -153,38 +153,35 @@ h1{
   font-size:10px;
 }
 
-#onlineMenu{
+#countdown{
+  display:none;
   position:fixed;
   inset:0;
   z-index:30;
-  display:none;
   align-items:center;
   justify-content:center;
-  background:
-    radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),
-    radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),
-    #05070b;
-}
-
-.onlineCode{
-  width:100%;
-  padding:16px;
-  border-radius:14px;
-  border:1px solid #ffffff25;
-  background:#10131b;
   color:white;
-  font-size:24px;
-  text-align:center;
-  letter-spacing:6px;
-  margin:8px 0;
-  outline:none;
+  font-size:clamp(90px,20vw,180px);
+  font-weight:900;
+  text-shadow:0 8px 30px #000;
+  pointer-events:none;
 }
 
-.onlineStatus{
-  text-align:center;
-  min-height:24px;
-  color:#62aaff;
-  margin:12px 0;
+#goalMessage{
+  display:none;
+  position:fixed;
+  z-index:31;
+  top:105px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:10px 28px;
+  border-radius:18px;
+  background:#ffd400;
+  color:#111;
+  font-size:clamp(30px,7vw,64px);
+  font-weight:900;
+  text-shadow:1px 1px #fff;
+  pointer-events:none;
 }
 
 #pause{
@@ -230,27 +227,6 @@ h1{
 
 </section>
 
-<!-- MENÚ ONLINE -->
-<section id="onlineMenu">
-  <div class="panel">
-    <h2 style="text-align:center;font-size:38px;margin-top:0">⚽ PARTIDA ONLINE</h2>
-    <p class="description">Crea una sala y comparte el código con tu amigo, o únete a una sala existente.</p>
-
-    <button id="createRoom" class="main">🟢 CREAR PARTIDA</button>
-    <div id="roomArea" style="display:none">
-      <p style="text-align:center;margin-bottom:5px">CÓDIGO DE TU SALA</p>
-      <div id="roomCode" class="onlineCode">----</div>
-      <p class="description">Dale este código a tu amigo.</p>
-    </div>
-
-    <button id="joinRoom" class="main">🔵 UNIRSE A UNA PARTIDA</button>
-    <input id="roomInput" class="onlineCode" maxlength="4" inputmode="numeric" placeholder="CÓDIGO" style="display:none">
-    <button id="confirmJoin" class="main" style="display:none">ENTRAR EN LA SALA</button>
-
-    <div id="onlineStatus" class="onlineStatus"></div>
-    <button id="closeOnline" class="main">🔙 VOLVER</button>
-  </div>
-</section>
 
 <!-- PAUSA -->
 
@@ -272,6 +248,9 @@ h1{
 
 </section>
 
+
+<div id="countdown">3</div>
+<div id="goalMessage">¡GOL!</div>
 
 <!-- HUD -->
 
@@ -896,8 +875,10 @@ const keys={
    VELOCIDAD
 ========================= */
 
-const normalSpeed=7;
-const sprintSpeed=12;
+const normalSpeed=9.5;
+const sprintSpeed=15;
+const aiSpeed=6.8;
+const aiSprintSpeed=10.5;
 
 
 /* =========================
@@ -968,6 +949,37 @@ function updatePlayer(
 
 }
 
+
+/* =========================
+   COLISIONES ENTRE JUGADORES
+========================= */
+
+function keepPlayersApart(){
+
+  const all=[player,...teammates,...opponents];
+  const minDistance=1.45;
+
+  for(let i=0;i<all.length;i++){
+    for(let j=i+1;j<all.length;j++){
+      const a=all[i];
+      const b=all[j];
+      const dx=b.position.x-a.position.x;
+      const dz=b.position.z-a.position.z;
+      const distance=Math.hypot(dx,dz);
+
+      if(distance<minDistance){
+        const safe=distance||0.001;
+        const nx=dx/safe;
+        const nz=dz/safe;
+        const push=(minDistance-safe)/2;
+        a.position.x-=nx*push;
+        a.position.z-=nz*push;
+        b.position.x+=nx*push;
+        b.position.z+=nz*push;
+      }
+    }
+  }
+}
 
 /* =========================
    FÍSICA DEL BALÓN
@@ -1073,11 +1085,13 @@ function updateBall(
       ){
 
         homeScore++;
+        showGoal("¡GOL! 🔵");
 
       }
       else{
 
         awayScore++;
+        showGoal("¡GOL! 🔴");
 
       }
 
@@ -1100,6 +1114,13 @@ function updateBall(
 
 }
 
+
+function showGoal(text){
+  const message=document.getElementById("goalMessage");
+  message.textContent=text;
+  message.style.display="block";
+  setTimeout(()=>{message.style.display="none";},1200);
+}
 
 /* =========================
    REINICIAR BALÓN
@@ -1268,7 +1289,7 @@ function updateAI(
       opponent.position
         .addScaledVector(
           direction,
-          3.8*delta
+          (direction.length()>12 ? aiSprintSpeed : aiSpeed)*delta
         );
 
     }
@@ -1298,7 +1319,7 @@ function updateAI(
       teammate.position
         .addScaledVector(
           direction,
-          3*delta
+          (direction.length()>12 ? aiSprintSpeed : aiSpeed)*delta
         );
 
     }
@@ -1649,6 +1670,8 @@ function update(delta){
 
   updateAI(delta);
 
+  keepPlayersApart();
+
   checkBall();
 
   updateBall(delta);
@@ -1660,6 +1683,26 @@ function update(delta){
 }
 
 
+function startCountdown(){
+  const el=document.getElementById("countdown");
+  el.style.display="flex";
+  let n=3;
+  el.textContent=n;
+
+  const timer=setInterval(()=>{
+    n--;
+    if(n>0){
+      el.textContent=n;
+    }else if(n===0){
+      el.textContent="¡YA!";
+    }else{
+      clearInterval(timer);
+      el.style.display="none";
+      playing=true;
+    }
+  },700);
+}
+
 /* =========================
    MENÚ
 ========================= */
@@ -1668,7 +1711,11 @@ document
   .getElementById("play")
   .onclick=()=>{
 
-    playing=true;
+    playing=false;
+    matchTime=0;
+    homeScore=0;
+    awayScore=0;
+    resetBall();
 
     document
       .getElementById("menu")
@@ -1682,54 +1729,31 @@ document
       .getElementById("controls")
       .style.display="block";
 
+    startCountdown();
+
   };
 
 
-const onlineMenu = document.getElementById("onlineMenu");
-const onlineStatus = document.getElementById("onlineStatus");
-const roomArea = document.getElementById("roomArea");
-const roomCode = document.getElementById("roomCode");
-const roomInput = document.getElementById("roomInput");
-const confirmJoin = document.getElementById("confirmJoin");
+document
+  .getElementById("online")
+  .onclick=()=>{
 
-function showOnlineMenu(){
-  document.getElementById("menu").style.display="none";
-  onlineMenu.style.display="flex";
-  onlineStatus.textContent="";
-}
+    alert(
+      "El modo online se conectará mediante un servidor en el siguiente paso."
+    );
 
-document.getElementById("online").onclick=showOnlineMenu;
-document.getElementById("friends").onclick=showOnlineMenu;
+  };
 
-document.getElementById("createRoom").onclick=()=>{
-  const code=Math.floor(1000+Math.random()*9000).toString();
-  roomCode.textContent=code;
-  roomArea.style.display="block";
-  roomInput.style.display="none";
-  confirmJoin.style.display="none";
-  onlineStatus.textContent="Sala creada. Comparte el código con tu amigo.";
-};
 
-document.getElementById("joinRoom").onclick=()=>{
-  roomInput.style.display="block";
-  confirmJoin.style.display="block";
-  roomInput.focus();
-  onlineStatus.textContent="Escribe el código de 4 cifras.";
-};
+document
+  .getElementById("friends")
+  .onclick=()=>{
 
-confirmJoin.onclick=()=>{
-  const code=roomInput.value.trim();
-  if(!/^\d{4}$/.test(code)){
-    onlineStatus.textContent="El código debe tener 4 cifras.";
-    return;
-  }
-  onlineStatus.textContent="Código aceptado: sala "+code+". La conexión multijugador real necesita el servidor online.";
-};
+    alert(
+      "Las salas privadas para amigos se añadirán con el servidor online."
+    );
 
-document.getElementById("closeOnline").onclick=()=>{
-  onlineMenu.style.display="none";
-  document.getElementById("menu").style.display="flex";
-};
+  };
 
 
 /* =========================
