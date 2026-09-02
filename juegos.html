@@ -2,232 +2,145 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Menú de Juegos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel Games - Juegos</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  user-select:none;
+* {
+    box-sizing: border-box;
 }
 
-html,body{
-  margin:0;
-  min-height:100%;
-  font-family:Arial,Helvetica,sans-serif;
-  color:white;
-  background:
-    radial-gradient(circle at top,#263d80 0%,#10162f 35%,#03040a 100%);
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    color: white;
+    background:
+        radial-gradient(circle at 20% 20%, #35206b 0, transparent 30%),
+        radial-gradient(circle at 80% 70%, #182d67 0, transparent 30%),
+        linear-gradient(135deg, #080816, #10152d, #080816);
 }
 
-body{
-  overflow-x:hidden;
+header {
+    text-align: center;
+    padding: 35px 20px 20px;
 }
 
-header{
-  text-align:center;
-  padding:35px 15px 25px;
+.logo {
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #9d5cff, #36d9ff);
+    -webkit-background-clip: text;
+    color: transparent;
 }
 
-header h1{
-  margin:0;
-  font-size:clamp(38px,7vw,72px);
-  font-weight:900;
-  text-shadow:0 8px 35px #000;
+.subtitle {
+    margin-top: 8px;
+    color: #bfc5e8;
+    font-size: 18px;
 }
 
-header p{
-  margin:10px 0 0;
-  opacity:.65;
+.container {
+    width: min(1200px, 94%);
+    margin: auto;
+    padding-bottom: 50px;
 }
 
-#games{
-  width:min(1250px,94%);
-  margin:0 auto 50px;
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fill,
-      minmax(245px,1fr)
-    );
-
-  gap:20px;
+.section-title {
+    margin-top: 35px;
+    margin-bottom: 8px;
+    font-size: 30px;
 }
 
-.game{
-  position:relative;
-
-  min-height:300px;
-
-  padding:24px;
-
-  border-radius:24px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #111827f5,
-      #070911f5
-    );
-
-  border:1px solid #ffffff1b;
-
-  box-shadow:
-    0 15px 45px #0009;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-
-  transition:
-    transform .2s,
-    border-color .2s;
+.section-info {
+    color: #aeb5d8;
+    margin-bottom: 22px;
 }
 
-.game:hover{
-  transform:translateY(-5px);
-  border-color:#ffffff45;
+/* SIEMPRE 4 JUEGOS POR FILA */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
 }
 
-.icon{
-  width:72px;
-  height:72px;
-
-  border-radius:20px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:38px;
-
-  background:#ffffff10;
-
-  border:1px solid #ffffff16;
-
-  margin-bottom:16px;
+.game {
+    min-height: 190px;
+    border: 1px solid rgba(150, 120, 255, 0.35);
+    border-radius: 18px;
+    padding: 22px;
+    background: rgba(20, 22, 52, 0.82);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, border-color 0.2s;
 }
 
-.game h2{
-  margin:0 0 8px;
-  font-size:25px;
+.game.available:hover {
+    transform: translateY(-6px);
+    border-color: #9d5cff;
 }
 
-.game p{
-  margin:0;
-  line-height:1.45;
-  opacity:.62;
-  font-size:14px;
+.game-icon {
+    font-size: 42px;
 }
 
-.status{
-  position:absolute;
-  right:15px;
-  top:15px;
-
-  padding:6px 9px;
-
-  border-radius:9px;
-
-  font-size:10px;
-  font-weight:900;
+.game-number {
+    color: #9fa7d4;
+    font-size: 14px;
+    margin-top: 8px;
 }
 
-.available{
-  color:#62f49b;
-  background:#2adf7620;
-  border:1px solid #2adf7635;
+.game-name {
+    font-size: 21px;
+    font-weight: bold;
+    margin-top: 5px;
 }
 
-.coming{
-  color:#999;
-  background:#ffffff0b;
-  border:1px solid #ffffff15;
+.play-button {
+    margin-top: 18px;
+    padding: 11px 15px;
+    border: 0;
+    border-radius: 10px;
+    color: white;
+    background: linear-gradient(90deg, #8b4dff, #25bce8);
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
 }
 
-.play{
-  width:100%;
-  margin-top:20px;
-  padding:14px;
-
-  border:0;
-  border-radius:13px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #397fff,
-      #1745b4
-    );
-
-  color:white;
-
-  text-align:center;
-  text-decoration:none;
-
-  font-size:16px;
-  font-weight:900;
-
-  cursor:pointer;
-
-  transition:
-    filter .15s,
-    transform .15s;
+.coming-soon {
+    opacity: 0.62;
+    background: rgba(15, 17, 38, 0.75);
 }
 
-.play:hover{
-  filter:brightness(1.15);
+.lock {
+    font-size: 40px;
 }
 
-.play:active{
-  transform:translateY(2px);
+.soon {
+    color: #9da4c9;
+    margin-top: 8px;
 }
 
-.disabled{
-  background:#171a23;
-  color:#777;
-  cursor:default;
+@media (max-width: 850px) {
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .logo {
+        font-size: 38px;
+    }
 }
 
-.game1{
-  border-top:3px solid #55aaff;
-}
-
-.game2{
-  border-top:3px solid #9d6cff;
-}
-
-.game3{
-  border-top:3px solid #ffd52f;
-}
-
-.game4{
-  border-top:3px solid #ff5c48;
-}
-
-.game5{
-  border-top:3px solid #43df77;
-}
-
-footer{
-  text-align:center;
-  opacity:.4;
-  padding:10px 20px 35px;
-  font-size:12px;
-}
-
-@media(max-width:600px){
-
-  #games{
-    grid-template-columns:1fr;
-  }
-
-  .game{
-    min-height:270px;
-  }
-
+@media (max-width: 520px) {
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 </head>
@@ -235,457 +148,109 @@ footer{
 <body>
 
 <header>
-
-  <h1>🎮 MIS JUEGOS</h1>
-
-  <p>
-    200 juegos · Elige uno para empezar
-  </p>
-
+    <div class="logo">PIXEL GAMES</div>
+    <div class="subtitle">Tu idea. Tu juego. Tu aventura.</div>
 </header>
 
+<main class="container">
 
-<main id="games"></main>
+    <h1 class="section-title">🎮 Juegos</h1>
+
+    <div class="section-info">
+        <strong>4 juegos disponibles</strong>
+    </div>
+
+    <!-- JUEGOS DISPONIBLES -->
+    <div class="games-grid">
+
+        <!-- JUEGO 1 -->
+        <div class="game available">
+            <div>
+                <div class="game-icon">🪙</div>
+                <div class="game-number">JUEGO 1</div>
+                <div class="game-name">Juego de Monedas</div>
+            </div>
+
+            <a class="play-button" href="juego1.html">
+                ▶ JUGAR
+            </a>
+        </div>
+
+        <!-- JUEGO 2 -->
+        <div class="game available">
+            <div>
+                <div class="game-icon">🎮</div>
+                <div class="game-number">JUEGO 2</div>
+                <div class="game-name">Spirit Wilds</div>
+            </div>
+
+            <a class="play-button" href="juego2.html">
+                ▶ JUGAR
+            </a>
+        </div>
+
+        <!-- JUEGO 3 -->
+        <div class="game available">
+            <div>
+                <div class="game-icon">⚽</div>
+                <div class="game-number">JUEGO 3</div>
+                <div class="game-name">Fútbol 3D Online</div>
+            </div>
+
+            <a class="play-button" href="juego3.html">
+                ▶ JUGAR
+            </a>
+        </div>
+
+        <!-- JUEGO 4 -->
+        <div class="game available">
+            <div>
+                <div class="game-icon">🏎️</div>
+                <div class="game-number">JUEGO 4</div>
+                <div class="game-name">Ultra 3D Kart</div>
+            </div>
+
+            <a class="play-button" href="juego4.html">
+                ▶ JUGAR
+            </a>
+        </div>
+
+    </div>
 
 
-<footer>
-  🎮 Plataforma de juegos · 200 juegos
-</footer>
+    <!-- PRÓXIMAMENTE -->
+    <h2 class="section-title">🚀 Próximamente</h2>
+
+    <div class="section-info">
+        Juegos 5–100 están esperando su momento.
+    </div>
+
+    <div class="games-grid" id="comingSoonGames"></div>
+
+</main>
 
 
 <script>
 
-/*
-==========================================================
-CONFIGURACIÓN
-==========================================================
-*/
+const container = document.getElementById("comingSoonGames");
 
-const games = [
+for (let i = 5; i <= 100; i++) {
 
-  /*
-  ========================================================
-  JUEGOS YA CREADOS
-  ========================================================
-  */
+    const game = document.createElement("div");
 
-  {
-    number:1,
-    name:"Juego 1",
-    icon:"🎮",
-    description:"Tu primer videojuego.",
-    file:"juego1.html",
-    available:true
-  },
+    game.className = "game coming-soon";
 
-  {
-    number:2,
-    name:"Spirit Wilds",
-    icon:"👻",
-    description:
-      "Explora el mundo, descubre espíritus y nuevas zonas.",
-    file:"juego2.html",
-    available:true
-  },
-
-  {
-    number:3,
-    name:"Football Legends",
-    icon:"⚽",
-    description:
-      "Entra al campo y juega tus partidos.",
-    file:"juego3.html",
-    available:true
-  },
-
-  {
-    number:4,
-    name:"Ultra 3D Kart",
-    icon:"🏎️",
-    description:
-      "Carreras 3D, rivales, turbo y velocidad.",
-    file:"juego4.html",
-    available:true
-  },
-
-  {
-    number:5,
-    name:"Mega Laberintos",
-    icon:"🧩",
-    description:
-      "Hasta 300 niveles, llaves, puertas, enemigos y mapas.",
-    file:"juego5.html",
-    available:true
-  }
-
-];
-
-
-/*
-==========================================================
-GENERAR LOS 195 JUEGOS RESTANTES
-==========================================================
-*/
-
-const futureNames = [
-
-  "Galaxy Battle",
-  "Galaxy Battle 2",
-  "Galaxy Battle Ultra",
-  "Space Warriors",
-  "Planet Attack",
-  "Cosmic Fighters",
-  "Star Mission",
-  "Galaxy Racing",
-  "Alien Invasion",
-  "Mars Explorer",
-  "Moon Warriors",
-  "Space Adventure",
-  "Robot Arena",
-  "Robot Battle",
-  "Cyber Fighters",
-  "Cyber City",
-  "Super Ninja",
-  "Ninja Warriors",
-  "Samurai Legends",
-  "Dragon Battle",
-  "Dragon Quest",
-  "Monster Arena",
-  "Monster Hunter",
-  "Zombie Survival",
-  "Zombie City",
-  "Zombie Night",
-  "Dark Castle",
-  "Haunted Mansion",
-  "Ghost Hunter",
-  "Magic World",
-  "Wizard Battle",
-  "Fantasy Quest",
-  "Dragon Kingdom",
-  "Knight Legends",
-  "Castle Warriors",
-  "Pirate Adventure",
-  "Pirate Battle",
-  "Ocean Quest",
-  "Island Survival",
-  "Treasure Island",
-  "Jungle Adventure",
-  "Jungle Runner",
-  "Desert Warriors",
-  "Desert Racing",
-  "Snow Adventure",
-  "Ice Warriors",
-  "Mountain Quest",
-  "Volcano Escape",
-  "Fire Battle",
-  "Water Warriors",
-  "Sky Adventure",
-  "Cloud Racing",
-  "Super Runner",
-  "Speed Runner",
-  "Mega Runner",
-  "Endless Runner",
-  "Parkour World",
-  "Parkour City",
-  "Extreme Parkour",
-  "Street Racing",
-  "Night Racing",
-  "Turbo Racing",
-  "Super Racing",
-  "Formula Extreme",
-  "Rally Legends",
-  "Drift Masters",
-  "Drift City",
-  "Kart Battle",
-  "Kart Champions",
-  "Fútbol 3D Online",
-  "Fútbol Champions",
-  "Fútbol World",
-  "Fútbol Manager",
-  "Fútbol Street",
-  "Fútbol Legends 2",
-  "Fútbol Pro",
-  "Basketball 3D",
-  "Basketball Legends",
-  "Basketball Online",
-  "Tennis Masters",
-  "Tennis Online",
-  "Golf Masters",
-  "Golf 3D",
-  "Boxing Legends",
-  "Boxing Arena",
-  "MMA Warriors",
-  "Skate City",
-  "Skate Champions",
-  "Snowboard Extreme",
-  "Ski Adventure",
-  "Bike Racing",
-  "Motorbike Legends",
-  "ATV Extreme",
-  "Truck Simulator",
-  "Bus Simulator",
-  "City Driver",
-  "Taxi Driver",
-  "Police Chase",
-  "Firefighter Mission",
-  "Rescue Team",
-  "Airport Manager",
-  "Train Simulator",
-  "Subway Adventure",
-  "City Builder",
-  "Mega City",
-  "Island Builder",
-  "Farm World",
-  "Farm Simulator",
-  "Zoo World",
-  "Zoo Manager",
-  "Aquarium World",
-  "Pet Adventure",
-  "Pet Simulator",
-  "Horse Adventure",
-  "Wildlife Quest",
-  "Safari Adventure",
-  "Dinosaur World",
-  "Dinosaur Survival",
-  "Jurassic Adventure",
-  "Robot Simulator",
-  "Factory Manager",
-  "Space Station",
-  "Planet Builder",
-  "Mars Colony",
-  "Moon Colony",
-  "Galaxy Manager",
-  "Star Empire",
-  "Empire Builder",
-  "Kingdom Builder",
-  "Medieval Kingdom",
-  "Castle Builder",
-  "Warriors Kingdom",
-  "Battle Kingdom",
-  "Arena Champions",
-  "Ultimate Battle",
-  "Ultimate Fighters",
-  "Super Heroes",
-  "Hero City",
-  "Hero Quest",
-  "Villain Attack",
-  "Comic Battle",
-  "Pixel Warriors",
-  "Pixel Adventure",
-  "Pixel Racing",
-  "Retro Arcade",
-  "Arcade Legends",
-  "Mega Arcade",
-  "Puzzle World",
-  "Puzzle Master",
-  "Brain Challenge",
-  "Memory Master",
-  "Math Challenge",
-  "Word Master",
-  "Quiz World",
-  "Trivia Champions",
-  "Escape Room",
-  "Escape Mansion",
-  "Escape Island",
-  "Mega Escape",
-  "Laberinto Extremo",
-  "Laberinto Oscuro",
-  "Laberinto Infinito",
-  "Laberinto Mortal",
-  "Mega Laberintos 2",
-  "Dungeon Adventure",
-  "Dungeon Master",
-  "Dungeon Warriors",
-  "Dark Dungeon",
-  "Cave Adventure",
-  "Treasure Dungeon",
-  "Sword Quest",
-  "Magic Quest",
-  "Legend Quest",
-  "Adventure World",
-  "Open World Adventure",
-  "Ultimate Adventure",
-  "Survival World",
-  "Extreme Survival",
-  "Island Survival 2",
-  "Winter Survival",
-  "Desert Survival",
-  "Space Survival",
-  "Zombie Survival 2",
-  "Monster Survival",
-  "Battle Royale",
-  "Battle Royale 2",
-  "Ultimate Royale",
-  "Online Arena",
-  "Online Warriors",
-  "Online Champions",
-  "Mega Fighters",
-  "Mega Warriors",
-  "Mega Champions",
-  "Final Battle",
-  "Ultimate World",
-  "Mega World",
-  "Super World",
-  "Game World",
-  "Adventure Legends",
-  "Final Adventure",
-  "The Last Battle",
-  "The Final Game"
-];
-
-
-/*
-==========================================================
-AÑADIR HASTA LLEGAR EXACTAMENTE A 200
-==========================================================
-*/
-
-for(
-  let i=games.length+1;
-  i<=200;
-  i++
-){
-
-  const name =
-    futureNames[i-6] ||
-    "Juego "+i;
-
-  games.push({
-
-    number:i,
-
-    name:name,
-
-    icon:
-      i%8===0 ? "🚀" :
-      i%8===1 ? "🎮" :
-      i%8===2 ? "⚔️" :
-      i%8===3 ? "🏆" :
-      i%8===4 ? "🌎" :
-      i%8===5 ? "👾" :
-      i%8===6 ? "🔥" :
-                "⭐",
-
-    description:
-      "Este juego estará disponible próximamente.",
-
-    file:"",
-
-    available:false
-
-  });
-
-}
-
-
-/*
-==========================================================
-MOSTRAR JUEGOS
-==========================================================
-*/
-
-const container =
-  document.getElementById(
-    "games"
-  );
-
-
-games.forEach(
-  game=>{
-
-    const card =
-      document.createElement(
-        "section"
-      );
-
-
-    card.className =
-      "game "+
-      (
-        game.number<=5
-          ? "game"+game.number
-          : ""
-      );
-
-
-    const status =
-      game.available
-        ? `
-          <div class="status available">
-            DISPONIBLE
-          </div>
-        `
-        : `
-          <div class="status coming">
-            PRÓXIMAMENTE
-          </div>
-        `;
-
-
-    const button =
-      game.available
-
-        ? `
-          <a
-            class="play"
-            href="${game.file}"
-          >
-            ▶ JUGAR
-          </a>
-        `
-
-        : `
-          <div
-            class="play disabled"
-          >
-            🔒 PRÓXIMAMENTE
-          </div>
-        `;
-
-
-    card.innerHTML = `
-
-      ${status}
-
-      <div>
-
-        <div class="icon">
-          ${game.icon}
+    game.innerHTML = `
+        <div>
+            <div class="lock">🔒</div>
+            <div class="game-number">JUEGO ${i}</div>
+            <div class="game-name">Próximamente</div>
+            <div class="soon">¿Qué juego habrá aquí?</div>
         </div>
-
-        <h2>
-          ${game.name}
-        </h2>
-
-        <p>
-          ${game.description}
-        </p>
-
-      </div>
-
-      ${button}
-
     `;
 
-
-    container.appendChild(
-      card
-    );
-
-  }
-);
-
-
-/*
-==========================================================
-COMPROBACIÓN
-==========================================================
-*/
-
-console.log(
-  "Juegos cargados:",
-  games.length
-);
+    container.appendChild(game);
+}
 
 </script>
 
