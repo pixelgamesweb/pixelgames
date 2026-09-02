@@ -153,6 +153,40 @@ h1{
   font-size:10px;
 }
 
+#onlineMenu{
+  position:fixed;
+  inset:0;
+  z-index:30;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),
+    radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),
+    #05070b;
+}
+
+.onlineCode{
+  width:100%;
+  padding:16px;
+  border-radius:14px;
+  border:1px solid #ffffff25;
+  background:#10131b;
+  color:white;
+  font-size:24px;
+  text-align:center;
+  letter-spacing:6px;
+  margin:8px 0;
+  outline:none;
+}
+
+.onlineStatus{
+  text-align:center;
+  min-height:24px;
+  color:#62aaff;
+  margin:12px 0;
+}
+
 #pause{
   display:none;
 }
@@ -196,6 +230,27 @@ h1{
 
 </section>
 
+<!-- MENÚ ONLINE -->
+<section id="onlineMenu">
+  <div class="panel">
+    <h2 style="text-align:center;font-size:38px;margin-top:0">⚽ PARTIDA ONLINE</h2>
+    <p class="description">Crea una sala y comparte el código con tu amigo, o únete a una sala existente.</p>
+
+    <button id="createRoom" class="main">🟢 CREAR PARTIDA</button>
+    <div id="roomArea" style="display:none">
+      <p style="text-align:center;margin-bottom:5px">CÓDIGO DE TU SALA</p>
+      <div id="roomCode" class="onlineCode">----</div>
+      <p class="description">Dale este código a tu amigo.</p>
+    </div>
+
+    <button id="joinRoom" class="main">🔵 UNIRSE A UNA PARTIDA</button>
+    <input id="roomInput" class="onlineCode" maxlength="4" inputmode="numeric" placeholder="CÓDIGO" style="display:none">
+    <button id="confirmJoin" class="main" style="display:none">ENTRAR EN LA SALA</button>
+
+    <div id="onlineStatus" class="onlineStatus"></div>
+    <button id="closeOnline" class="main">🔙 VOLVER</button>
+  </div>
+</section>
 
 <!-- PAUSA -->
 
@@ -1630,26 +1685,51 @@ document
   };
 
 
-document
-  .getElementById("online")
-  .onclick=()=>{
+const onlineMenu = document.getElementById("onlineMenu");
+const onlineStatus = document.getElementById("onlineStatus");
+const roomArea = document.getElementById("roomArea");
+const roomCode = document.getElementById("roomCode");
+const roomInput = document.getElementById("roomInput");
+const confirmJoin = document.getElementById("confirmJoin");
 
-    alert(
-      "El modo online se conectará mediante un servidor en el siguiente paso."
-    );
+function showOnlineMenu(){
+  document.getElementById("menu").style.display="none";
+  onlineMenu.style.display="flex";
+  onlineStatus.textContent="";
+}
 
-  };
+document.getElementById("online").onclick=showOnlineMenu;
+document.getElementById("friends").onclick=showOnlineMenu;
 
+document.getElementById("createRoom").onclick=()=>{
+  const code=Math.floor(1000+Math.random()*9000).toString();
+  roomCode.textContent=code;
+  roomArea.style.display="block";
+  roomInput.style.display="none";
+  confirmJoin.style.display="none";
+  onlineStatus.textContent="Sala creada. Comparte el código con tu amigo.";
+};
 
-document
-  .getElementById("friends")
-  .onclick=()=>{
+document.getElementById("joinRoom").onclick=()=>{
+  roomInput.style.display="block";
+  confirmJoin.style.display="block";
+  roomInput.focus();
+  onlineStatus.textContent="Escribe el código de 4 cifras.";
+};
 
-    alert(
-      "Las salas privadas para amigos se añadirán con el servidor online."
-    );
+confirmJoin.onclick=()=>{
+  const code=roomInput.value.trim();
+  if(!/^\d{4}$/.test(code)){
+    onlineStatus.textContent="El código debe tener 4 cifras.";
+    return;
+  }
+  onlineStatus.textContent="Código aceptado: sala "+code+". La conexión multijugador real necesita el servidor online.";
+};
 
-  };
+document.getElementById("closeOnline").onclick=()=>{
+  onlineMenu.style.display="none";
+  document.getElementById("menu").style.display="flex";
+};
 
 
 /* =========================
