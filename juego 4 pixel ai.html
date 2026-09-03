@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pixel AI</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#02030a;
+    color:white;
+    min-height:100vh;
+    overflow:hidden;
+}
+
+/* FONDO */
+body::before{
+    content:"";
+    position:fixed;
+    inset:-50px;
+    background:
+        radial-gradient(circle at 15% 20%,rgba(80,80,255,.35),transparent 30%),
+        radial-gradient(circle at 85% 70%,rgba(170,40,255,.30),transparent 32%),
+        radial-gradient(circle at 50% 50%,rgba(0,170,255,.12),transparent 45%);
+    z-index:-2;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:40px 40px;
+    z-index:-1;
+}
+
+/* PANTALLAS */
+.screen{
+    width:100%;
+    height:100vh;
+    display:none;
+}
+
+.screen.active{
+    display:flex;
+}
+
+/* PORTADA */
+#home{
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.logo{
+    font-size:clamp(45px,10vw,90px);
+    font-weight:900;
+    letter-spacing:5px;
+    text-shadow:
+        4px 4px 0 #000,
+        0 0 20px #6a5cff;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    font-size:20px;
+    color:#d9d9ff;
+    margin-bottom:45px;
+}
+
+.main-button{
+    width:260px;
+    padding:18px;
+    margin:8px;
+    border:2px solid rgba(255,255,255,.25);
+    border-radius:16px;
+    background:rgba(20,20,40,.9);
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.main-button:hover{
+    transform:scale(1.05);
+    border-color:#8c7cff;
+    box-shadow:0 0 25px rgba(120,100,255,.4);
+}
+
+/* CHAT */
+#chatScreen{
+    flex-direction:column;
+    background:white;
+    color:#111;
+}
+
+.topbar{
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    background:#111326;
+    color:white;
+    flex-shrink:0;
+}
+
+.top-title{
+    font-size:24px;
+    font-weight:900;
+}
+
+.top-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.small-button{
+    border:0;
+    border-radius:10px;
+    padding:10px 14px;
+    background:#292d50;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.small-button:hover{
+    background:#3b4070;
+}
+
+.messages{
+    flex:1;
+    overflow-y:auto;
+    padding:20px;
+    background:#f7f7f9;
+}
+
+.message{
+    max-width:800px;
+    margin:0 auto 16px;
+    padding:14px 17px;
+    border-radius:16px;
+    line-height:1.5;
+    white-space:pre-wrap;
+}
+
+.message.ai{
+    background:white;
+    border:1px solid #ddd;
+}
+
+.message.user{
+    background:#292d50;
+    color:white;
+    margin-left:auto;
+    margin-right:max(0px,calc((100% - 800px)/2));
+}
+
+.input-area{
+    display:flex;
+    gap:10px;
+    padding:14px;
+    background:white;
+    border-top:1px solid #ddd;
+}
+
+.input-area input{
+    flex:1;
+    min-width:0;
+    padding:15px 17px;
+    border:1px solid #ccc;
+    border-radius:14px;
+    font-size:16px;
+    outline:none;
+}
+
+.input-area input:focus{
+    border-color:#625cff;
+}
+
+.send-button{
+    width:52px;
+    height:52px;
+    border:0;
+    border-radius:50%;
+    background:#292d50;
+    color:white;
+    font-size:25px;
+    cursor:pointer;
+}
+
+.send-button:hover{
+    transform:scale(1.05);
+}
+
+/* GUARDADOS */
+#savedScreen{
+    flex-direction:column;
+    padding:25px;
+}
+
+.saved-title{
+    text-align:center;
+    font-size:38px;
+    font-weight:900;
+    margin:25px 0;
+}
+
+.saved-list{
+    width:min(900px,100%);
+    margin:auto;
+    overflow-y:auto;
+}
+
+.saved-item{
+    background:rgba(20,20,40,.9);
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:12px;
+}
+
+.saved-item h3{
+    margin-bottom:8px;
+}
+
+.saved-item p{
+    color:#ddd;
+    line-height:1.4;
+}
+
+.empty{
+    text-align:center;
+    color:#bbb;
+    margin-top:80px;
+}
+
+.back{
+    align-self:flex-start;
+}
+
+/* MÓVIL */
+@media(max-width:600px){
+
+    .logo{
+        font-size:48px;
+    }
+
+    .subtitle{
+        font-size:17px;
+    }
+
+    .main-button{
+        width:85%;
+    }
+
+    .top-title{
+        font-size:20px;
+    }
+
+    .messages{
+        padding:12px;
+    }
+
+    .message{
+        max-width:95%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- PORTADA -->
+<section id="home" class="screen active">
+
+    <div class="logo">PIXEL AI</div>
+
+    <div class="subtitle">
+        Inteligencia artificial
+    </div>
+
+    <button class="main-button" onclick="openChat()">
+        🤖 USAR
+    </button>
+
+    <button class="main-button" onclick="openSaved()">
+        💾 GUARDADOS
+    </button>
+
+</section>
+
+
+<!-- CHAT -->
+<section id="chatScreen" class="screen">
+
+    <div class="topbar">
+
+        <div class="top-title">
+            🤖 Pixel AI
+        </div>
+
+        <div class="top-buttons">
+
+            <button class="small-button" onclick="openSaved()">
+                💾 Guardados
+            </button>
+
+            <button class="small-button" onclick="goHome()">
+                ← Volver
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="messages" class="messages">
+
+        <div class="message ai">
+¡Hola! 👋 Soy Pixel AI.
+
+Soy la inteligencia artificial de Pixel Games.
+
+Antes de empezar, ¿cómo te llamas?
+        </div>
+
+    </div>
+
+
+    <div class="input-area">
+
+        <input
+            id="messageInput"
+            type="text"
+            placeholder="Escribir..."
+            autocomplete="off"
+        >
+
+        <button
+            class="send-button"
+            onclick="sendMessage()">
+            ↑
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- GUARDADOS -->
+<section id="savedScreen" class="screen">
+
+    <button class="small-button back" onclick="goHome()">
+        ← Volver
+    </button>
+
+    <div class="saved-title">
+        💾 Guardados
+    </div>
+
+    <div id="savedList" class="saved-list"></div>
+
+</section>
+
+
+<script>
+
+let currentName = "";
+let conversation = [];
+
+
+/* CAMBIAR PANTALLA */
+
+function showScreen(id){
+
+    document.querySelectorAll(".screen").forEach(screen=>{
+        screen.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+}
+
+
+/* ABRIR CHAT */
+
+function openChat(){
+
+    showScreen("chatScreen");
+
+    setTimeout(()=>{
+        document.getElementById("messageInput").focus();
+    },100);
+
+}
+
+
+/* VOLVER */
+
+function goHome(){
+    showScreen("home");
+}
+
+
+/* ABRIR GUARDADOS */
+
+function openSaved(){
+
+    showScreen("savedScreen");
+
+    renderSaved();
+
+}
+
+
+/* AÑADIR MENSAJE */
+
+function addMessage(text,type){
+
+    const messages=document.getElementById("messages");
+
+    const div=document.createElement("div");
+
+    div.className="message "+type;
+
+    div.textContent=text;
+
+    messages.appendChild(div);
+
+    messages.scrollTop=messages.scrollHeight;
+
+}
+
+
+/* ENVIAR */
+
+function sendMessage(){
+
+    const input=document.getElementById("messageInput");
+
+    const text=input.value.trim();
+
+    if(!text) return;
+
+    addMessage(text,"user");
+
+    input.value="";
+
+    conversation.push({
+        role:"user",
+        content:text
+    });
+
+    /*
+       TEMPORALMENTE NO HAY API.
+
+       En el siguiente paso conectaremos
+       este punto con la inteligencia artificial.
+    */
+
+    setTimeout(()=>{
+
+        let response="He recibido tu mensaje. 🤖";
+
+        if(!currentName){
+
+            currentName=text;
+
+            response=
+            "¡Encantada, "+currentName+"! 👋\n\n"+
+            "¿De qué quieres hablar hoy?";
+
+        }else{
+
+            response=
+            "Perfecto, "+currentName+". 🤖\n\n"+
+            "En el siguiente paso conectaré este chat "+
+            "con la inteligencia artificial real.";
+
+        }
+
+        addMessage(response,"ai");
+
+    },500);
+
+}
+
+
+/* ENTER PARA ENVIAR */
+
+document.getElementById("messageInput").addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key==="Enter"){
+            sendMessage();
+        }
+
+    }
+);
+
+
+/* GUARDAR IDEA */
+
+function saveIdea(title,text){
+
+    let saved=JSON.parse(
+        localStorage.getItem("pixelAI_saved") || "[]"
+    );
+
+    saved.push({
+        title:title,
+        text:text,
+        date:new Date().toLocaleString()
+    });
+
+    localStorage.setItem(
+        "pixelAI_saved",
+        JSON.stringify(saved)
+    );
+
+    alert("Idea guardada en Pixel AI 💾");
+
+}
+
+
+/* MOSTRAR GUARDADOS */
+
+function renderSaved(){
+
+    const list=document.getElementById("savedList");
+
+    const saved=JSON.parse(
+        localStorage.getItem("pixelAI_saved") || "[]"
+    );
+
+    list.innerHTML="";
+
+    if(saved.length===0){
+
+        list.innerHTML=
+        '<div class="empty">Todavía no tienes ideas guardadas.</div>';
+
+        return;
+    }
+
+    saved.forEach((item,index)=>{
+
+        const div=document.createElement("div");
+
+        div.className="saved-item";
+
+        div.innerHTML=`
+            <h3>🎮 ${escapeHTML(item.title)}</h3>
+            <p>${escapeHTML(item.text)}</p>
+            <br>
+            <button class="small-button"
+                onclick="deleteSaved(${index})">
+                🗑️ Borrar
+            </button>
+        `;
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* BORRAR GUARDADO */
+
+function deleteSaved(index){
+
+    let saved=JSON.parse(
+        localStorage.getItem("pixelAI_saved") || "[]"
+    );
+
+    saved.splice(index,1);
+
+    localStorage.setItem(
+        "pixelAI_saved",
+        JSON.stringify(saved)
+    );
+
+    renderSaved();
+
+}
+
+
+/* SEGURIDAD DEL TEXTO */
+
+function escapeHTML(text){
+
+    return text
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+</script>
+
+</body>
+</html>
