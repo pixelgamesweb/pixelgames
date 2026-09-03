@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Super Laberintos</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  background:#02030a;
+  color:white;
+}
+
+button{
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;
+  background:#090d18;
+  color:#62aaff;
+  font-weight:bold;
+  padding:14px 20px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+.screen{
+  position:fixed;
+  inset:0;
+  display:none;
+  z-index:10;
+}
+
+.screen.active{
+  display:flex;
+}
+
+/* =========================
+   PORTADA
+========================= */
+
+#cover{
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(50,90,255,.28),transparent 35%),
+    radial-gradient(circle at 80% 70%,rgba(150,40,255,.22),transparent 35%),
+    linear-gradient(145deg,#03051a,#08020f);
+}
+
+.pixelTitle{
+  font-size:clamp(42px,10vw,82px);
+  font-weight:900;
+  letter-spacing:4px;
+  text-shadow:
+    4px 4px 0 #15152d,
+    0 0 20px rgba(90,150,255,.7);
+  margin-bottom:15px;
+}
+
+.subtitle{
+  font-size:18px;
+  color:rgba(255,255,255,.75);
+  margin-bottom:35px;
+}
+
+.mainButton{
+  min-width:190px;
+  font-size:21px;
+  padding:17px 30px;
+  background:#080c18;
+  color:#69adff;
+}
+
+/* =========================
+   NIVELES
+========================= */
+
+#levels{
+  flex-direction:column;
+  background:
+    radial-gradient(circle at 20% 10%,rgba(50,100,255,.18),transparent 35%),
+    radial-gradient(circle at 80% 80%,rgba(160,50,255,.18),transparent 40%),
+    #03040b;
+}
+
+.levelHeader{
+  padding:30px 20px 15px;
+  text-align:center;
+}
+
+.levelTitle{
+  font-size:clamp(38px,8vw,65px);
+  font-weight:900;
+  letter-spacing:3px;
+}
+
+.levelsGrid{
+  width:min(1100px,94%);
+  margin:auto;
+  padding:10px 0 40px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+  overflow:auto;
+}
+
+.level{
+  min-height:105px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border-radius:17px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(10,14,28,.9);
+  color:white;
+  font-size:17px;
+}
+
+.level small{
+  color:#65aaff;
+}
+
+.level.locked{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.lock{
+  font-size:27px;
+}
+
+.backButton{
+  position:absolute;
+  left:18px;
+  top:18px;
+}
+
+/* =========================
+   JUEGO
+========================= */
+
+#game{
+  display:none;
+  background:#000;
+}
+
+#game.active{
+  display:block;
+}
+
+#canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.gameTop{
+  position:absolute;
+  top:15px;
+  right:15px;
+  z-index:20;
+  display:flex;
+  gap:9px;
+}
+
+.topButton{
+  padding:10px 13px;
+  font-size:14px;
+  background:rgba(4,7,15,.85);
+  backdrop-filter:blur(8px);
+}
+
+#mapPanel{
+  position:absolute;
+  right:15px;
+  top:65px;
+  width:230px;
+  height:230px;
+  background:rgba(4,5,10,.95);
+  border:2px solid rgba(255,255,255,.2);
+  border-radius:18px;
+  z-index:25;
+  display:none;
+  padding:10px;
+}
+
+#mapCanvas{
+  width:100%;
+  height:100%;
+}
+
+.hud{
+  position:absolute;
+  left:15px;
+  top:15px;
+  z-index:20;
+  background:rgba(4,7,15,.8);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  padding:10px 14px;
+  font-weight:bold;
+}
+
+#controls{
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  right:20px;
+  z-index:30;
+  display:flex;
+  justify-content:space-between;
+  pointer-events:none;
+}
+
+.controlGroup{
+  display:flex;
+  gap:10px;
+  pointer-events:auto;
+}
+
+.control{
+  width:62px;
+  height:62px;
+  padding:0;
+  border-radius:18px;
+  font-size:25px;
+  background:rgba(5,8,17,.8);
+  backdrop-filter:blur(8px);
+}
+
+#pauseMenu{
+  position:absolute;
+  inset:0;
+  z-index:50;
+  background:rgba(0,0,0,.72);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:15px;
+  backdrop-filter:blur(5px);
+}
+
+.pauseTitle{
+  font-size:52px;
+  font-weight:900;
+}
+
+.finish{
+  position:absolute;
+  inset:0;
+  z-index:60;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:18px;
+  text-align:center;
+}
+
+.finish h2{
+  font-size:45px;
+  margin:0;
+}
+
+@media(max-width:700px){
+  .levelsGrid{
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+
+  .level{
+    min-height:85px;
+    font-size:14px;
+  }
+
+  .control{
+    width:58px;
+    height:58px;
+  }
+}
+
+@media(max-width:430px){
+  .levelsGrid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .gameTop{
+    top:10px;
+    right:10px;
+  }
+
+  .topButton{
+    padding:9px 10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     PORTADA
+========================= -->
+
+<section id="cover" class="screen active">
+
+  <div class="pixelTitle">SUPER LABERINTOS</div>
+
+  <div class="subtitle">
+    Encuentra la salida
+  </div>
+
+  <button class="mainButton" onclick="showLevels()">
+    JUGAR
+  </button>
+
+</section>
+
+
+<!-- =========================
+     NIVELES
+========================= -->
+
+<section id="levels" class="screen">
+
+  <button class="backButton" onclick="showCover()">← VOLVER</button>
+
+  <div class="levelHeader">
+    <div class="levelTitle">NIVELES</div>
+  </div>
+
+  <div id="levelsGrid" class="levelsGrid"></div>
+
+</section>
+
+
+<!-- =========================
+     JUEGO
+========================= -->
+
+<section id="game" class="screen">
+
+  <canvas id="canvas"></canvas>
+
+  <div class="hud">
+    NIVEL <span id="levelNumber">1</span>
+  </div>
+
+  <div class="gameTop">
+
+    <button class="topButton" onclick="toggleMap()">
+      🗺️ MAPA
+    </button>
+
+    <button class="topButton" onclick="pauseGame()">
+      ⏸️
+    </button>
+
+  </div>
+
+  <div id="mapPanel">
+    <canvas id="mapCanvas"></canvas>
+  </div>
+
+
+  <!-- CONTROLES -->
+
+  <div id="controls">
+
+    <div class="controlGroup">
+
+      <button class="control"
+        onpointerdown="keys.left=true"
+        onpointerup="keys.left=false"
+        onpointerleave="keys.left=false">
+        ◀
+      </button>
+
+      <button class="control"
+        onpointerdown="keys.back=true"
+        onpointerup="keys.back=false"
+        onpointerleave="keys.back=false">
+        ▼
+      </button>
+
+      <button class="control"
+        onpointerdown="keys.forward=true"
+        onpointerup="keys.forward=false"
+        onpointerleave="keys.forward=false">
+        ▲
+      </button>
+
+      <button class="control"
+        onpointerdown="keys.right=true"
+        onpointerup="keys.right=false"
+        onpointerleave="keys.right=false">
+        ▶
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- PAUSA -->
+
+  <div id="pauseMenu">
+
+    <div class="pauseTitle">PAUSA</div>
+
+    <button onclick="continueGame()">
+      ▶ CONTINUAR
+    </button>
+
+    <button onclick="backToLevels()">
+      ↩ VOLVER
+    </button>
+
+  </div>
+
+
+  <!-- FINAL -->
+
+  <div id="finish">
+
+    <h2>¡NIVEL COMPLETADO!</h2>
+
+    <div id="finishText"></div>
+
+    <button onclick="nextLevel()">
+      SIGUIENTE NIVEL →
+    </button>
+
+    <button onclick="backToLevels()">
+      NIVELES
+    </button>
+
+  </div>
+
+</section>
+
+
+<script>
+
+/* =====================================================
+   PIXEL GAMES - SUPER LABERINTOS
+===================================================== */
+
+const cover = document.getElementById("cover");
+const levelsScreen = document.getElementById("levels");
+const gameScreen = document.getElementById("game");
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const mapCanvas = document.getElementById("mapCanvas");
+const mapCtx = mapCanvas.getContext("2d");
+
+let currentLevel = 1;
+let unlocked = 3;
+
+let maze = [];
+let mazeSize = 9;
+
+let player = {
+  x:1.5,
+  y:1.5,
+  angle:0
+};
+
+let gamePaused = false;
+let gameWon = false;
+
+const keys = {
+  forward:false,
+  back:false,
+  left:false,
+  right:false
+};
+
+
+/* =====================================================
+   PANTALLAS
+===================================================== */
+
+function hideScreens(){
+  cover.classList.remove("active");
+  levelsScreen.classList.remove("active");
+  gameScreen.classList.remove("active");
+}
+
+function showCover(){
+  hideScreens();
+  cover.classList.add("active");
+}
+
+function showLevels(){
+  hideScreens();
+  levelsScreen.classList.add("active");
+  createLevelButtons();
+}
+
+function backToLevels(){
+  gamePaused=false;
+  document.getElementById("pauseMenu").style.display="none";
+  document.getElementById("finish").style.display="none";
+
+  hideScreens();
+  levelsScreen.classList.add("active");
+
+  createLevelButtons();
+}
+
+
+/* =====================================================
+   NIVELES
+===================================================== */
+
+function createLevelButtons(){
+
+  const grid=document.getElementById("levelsGrid");
+  grid.innerHTML="";
+
+  for(let i=1;i<=100;i++){
+
+    const b=document.createElement("button");
+    b.className="level";
+
+    if(i>unlocked){
+
+      b.classList.add("locked");
+
+      b.innerHTML=`
+        <div class="lock">🔒</div>
+        <div>Nivel ${i}</div>
+      `;
+
+    }else{
+
+      b.innerHTML=`
+        <div>⭐</div>
+        <div>Nivel ${i}</div>
+        <small>JUGAR</small>
+      `;
+
+      b.onclick=()=>{
+        startLevel(i);
+      };
+
+    }
+
+    grid.appendChild(b);
+  }
+}
+
+
+/* =====================================================
+   GENERADOR DE LABERINTO
+===================================================== */
+
+function generateMaze(size){
+
+  const grid=[];
+
+  for(let y=0;y<size;y++){
+
+    grid[y]=[];
+
+    for(let x=0;x<size;x++){
+
+      grid[y][x]=1;
+
+    }
+
+  }
+
+  function carve(x,y){
+
+    grid[y][x]=0;
+
+    const directions=[
+      [2,0],
+      [-2,0],
+      [0,2],
+      [0,-2]
+    ];
+
+    directions.sort(()=>Math.random()-.5);
+
+    for(const [dx,dy] of directions){
+
+      const nx=x+dx;
+      const ny=y+dy;
+
+      if(
+        nx>0 &&
+        nx<size-1 &&
+        ny>0 &&
+        ny<size-1 &&
+        grid[ny][nx]===1
+      ){
+
+        grid[y+dy/2][x+dx/2]=0;
+
+        carve(nx,ny);
+
+      }
+
+    }
+
+  }
+
+  carve(1,1);
+
+  grid[size-2][size-2]=0;
+
+  return grid;
+}
+
+
+/* =====================================================
+   INICIAR NIVEL
+===================================================== */
+
+function startLevel(level){
+
+  currentLevel=level;
+
+  mazeSize=
+    Math.min(
+      9 + Math.floor(level/8)*2,
+      25
+    );
+
+  if(mazeSize%2===0){
+    mazeSize++;
+  }
+
+  maze=generateMaze(mazeSize);
+
+  player.x=1.5;
+  player.y=1.5;
+
+  /*
+     Miramos hacia la derecha al comenzar.
+  */
+  player.angle=0;
+
+  gamePaused=false;
+  gameWon=false;
+
+  document.getElementById("levelNumber").textContent=level;
+
+  document.getElementById("pauseMenu").style.display="none";
+  document.getElementById("finish").style.display="none";
+  document.getElementById("mapPanel").style.display="none";
+
+  hideScreens();
+  gameScreen.classList.add("active");
+
+  resizeCanvas();
+
+  updateMap();
+
+}
+
+
+/* =====================================================
+   CANVAS
+===================================================== */
+
+function resizeCanvas(){
+
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+
+  mapCanvas.width=210;
+  mapCanvas.height=210;
+}
+
+window.addEventListener("resize",resizeCanvas);
+
+
+/* =====================================================
+   MOVIMIENTO
+===================================================== */
+
+window.addEventListener("keydown",e=>{
+
+  if(e.key==="w" || e.key==="ArrowUp")
+    keys.forward=true;
+
+  if(e.key==="s" || e.key==="ArrowDown")
+    keys.back=true;
+
+  if(e.key==="a" || e.key==="ArrowLeft")
+    keys.left=true;
+
+  if(e.key==="d" || e.key==="ArrowRight")
+    keys.right=true;
+
+  if(e.key==="Escape")
+    pauseGame();
+
+});
+
+window.addEventListener("keyup",e=>{
+
+  if(e.key==="w" || e.key==="ArrowUp")
+    keys.forward=false;
+
+  if(e.key==="s" || e.key==="ArrowDown")
+    keys.back=false;
+
+  if(e.key==="a" || e.key==="ArrowLeft")
+    keys.left=false;
+
+  if(e.key==="d" || e.key==="ArrowRight")
+    keys.right=false;
+
+});
+
+
+/* =====================================================
+   COLISIONES
+===================================================== */
+
+function isWall(x,y){
+
+  const gx=Math.floor(x);
+  const gy=Math.floor(y);
+
+  if(
+    gy<0 ||
+    gy>=maze.length ||
+    gx<0 ||
+    gx>=maze[0].length
+  )
+    return true;
+
+  return maze[gy][gx]===1;
+}
+
+
+function movePlayer(){
+
+  if(gamePaused || gameWon) return;
+
+  const speed=.045;
+
+  let moveX=0;
+  let moveY=0;
+
+  if(keys.forward){
+
+    moveX+=Math.cos(player.angle)*speed;
+    moveY+=Math.sin(player.angle)*speed;
+
+  }
+
+  if(keys.back){
+
+    moveX-=Math.cos(player.angle)*speed;
+    moveY-=Math.sin(player.angle)*speed;
+
+  }
+
+  if(keys.left){
+
+    player.angle-=.045;
+
+  }
+
+  if(keys.right){
+
+    player.angle+=.045;
+
+  }
+
+  if(!isWall(player.x+moveX,player.y))
+    player.x+=moveX;
+
+  if(!isWall(player.x,player.y+moveY))
+    player.y+=moveY;
+
+
+  /*
+     SALIDA
+  */
+
+  const exitX=mazeSize-1.5;
+  const exitY=mazeSize-1.5;
+
+  const distance=
+    Math.hypot(
+      player.x-exitX,
+      player.y-exitY
+    );
+
+  if(distance<.6){
+
+    completeLevel();
+
+  }
+
+}
+
+
+/* =====================================================
+   MOTOR 3D
+===================================================== */
+
+const FOV=Math.PI/3;
+
+function castRay(angle){
+
+  let distance=0;
+
+  const step=.025;
+
+  while(distance<30){
+
+    distance+=step;
+
+    const x=
+      player.x+
+      Math.cos(angle)*distance;
+
+    const y=
+      player.y+
+      Math.sin(angle)*distance;
+
+    if(isWall(x,y)){
+
+      return distance;
+
+    }
+
+  }
+
+  return 30;
+}
+
+
+function render3D(){
+
+  const w=canvas.width;
+  const h=canvas.height;
+
+  /*
+     Cielo
+  */
+
+  const sky=ctx.createLinearGradient(0,0,0,h/2);
+
+  sky.addColorStop(0,"#02030b");
+  sky.addColorStop(1,"#111b38");
+
+  ctx.fillStyle=sky;
+  ctx.fillRect(0,0,w,h/2);
+
+
+  /*
+     Suelo
+  */
+
+  const floor=ctx.createLinearGradient(0,h/2,0,h);
+
+  floor.addColorStop(0,"#151515");
+  floor.addColorStop(1,"#030303");
+
+  ctx.fillStyle=floor;
+  ctx.fillRect(0,h/2,w,h/2);
+
+
+  /*
+     Raycasting
+  */
+
+  const rays=Math.min(w,900);
+  const columnWidth=w/rays;
+
+  for(let i=0;i<rays;i++){
+
+    const rayAngle=
+      player.angle-
+      FOV/2+
+      FOV*(i/rays);
+
+    let distance=castRay(rayAngle);
+
+    /*
+       Corrección de efecto ojo de pez
+    */
+
+    distance *=
+      Math.cos(rayAngle-player.angle);
+
+    const wallHeight=
+      Math.min(
+        h*1.5,
+        h/(distance*.75)
+      );
+
+    const top=
+      h/2-wallHeight/2;
+
+    /*
+       Color según distancia
+    */
+
+    const brightness=
+      Math.max(
+        25,
+        210-distance*14
+      );
+
+    ctx.fillStyle=
+      `rgb(${brightness*.35},
+           ${brightness*.55},
+           ${brightness})`;
+
+    ctx.fillRect(
+      i*columnWidth,
+      top,
+      columnWidth+1,
+      wallHeight
+    );
+
+  }
+
+
+  /*
+     Cruz central
+  */
+
+  ctx.strokeStyle="rgba(255,255,255,.65)";
+  ctx.lineWidth=2;
+
+  ctx.beginPath();
+
+  ctx.moveTo(w/2-8,h/2);
+  ctx.lineTo(w/2+8,h/2);
+
+  ctx.moveTo(w/2,h/2-8);
+  ctx.lineTo(w/2,h/2+8);
+
+  ctx.stroke();
+
+
+  /*
+     Salida luminosa
+  */
+
+  drawExitMarker();
+
+}
+
+
+/* =====================================================
+   SALIDA
+===================================================== */
+
+function drawExitMarker(){
+
+  const dx=
+    mazeSize-1.5-player.x;
+
+  const dy=
+    mazeSize-1.5-player.y;
+
+  const distance=Math.hypot(dx,dy);
+
+  let angle=
+    Math.atan2(dy,dx)-player.angle;
+
+  while(angle>Math.PI)
+    angle-=Math.PI*2;
+
+  while(angle<-Math.PI)
+    angle+=Math.PI*2;
+
+  if(Math.abs(angle)>FOV/2)
+    return;
+
+  const screenX=
+    canvas.width/2+
+    (angle/(FOV/2))*
+    (canvas.width/2);
+
+  const size=
+    Math.max(
+      10,
+      100/distance
+    );
+
+  ctx.fillStyle="#62aaff";
+
+  ctx.fillRect(
+    screenX-size/2,
+    canvas.height/2-size,
+    size,
+    size*2
+  );
+
+}
+
+
+/* =====================================================
+   MAPA
+===================================================== */
+
+function toggleMap(){
+
+  const panel=
+    document.getElementById("mapPanel");
+
+  if(panel.style.display==="block"){
+
+    panel.style.display="none";
+
+  }else{
+
+    panel.style.display="block";
+
+    updateMap();
+
+  }
+
+}
+
+
+function updateMap(){
+
+  if(!maze.length) return;
+
+  const size=210;
+  const cell=size/mazeSize;
+
+  mapCtx.fillStyle="#05060b";
+  mapCtx.fillRect(0,0,size,size);
+
+  for(let y=0;y<mazeSize;y++){
+
+    for(let x=0;x<mazeSize;x++){
+
+      if(maze[y][x]===1){
+
+        mapCtx.fillStyle="#6b7280";
+
+      }else{
+
+        mapCtx.fillStyle="#151922";
+
+      }
+
+      mapCtx.fillRect(
+        x*cell,
+        y*cell,
+        cell+.5,
+        cell+.5
+      );
+
+    }
+
+  }
+
+
+  /*
+     SALIDA
+  */
+
+  mapCtx.fillStyle="#62aaff";
+
+  mapCtx.fillRect(
+    (mazeSize-2)*cell,
+    (mazeSize-2)*cell,
+    cell,
+    cell
+  );
+
+
+  /*
+     JUGADOR
+  */
+
+  const px=player.x*cell;
+  const py=player.y*cell;
+
+  mapCtx.fillStyle="#ff3b7a";
+
+  mapCtx.beginPath();
+
+  mapCtx.arc(
+    px,
+    py,
+    Math.max(4,cell*.25),
+    0,
+    Math.PI*2
+  );
+
+  mapCtx.fill();
+
+
+  /*
+     Dirección
+  */
+
+  mapCtx.strokeStyle="#fff";
+  mapCtx.lineWidth=2;
+
+  mapCtx.beginPath();
+
+  mapCtx.moveTo(px,py);
+
+  mapCtx.lineTo(
+    px+
+    Math.cos(player.angle)*cell,
+    py+
+    Math.sin(player.angle)*cell
+  );
+
+  mapCtx.stroke();
+
+}
+
+
+/* =====================================================
+   PAUSA
+===================================================== */
+
+function pauseGame(){
+
+  if(gameWon) return;
+
+  gamePaused=true;
+
+  document.getElementById("pauseMenu").style.display="flex";
+
+}
+
+
+function continueGame(){
+
+  gamePaused=false;
+
+  document.getElementById("pauseMenu").style.display="none";
+
+}
+
+
+/* =====================================================
+   COMPLETAR NIVEL
+===================================================== */
+
+function completeLevel(){
+
+  gameWon=true;
+
+  /*
+     Desbloqueamos el siguiente.
+  */
+
+  if(currentLevel===unlocked && unlocked<100){
+
+    unlocked++;
+
+  }
+
+  document.getElementById("finishText").textContent=
+    "Has completado el nivel "+currentLevel+".";
+
+  document.getElementById("finish").style.display="flex";
+
+}
+
+
+/* =====================================================
+   SIGUIENTE NIVEL
+===================================================== */
+
+function nextLevel(){
+
+  const next=currentLevel+1;
+
+  if(next<=100){
+
+    startLevel(next);
+
+  }else{
+
+    backToLevels();
+
+  }
+
+}
+
+
+/* =====================================================
+   BUCLE PRINCIPAL
+===================================================== */
+
+function gameLoop(){
+
+  movePlayer();
+
+  render3D();
+
+  updateMap();
+
+  requestAnimationFrame(gameLoop);
+
+}
+
+gameLoop();
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+createLevelButtons();
+
+</script>
+
+</body>
+</html>
