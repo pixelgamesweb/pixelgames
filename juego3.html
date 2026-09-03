@@ -1,1877 +1,545 @@
-<!DOCTYPE html>
+# We'll generate a complete HTML file based on the user's existing game design.
+html = r'''<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Juego 3 - Fútbol 3D</title>
-
+<title>Juego 3 - Fútbol 3D Online</title>
 <style>
-*{
-  box-sizing:border-box;
-  user-select:none;
-  -webkit-user-select:none;
-}
-
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#07100a;
-  font-family:Arial,sans-serif;
-}
-
-#game{
-  position:fixed;
-  inset:0;
-}
-
-button{
-  border:1px solid #ffffff25;
-  border-radius:14px;
-  background:#050505;
-  color:#62aaff;
-  font-weight:bold;
-  padding:13px;
-}
-
-#menu,
-#pause{
-  position:fixed;
-  inset:0;
-  z-index:20;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:
-    radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),
-    radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),
-    #05070b;
-}
-
-.panel{
-  width:min(92vw,620px);
-  padding:30px;
-  border-radius:28px;
-  background:#050509ed;
-  border:1px solid #ffffff20;
-  box-shadow:0 30px 100px #000;
-  color:white;
-}
-
-h1{
-  margin:0;
-  text-align:center;
-  font-size:clamp(42px,9vw,75px);
-}
-
-.description{
-  text-align:center;
-  line-height:1.6;
-  opacity:.75;
-}
-
-.main{
-  width:100%;
-  margin:8px 0;
-  padding:17px;
-  font-size:18px;
-}
-
-#hud{
-  display:none;
-  position:fixed;
-  z-index:10;
-  top:12px;
-  left:12px;
-  right:12px;
-  justify-content:space-between;
-  pointer-events:none;
-}
-
-#score{
-  padding:12px 20px;
-  border-radius:14px;
-  background:#000b;
-  border:1px solid #ffffff25;
-  font-size:18px;
-}
-
-#hud button{
-  pointer-events:auto;
-  width:48px;
-  height:48px;
-  padding:0;
-}
-
-#controls{
-  display:none;
-  position:fixed;
-  z-index:12;
-  left:0;
-  right:0;
-  bottom:12px;
-  height:155px;
-  pointer-events:none;
-}
-
-#joystick{
-  position:absolute;
-  left:15px;
-  bottom:0;
-  width:140px;
-  height:140px;
-  border-radius:50%;
-  background:#000a;
-  border:2px solid #ffffff25;
-  pointer-events:auto;
-}
-
-#knob{
-  position:absolute;
-  left:41px;
-  top:41px;
-  width:58px;
-  height:58px;
-  border-radius:50%;
-  background:#111;
-}
-
-#actions{
-  position:absolute;
-  right:15px;
-  bottom:0;
-  display:grid;
-  grid-template-columns:82px 82px;
-  gap:8px;
-  pointer-events:auto;
-}
-
-#actions button{
-  height:62px;
-  padding:4px;
-  font-size:10px;
-}
-
-#countdown{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:30;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-size:clamp(90px,20vw,180px);
-  font-weight:900;
-  text-shadow:0 8px 30px #000;
-  pointer-events:none;
-}
-
-#goalMessage{
-  display:none;
-  position:fixed;
-  z-index:31;
-  top:105px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:10px 28px;
-  border-radius:18px;
-  background:#ffd400;
-  color:#111;
-  font-size:clamp(30px,7vw,64px);
-  font-weight:900;
-  text-shadow:1px 1px #fff;
-  pointer-events:none;
-}
-
-#pause{
-  display:none;
-}
-
-#pause .panel{
-  text-align:center;
-}
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07100a;font-family:Arial,sans-serif}
+#game{position:fixed;inset:0}
+button{border:1px solid #ffffff25;border-radius:14px;background:#050505;color:#62aaff;font-weight:bold;padding:13px;cursor:pointer}
+button:active{transform:translateY(1px)}
+#menu,#pause,#onlineMenu{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),#05070b}
+#onlineMenu{z-index:40;display:none}
+.panel{width:min(92vw,620px);padding:30px;border-radius:28px;background:#050509ed;border:1px solid #ffffff20;box-shadow:0 30px 100px #000;color:white}
+h1{margin:0;text-align:center;font-size:clamp(42px,9vw,75px)}
+.description{text-align:center;line-height:1.6;opacity:.75}
+.main{width:100%;margin:8px 0;padding:17px;font-size:18px}
+#hud{display:none;position:fixed;z-index:10;top:12px;left:12px;right:12px;justify-content:space-between;pointer-events:none}
+#score{padding:12px 20px;border-radius:14px;background:#000b;border:1px solid #ffffff25;font-size:18px}
+#hud button{pointer-events:auto;width:48px;height:48px;padding:0}
+#controls{display:none;position:fixed;z-index:12;left:0;right:0;bottom:12px;height:155px;pointer-events:none}
+#joystick{position:absolute;left:15px;bottom:0;width:140px;height:140px;border-radius:50%;background:#000a;border:2px solid #ffffff25;pointer-events:auto;touch-action:none}
+#knob{position:absolute;left:41px;top:41px;width:58px;height:58px;border-radius:50%;background:#111}
+#actions{position:absolute;right:15px;bottom:0;display:grid;grid-template-columns:82px 82px;gap:8px;pointer-events:auto}
+#actions button{height:62px;padding:4px;font-size:10px;touch-action:none}
+#countdown{display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;color:white;font-size:clamp(90px,20vw,180px);font-weight:900;text-shadow:0 8px 30px #000;pointer-events:none}
+#goalMessage{display:none;position:fixed;z-index:51;top:105px;left:50%;transform:translateX(-50%);padding:10px 28px;border-radius:18px;background:#ffd400;color:#111;font-size:clamp(30px,7vw,64px);font-weight:900;pointer-events:none}
+.onlineCode{width:100%;padding:16px;border-radius:14px;border:1px solid #ffffff25;background:#10131b;color:white;font-size:24px;text-align:center;letter-spacing:6px;margin:8px 0;outline:none}
+.onlineStatus{text-align:center;min-height:28px;color:#62aaff;margin:12px 0}
+#pause{display:none}
+#pause .panel{text-align:center}
+.small{font-size:13px;opacity:.7}
 </style>
 </head>
-
 <body>
-
 <div id="game"></div>
 
-<!-- MENÚ -->
-
 <section id="menu">
-
   <div class="panel">
-
     <h1>Fútbol 3D</h1>
-
-    <p class="description">
-      Un juego de fútbol 3D original.
-      Juega partidos, marca goles y domina el campo.
-    </p>
-
-    <button id="play" class="main">
-      JUGAR
-    </button>
-
-    <button id="online" class="main">
-      PARTIDA ONLINE
-    </button>
-
-    <button id="friends" class="main">
-      JUGAR CON AMIGOS
-    </button>
-
+    <p class="description">Un juego de fútbol 3D original.<br>Juega partidos, marca goles y domina el campo.</p>
+    <button id="play" class="main">JUGAR</button>
+    <button id="online" class="main">PARTIDA ONLINE</button>
+    <button id="friends" class="main">JUGAR CON AMIGOS</button>
   </div>
-
 </section>
 
-
-<!-- PAUSA -->
+<section id="onlineMenu">
+  <div class="panel">
+    <h2 style="text-align:center;font-size:38px;margin-top:0">⚽ PARTIDA ONLINE</h2>
+    <p class="description">Una persona crea la sala y comparte el código de 4 cifras. La otra lo escribe para entrar.</p>
+    <button id="createRoom" class="main">🟢 CREAR PARTIDA</button>
+    <div id="roomArea" style="display:none;text-align:center">
+      <p style="margin-bottom:5px">CÓDIGO DE TU SALA</p>
+      <div id="roomCode" class="onlineCode">----</div>
+      <p class="description">Comparte este código con tu amigo.</p>
+      <p id="hostStatus" class="small">Esperando al segundo jugador...</p>
+    </div>
+    <button id="joinRoom" class="main">🔵 UNIRSE A UNA PARTIDA</button>
+    <input id="roomInput" class="onlineCode" maxlength="4" inputmode="numeric" placeholder="CÓDIGO" style="display:none">
+    <button id="confirmJoin" class="main" style="display:none">ENTRAR EN LA SALA</button>
+    <div id="onlineStatus" class="onlineStatus"></div>
+    <button id="closeOnline" class="main">🔙 VOLVER</button>
+  </div>
+</section>
 
 <section id="pause">
-
   <div class="panel">
-
     <h2>PAUSA</h2>
-
-    <button id="resume" class="main">
-      CONTINUAR
-    </button>
-
-    <button id="back" class="main">
-      VOLVER
-    </button>
-
+    <button id="resume" class="main">CONTINUAR</button>
+    <button id="back" class="main">VOLVER</button>
   </div>
-
 </section>
 
+<div id="hud">
+  <div id="score">LOCAL 0 — 0 VISITANTE<br><small id="time">00:00</small></div>
+  <button id="pauseButton">Ⅱ</button>
+</div>
 
-<div id="countdown">3</div>
+<div id="countdown"></div>
 <div id="goalMessage">¡GOL!</div>
 
-<!-- HUD -->
-
-<div id="hud">
-
-  <div id="score">
-    LOCAL 0 — 0 VISITANTE
-    <br>
-    <small id="time">00:00</small>
-  </div>
-
-  <button id="pauseButton">
-    Ⅱ
-  </button>
-
-</div>
-
-
-<!-- CONTROLES -->
-
 <div id="controls">
-
-  <div id="joystick">
-
-    <div id="knob"></div>
-
-  </div>
-
+  <div id="joystick"><div id="knob"></div></div>
   <div id="actions">
-
-    <button id="pass">
-      PASAR
-    </button>
-
-    <button id="shoot">
-      TIRAR
-    </button>
-
-    <button id="sprint">
-      SPRINT
-    </button>
-
-    <button id="switch">
-      JUGADOR
-    </button>
-
+    <button id="pass">PASAR</button>
+    <button id="shoot">TIRAR</button>
+    <button id="sprint">SPRINT</button>
+    <button id="switch">JUGADOR</button>
   </div>
-
 </div>
 
-
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+/* ---------- ESCENA ---------- */
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x07120b);
+scene.fog=new THREE.Fog(0x07120b,80,350);
 
+const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,1000);
+camera.position.set(0,12,18);
 
-/* =========================
-   ESCENA
-========================= */
-
-const scene =
-  new THREE.Scene();
-
-scene.background =
-  new THREE.Color(0x07120b);
-
-scene.fog =
-  new THREE.Fog(
-    0x07120b,
-    80,
-    350
-  );
-
-
-/* =========================
-   CÁMARA
-========================= */
-
-const camera =
-  new THREE.PerspectiveCamera(
-    60,
-    innerWidth / innerHeight,
-    .1,
-    1000
-  );
-
-camera.position.set(
-  0,
-  12,
-  18
-);
-
-
-/* =========================
-   RENDER
-========================= */
-
-const renderer =
-  new THREE.WebGLRenderer({
-    antialias:true
-  });
-
-renderer.setSize(
-  innerWidth,
-  innerHeight
-);
-
-renderer.setPixelRatio(
-  Math.min(
-    devicePixelRatio,
-    2
-  )
-);
-
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.shadowMap.enabled=true;
+document.getElementById("game").appendChild(renderer.domElement);
 
-document
-  .getElementById("game")
-  .appendChild(
-    renderer.domElement
-  );
+scene.add(new THREE.HemisphereLight(0xcfe7ff,0x142719,1.8));
+const stadiumLight=new THREE.DirectionalLight(0xffffff,2.5);
+stadiumLight.position.set(-50,100,40); stadiumLight.castShadow=true; scene.add(stadiumLight);
 
+const fieldWidth=68, fieldLength=105;
+const field=new THREE.Mesh(new THREE.PlaneGeometry(fieldWidth,fieldLength),new THREE.MeshStandardMaterial({color:0x176b35,roughness:.9}));
+field.rotation.x=-Math.PI/2; field.receiveShadow=true; scene.add(field);
 
-/* =========================
-   ILUMINACIÓN
-========================= */
-
-scene.add(
-  new THREE.HemisphereLight(
-    0xcfe7ff,
-    0x142719,
-    1.8
-  )
-);
-
-
-const stadiumLight =
-  new THREE.DirectionalLight(
-    0xffffff,
-    2.5
-  );
-
-stadiumLight.position.set(
-  -50,
-  100,
-  40
-);
-
-stadiumLight.castShadow=true;
-
-scene.add(
-  stadiumLight
-);
-
-
-/* =========================
-   CAMPO
-========================= */
-
-const fieldWidth=68;
-const fieldLength=105;
-
-
-const field =
-  new THREE.Mesh(
-
-    new THREE.PlaneGeometry(
-      fieldWidth,
-      fieldLength
-    ),
-
-    new THREE.MeshStandardMaterial({
-      color:0x176b35,
-      roughness:.9
-    })
-
-  );
-
-
-field.rotation.x=
-  -Math.PI/2;
-
-field.receiveShadow=true;
-
-scene.add(field);
-
-
-/* =========================
-   LÍNEAS DEL CAMPO
-========================= */
-
-function line(
-  x,
-  z,
-  width,
-  depth
-){
-
-  const mesh=
-    new THREE.Mesh(
-
-      new THREE.BoxGeometry(
-        width,
-        .025,
-        depth
-      ),
-
-      new THREE.MeshBasicMaterial({
-        color:0xffffff
-      })
-
-    );
-
-  mesh.position.set(
-    x,
-    .03,
-    z
-  );
-
-  scene.add(mesh);
-
+function line(x,z,width,depth){
+  const mesh=new THREE.Mesh(new THREE.BoxGeometry(width,.025,depth),new THREE.MeshBasicMaterial({color:0xffffff}));
+  mesh.position.set(x,.03,z); scene.add(mesh);
 }
+line(-fieldWidth/2,0,.12,fieldLength); line(fieldWidth/2,0,.12,fieldLength);
+line(0,-fieldLength/2,fieldWidth,.12); line(0,fieldLength/2,fieldWidth,.12); line(0,0,fieldWidth,.12);
+const circle=new THREE.Mesh(new THREE.RingGeometry(9.1,9.22,64),new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}));
+circle.rotation.x=-Math.PI/2; circle.position.y=.04; scene.add(circle);
 
-
-/* Líneas laterales */
-
-line(
-  -fieldWidth/2,
-  0,
-  .12,
-  fieldLength
-);
-
-line(
-  fieldWidth/2,
-  0,
-  .12,
-  fieldLength
-);
-
-
-/* Líneas de fondo */
-
-line(
-  0,
-  -fieldLength/2,
-  fieldWidth,
-  .12
-);
-
-line(
-  0,
-  fieldLength/2,
-  fieldWidth,
-  .12
-);
-
-
-/* Línea central */
-
-line(
-  0,
-  0,
-  fieldWidth,
-  .12
-);
-
-
-/* Círculo central */
-
-const circle=
-  new THREE.Mesh(
-
-    new THREE.RingGeometry(
-      9.1,
-      9.22,
-      64
-    ),
-
-    new THREE.MeshBasicMaterial({
-      color:0xffffff,
-      side:THREE.DoubleSide
-    })
-
-  );
-
-circle.rotation.x=
-  -Math.PI/2;
-
-circle.position.y=.04;
-
-scene.add(circle);
-
-
-/* =========================
-   PORTERÍAS
-========================= */
-
-function createGoal(
-  z,
-  direction
-){
-
-  const group=
-    new THREE.Group();
-
-  const material=
-    new THREE.MeshStandardMaterial({
-      color:0xffffff
-    });
-
-
-  const width=14;
-  const height=5;
-
-
-  const post1=
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        .35,
-        height,
-        .35
-      ),
-      material
-    );
-
-
-  post1.position.set(
-    -width/2,
-    height/2,
-    0
-  );
-
-
-  const post2=
-    post1.clone();
-
-  post2.position.x=
-    width/2;
-
-
-  const crossbar=
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        width,
-        .35,
-        .35
-      ),
-      material
-    );
-
-
-  crossbar.position.y=
-    height;
-
-
-  group.add(
-    post1,
-    post2,
-    crossbar
-  );
-
-
-  group.position.z=
-    z;
-
-
-  scene.add(group);
-
+function createGoal(z){
+  const group=new THREE.Group(), material=new THREE.MeshStandardMaterial({color:0xffffff});
+  const width=14,height=5;
+  const p1=new THREE.Mesh(new THREE.BoxGeometry(.35,height,.35),material);
+  p1.position.set(-width/2,height/2,0);
+  const p2=p1.clone(); p2.position.x=width/2;
+  const bar=new THREE.Mesh(new THREE.BoxGeometry(width,.35,.35),material); bar.position.y=height;
+  group.add(p1,p2,bar); group.position.z=z; scene.add(group);
 }
+createGoal(-fieldLength/2); createGoal(fieldLength/2);
 
-
-createGoal(
-  -fieldLength/2,
-  1
-);
-
-createGoal(
-  fieldLength/2,
-  -1
-);
-
-
-/* =========================
-   JUGADOR
-========================= */
-
-function createPlayer(
-  color
-){
-
-  const group=
-    new THREE.Group();
-
-
-  const body=
-    new THREE.Mesh(
-
-      new THREE.CapsuleGeometry(
-        .42,
-        1,
-        8,
-        12
-      ),
-
-      new THREE.MeshStandardMaterial({
-        color
-      })
-
-    );
-
-  body.position.y=
-    1.35;
-
-  body.castShadow=true;
-
-  group.add(body);
-
-
-  const head=
-    new THREE.Mesh(
-
-      new THREE.SphereGeometry(
-        .38,
-        16,
-        12
-      ),
-
-      new THREE.MeshStandardMaterial({
-        color:0xd69a73
-      })
-
-    );
-
-  head.position.y=
-    2.35;
-
-  head.castShadow=true;
-
-  group.add(head);
-
-
-  const legMaterial=
-    new THREE.MeshStandardMaterial({
-      color:0x111111
-    });
-
-
-  for(
-    const x of[-.2,.2]
-  ){
-
-    const leg=
-      new THREE.Mesh(
-
-        new THREE.BoxGeometry(
-          .22,
-          .8,
-          .25
-        ),
-
-        legMaterial
-
-      );
-
-    leg.position.set(
-      x,
-      .45,
-      0
-    );
-
-    group.add(leg);
-
+/* ---------- JUGADORES ---------- */
+function createPlayer(color){
+  const group=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.CapsuleGeometry(.42,1,8,12),new THREE.MeshStandardMaterial({color}));
+  body.position.y=1.35; body.castShadow=true; group.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.38,16,12),new THREE.MeshStandardMaterial({color:0xd69a73}));
+  head.position.y=2.35; head.castShadow=true; group.add(head);
+  const legMaterial=new THREE.MeshStandardMaterial({color:0x111111});
+  for(const x of[-.2,.2]){
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(.22,.8,.25),legMaterial);
+    leg.position.set(x,.45,0); group.add(leg);
   }
-
-
   return group;
-
 }
 
+const player=createPlayer(0x2878e8); player.position.set(0,0,22); scene.add(player);
+const remotePlayer=createPlayer(0xf2c230); remotePlayer.position.set(0,0,-22); remotePlayer.visible=false; scene.add(remotePlayer);
 
-const player=
-  createPlayer(
-    0x2878e8
-  );
-
-player.position.set(
-  0,
-  0,
-  22
-);
-
-scene.add(player);
-
-
-/* =========================
-   JUGADORES IA
-========================= */
-
-const opponents=[];
-
-
-for(
-  let i=0;
-  i<5;
-  i++
-){
-
-  const p=
-    createPlayer(
-      0xe83232
-    );
-
-  p.position.set(
-    (Math.random()-.5)*35,
-    0,
-    -20+
-    Math.random()*35
-  );
-
-  scene.add(p);
-
-  opponents.push(p);
-
+const opponents=[], teammates=[];
+for(let i=0;i<5;i++){
+  const p=createPlayer(0xe83232);
+  p.position.set((Math.random()-.5)*35,0,-20+Math.random()*35); scene.add(p); opponents.push(p);
+}
+for(let i=0;i<4;i++){
+  const p=createPlayer(0x2878e8);
+  p.position.set((Math.random()-.5)*35,0,5+Math.random()*35); scene.add(p); teammates.push(p);
 }
 
+/* ---------- BALÓN ---------- */
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.55,24,16),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.5}));
+ball.position.set(0,.55,15); ball.castShadow=true; scene.add(ball);
+const ballVelocity=new THREE.Vector3();
+let ballOwner=null;
 
-const teammates=[];
+/* ---------- ESTADO ---------- */
+let playing=false, paused=false, matchTime=0, homeScore=0, awayScore=0, sprinting=false;
+let onlineMode=false, isHost=false, connected=false, peer=null, conn=null, roomPeerId="";
+let countdownRunning=false, resetLock=false;
+const keys={w:false,a:false,s:false,d:false};
+const remoteInput={w:false,a:false,s:false,d:false,sprint:false,shoot:false,pass:false};
 
-
-for(
-  let i=0;
-  i<4;
-  i++
-){
-
-  const p=
-    createPlayer(
-      0x2878e8
-    );
-
-  p.position.set(
-    (Math.random()-.5)*35,
-    0,
-    5+
-    Math.random()*35
-  );
-
-  scene.add(p);
-
-  teammates.push(p);
-
-}
-
-
-/* =========================
-   BALÓN
-========================= */
-
-const ball=
-  new THREE.Mesh(
-
-    new THREE.SphereGeometry(
-      .55,
-      24,
-      16
-    ),
-
-    new THREE.MeshStandardMaterial({
-      color:0xffffff,
-      roughness:.5
-    })
-
-  );
-
-ball.position.set(
-  0,
-  .55,
-  15
-);
-
-ball.castShadow=true;
-
-scene.add(ball);
-
-
-/* =========================
-   ESTADO DEL BALÓN
-========================= */
-
-const ballVelocity=
-  new THREE.Vector3();
-
-let ballOwner=
-  null;
-
-
-/* =========================
-   ESTADO
-========================= */
-
-let playing=false;
-let paused=false;
-
-let matchTime=0;
-
-let homeScore=0;
-let awayScore=0;
-
-let sprinting=false;
-
-const keys={
-  w:false,
-  a:false,
-  s:false,
-  d:false
+const normalSpeed=7, sprintSpeed=12;
+const clampPos=p=>{
+  p.x=THREE.MathUtils.clamp(p.x,-fieldWidth/2+1,fieldWidth/2-1);
+  p.z=THREE.MathUtils.clamp(p.z,-fieldLength/2+1,fieldLength/2-1);
 };
 
-
-/* =========================
-   VELOCIDAD
-========================= */
-
-const normalSpeed=9.5;
-const sprintSpeed=15;
-const aiSpeed=6.8;
-const aiSprintSpeed=10.5;
-
-
-/* =========================
-   CONTROL DEL JUGADOR
-========================= */
-
-function updatePlayer(
-  delta
-){
-
-  const forward=
-    (keys.w?1:0)-
-    (keys.s?1:0);
-
-  const sideways=
-    (keys.d?1:0)-
-    (keys.a?1:0);
-
-
-  let speed=
-    sprinting
-      ? sprintSpeed
-      : normalSpeed;
-
-
-  player.position.z+=
-    forward*
-    speed*
-    delta;
-
-
-  player.position.x+=
-    sideways*
-    speed*
-    delta;
-
-
-  player.position.x=
-    THREE.MathUtils.clamp(
-      player.position.x,
-      -fieldWidth/2+1,
-      fieldWidth/2-1
-    );
-
-
-  player.position.z=
-    THREE.MathUtils.clamp(
-      player.position.z,
-      -fieldLength/2+1,
-      fieldLength/2-1
-    );
-
-
-  /* Animación sencilla */
-
-  if(
-    forward!==0 ||
-    sideways!==0
-  ){
-
-    player.rotation.y=
-      Math.atan2(
-        sideways,
-        forward
-      );
-
-  }
-
+/* ---------- CONTROLES ---------- */
+function getInputFor(p, input, speed, delta){
+  const forward=(input.w?1:0)-(input.s?1:0);
+  const sideways=(input.d?1:0)-(input.a?1:0);
+  p.position.z+=forward*speed*delta;
+  p.position.x+=sideways*speed*delta;
+  clampPos(p);
+  if(forward||sideways) p.rotation.y=Math.atan2(sideways,forward);
 }
 
-
-/* =========================
-   COLISIONES ENTRE JUGADORES
-========================= */
-
-function keepPlayersApart(){
-
-  const all=[player,...teammates,...opponents];
-  const minDistance=1.45;
-
-  for(let i=0;i<all.length;i++){
-    for(let j=i+1;j<all.length;j++){
-      const a=all[i];
-      const b=all[j];
-      const dx=b.position.x-a.position.x;
-      const dz=b.position.z-a.position.z;
-      const distance=Math.hypot(dx,dz);
-
-      if(distance<minDistance){
-        const safe=distance||0.001;
-        const nx=dx/safe;
-        const nz=dz/safe;
-        const push=(minDistance-safe)/2;
-        a.position.x-=nx*push;
-        a.position.z-=nz*push;
-        b.position.x+=nx*push;
-        b.position.z+=nz*push;
-      }
-    }
-  }
+function updatePlayer(delta){
+  getInputFor(player,keys,sprinting?sprintSpeed:normalSpeed,delta);
+}
+function updateRemotePlayer(delta){
+  if(!connected)return;
+  getInputFor(remotePlayer,remoteInput,remoteInput.sprint?sprintSpeed:normalSpeed,delta);
 }
 
-/* =========================
-   FÍSICA DEL BALÓN
-========================= */
-
-function updateBall(
-  delta
-){
-
-  ball.position.addScaledVector(
-    ballVelocity,
-    delta
-  );
-
-
-  ballVelocity.multiplyScalar(
-    Math.pow(
-      .94,
-      delta*60
-    )
-  );
-
-
-  if(
-    ball.position.y>.55
-  ){
-
-    ballVelocity.y-=
-      12*
-      delta;
-
-  }
-
-
-  if(
-    ball.position.y<.55
-  ){
-
-    ball.position.y=.55;
-
-    if(
-      Math.abs(
-        ballVelocity.y
-      )>.5
-    ){
-
-      ballVelocity.y*=
-        -.45;
-
-    }
-    else{
-
-      ballVelocity.y=0;
-
-    }
-
-  }
-
-
-  /* Laterales */
-
-  if(
-    Math.abs(
-      ball.position.x
-    )>
-    fieldWidth/2
-  ){
-
-    ball.position.x=
-      Math.sign(
-        ball.position.x
-      )*
-      fieldWidth/2;
-
-    ballVelocity.x*=-.65;
-
-  }
-
-
-  /* Fondos */
-
-  if(
-    Math.abs(
-      ball.position.z
-    )>
-    fieldLength/2
-  ){
-
-    /*
-      Gol si la pelota está
-      dentro de la portería.
-    */
-
-    if(
-      Math.abs(
-        ball.position.x
-      )<7
-    ){
-
-      if(
-        ball.position.z<
-        -fieldLength/2
-      ){
-
-        homeScore++;
-        showGoal("¡GOL! 🔵");
-
-      }
-      else{
-
-        awayScore++;
-        showGoal("¡GOL! 🔴");
-
-      }
-
-      resetBall();
-
-    }
-    else{
-
-      ball.position.z=
-        Math.sign(
-          ball.position.z
-        )*
-        fieldLength/2;
-
-      ballVelocity.z*=-.65;
-
-    }
-
-  }
-
-}
-
-
-function showGoal(text){
-  const message=document.getElementById("goalMessage");
-  message.textContent=text;
-  message.style.display="block";
-  setTimeout(()=>{message.style.display="none";},1200);
-}
-
-/* =========================
-   REINICIAR BALÓN
-========================= */
-
+/* ---------- FÍSICA BALÓN ---------- */
 function resetBall(){
-
-  ball.position.set(
-    0,
-    .55,
-    0
-  );
-
-  ballVelocity.set(
-    0,
-    0,
-    0
-  );
-
+  ball.position.set(0,.55,0); ballVelocity.set(0,0,0); ballOwner=null;
+}
+function kickBall(dirX=0,high=2.5,power=25){
+  ballOwner=null;
+  ballVelocity.set(dirX,high,-power);
+}
+function updateBall(delta){
+  ball.position.addScaledVector(ballVelocity,delta);
+  ballVelocity.multiplyScalar(Math.pow(.94,delta*60));
+  if(ball.position.y>.55) ballVelocity.y-=12*delta;
+  if(ball.position.y<.55){
+    ball.position.y=.55;
+    if(Math.abs(ballVelocity.y)>.5) ballVelocity.y*=-.45; else ballVelocity.y=0;
+  }
+  if(Math.abs(ball.position.x)>fieldWidth/2){
+    ball.position.x=Math.sign(ball.position.x)*fieldWidth/2;
+    ballVelocity.x*=-.65;
+  }
+  if(Math.abs(ball.position.z)>fieldLength/2){
+    if(Math.abs(ball.position.x)<7){
+      if(ball.position.z<-fieldLength/2) homeScore++; else awayScore++;
+      showGoal();
+      resetBall();
+      player.position.set(0,0,22); remotePlayer.position.set(0,0,-22);
+    }else{
+      ball.position.z=Math.sign(ball.position.z)*fieldLength/2;
+      ballVelocity.z*=-.65;
+    }
+  }
 }
 
-
-/* =========================
-   CONTROL BALÓN
-========================= */
-
+/* ---------- BALÓN / CHUTES ---------- */
 function checkBall(){
-
-  const distance=
-    player.position.distanceTo(
-      ball.position
-    );
-
-
-  if(
-    distance<2.3 &&
-    ball.position.y<2
-  ){
-
-    ballOwner=
-      player;
-
+  if(ballOwner===null){
+    const d1=player.position.distanceTo(ball.position);
+    const d2=connected?remotePlayer.position.distanceTo(ball.position):999;
+    if(d1<2.3 && ball.position.y<2) ballOwner=player;
+    else if(d2<2.3 && ball.position.y<2) ballOwner=remotePlayer;
   }
-
-
-  if(
-    ballOwner===player
-  ){
-
-    const target=
-      player.position.clone();
-
-
-    target.z-=
-      1.2;
-
-
-    target.y=
-      .55;
-
-
-    ball.position.lerp(
-      target,
-      .25
-    );
-
+  if(ballOwner===player){
+    const target=player.position.clone(); target.z-=1.2; target.y=.55;
+    ball.position.lerp(target,.25);
+  }else if(ballOwner===remotePlayer){
+    const target=remotePlayer.position.clone(); target.z+=1.2; target.y=.55;
+    ball.position.lerp(target,.25);
   }
-
 }
-
-
-/* =========================
-   PASE
-========================= */
-
 function pass(){
-
-  if(
-    ballOwner!==player
-  )
-    return;
-
-
-  ballOwner=null;
-
-
-  ballVelocity.set(
-    0,
-    0,
-    -12
-  );
-
+  if(ballOwner!==player)return;
+  ballOwner=null; ballVelocity.set(0,1.5,-14);
 }
-
-
-/* =========================
-   TIRO
-========================= */
-
 function shoot(){
-
-  if(
-    ballOwner!==player
-  )
-    return;
-
-
-  ballOwner=null;
-
-
-  ballVelocity.set(
-    0,
-    2.5,
-    -25
-  );
-
+  if(ballOwner!==player)return;
+  kickBall(0,5.2,27);
 }
 
-
-/* =========================
-   IA
-========================= */
-
-function updateAI(
-  delta
-){
-
-  for(
-    const opponent of opponents
-  ){
-
-    const target=
-      ball.position.clone();
-
-    target.x=
-      THREE.MathUtils.clamp(
-        target.x,
-        -fieldWidth/2+2,
-        fieldWidth/2-2
-      );
-
-    target.z=
-      THREE.MathUtils.clamp(
-        target.z,
-        -fieldLength/2+2,
-        fieldLength/2-2
-      );
-
-
-    const direction=
-      target
-      .sub(
-        opponent.position
-      );
-
-
-    direction.y=0;
-
-
-    if(
-      direction.length()>1
-    ){
-
+/* ---------- IA ---------- */
+function updateAI(delta){
+  for(const opponent of opponents){
+    const target=ball.position.clone();
+    target.x=THREE.MathUtils.clamp(target.x,-fieldWidth/2+2,fieldWidth/2-2);
+    target.z=THREE.MathUtils.clamp(target.z,-fieldLength/2+2,fieldLength/2-2);
+    const direction=target.sub(opponent.position); direction.y=0;
+    if(direction.length()>1){
       direction.normalize();
-
-      opponent.position
-        .addScaledVector(
-          direction,
-          (direction.length()>12 ? aiSprintSpeed : aiSpeed)*delta
-        );
-
+      opponent.position.addScaledVector(direction,5.5*delta);
+      clampPos(opponent);
     }
-
   }
-
-
-  for(
-    const teammate of teammates
-  ){
-
-    const direction=
-      ball.position.clone()
-      .sub(
-        teammate.position
-      );
-
-    direction.y=0;
-
-
-    if(
-      direction.length()>4
-    ){
-
-      direction.normalize();
-
-      teammate.position
-        .addScaledVector(
-          direction,
-          (direction.length()>12 ? aiSprintSpeed : aiSpeed)*delta
-        );
-
+  for(const teammate of teammates){
+    const direction=ball.position.clone().sub(teammate.position); direction.y=0;
+    if(direction.length()>4){
+      direction.normalize(); teammate.position.addScaledVector(direction,4.2*delta); clampPos(teammate);
     }
-
   }
-
 }
 
-
-/* =========================
-   TECLADO
-========================= */
-
-addEventListener(
-  "keydown",
-  e=>{
-
-    const key=
-      e.key.toLowerCase();
-
-    if(
-      key==="w"||
-      key==="arrowup"
-    )
-      keys.w=true;
-
-    if(
-      key==="a"||
-      key==="arrowleft"
-    )
-      keys.a=true;
-
-    if(
-      key==="s"||
-      key==="arrowdown"
-    )
-      keys.s=true;
-
-    if(
-      key==="d"||
-      key==="arrowright"
-    )
-      keys.d=true;
-
-    if(
-      key==="shift"
-    )
-      sprinting=true;
-
-    if(
-      key===" "
-    )
-      shoot();
-
-    if(
-      key==="e"
-    )
-      pass();
-
-  }
-);
-
-
-addEventListener(
-  "keyup",
-  e=>{
-
-    const key=
-      e.key.toLowerCase();
-
-    if(
-      key==="w"||
-      key==="arrowup"
-    )
-      keys.w=false;
-
-    if(
-      key==="a"||
-      key==="arrowleft"
-    )
-      keys.a=false;
-
-    if(
-      key==="s"||
-      key==="arrowdown"
-    )
-      keys.s=false;
-
-    if(
-      key==="d"||
-      key==="arrowright"
-    )
-      keys.d=false;
-
-    if(
-      key==="shift"
-    )
-      sprinting=false;
-
-  }
-);
-
-
-/* =========================
-   BOTONES
-========================= */
-
-document
-  .getElementById("pass")
-  .onclick=pass;
-
-document
-  .getElementById("shoot")
-  .onclick=shoot;
-
-document
-  .getElementById("sprint")
-  .onpointerdown=()=>{
-    sprinting=true;
-  };
-
-document
-  .getElementById("sprint")
-  .onpointerup=()=>{
-    sprinting=false;
-  };
-
-
-/* =========================
-   JOYSTICK
-========================= */
-
-const joystick=
-  document.getElementById(
-    "joystick"
-  );
-
-const knob=
-  document.getElementById(
-    "knob"
-  );
-
-let pointerId=null;
-
-
-joystick.addEventListener(
-  "pointerdown",
-  e=>{
-
-    pointerId=e.pointerId;
-
-    joystick.setPointerCapture(
-      pointerId
-    );
-
-    moveJoystick(e);
-
-  }
-);
-
-
-joystick.addEventListener(
-  "pointermove",
-  e=>{
-
-    if(
-      e.pointerId===pointerId
-    ){
-
-      moveJoystick(e);
-
-    }
-
-  }
-);
-
-
-joystick.addEventListener(
-  "pointerup",
-  resetJoystick
-);
-
-
-function moveJoystick(e){
-
-  const r=
-    joystick.getBoundingClientRect();
-
-
-  const dx=
-    e.clientX-
-    r.left-
-    r.width/2;
-
-
-  const dy=
-    e.clientY-
-    r.top-
-    r.height/2;
-
-
-  const length=
-    Math.min(
-      50,
-      Math.hypot(
-        dx,
-        dy
-      )
-    );
-
-
-  const angle=
-    Math.atan2(
-      dy,
-      dx
-    );
-
-
-  knob.style.left=
-    41+
-    Math.cos(angle)*
-    length+
-    "px";
-
-
-  knob.style.top=
-    41+
-    Math.sin(angle)*
-    length+
-    "px";
-
-
-  keys.a=dx<-18;
-  keys.d=dx>18;
-  keys.w=dy<-18;
-  keys.s=dy>18;
-
+/* ---------- ONLINE REAL ---------- */
+function makeRoomCode(){return String(Math.floor(1000+Math.random()*9000));}
+function setStatus(t){document.getElementById("onlineStatus").textContent=t;}
+function showOnlineMenu(){
+  document.getElementById("menu").style.display="none";
+  document.getElementById("onlineMenu").style.display="flex";
+  setStatus("");
 }
-
-
-function resetJoystick(){
-
-  pointerId=null;
-
-  knob.style.left="41px";
-  knob.style.top="41px";
-
-  keys.w=
-  keys.a=
-  keys.s=
-  keys.d=false;
-
+function closeOnline(){
+  if(peer){try{peer.destroy()}catch(e){}}
+  peer=null; conn=null; connected=false; onlineMode=false; isHost=false;
+  document.getElementById("onlineMenu").style.display="none";
+  document.getElementById("menu").style.display="flex";
 }
-
-
-/* =========================
-   CÁMARA
-========================= */
-
-function updateCamera(){
-
-  const target=
-    player.position.clone();
-
-  target.y=1;
-
-
-  const desired=
-    new THREE.Vector3(
-      player.position.x,
-      12,
-      player.position.z+18
-    );
-
-
-  camera.position.lerp(
-    desired,
-    .08
-  );
-
-
-  camera.lookAt(
-    target
-  );
-
+function startGame(mode){
+  onlineMode=mode==="online"; playing=true; paused=false;
+  document.getElementById("menu").style.display="none";
+  document.getElementById("onlineMenu").style.display="none";
+  document.getElementById("hud").style.display="flex";
+  document.getElementById("controls").style.display="block";
+  startCountdown();
 }
-
-
-/* =========================
-   HUD
-========================= */
-
-function updateHUD(){
-
-  document
-    .getElementById("score")
-    .innerHTML=
-      "LOCAL "+
-      homeScore+
-      " — "+
-      awayScore+
-      " VISITANTE"+
-      "<br><small>"+
-      formatTime(matchTime)+
-      "</small>";
-
-}
-
-
-function formatTime(seconds){
-
-  const m=
-    Math.floor(
-      seconds/60
-    )
-    .toString()
-    .padStart(2,"0");
-
-  const s=
-    Math.floor(
-      seconds%60
-    )
-    .toString()
-    .padStart(2,"0");
-
-  return m+":"+s;
-
-}
-
-
-/* =========================
-   JUEGO
-========================= */
-
-function update(delta){
-
-  if(
-    !playing||
-    paused
-  )
-    return;
-
-
-  matchTime+=delta;
-
-
-  updatePlayer(delta);
-
-  updateAI(delta);
-
-  keepPlayersApart();
-
-  checkBall();
-
-  updateBall(delta);
-
-  updateCamera();
-
-  updateHUD();
-
-}
-
-
 function startCountdown(){
+  if(countdownRunning)return;
+  countdownRunning=true;
   const el=document.getElementById("countdown");
   el.style.display="flex";
-  let n=3;
-  el.textContent=n;
-
-  const timer=setInterval(()=>{
-    n--;
-    if(n>0){
-      el.textContent=n;
-    }else if(n===0){
-      el.textContent="¡YA!";
-    }else{
-      clearInterval(timer);
-      el.style.display="none";
-      playing=true;
+  const vals=["3","2","1","¡YA!"];
+  let i=0;
+  const tick=()=>{
+    el.textContent=vals[i++];
+    if(i<vals.length)setTimeout(tick,650);
+    else setTimeout(()=>{el.style.display="none";countdownRunning=false},450);
+  };
+  tick();
+}
+function createHost(){
+  if(peer){try{peer.destroy()}catch(e){}}
+  const code=makeRoomCode(), id="pixelgames-futbol3-"+code;
+  isHost=true; onlineMode=true; roomPeerId=id;
+  setStatus("Creando sala...");
+  peer=new Peer(id);
+  peer.on("open",()=>{
+    document.getElementById("roomArea").style.display="block";
+    document.getElementById("roomCode").textContent=code;
+    document.getElementById("hostStatus").textContent="Esperando al segundo jugador...";
+    setStatus("Sala creada correctamente.");
+  });
+  peer.on("connection",c=>{
+    if(conn){c.close();return}
+    conn=c;
+    conn.on("open",()=>{
+      connected=true; remotePlayer.visible=true;
+      document.getElementById("hostStatus").textContent="🟢 ¡Jugador conectado!";
+      setStatus("¡Conectado! Empezando partido...");
+      conn.send({type:"start",state:packState()});
+      startGame("online");
+    });
+    conn.on("data",handleGuestData);
+    conn.on("close",()=>{connected=false;remotePlayer.visible=false;setStatus("El otro jugador se ha desconectado.");});
+    conn.on("error",()=>setStatus("Error de conexión."));
+  });
+  peer.on("error",e=>{
+    setStatus("No se pudo crear la sala. Pulsa CREAR PARTIDA otra vez.");
+    console.error(e);
+  });
+}
+function joinHost(){
+  const code=document.getElementById("roomInput").value.trim();
+  if(!/^\d{4}$/.test(code)){setStatus("El código debe tener 4 cifras.");return}
+  if(peer){try{peer.destroy()}catch(e){}}
+  isHost=false; onlineMode=true;
+  const id="pixelgames-futbol3-"+code;
+  setStatus("Conectando...");
+  peer=new Peer();
+  peer.on("open",()=>{
+    conn=peer.connect(id,{reliable:true});
+    conn.on("open",()=>{
+      connected=true; remotePlayer.visible=true;
+      setStatus("¡Conectado al anfitrión! Esperando inicio...");
+      conn.send({type:"hello"});
+    });
+    conn.on("data",data=>{
+      if(data.type==="start"){
+        applyState(data.state); startGame("online");
+      }else if(data.type==="state") applyState(data.state);
+      else if(data.type==="goal") showGoal();
+    });
+    conn.on("close",()=>{connected=false;setStatus("El anfitrión se ha desconectado.");});
+    conn.on("error",()=>setStatus("No se pudo conectar. Comprueba el código."));
+  });
+  peer.on("error",()=>setStatus("No se encontró esa sala. Comprueba el código."));
+}
+function packState(){
+  return {
+    p:{x:player.position.x,z:player.position.z},
+    r:{x:remotePlayer.position.x,z:remotePlayer.position.z},
+    b:{x:ball.position.x,y:ball.position.y,z:ball.position.z,vx:ballVelocity.x,vy:ballVelocity.y,vz:ballVelocity.z,owner:ballOwner===player?"host":ballOwner===remotePlayer?"guest":null},
+    hs:homeScore,as:awayScore,t:matchTime
+  };
+}
+function applyState(s){
+  if(!s)return;
+  player.position.x=s.r.x; player.position.z=s.r.z;
+  remotePlayer.position.x=s.p.x; remotePlayer.position.z=s.p.z;
+  ball.position.set(s.b.x,s.b.y,s.b.z); ballVelocity.set(s.b.vx,s.b.vy,s.b.vz);
+  homeScore=s.hs; awayScore=s.as; matchTime=s.t;
+  ballOwner=s.b.owner==="host"?remotePlayer:s.b.owner==="guest"?player:null;
+}
+function handleGuestData(data){
+  if(!isHost)return;
+  if(data.type==="input"){
+    Object.assign(remoteInput,data.input||{});
+    if(data.input?.shoot && ballOwner===remotePlayer) {ballOwner=null;ballVelocity.set(0,5.2,27)}
+    if(data.input?.pass && ballOwner===remotePlayer) {ballOwner=null;ballVelocity.set(0,1.5,14)}
+  }
+}
+let lastNetworkSend=0;
+function onlineTick(now){
+  if(!onlineMode||!connected)return;
+  if(isHost){
+    if(now-lastNetworkSend>50){
+      lastNetworkSend=now;
+      conn?.send({type:"state",state:packState()});
     }
-  },700);
+  }else{
+    if(now-lastNetworkSend>50){
+      lastNetworkSend=now;
+      conn?.send({type:"input",input:{...keys,sprint:sprinting}});
+    }
+  }
 }
 
-/* =========================
-   MENÚ
-========================= */
+/* ---------- TECLADO ---------- */
+addEventListener("keydown",e=>{
+  const k=e.key.toLowerCase();
+  if(k==="w"||k==="arrowup")keys.w=true;
+  if(k==="a"||k==="arrowleft")keys.a=true;
+  if(k==="s"||k==="arrowdown")keys.s=true;
+  if(k==="d"||k==="arrowright")keys.d=true;
+  if(k==="shift")sprinting=true;
+  if(k===" ")shoot();
+  if(k==="e")pass();
+});
+addEventListener("keyup",e=>{
+  const k=e.key.toLowerCase();
+  if(k==="w"||k==="arrowup")keys.w=false;
+  if(k==="a"||k==="arrowleft")keys.a=false;
+  if(k==="s"||k==="arrowdown")keys.s=false;
+  if(k==="d"||k==="arrowright")keys.d=false;
+  if(k==="shift")sprinting=false;
+});
 
-document
-  .getElementById("play")
-  .onclick=()=>{
+/* ---------- BOTONES MÓVIL ---------- */
+const joystick=document.getElementById("joystick"),knob=document.getElementById("knob");
+let pointerId=null;
+joystick.addEventListener("pointerdown",e=>{pointerId=e.pointerId;joystick.setPointerCapture(pointerId);moveJoystick(e)});
+joystick.addEventListener("pointermove",e=>{if(e.pointerId===pointerId)moveJoystick(e)});
+joystick.addEventListener("pointerup",resetJoystick);
+joystick.addEventListener("pointercancel",resetJoystick);
+function moveJoystick(e){
+  const r=joystick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
+  const length=Math.min(50,Math.hypot(dx,dy)),angle=Math.atan2(dy,dx);
+  knob.style.left=41+Math.cos(angle)*length+"px"; knob.style.top=41+Math.sin(angle)*length+"px";
+  keys.a=dx<-18; keys.d=dx>18; keys.w=dy<-18; keys.s=dy>18;
+}
+function resetJoystick(){
+  pointerId=null;knob.style.left="41px";knob.style.top="41px";keys.w=keys.a=keys.s=keys.d=false;
+}
+document.getElementById("pass").onpointerdown=e=>{e.preventDefault();pass()};
+document.getElementById("shoot").onpointerdown=e=>{e.preventDefault();shoot()};
+document.getElementById("sprint").onpointerdown=e=>{e.preventDefault();sprinting=true};
+document.getElementById("sprint").onpointerup=()=>sprinting=false;
+document.getElementById("sprint").onpointercancel=()=>sprinting=false;
 
-    playing=false;
-    matchTime=0;
-    homeScore=0;
-    awayScore=0;
-    resetBall();
+/* ---------- CÁMARA ---------- */
+function updateCamera(){
+  const target=player.position.clone();target.y=1;
+  const desired=new THREE.Vector3(player.position.x,12,player.position.z+18);
+  camera.position.lerp(desired,.08);camera.lookAt(target);
+}
 
-    document
-      .getElementById("menu")
-      .style.display="none";
+/* ---------- HUD ---------- */
+function updateHUD(){
+  document.getElementById("score").innerHTML="LOCAL "+homeScore+" — "+awayScore+" VISITANTE<br><small>"+formatTime(matchTime)+(onlineMode&&connected?" · ONLINE":"")+"</small>";
+}
+function formatTime(seconds){
+  const m=Math.floor(seconds/60).toString().padStart(2,"0"),s=Math.floor(seconds%60).toString().padStart(2,"0");return m+":"+s;
+}
+function showGoal(){
+  const el=document.getElementById("goalMessage");el.style.display="block";
+  setTimeout(()=>el.style.display="none",1200);
+  if(isHost&&conn?.open)conn.send({type:"goal"});
+}
 
-    document
-      .getElementById("hud")
-      .style.display="flex";
+/* ---------- JUEGO ---------- */
+function update(delta,now){
+  if(!playing||paused)return;
+  if(!onlineMode||isHost){
+    matchTime+=delta;
+    updatePlayer(delta);
+    if(onlineMode)updateRemotePlayer(delta);
+    updateAI(delta);
+    checkBall();
+    updateBall(delta);
+    if(isHost&&conn?.open)onlineTick(now);
+  }else{
+    updatePlayer(delta);
+    onlineTick(now);
+  }
+  updateCamera();updateHUD();
+}
 
-    document
-      .getElementById("controls")
-      .style.display="block";
+/* ---------- MENÚ ---------- */
+document.getElementById("play").onclick=()=>startGame("local");
+document.getElementById("online").onclick=showOnlineMenu;
+document.getElementById("friends").onclick=showOnlineMenu;
+document.getElementById("createRoom").onclick=createHost;
+document.getElementById("joinRoom").onclick=()=>{
+  document.getElementById("roomInput").style.display="block";
+  document.getElementById("confirmJoin").style.display="block";
+  document.getElementById("roomInput").focus();
+  setStatus("Escribe el código de 4 cifras.");
+};
+document.getElementById("confirmJoin").onclick=joinHost;
+document.getElementById("closeOnline").onclick=closeOnline;
 
-    startCountdown();
+document.getElementById("pauseButton").onclick=()=>{
+  paused=true;document.getElementById("pause").style.display="flex";
+};
+document.getElementById("resume").onclick=()=>{
+  paused=false;document.getElementById("pause").style.display="none";
+};
+document.getElementById("back").onclick=()=>{
+  playing=false;paused=false;onlineMode=false;connected=false;
+  if(peer){try{peer.destroy()}catch(e){}}
+  peer=null;conn=null;
+  document.getElementById("pause").style.display="none";
+  document.getElementById("hud").style.display="none";
+  document.getElementById("controls").style.display="none";
+  document.getElementById("menu").style.display="flex";
+};
 
-  };
-
-
-document
-  .getElementById("online")
-  .onclick=()=>{
-
-    alert(
-      "El modo online se conectará mediante un servidor en el siguiente paso."
-    );
-
-  };
-
-
-document
-  .getElementById("friends")
-  .onclick=()=>{
-
-    alert(
-      "Las salas privadas para amigos se añadirán con el servidor online."
-    );
-
-  };
-
-
-/* =========================
-   PAUSA
-========================= */
-
-document
-  .getElementById("pauseButton")
-  .onclick=()=>{
-
-    paused=true;
-
-    document
-      .getElementById("pause")
-      .style.display="flex";
-
-  };
-
-
-document
-  .getElementById("resume")
-  .onclick=()=>{
-
-    paused=false;
-
-    document
-      .getElementById("pause")
-      .style.display="none";
-
-  };
-
-
-document
-  .getElementById("back")
-  .onclick=()=>{
-
-    playing=false;
-    paused=false;
-
-    document
-      .getElementById("pause")
-      .style.display="none";
-
-    document
-      .getElementById("hud")
-      .style.display="none";
-
-    document
-      .getElementById("controls")
-      .style.display="none";
-
-    document
-      .getElementById("menu")
-      .style.display="flex";
-
-  };
-
-
-/* =========================
-   BUCLE
-========================= */
-
-let last=
-  performance.now();
-
-
+/* ---------- BUCLE ---------- */
+let last=performance.now();
 function loop(now){
-
   requestAnimationFrame(loop);
-
-
-  const delta=
-    Math.min(
-      .05,
-      (now-last)/1000
-    );
-
-
-  last=now;
-
-
-  update(delta);
-
-
-  renderer.render(
-    scene,
-    camera
-  );
-
+  const delta=Math.min(.05,(now-last)/1000);last=now;
+  update(delta,now);
+  renderer.render(scene,camera);
 }
-
-
 requestAnimationFrame(loop);
 
-
-/* =========================
-   RESIZE
-========================= */
-
-addEventListener(
-  "resize",
-  ()=>{
-
-    camera.aspect=
-      innerWidth/
-      innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-      innerWidth,
-      innerHeight
-    );
-
-  }
-);
-
+addEventListener("resize",()=>{
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);
+});
 </script>
-
 </body>
 </html>
+'''
+len(html), html.count('\n')
