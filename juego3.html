@@ -3,98 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Juego 3 - Fútbol 3D Online</title>
+<title>Fútbol 3D - 1 contra 1</title>
 <style>
 *{box-sizing:border-box;user-select:none;-webkit-user-select:none}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07100a;font-family:Arial,sans-serif}
 #game{position:fixed;inset:0}
 button{border:1px solid #ffffff25;border-radius:14px;background:#050505;color:#62aaff;font-weight:bold;padding:13px;cursor:pointer}
-button:active{transform:translateY(1px)}
-#menu,#pause,#onlineMenu{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),#05070b}
-#onlineMenu{z-index:40;display:none}
+#menu,#onlineMenu,#pause{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),#05070b}
+#onlineMenu,#pause{display:none}
 .panel{width:min(92vw,620px);padding:30px;border-radius:28px;background:#050509ed;border:1px solid #ffffff20;box-shadow:0 30px 100px #000;color:white}
-h1{margin:0;text-align:center;font-size:clamp(42px,9vw,75px)}
-.description{text-align:center;line-height:1.6;opacity:.75}
+h1{text-align:center;font-size:clamp(42px,9vw,75px);margin:0}
 .main{width:100%;margin:8px 0;padding:17px;font-size:18px}
+.description{text-align:center;line-height:1.6;opacity:.75}
 #hud{display:none;position:fixed;z-index:10;top:12px;left:12px;right:12px;justify-content:space-between;pointer-events:none}
-#score{padding:12px 20px;border-radius:14px;background:#000b;border:1px solid #ffffff25;font-size:18px}
-#hud button{pointer-events:auto;width:48px;height:48px;padding:0}
+#score{padding:12px 20px;border-radius:14px;background:#000b;border:1px solid #ffffff25;color:white;font-size:18px}
+#pauseButton{pointer-events:auto;width:48px;height:48px;padding:0}
 #controls{display:none;position:fixed;z-index:12;left:0;right:0;bottom:12px;height:155px;pointer-events:none}
 #joystick{position:absolute;left:15px;bottom:0;width:140px;height:140px;border-radius:50%;background:#000a;border:2px solid #ffffff25;pointer-events:auto;touch-action:none}
 #knob{position:absolute;left:41px;top:41px;width:58px;height:58px;border-radius:50%;background:#111}
 #actions{position:absolute;right:15px;bottom:0;display:grid;grid-template-columns:82px 82px;gap:8px;pointer-events:auto}
-#actions button{height:62px;padding:4px;font-size:10px;touch-action:none}
+#actions button{height:62px;padding:4px;font-size:10px}
 #countdown{display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;color:white;font-size:clamp(90px,20vw,180px);font-weight:900;text-shadow:0 8px 30px #000;pointer-events:none}
-#goalMessage{display:none;position:fixed;z-index:51;top:105px;left:50%;transform:translateX(-50%);padding:10px 28px;border-radius:18px;background:#ffd400;color:#111;font-size:clamp(30px,7vw,64px);font-weight:900;pointer-events:none}
-.onlineCode{width:100%;padding:16px;border-radius:14px;border:1px solid #ffffff25;background:#10131b;color:white;font-size:24px;text-align:center;letter-spacing:6px;margin:8px 0;outline:none}
-.onlineStatus{text-align:center;min-height:28px;color:#62aaff;margin:12px 0}
-#pause{display:none}
-#pause .panel{text-align:center}
-.small{font-size:13px;opacity:.7}
+#goal{display:none;position:fixed;z-index:51;top:105px;left:50%;transform:translateX(-50%);padding:10px 28px;border-radius:18px;background:#ffd400;color:#111;font-size:clamp(30px,7vw,64px);font-weight:900}
+.code{width:100%;padding:16px;border-radius:14px;border:1px solid #ffffff25;background:#10131b;color:white;font-size:24px;text-align:center;letter-spacing:6px}
+.status{text-align:center;min-height:25px;color:#62aaff;margin:12px}
 </style>
 </head>
 <body>
 <div id="game"></div>
 
-<section id="menu">
-  <div class="panel">
-    <h1>Fútbol 3D</h1>
-    <p class="description">Un juego de fútbol 3D original.<br>Juega partidos, marca goles y domina el campo.</p>
-    <button id="play" class="main">JUGAR</button>
-    <button id="online" class="main">PARTIDA ONLINE</button>
-    <button id="friends" class="main">JUGAR CON AMIGOS</button>
-  </div>
-</section>
+<div id="menu"><div class="panel">
+<h1>Fútbol 3D</h1>
+<p class="description">⚽ Partido 1 contra 1</p>
+<button id="play" class="main">JUGAR</button>
+<button id="online" class="main">PARTIDA ONLINE 1 VS 1</button>
+</div></div>
 
-<section id="onlineMenu">
-  <div class="panel">
-    <h2 style="text-align:center;font-size:38px;margin-top:0">⚽ PARTIDA ONLINE</h2>
-    <p class="description">Una persona crea la sala y comparte el código de 4 cifras. La otra lo escribe para entrar.</p>
-    <button id="createRoom" class="main">🟢 CREAR PARTIDA</button>
-    <div id="roomArea" style="display:none;text-align:center">
-      <p style="margin-bottom:5px">CÓDIGO DE TU SALA</p>
-      <div id="roomCode" class="onlineCode">----</div>
-      <p class="description">Comparte este código con tu amigo.</p>
-      <p id="hostStatus" class="small">Esperando al segundo jugador...</p>
-    </div>
-    <button id="joinRoom" class="main">🔵 UNIRSE A UNA PARTIDA</button>
-    <input id="roomInput" class="onlineCode" maxlength="4" inputmode="numeric" placeholder="CÓDIGO" style="display:none">
-    <button id="confirmJoin" class="main" style="display:none">ENTRAR EN LA SALA</button>
-    <div id="onlineStatus" class="onlineStatus"></div>
-    <button id="closeOnline" class="main">🔙 VOLVER</button>
-  </div>
-</section>
-
-<section id="pause">
-  <div class="panel">
-    <h2>PAUSA</h2>
-    <button id="resume" class="main">CONTINUAR</button>
-    <button id="back" class="main">VOLVER</button>
-  </div>
-</section>
-
-<div id="hud">
-  <div id="score">LOCAL 0 — 0 VISITANTE<br><small id="time">00:00</small></div>
-  <button id="pauseButton">Ⅱ</button>
+<div id="onlineMenu"><div class="panel">
+<h2 style="text-align:center;font-size:36px">⚽ 1 VS 1 ONLINE</h2>
+<p class="description">Crea una sala y comparte el código con tu amigo.</p>
+<button id="create" class="main">🟢 CREAR PARTIDA</button>
+<div id="room" style="display:none;text-align:center">
+<p>CÓDIGO DE SALA</p><div id="code" class="code">----</div>
+<p id="hostStatus" class="status">Esperando al jugador 2...</p>
 </div>
-<div id="countdown"></div>
-<div id="goalMessage">¡GOL!</div>
+<button id="join" class="main">🔵 UNIRSE</button>
+<input id="inputCode" class="code" maxlength="4" inputmode="numeric" placeholder="CÓDIGO" style="display:none">
+<button id="confirm" class="main" style="display:none">ENTRAR</button>
+<div id="onlineStatus" class="status"></div>
+<button id="close" class="main">VOLVER</button>
+</div></div>
+
+<div id="pause"><div class="panel">
+<h2 style="text-align:center">PAUSA</h2>
+<button id="resume" class="main">CONTINUAR</button>
+<button id="back" class="main">SALIR</button>
+</div></div>
+
+<div id="hud"><div id="score">J1 0 — 0 J2</div><button id="pauseButton">Ⅱ</button></div>
+<div id="countdown"></div><div id="goal">¡GOL!</div>
 
 <div id="controls">
-  <div id="joystick"><div id="knob"></div></div>
-  <div id="actions">
-    <button id="pass">PASAR</button>
-    <button id="shoot">TIRAR</button>
-    <button id="sprint">SPRINT</button>
-    <button id="switch">JUGADOR</button>
-  </div>
+<div id="joystick"><div id="knob"></div></div>
+<div id="actions">
+<button id="shoot">TIRAR</button><button id="sprint">SPRINT</button>
+</div>
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-/* ESCENA */
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x07120b);
 scene.fog=new THREE.Fog(0x07120b,80,350);
@@ -106,328 +85,146 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.shadowMap.enabled=true;
 document.getElementById("game").appendChild(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xcfe7ff,0x142719,1.8));
-const stadiumLight=new THREE.DirectionalLight(0xffffff,2.5);
-stadiumLight.position.set(-50,100,40);stadiumLight.castShadow=true;scene.add(stadiumLight);
+const light=new THREE.DirectionalLight(0xffffff,2.5);light.position.set(-50,100,40);light.castShadow=true;scene.add(light);
 
-/* CAMPO */
-const fieldWidth=68,fieldLength=105;
-const field=new THREE.Mesh(new THREE.PlaneGeometry(fieldWidth,fieldLength),new THREE.MeshStandardMaterial({color:0x176b35,roughness:.9}));
+const W=68,L=105;
+const field=new THREE.Mesh(new THREE.PlaneGeometry(W,L),new THREE.MeshStandardMaterial({color:0x176b35,roughness:.9}));
 field.rotation.x=-Math.PI/2;field.receiveShadow=true;scene.add(field);
-function line(x,z,width,depth){
-  const m=new THREE.Mesh(new THREE.BoxGeometry(width,.025,depth),new THREE.MeshBasicMaterial({color:0xffffff}));
-  m.position.set(x,.03,z);scene.add(m);
-}
-line(-fieldWidth/2,0,.12,fieldLength);line(fieldWidth/2,0,.12,fieldLength);
-line(0,-fieldLength/2,fieldWidth,.12);line(0,fieldLength/2,fieldWidth,.12);line(0,0,fieldWidth,.12);
+function line(x,z,w,d){const m=new THREE.Mesh(new THREE.BoxGeometry(w,.025,d),new THREE.MeshBasicMaterial({color:0xffffff}));m.position.set(x,.03,z);scene.add(m)}
+line(-W/2,0,.12,L);line(W/2,0,.12,L);line(0,-L/2,W,.12);line(0,L/2,W,.12);line(0,0,W,.12);
 const circle=new THREE.Mesh(new THREE.RingGeometry(9.1,9.22,64),new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}));
 circle.rotation.x=-Math.PI/2;circle.position.y=.04;scene.add(circle);
-function createGoal(z){
-  const g=new THREE.Group(),mat=new THREE.MeshStandardMaterial({color:0xffffff}),w=14,h=5;
-  const p1=new THREE.Mesh(new THREE.BoxGeometry(.35,h,.35),mat);p1.position.set(-w/2,h/2,0);
-  const p2=p1.clone();p2.position.x=w/2;
-  const bar=new THREE.Mesh(new THREE.BoxGeometry(w,.35,.35),mat);bar.position.y=h;
-  g.add(p1,p2,bar);g.position.z=z;scene.add(g);
+function goal(z){
+ const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:0xffffff}),w=14,h=5;
+ const a=new THREE.Mesh(new THREE.BoxGeometry(.35,h,.35),m),b=a.clone(),c=new THREE.Mesh(new THREE.BoxGeometry(w,.35,.35),m);
+ a.position.set(-w/2,h/2,0);b.position.set(w/2,h/2,0);c.position.y=h;g.add(a,b,c);g.position.z=z;scene.add(g)
 }
-createGoal(-fieldLength/2);createGoal(fieldLength/2);
+goal(-L/2);goal(L/2);
 
-/* JUGADORES */
-function createPlayer(color){
-  const g=new THREE.Group();
-  const body=new THREE.Mesh(new THREE.CapsuleGeometry(.42,1,8,12),new THREE.MeshStandardMaterial({color}));
-  body.position.y=1.35;body.castShadow=true;g.add(body);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(.38,16,12),new THREE.MeshStandardMaterial({color:0xd69a73}));
-  head.position.y=2.35;head.castShadow=true;g.add(head);
-  const lm=new THREE.MeshStandardMaterial({color:0x111111});
-  for(const x of[-.2,.2]){const leg=new THREE.Mesh(new THREE.BoxGeometry(.22,.8,.25),lm);leg.position.set(x,.45,0);g.add(leg)}
-  return g;
+function makePlayer(color){
+ const g=new THREE.Group();
+ const body=new THREE.Mesh(new THREE.CapsuleGeometry(.42,1,8,12),new THREE.MeshStandardMaterial({color}));
+ body.position.y=1.35;body.castShadow=true;g.add(body);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.38,16,12),new THREE.MeshStandardMaterial({color:0xd69a73}));
+ head.position.y=2.35;g.add(head);return g;
 }
-const player=createPlayer(0x2878e8);player.position.set(0,0,22);scene.add(player);
-const remotePlayer=createPlayer(0xf2c230);remotePlayer.position.set(0,0,-22);remotePlayer.visible=false;scene.add(remotePlayer);
-const opponents=[],teammates=[];
-for(let i=0;i<5;i++){const p=createPlayer(0xe83232);p.position.set((Math.random()-.5)*35,0,-20+Math.random()*35);scene.add(p);opponents.push(p)}
-for(let i=0;i<4;i++){const p=createPlayer(0x2878e8);p.position.set((Math.random()-.5)*35,0,5+Math.random()*35);scene.add(p);teammates.push(p)}
+const me=makePlayer(0x2878e8),enemy=makePlayer(0xf2c230);
+me.position.set(0,0,22);enemy.position.set(0,0,-22);scene.add(me,enemy);
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.55,24,16),new THREE.MeshStandardMaterial({color:0xffffff}));
+ball.position.set(0,.55,0);ball.castShadow=true;scene.add(ball);
+const bv=new THREE.Vector3();
 
-/* BALÓN */
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.55,24,16),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.5}));
-ball.position.set(0,.55,15);ball.castShadow=true;scene.add(ball);
-const ballVelocity=new THREE.Vector3();let ballOwner=null;
-
-/* ESTADO */
-let playing=false,paused=false,matchTime=0,homeScore=0,awayScore=0,sprinting=false;
-let onlineMode=false,isHost=false,connected=false,peer=null,conn=null;
+let playing=false,paused=false,online=false,host=false,connected=false;
+let peer=null,conn=null,score1=0,score2=0,time=0,owner=null,sprinting=false;
 const keys={w:false,a:false,s:false,d:false};
-const remoteInput={w:false,a:false,s:false,d:false,sprint:false};
+const remote={w:false,a:false,s:false,d:false,sprint:false};
 
-const normalSpeed=7,sprintSpeed=12;
-function clampPos(p){
-  p.x=THREE.MathUtils.clamp(p.x,-fieldWidth/2+1,fieldWidth/2-1);
-  p.z=THREE.MathUtils.clamp(p.z,-fieldLength/2+1,fieldLength/2-1);
-}
-function movePlayer(p,input,speed,delta){
-  const f=(input.w?1:0)-(input.s?1:0),side=(input.d?1:0)-(input.a?1:0);
-  p.position.z+=f*speed*delta;p.position.x+=side*speed*delta;clampPos(p);
-  if(f||side)p.rotation.y=Math.atan2(side,f);
-}
-function updatePlayer(delta){movePlayer(player,keys,sprinting?sprintSpeed:normalSpeed,delta)}
-function updateRemotePlayer(delta){if(connected)movePlayer(remotePlayer,remoteInput,remoteInput.sprint?sprintSpeed:normalSpeed,delta)}
-
-/* BALÓN */
-function resetBall(){
-  ball.position.set(0,.55,0);ballVelocity.set(0,0,0);ballOwner=null;
-}
-function updateBall(delta){
-  ball.position.addScaledVector(ballVelocity,delta);
-  ballVelocity.multiplyScalar(Math.pow(.94,delta*60));
-  if(ball.position.y>.55)ballVelocity.y-=12*delta;
-  if(ball.position.y<.55){ball.position.y=.55;if(Math.abs(ballVelocity.y)>.5)ballVelocity.y*=-.45;else ballVelocity.y=0}
-  if(Math.abs(ball.position.x)>fieldWidth/2){
-    ball.position.x=Math.sign(ball.position.x)*fieldWidth/2;ballVelocity.x*=-.65;
-  }
-  if(Math.abs(ball.position.z)>fieldLength/2){
-    if(Math.abs(ball.position.x)<7){
-      if(ball.position.z<-fieldLength/2)homeScore++;else awayScore++;
-      showGoal();resetBall();player.position.set(0,0,22);remotePlayer.position.set(0,0,-22);
-    }else{
-      ball.position.z=Math.sign(ball.position.z)*fieldLength/2;ballVelocity.z*=-.65;
-    }
-  }
-}
-function checkBall(){
-  if(ballOwner===null){
-    const d1=player.position.distanceTo(ball.position);
-    const d2=connected?remotePlayer.position.distanceTo(ball.position):999;
-    if(d1<2.3&&ball.position.y<2)ballOwner=player;
-    else if(d2<2.3&&ball.position.y<2)ballOwner=remotePlayer;
-  }
-  if(ballOwner===player){
-    const t=player.position.clone();t.z-=1.2;t.y=.55;ball.position.lerp(t,.25);
-  }else if(ballOwner===remotePlayer){
-    const t=remotePlayer.position.clone();t.z+=1.2;t.y=.55;ball.position.lerp(t,.25);
-  }
-}
-function pass(){
-  if(ballOwner!==player)return;
-  if(onlineMode&&!isHost){if(conn?.open)conn.send({type:"action",action:"pass"});return}
-  ballOwner=null;ballVelocity.set(0,1.5,isHost&&onlineMode?14:-14);
+function clamp(p){p.x=THREE.MathUtils.clamp(p.x,-W/2+1,W/2-1);p.z=THREE.MathUtils.clamp(p.z,-L/2+1,L/2-1)}
+function move(p,i,s,d){
+ let z=(i.w?1:0)-(i.s?1:0),x=(i.d?1:0)-(i.a?1:0);
+ if(x||z){const n=Math.hypot(x,z);x/=n;z/=n;p.position.x+=x*s*d;p.position.z+=z*s*d;p.rotation.y=Math.atan2(x,z)}
+ clamp(p)
 }
 function shoot(){
-  if(ballOwner!==player)return;
-  if(onlineMode&&!isHost){if(conn?.open)conn.send({type:"action",action:"shoot"});return}
-  ballOwner=null;ballVelocity.set(0,5.2,-27);
+ if(owner!==me)return;
+ if(online&&!host){if(conn?.open)conn.send({type:"action",a:"shoot"});return}
+ owner=null;bv.set(0,5.2,-28)
 }
+function reset(){ball.position.set(0,.55,0);bv.set(0,0,0);owner=null;me.position.set(0,0,22);enemy.position.set(0,0,-22)}
+function goalScored(n){
+ if(n===1)score1++;else score2++;
+ const g=document.getElementById("goal");g.style.display="block";setTimeout(()=>g.style.display="none",1100);
+ if(host&&conn?.open)conn.send({type:"goal",s1:score1,s2:score2});
+ reset()
+}
+function ballUpdate(d){
+ if(owner===me){ball.position.lerp(new THREE.Vector3(me.position.x,.55,me.position.z-1.2),.3)}
+ else if(owner===enemy){ball.position.lerp(new THREE.Vector3(enemy.position.x,.55,enemy.position.z+1.2),.3)}
+ else{
+  ball.position.addScaledVector(bv,d);bv.multiplyScalar(Math.pow(.94,d*60));bv.y-=12*d;
+  if(ball.position.y<.55){ball.position.y=.55;if(Math.abs(bv.y)>.5)bv.y*=-.45;else bv.y=0}
+ }
+ if(Math.abs(ball.position.x)>W/2){ball.position.x=Math.sign(ball.position.x)*(W/2);bv.x*=-.65}
+ if(Math.abs(ball.position.z)>L/2){
+  if(Math.abs(ball.position.x)<7)goalScored(ball.position.z<0?1:2);
+  else{ball.position.z=Math.sign(ball.position.z)*(L/2);bv.z*=-.65}
+ }
+}
+function possession(){
+ if(owner)return;
+ if(me.position.distanceTo(ball.position)<2.3)owner=me;
+ else if(enemy.position.distanceTo(ball.position)<2.3)owner=enemy;
+}
+function collide(){
+ const dx=enemy.position.x-me.position.x,dz=enemy.position.z-me.position.z,d=Math.hypot(dx,dz),min=1.2;
+ if(d>0&&d<min){const q=(min-d)/2, x=dx/d,z=dz/d;me.position.x-=x*q;me.position.z-=z*q;enemy.position.x+=x*q;enemy.position.z+=z*q;clamp(me);clamp(enemy)}
+}
+function start(){
+ playing=true;paused=false;document.getElementById("menu").style.display="none";document.getElementById("onlineMenu").style.display="none";
+ document.getElementById("hud").style.display="flex";document.getElementById("controls").style.display="block";
+ const el=document.getElementById("countdown");el.style.display="flex";let a=["3","2","1","¡YA!"],i=0;
+ const t=()=>{el.textContent=a[i++];if(i<a.length)setTimeout(t,650);else setTimeout(()=>el.style.display="none",450)};t()
+}
+function state(){return {e:{x:enemy.position.x,z:enemy.position.z},m:{x:me.position.x,z:me.position.z},b:{x:ball.position.x,y:ball.position.y,z:ball.position.z,vx:bv.x,vy:bv.y,vz:bv.z,o:owner===me?1:owner===enemy?2:0},s1:score1,s2:score2,t:time}}
+function apply(s){
+ enemy.position.set(s.m.x,0,s.m.z);me.position.set(s.e.x,0,s.e.z);
+ ball.position.set(s.b.x,s.b.y,s.b.z);bv.set(s.b.vx,s.b.vy,s.b.vz);owner=s.b.o===1?enemy:s.b.o===2?me:null;score1=s.s1;score2=s.s2;time=s.t
+}
+function codeId(c){return "pixelgames-futbol3-1v1-"+c}
+function createRoom(){
+ const c=String(Math.floor(1000+Math.random()*9000));host=true;online=true;
+ peer=new Peer(codeId(c));
+ peer.on("open",()=>{document.getElementById("room").style.display="block";document.getElementById("code").textContent=c;status("Sala creada. Comparte el código.")});
+ peer.on("connection",c2=>{conn=c2;conn.on("open",()=>{connected=true;enemy.visible=true;document.getElementById("hostStatus").textContent="🟢 Jugador 2 conectado";conn.send({type:"start",s:state()});start()});
+ conn.on("data",d=>{if(d.type==="input")Object.assign(remote,d.i);if(d.type==="action"&&owner===enemy){owner=null;bv.set(0,5.2,28)}})
+ })
+ peer.on("error",()=>status("No se pudo crear la sala."))
+}
+function joinRoom(){
+ const c=document.getElementById("inputCode").value.trim();if(!/^\d{4}$/.test(c)){status("Código incorrecto.");return}
+ host=false;online=true;peer=new Peer();peer.on("open",()=>{conn=peer.connect(codeId(c),{reliable:true});
+ conn.on("open",()=>{connected=true;status("Conectado. Esperando al jugador 1...")});
+ conn.on("data",d=>{if(d.type==="start"){apply(d.s);start()}if(d.type==="state")apply(d.s);if(d.type==="goal"){score1=d.s1;score2=d.s2;reset();document.getElementById("goal").style.display="block";setTimeout(()=>document.getElementById("goal").style.display="none",1100)}})
+ conn.on("error",()=>status("Error de conexión."));conn.on("close",()=>status("El otro jugador se desconectó."))});
+ peer.on("error",()=>status("No se encontró la sala."))
+}
+function status(t){document.getElementById("onlineStatus").textContent=t}
 
-/* IA */
-function updateAI(delta){
-  for(const opponent of opponents){
-    const target=ball.position.clone();
-    target.x=THREE.MathUtils.clamp(target.x,-fieldWidth/2+2,fieldWidth/2-2);
-    target.z=THREE.MathUtils.clamp(target.z,-fieldLength/2+2,fieldLength/2-2);
-    const d=target.sub(opponent.position);d.y=0;
-    if(d.length()>1){d.normalize();opponent.position.addScaledVector(d,5.5*delta);clampPos(opponent)}
-  }
-  for(const teammate of teammates){
-    const d=ball.position.clone().sub(teammate.position);d.y=0;
-    if(d.length()>4){d.normalize();teammate.position.addScaledVector(d,4.2*delta);clampPos(teammate)}
-  }
-}
+addEventListener("keydown",e=>{let k=e.key.toLowerCase();if(k==="w"||k==="arrowup")keys.w=true;if(k==="a"||k==="arrowleft")keys.a=true;if(k==="s"||k==="arrowdown")keys.s=true;if(k==="d"||k==="arrowright")keys.d=true;if(k==="shift")sprinting=true;if(k===" ")shoot()});
+addEventListener("keyup",e=>{let k=e.key.toLowerCase();if(k==="w"||k==="arrowup")keys.w=false;if(k==="a"||k==="arrowleft")keys.a=false;if(k==="s"||k==="arrowdown")keys.s=false;if(k==="d"||k==="arrowright")keys.d=false;if(k==="shift")sprinting=false});
 
-/* ONLINE REAL CON PEERJS */
-function roomId(code){return "pixelgames-futbol3-"+code}
-function setStatus(t){document.getElementById("onlineStatus").textContent=t}
-function showOnlineMenu(){
-  document.getElementById("menu").style.display="none";
-  document.getElementById("onlineMenu").style.display="flex";setStatus("");
-}
-function closeOnline(){
-  if(peer){try{peer.destroy()}catch(e){}}
-  peer=null;conn=null;connected=false;onlineMode=false;isHost=false;
-  document.getElementById("onlineMenu").style.display="none";document.getElementById("menu").style.display="flex";
-}
-function startGame(mode){
-  onlineMode=mode==="online";playing=true;paused=false;
-  document.getElementById("menu").style.display="none";
-  document.getElementById("onlineMenu").style.display="none";
-  document.getElementById("hud").style.display="flex";
-  document.getElementById("controls").style.display="block";
-  startCountdown();
-}
-function startCountdown(){
-  const el=document.getElementById("countdown");el.style.display="flex";
-  const vals=["3","2","1","¡YA!"];let i=0;
-  const tick=()=>{el.textContent=vals[i++];if(i<vals.length)setTimeout(tick,650);else setTimeout(()=>el.style.display="none",450)}
-  tick();
-}
-function packState(){
-  return {
-    p:{x:player.position.x,z:player.position.z},
-    r:{x:remotePlayer.position.x,z:remotePlayer.position.z},
-    b:{x:ball.position.x,y:ball.position.y,z:ball.position.z,vx:ballVelocity.x,vy:ballVelocity.y,vz:ballVelocity.z,owner:ballOwner===player?"host":ballOwner===remotePlayer?"guest":null},
-    hs:homeScore,as:awayScore,t:matchTime
-  };
-}
-function applyState(s){
-  if(!s)return;
-  player.position.x=s.r.x;player.position.z=s.r.z;
-  remotePlayer.position.x=s.p.x;remotePlayer.position.z=s.p.z;
-  ball.position.set(s.b.x,s.b.y,s.b.z);ballVelocity.set(s.b.vx,s.b.vy,s.b.vz);
-  homeScore=s.hs;awayScore=s.as;matchTime=s.t;
-  ballOwner=s.b.owner==="host"?remotePlayer:s.b.owner==="guest"?player:null;
-}
-function createHost(){
-  if(peer){try{peer.destroy()}catch(e){}}
-  const code=String(Math.floor(1000+Math.random()*9000)),id=roomId(code);
-  isHost=true;onlineMode=true;setStatus("Creando sala...");
-  peer=new Peer(id);
-  peer.on("open",()=>{
-    document.getElementById("roomArea").style.display="block";
-    document.getElementById("roomCode").textContent=code;
-    document.getElementById("hostStatus").textContent="Esperando al segundo jugador...";
-    setStatus("Sala creada correctamente.");
-  });
-  peer.on("connection",c=>{
-    if(conn){c.close();return}
-    conn=c;
-    conn.on("open",()=>{
-      connected=true;remotePlayer.visible=true;
-      document.getElementById("hostStatus").textContent="🟢 ¡Jugador conectado!";
-      setStatus("¡Conectado! Empezando partido...");
-      conn.send({type:"start",state:packState()});startGame("online");
-    });
-    conn.on("data",data=>{
-      if(data.type==="input")Object.assign(remoteInput,data.input||{});
-      if(data.type==="action"&&ballOwner===remotePlayer){
-        ballOwner=null;
-        if(data.action==="shoot")ballVelocity.set(0,5.2,27);
-        if(data.action==="pass")ballVelocity.set(0,1.5,14);
-      }
-    });
-    conn.on("close",()=>{connected=false;remotePlayer.visible=false;setStatus("El otro jugador se ha desconectado.")});
-    conn.on("error",()=>setStatus("Error de conexión."));
-  });
-  peer.on("error",e=>{setStatus("No se pudo crear la sala. Pulsa CREAR PARTIDA otra vez.");console.error(e)});
-}
-function joinHost(){
-  const code=document.getElementById("roomInput").value.trim();
-  if(!/^\d{4}$/.test(code)){setStatus("El código debe tener 4 cifras.");return}
-  if(peer){try{peer.destroy()}catch(e){}}
-  isHost=false;onlineMode=true;setStatus("Conectando...");
-  peer=new Peer();
-  peer.on("open",()=>{
-    conn=peer.connect(roomId(code),{reliable:true});
-    conn.on("open",()=>{connected=true;remotePlayer.visible=true;setStatus("¡Conectado! Esperando inicio...")});
-    conn.on("data",data=>{
-      if(data.type==="start"){applyState(data.state);startGame("online")}
-      if(data.type==="state")applyState(data.state);
-      if(data.type==="goal")showGoal();
-    });
-    conn.on("close",()=>{connected=false;setStatus("El anfitrión se ha desconectado.")});
-    conn.on("error",()=>setStatus("No se pudo conectar. Comprueba el código.")});
-  });
-  peer.on("error",()=>setStatus("No se encontró esa sala. Comprueba el código."));
-}
-let lastNetworkSend=0;
-function onlineTick(now){
-  if(!onlineMode||!connected||!conn?.open)return;
-  if(now-lastNetworkSend>50){
-    lastNetworkSend=now;
-    if(isHost)conn.send({type:"state",state:packState()});
-    else conn.send({type:"input",input:{...keys,sprint:sprinting}});
-  }
-}
-
-/* TECLADO */
-addEventListener("keydown",e=>{
-  const k=e.key.toLowerCase();
-  if(k==="w"||k==="arrowup")keys.w=true;
-  if(k==="a"||k==="arrowleft")keys.a=true;
-  if(k==="s"||k==="arrowdown")keys.s=true;
-  if(k==="d"||k==="arrowright")keys.d=true;
-  if(k==="shift")sprinting=true;
-  if(k===" ")shoot();
-  if(k==="e")pass();
-});
-addEventListener("keyup",e=>{
-  const k=e.key.toLowerCase();
-  if(k==="w"||k==="arrowup")keys.w=false;
-  if(k==="a"||k==="arrowleft")keys.a=false;
-  if(k==="s"||k==="arrowdown")keys.s=false;
-  if(k==="d"||k==="arrowright")keys.d=false;
-  if(k==="shift")sprinting=false;
-});
-
-/* MÓVIL */
-const joystick=document.getElementById("joystick"),knob=document.getElementById("knob");let pointerId=null;
-joystick.addEventListener("pointerdown",e=>{pointerId=e.pointerId;joystick.setPointerCapture(pointerId);moveJoystick(e)});
-joystick.addEventListener("pointermove",e=>{if(e.pointerId===pointerId)moveJoystick(e)});
-joystick.addEventListener("pointerup",resetJoystick);joystick.addEventListener("pointercancel",resetJoystick);
-function moveJoystick(e){
-  const r=joystick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
-  const len=Math.min(50,Math.hypot(dx,dy)),ang=Math.atan2(dy,dx);
-  knob.style.left=41+Math.cos(ang)*len+"px";knob.style.top=41+Math.sin(ang)*len+"px";
-  keys.a=dx<-18;keys.d=dx>18;keys.w=dy<-18;keys.s=dy>18;
-}
-function resetJoystick(){pointerId=null;knob.style.left="41px";knob.style.top="41px";keys.w=keys.a=keys.s=keys.d=false}
-document.getElementById("pass").onpointerdown=e=>{e.preventDefault();pass()};
-document.getElementById("shoot").onpointerdown=e=>{e.preventDefault();shoot()};
-document.getElementById("sprint").onpointerdown=e=>{e.preventDefault();sprinting=true};
+let pid=null;
+const joy=document.getElementById("joystick"),knob=document.getElementById("knob");
+joy.addEventListener("pointerdown",e=>{pid=e.pointerId;joy.setPointerCapture(pid);joyMove(e)});
+joy.addEventListener("pointermove",e=>{if(e.pointerId===pid)joyMove(e)});
+joy.addEventListener("pointerup",joyReset);joy.addEventListener("pointercancel",joyReset);
+function joyMove(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,len=Math.min(50,Math.hypot(x,y)),a=Math.atan2(y,x);knob.style.left=41+Math.cos(a)*len+"px";knob.style.top=41+Math.sin(a)*len+"px";keys.a=x<-18;keys.d=x>18;keys.w=y<-18;keys.s=y>18}
+function joyReset(){pid=null;knob.style.left="41px";knob.style.top="41px";keys.w=keys.a=keys.s=keys.d=false}
+document.getElementById("shoot").onpointerdown=shoot;
+document.getElementById("sprint").onpointerdown=()=>sprinting=true;
 document.getElementById("sprint").onpointerup=()=>sprinting=false;
-document.getElementById("sprint").onpointercancel=()=>sprinting=false;
 
-/* CÁMARA Y HUD */
-function updateCamera(){
-  const target=player.position.clone();target.y=1;
-  const desired=new THREE.Vector3(player.position.x,12,player.position.z+18);
-  camera.position.lerp(desired,.08);camera.lookAt(target);
-}
-function formatTime(seconds){
-  const m=Math.floor(seconds/60).toString().padStart(2,"0"),s=Math.floor(seconds%60).toString().padStart(2,"0");return m+":"+s;
-}
-function updateHUD(){
-  document.getElementById("score").innerHTML="LOCAL "+homeScore+" — "+awayScore+" VISITANTE<br><small>"+formatTime(matchTime)+(onlineMode&&connected?" · ONLINE":"")+"</small>";
-}
-function showGoal(){
-  const el=document.getElementById("goalMessage");el.style.display="block";setTimeout(()=>el.style.display="none",1200);
-  if(isHost&&conn?.open)conn.send({type:"goal"});
-}
-
-/* UPDATE */
-function update(delta,now){
-  if(!playing||paused)return;
-  if(!onlineMode||isHost){
-    matchTime+=delta;updatePlayer(delta);if(onlineMode)updateRemotePlayer(delta);
-    updateAI(delta);checkBall();updateBall(delta);
-  }else updatePlayer(delta);
-  onlineTick(now);updateCamera();updateHUD();
-}
-
-/* MENÚ */
-document.getElementById("play").onclick=()=>startGame("local");
-document.getElementById("online").onclick=showOnlineMenu;
-document.getElementById("friends").onclick=showOnlineMenu;
-document.getElementById("createRoom").onclick=createHost;
-document.getElementById("joinRoom").onclick=()=>{
-  document.getElementById("roomInput").style.display="block";
-  document.getElementById("confirmJoin").style.display="block";
-  document.getElementById("roomInput").focus();setStatus("Escribe el código de 4 cifras.");
-};
-document.getElementById("confirmJoin").onclick=joinHost;
-document.getElementById("closeOnline").onclick=closeOnline;
-
+document.getElementById("play").onclick=()=>{online=false;start()};
+document.getElementById("online").onclick=()=>{document.getElementById("menu").style.display="none";document.getElementById("onlineMenu").style.display="flex"};
+document.getElementById("create").onclick=createRoom;
+document.getElementById("join").onclick=()=>{document.getElementById("inputCode").style.display="block";document.getElementById("confirm").style.display="block";document.getElementById("inputCode").focus()};
+document.getElementById("confirm").onclick=joinRoom;
+document.getElementById("close").onclick=()=>{if(peer)peer.destroy();document.getElementById("onlineMenu").style.display="none";document.getElementById("menu").style.display="flex"};
 document.getElementById("pauseButton").onclick=()=>{paused=true;document.getElementById("pause").style.display="flex"};
 document.getElementById("resume").onclick=()=>{paused=false;document.getElementById("pause").style.display="none"};
-document.getElementById("back").onclick=()=>{
-  playing=false;paused=false;onlineMode=false;connected=false;
-  if(peer){try{peer.destroy()}catch(e){}}
-  peer=null;conn=null;document.getElementById("pause").style.display="none";
-  document.getElementById("hud").style.display="none";document.getElementById("controls").style.display="none";
-  document.getElementById("menu").style.display="flex";
-};
+document.getElementById("back").onclick=()=>location.reload();
 
-/* BUCLE */
-let last=performance.now();
+let last=performance.now(),net=0;
 function loop(now){
-  requestAnimationFrame(loop);const delta=Math.min(.05,(now-last)/1000);last=now;
-  update(delta,now);renderer.render(scene,camera);
+ requestAnimationFrame(loop);const d=Math.min(.05,(now-last)/1000);last=now;
+ if(playing&&!paused){
+  if(!online||host){time+=d;move(me,keys,sprinting?12:7,d);if(online)move(enemy,remote,remote.sprint?12:7,d);else{const q=ball.position.clone().sub(enemy.position);q.y=0;if(q.length()>1){q.normalize();enemy.position.addScaledVector(q,5*d);clamp(enemy)}}collide();possession();ballUpdate(d)}
+  else move(me,keys,sprinting?12:7,d);
+  document.getElementById("score").textContent="J1 "+score1+" — "+score2+" J2";
+  const target=me.position.clone();target.y=1;camera.position.lerp(new THREE.Vector3(me.position.x,12,me.position.z+18),.08);camera.lookAt(target);
+  if(online&&connected&&conn?.open&&now-net>50){net=now;if(host)conn.send({type:"state",s:state()});else conn.send({type:"input",i:{...keys,sprint:sprinting}})}
+ }
+ renderer.render(scene,camera)
 }
 requestAnimationFrame(loop);
 addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
