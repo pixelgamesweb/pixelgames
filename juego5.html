@@ -3,1242 +3,1173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Super Laberintos</title>
+<title>Mega Laberintos</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  user-select:none;
-  -webkit-user-select:none;
-}
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#02030a;color:white;font-family:Arial,sans-serif}
+button{border:1px solid rgba(255,255,255,.18);border-radius:14px;background:#090d18;color:#62aaff;font-weight:bold;padding:14px 20px;cursor:pointer;font-size:16px}
+button:active{transform:scale(.96)}
 
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  font-family:Arial,sans-serif;
-  background:#02030a;
-  color:white;
-}
-
-button{
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:14px;
-  background:#090d18;
-  color:#62aaff;
-  font-weight:bold;
-  padding:14px 20px;
-  cursor:pointer;
-  font-size:16px;
-}
-
-button:active{
-  transform:scale(.96);
-}
-
-.screen{
-  position:fixed;
-  inset:0;
-  display:none;
-  z-index:10;
-}
-
-.screen.active{
-  display:flex;
-}
-
-/* =========================
-   PORTADA
-========================= */
+.screen{position:fixed;inset:0;display:none;z-index:10}
+.screen.active{display:flex}
 
 #cover{
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  background:
-    radial-gradient(circle at 20% 20%,rgba(50,90,255,.28),transparent 35%),
-    radial-gradient(circle at 80% 70%,rgba(150,40,255,.22),transparent 35%),
-    linear-gradient(145deg,#03051a,#08020f);
+ flex-direction:column;align-items:center;justify-content:center;text-align:center;
+ background:
+ radial-gradient(circle at 20% 20%,rgba(50,90,255,.28),transparent 35%),
+ radial-gradient(circle at 80% 70%,rgba(150,40,255,.22),transparent 35%),
+ linear-gradient(145deg,#03051a,#08020f)
 }
 
 .pixelTitle{
-  font-size:clamp(42px,10vw,82px);
-  font-weight:900;
-  letter-spacing:4px;
-  text-shadow:
-    4px 4px 0 #15152d,
-    0 0 20px rgba(90,150,255,.7);
-  margin-bottom:15px;
+ font-size:clamp(42px,10vw,82px);font-weight:900;letter-spacing:4px;
+ text-shadow:4px 4px 0 #15152d,0 0 20px rgba(90,150,255,.7);
+ margin-bottom:15px
 }
 
-.subtitle{
-  font-size:18px;
-  color:rgba(255,255,255,.75);
-  margin-bottom:35px;
-}
-
-.mainButton{
-  min-width:190px;
-  font-size:21px;
-  padding:17px 30px;
-  background:#080c18;
-  color:#69adff;
-}
-
-/* =========================
-   NIVELES
-========================= */
+.subtitle{font-size:18px;color:rgba(255,255,255,.75);margin-bottom:35px}
+.mainButton{min-width:190px;font-size:21px;padding:17px 30px;background:#080c18;color:#69adff}
 
 #levels{
-  flex-direction:column;
-  background:
-    radial-gradient(circle at 20% 10%,rgba(50,100,255,.18),transparent 35%),
-    radial-gradient(circle at 80% 80%,rgba(160,50,255,.18),transparent 40%),
-    #03040b;
+ flex-direction:column;
+ background:
+ radial-gradient(circle at 20% 10%,rgba(50,100,255,.18),transparent 35%),
+ radial-gradient(circle at 80% 80%,rgba(160,50,255,.18),transparent 40%),#03040b
 }
 
-.levelHeader{
-  padding:30px 20px 15px;
-  text-align:center;
-}
-
-.levelTitle{
-  font-size:clamp(38px,8vw,65px);
-  font-weight:900;
-  letter-spacing:3px;
-}
+.levelHeader{padding:30px 20px 15px;text-align:center}
+.levelTitle{font-size:clamp(38px,8vw,65px);font-weight:900;letter-spacing:3px}
 
 .levelsGrid{
-  width:min(1100px,94%);
-  margin:auto;
-  padding:10px 0 40px;
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:14px;
-  overflow:auto;
+ width:min(1100px,94%);margin:auto;padding:10px 0 40px;
+ display:grid;grid-template-columns:repeat(5,1fr);gap:14px;overflow:auto
 }
 
 .level{
-  min-height:105px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  border-radius:17px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(10,14,28,.9);
-  color:white;
-  font-size:17px;
+ min-height:105px;display:flex;flex-direction:column;align-items:center;
+ justify-content:center;gap:7px;border-radius:17px;
+ border:1px solid rgba(255,255,255,.14);background:rgba(10,14,28,.9);
+ color:white;font-size:17px
 }
 
-.level small{
-  color:#65aaff;
-}
+.level small{color:#65aaff}
+.level.locked{opacity:.45;cursor:not-allowed}
+.lock{font-size:27px}
+.backButton{position:absolute;left:18px;top:18px}
 
-.level.locked{
-  opacity:.45;
-  cursor:not-allowed;
-}
+#game{display:none;background:#000}
+#game.active{display:block}
 
-.lock{
-  font-size:27px;
-}
-
-.backButton{
-  position:absolute;
-  left:18px;
-  top:18px;
-}
-
-/* =========================
-   JUEGO
-========================= */
-
-#game{
-  display:none;
-  background:#000;
-}
-
-#game.active{
-  display:block;
-}
-
-#canvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-}
+#canvas{position:absolute;inset:0;width:100%;height:100%}
 
 .gameTop{
-  position:absolute;
-  top:15px;
-  right:15px;
-  z-index:20;
-  display:flex;
-  gap:9px;
+ position:absolute;top:15px;right:15px;z-index:20;display:flex;gap:9px
 }
 
 .topButton{
-  padding:10px 13px;
-  font-size:14px;
-  background:rgba(4,7,15,.85);
-  backdrop-filter:blur(8px);
+ padding:10px 13px;font-size:14px;background:rgba(4,7,15,.85);
+ backdrop-filter:blur(8px)
 }
 
 #mapPanel{
-  position:absolute;
-  right:15px;
-  top:65px;
-  width:230px;
-  height:230px;
-  background:rgba(4,5,10,.95);
-  border:2px solid rgba(255,255,255,.2);
-  border-radius:18px;
-  z-index:25;
-  display:none;
-  padding:10px;
+ position:absolute;right:15px;top:65px;width:230px;height:230px;
+ background:rgba(4,5,10,.95);border:2px solid rgba(255,255,255,.2);
+ border-radius:18px;z-index:25;display:none;padding:10px
 }
 
-#mapCanvas{
-  width:100%;
-  height:100%;
-}
+#mapCanvas{width:100%;height:100%}
 
 .hud{
-  position:absolute;
-  left:15px;
-  top:15px;
-  z-index:20;
-  background:rgba(4,7,15,.8);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;
-  padding:10px 14px;
-  font-weight:bold;
+ position:absolute;left:15px;top:15px;z-index:20;
+ background:rgba(4,7,15,.8);border:1px solid rgba(255,255,255,.12);
+ border-radius:14px;padding:10px 14px;font-weight:bold
+}
+
+#keyHud{
+ display:none;
+ margin-left:10px;
+ color:#ffd84d;
+ font-size:20px
 }
 
 #controls{
-  position:absolute;
-  bottom:20px;
-  left:20px;
-  right:20px;
-  z-index:30;
-  display:flex;
-  justify-content:space-between;
-  pointer-events:none;
+ position:absolute;bottom:20px;left:20px;right:20px;z-index:30;
+ display:flex;justify-content:space-between;pointer-events:none
 }
 
-.controlGroup{
-  display:flex;
-  gap:10px;
-  pointer-events:auto;
-}
+.controlGroup{display:flex;gap:10px;pointer-events:auto}
 
 .control{
-  width:62px;
-  height:62px;
-  padding:0;
-  border-radius:18px;
-  font-size:25px;
-  background:rgba(5,8,17,.8);
-  backdrop-filter:blur(8px);
+ width:62px;height:62px;padding:0;border-radius:18px;font-size:25px;
+ background:rgba(5,8,17,.8);backdrop-filter:blur(8px)
 }
 
-#pauseMenu{
-  position:absolute;
-  inset:0;
-  z-index:50;
-  background:rgba(0,0,0,.72);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:15px;
-  backdrop-filter:blur(5px);
+#pauseMenu,#finish{
+ position:absolute;inset:0;z-index:50;background:rgba(0,0,0,.72);
+ display:none;align-items:center;justify-content:center;
+ flex-direction:column;gap:15px;text-align:center;
+ backdrop-filter:blur(5px)
 }
 
-.pauseTitle{
-  font-size:52px;
-  font-weight:900;
-}
+.pauseTitle{font-size:52px;font-weight:900}
 
-.finish{
-  position:absolute;
-  inset:0;
-  z-index:60;
-  background:rgba(0,0,0,.75);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:18px;
-  text-align:center;
-}
-
-.finish h2{
-  font-size:45px;
-  margin:0;
-}
+.finish{z-index:60}
+.finish h2{font-size:45px;margin:0}
 
 @media(max-width:700px){
-  .levelsGrid{
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
-  }
-
-  .level{
-    min-height:85px;
-    font-size:14px;
-  }
-
-  .control{
-    width:58px;
-    height:58px;
-  }
+ .levelsGrid{grid-template-columns:repeat(3,1fr);gap:10px}
+ .level{min-height:85px;font-size:14px}
+ .control{width:58px;height:58px}
 }
 
 @media(max-width:430px){
-  .levelsGrid{
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .gameTop{
-    top:10px;
-    right:10px;
-  }
-
-  .topButton{
-    padding:9px 10px;
-  }
+ .levelsGrid{grid-template-columns:repeat(3,1fr)}
+ .gameTop{top:10px;right:10px}
+ .topButton{padding:9px 10px}
 }
 </style>
 </head>
 
 <body>
 
-<!-- =========================
-     PORTADA
-========================= -->
-
 <section id="cover" class="screen active">
-
-  <div class="pixelTitle">SUPER LABERINTOS</div>
-
-  <div class="subtitle">
-    Encuentra la salida
-  </div>
-
-  <button class="mainButton" onclick="showLevels()">
-    JUGAR
-  </button>
-
+ <div class="pixelTitle">MEGA LABERINTOS</div>
+ <div class="subtitle">Encuentra la llave y escapa</div>
+ <button class="mainButton" onclick="showLevels()">JUGAR</button>
 </section>
-
-
-<!-- =========================
-     NIVELES
-========================= -->
 
 <section id="levels" class="screen">
-
-  <button class="backButton" onclick="showCover()">← VOLVER</button>
-
-  <div class="levelHeader">
-    <div class="levelTitle">NIVELES</div>
-  </div>
-
-  <div id="levelsGrid" class="levelsGrid"></div>
-
+ <button class="backButton" onclick="showCover()">← VOLVER</button>
+ <div class="levelHeader">
+  <div class="levelTitle">NIVELES</div>
+ </div>
+ <div id="levelsGrid" class="levelsGrid"></div>
 </section>
-
-
-<!-- =========================
-     JUEGO
-========================= -->
 
 <section id="game" class="screen">
 
-  <canvas id="canvas"></canvas>
+ <canvas id="canvas"></canvas>
 
-  <div class="hud">
-    NIVEL <span id="levelNumber">1</span>
+ <div class="hud">
+  NIVEL <span id="levelNumber">1</span>
+  <span id="keyHud">🔑</span>
+ </div>
+
+ <div class="gameTop">
+  <button class="topButton" onclick="toggleMap()">🗺️ MAPA</button>
+  <button class="topButton" onclick="pauseGame()">⏸️</button>
+ </div>
+
+ <div id="mapPanel">
+  <canvas id="mapCanvas"></canvas>
+ </div>
+
+ <div id="controls">
+  <div class="controlGroup">
+   <button class="control"
+    onpointerdown="keys.left=true"
+    onpointerup="keys.left=false"
+    onpointerleave="keys.left=false">◀</button>
+
+   <button class="control"
+    onpointerdown="keys.back=true"
+    onpointerup="keys.back=false"
+    onpointerleave="keys.back=false">▼</button>
+
+   <button class="control"
+    onpointerdown="keys.forward=true"
+    onpointerup="keys.forward=false"
+    onpointerleave="keys.forward=false">▲</button>
+
+   <button class="control"
+    onpointerdown="keys.right=true"
+    onpointerup="keys.right=false"
+    onpointerleave="keys.right=false">▶</button>
   </div>
+ </div>
 
-  <div class="gameTop">
+ <div id="pauseMenu">
+  <div class="pauseTitle">PAUSA</div>
+  <button onclick="continueGame()">▶ CONTINUAR</button>
+  <button onclick="backToLevels()">↩ VOLVER</button>
+ </div>
 
-    <button class="topButton" onclick="toggleMap()">
-      🗺️ MAPA
-    </button>
-
-    <button class="topButton" onclick="pauseGame()">
-      ⏸️
-    </button>
-
-  </div>
-
-  <div id="mapPanel">
-    <canvas id="mapCanvas"></canvas>
-  </div>
-
-
-  <!-- CONTROLES -->
-
-  <div id="controls">
-
-    <div class="controlGroup">
-
-      <button class="control"
-        onpointerdown="keys.left=true"
-        onpointerup="keys.left=false"
-        onpointerleave="keys.left=false">
-        ◀
-      </button>
-
-      <button class="control"
-        onpointerdown="keys.back=true"
-        onpointerup="keys.back=false"
-        onpointerleave="keys.back=false">
-        ▼
-      </button>
-
-      <button class="control"
-        onpointerdown="keys.forward=true"
-        onpointerup="keys.forward=false"
-        onpointerleave="keys.forward=false">
-        ▲
-      </button>
-
-      <button class="control"
-        onpointerdown="keys.right=true"
-        onpointerup="keys.right=false"
-        onpointerleave="keys.right=false">
-        ▶
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- PAUSA -->
-
-  <div id="pauseMenu">
-
-    <div class="pauseTitle">PAUSA</div>
-
-    <button onclick="continueGame()">
-      ▶ CONTINUAR
-    </button>
-
-    <button onclick="backToLevels()">
-      ↩ VOLVER
-    </button>
-
-  </div>
-
-
-  <!-- FINAL -->
-
-  <div id="finish">
-
-    <h2>¡NIVEL COMPLETADO!</h2>
-
-    <div id="finishText"></div>
-
-    <button onclick="nextLevel()">
-      SIGUIENTE NIVEL →
-    </button>
-
-    <button onclick="backToLevels()">
-      NIVELES
-    </button>
-
-  </div>
+ <div id="finish" class="finish">
+  <h2>¡NIVEL COMPLETADO!</h2>
+  <div id="finishText"></div>
+  <button onclick="nextLevel()">SIGUIENTE NIVEL →</button>
+  <button onclick="backToLevels()">NIVELES</button>
+ </div>
 
 </section>
 
-
 <script>
 
-/* =====================================================
-   PIXEL GAMES - SUPER LABERINTOS
-===================================================== */
+const cover=document.getElementById("cover");
+const levelsScreen=document.getElementById("levels");
+const gameScreen=document.getElementById("game");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+const mapCanvas=document.getElementById("mapCanvas");
+const mapCtx=mapCanvas.getContext("2d");
 
-const cover = document.getElementById("cover");
-const levelsScreen = document.getElementById("levels");
-const gameScreen = document.getElementById("game");
+let currentLevel=1;
+let unlocked=3;
+let maze=[];
+let mazeSize=9;
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-
-const mapCanvas = document.getElementById("mapCanvas");
-const mapCtx = mapCanvas.getContext("2d");
-
-let currentLevel = 1;
-let unlocked = 3;
-
-let maze = [];
-let mazeSize = 9;
-
-let player = {
-  x:1.5,
-  y:1.5,
-  angle:0
+let player={
+ x:1.5,
+ y:1.5,
+ angle:0
 };
 
-let gamePaused = false;
-let gameWon = false;
+let key={
+ x:0,
+ y:0,
+ collected:false
+};
 
-const keys = {
-  forward:false,
-  back:false,
-  left:false,
-  right:false
+let door={
+ x:0,
+ y:0,
+ open:false
+};
+
+let gamePaused=false;
+let gameWon=false;
+
+const keys={
+ forward:false,
+ back:false,
+ left:false,
+ right:false
 };
 
 
-/* =====================================================
+/* =========================
    PANTALLAS
-===================================================== */
+========================= */
 
 function hideScreens(){
-  cover.classList.remove("active");
-  levelsScreen.classList.remove("active");
-  gameScreen.classList.remove("active");
+ cover.classList.remove("active");
+ levelsScreen.classList.remove("active");
+ gameScreen.classList.remove("active");
 }
 
 function showCover(){
-  hideScreens();
-  cover.classList.add("active");
+ hideScreens();
+ cover.classList.add("active");
 }
 
 function showLevels(){
-  hideScreens();
-  levelsScreen.classList.add("active");
-  createLevelButtons();
+ hideScreens();
+ levelsScreen.classList.add("active");
+ createLevelButtons();
 }
 
 function backToLevels(){
-  gamePaused=false;
-  document.getElementById("pauseMenu").style.display="none";
-  document.getElementById("finish").style.display="none";
-
-  hideScreens();
-  levelsScreen.classList.add("active");
-
-  createLevelButtons();
+ gamePaused=false;
+ document.getElementById("pauseMenu").style.display="none";
+ document.getElementById("finish").style.display="none";
+ hideScreens();
+ levelsScreen.classList.add("active");
+ createLevelButtons();
 }
 
 
-/* =====================================================
+/* =========================
    NIVELES
-===================================================== */
+========================= */
 
 function createLevelButtons(){
 
-  const grid=document.getElementById("levelsGrid");
-  grid.innerHTML="";
+ const grid=document.getElementById("levelsGrid");
+ grid.innerHTML="";
 
-  for(let i=1;i<=100;i++){
+ for(let i=1;i<=100;i++){
 
-    const b=document.createElement("button");
-    b.className="level";
+  const b=document.createElement("button");
+  b.className="level";
 
-    if(i>unlocked){
+  if(i>unlocked){
 
-      b.classList.add("locked");
+   b.classList.add("locked");
 
-      b.innerHTML=`
-        <div class="lock">🔒</div>
-        <div>Nivel ${i}</div>
-      `;
+   b.innerHTML=
+   `<div class="lock">🔒</div>
+    <div>Nivel ${i}</div>`;
 
-    }else{
+  }else{
 
-      b.innerHTML=`
-        <div>⭐</div>
-        <div>Nivel ${i}</div>
-        <small>JUGAR</small>
-      `;
+   b.innerHTML=
+   `<div>⭐</div>
+    <div>Nivel ${i}</div>
+    <small>JUGAR</small>`;
 
-      b.onclick=()=>{
-        startLevel(i);
-      };
-
-    }
-
-    grid.appendChild(b);
+   b.onclick=()=>startLevel(i);
   }
+
+  grid.appendChild(b);
+ }
 }
 
 
-/* =====================================================
-   GENERADOR DE LABERINTO
-===================================================== */
+/* =========================
+   GENERADOR
+========================= */
 
 function generateMaze(size){
 
-  const grid=[];
+ const grid=[];
 
-  for(let y=0;y<size;y++){
-
-    grid[y]=[];
-
-    for(let x=0;x<size;x++){
-
-      grid[y][x]=1;
-
-    }
-
+ for(let y=0;y<size;y++){
+  grid[y]=[];
+  for(let x=0;x<size;x++){
+   grid[y][x]=1;
   }
+ }
 
-  function carve(x,y){
+ function carve(x,y){
 
-    grid[y][x]=0;
+  grid[y][x]=0;
 
-    const directions=[
-      [2,0],
-      [-2,0],
-      [0,2],
-      [0,-2]
-    ];
+  const directions=[
+   [2,0],[-2,0],[0,2],[0,-2]
+  ];
 
-    directions.sort(()=>Math.random()-.5);
+  directions.sort(()=>Math.random()-.5);
 
-    for(const [dx,dy] of directions){
+  for(const [dx,dy] of directions){
 
-      const nx=x+dx;
-      const ny=y+dy;
+   const nx=x+dx;
+   const ny=y+dy;
 
-      if(
-        nx>0 &&
-        nx<size-1 &&
-        ny>0 &&
-        ny<size-1 &&
-        grid[ny][nx]===1
-      ){
+   if(
+    nx>0 &&
+    nx<size-1 &&
+    ny>0 &&
+    ny<size-1 &&
+    grid[ny][nx]===1
+   ){
 
-        grid[y+dy/2][x+dx/2]=0;
+    grid[y+dy/2][x+dx/2]=0;
+    carve(nx,ny);
 
-        carve(nx,ny);
-
-      }
-
-    }
-
+   }
   }
+ }
 
-  carve(1,1);
+ carve(1,1);
 
-  grid[size-2][size-2]=0;
+ grid[size-2][size-2]=0;
 
-  return grid;
+ return grid;
 }
 
 
-/* =====================================================
+/* =========================
+   BUSCAR POSICIÓN LIBRE
+========================= */
+
+function randomFreeCell(){
+
+ let x,y;
+
+ do{
+  x=1+Math.floor(Math.random()*(mazeSize-2));
+  y=1+Math.floor(Math.random()*(mazeSize-2));
+ }while(
+  maze[y][x]!==0 ||
+  Math.hypot(x+.5-player.x,y+.5-player.y)<4 ||
+  (x>=mazeSize-3 && y>=mazeSize-3)
+ );
+
+ return {x:x+.5,y:y+.5};
+}
+
+
+/* =========================
    INICIAR NIVEL
-===================================================== */
+========================= */
 
 function startLevel(level){
 
-  currentLevel=level;
+ currentLevel=level;
 
-  mazeSize=
-    Math.min(
-      9 + Math.floor(level/8)*2,
-      25
-    );
+ /*
+    A partir de los niveles altos,
+    el laberinto crece.
+ */
+ mazeSize=Math.min(
+  9+Math.floor(level/5)*2,
+  31
+ );
 
-  if(mazeSize%2===0){
-    mazeSize++;
-  }
+ if(mazeSize%2===0) mazeSize++;
 
-  maze=generateMaze(mazeSize);
+ maze=generateMaze(mazeSize);
 
-  player.x=1.5;
-  player.y=1.5;
+ player.x=1.5;
+ player.y=1.5;
+ player.angle=0;
 
-  /*
-     Miramos hacia la derecha al comenzar.
-  */
-  player.angle=0;
+ /*
+    PUERTA
+ */
+ door.x=mazeSize-1.5;
+ door.y=mazeSize-1.5;
+ door.open=false;
 
-  gamePaused=false;
-  gameWon=false;
+ /*
+    LLAVE.
+    Se coloca en una zona libre diferente
+    de la salida.
+ */
+ const k=randomFreeCell();
 
-  document.getElementById("levelNumber").textContent=level;
+ key.x=k.x;
+ key.y=k.y;
+ key.collected=false;
 
-  document.getElementById("pauseMenu").style.display="none";
-  document.getElementById("finish").style.display="none";
-  document.getElementById("mapPanel").style.display="none";
+ gamePaused=false;
+ gameWon=false;
 
-  hideScreens();
-  gameScreen.classList.add("active");
+ document.getElementById("levelNumber").textContent=level;
+ document.getElementById("keyHud").style.display="none";
+ document.getElementById("pauseMenu").style.display="none";
+ document.getElementById("finish").style.display="none";
+ document.getElementById("mapPanel").style.display="none";
 
-  resizeCanvas();
+ hideScreens();
+ gameScreen.classList.add("active");
 
-  updateMap();
-
+ resizeCanvas();
+ updateMap();
 }
 
 
-/* =====================================================
+/* =========================
    CANVAS
-===================================================== */
+========================= */
 
 function resizeCanvas(){
 
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
+ canvas.width=window.innerWidth;
+ canvas.height=window.innerHeight;
 
-  mapCanvas.width=210;
-  mapCanvas.height=210;
+ mapCanvas.width=210;
+ mapCanvas.height=210;
 }
 
 window.addEventListener("resize",resizeCanvas);
 
 
-/* =====================================================
-   MOVIMIENTO
-===================================================== */
+/* =========================
+   TECLADO
+========================= */
 
 window.addEventListener("keydown",e=>{
 
-  if(e.key==="w" || e.key==="ArrowUp")
-    keys.forward=true;
+ if(e.key==="w"||e.key==="ArrowUp")
+  keys.forward=true;
 
-  if(e.key==="s" || e.key==="ArrowDown")
-    keys.back=true;
+ if(e.key==="s"||e.key==="ArrowDown")
+  keys.back=true;
 
-  if(e.key==="a" || e.key==="ArrowLeft")
-    keys.left=true;
+ if(e.key==="a"||e.key==="ArrowLeft")
+  keys.left=true;
 
-  if(e.key==="d" || e.key==="ArrowRight")
-    keys.right=true;
+ if(e.key==="d"||e.key==="ArrowRight")
+  keys.right=true;
 
-  if(e.key==="Escape")
-    pauseGame();
+ if(e.key==="Escape")
+  pauseGame();
 
 });
 
 window.addEventListener("keyup",e=>{
 
-  if(e.key==="w" || e.key==="ArrowUp")
-    keys.forward=false;
+ if(e.key==="w"||e.key==="ArrowUp")
+  keys.forward=false;
 
-  if(e.key==="s" || e.key==="ArrowDown")
-    keys.back=false;
+ if(e.key==="s"||e.key==="ArrowDown")
+  keys.back=false;
 
-  if(e.key==="a" || e.key==="ArrowLeft")
-    keys.left=false;
+ if(e.key==="a"||e.key==="ArrowLeft")
+  keys.left=false;
 
-  if(e.key==="d" || e.key==="ArrowRight")
-    keys.right=false;
-
+ if(e.key==="d"||e.key==="ArrowRight")
+  keys.right=false;
 });
 
 
-/* =====================================================
-   COLISIONES
-===================================================== */
+/* =========================
+   COLISIÓN
+========================= */
 
 function isWall(x,y){
 
-  const gx=Math.floor(x);
-  const gy=Math.floor(y);
+ const gx=Math.floor(x);
+ const gy=Math.floor(y);
 
-  if(
-    gy<0 ||
-    gy>=maze.length ||
-    gx<0 ||
-    gx>=maze[0].length
-  )
-    return true;
+ if(
+  gy<0||
+  gy>=maze.length||
+  gx<0||
+  gx>=maze[0].length
+ ) return true;
 
-  return maze[gy][gx]===1;
+ return maze[gy][gx]===1;
 }
 
+
+/* =========================
+   MOVIMIENTO
+========================= */
 
 function movePlayer(){
 
-  if(gamePaused || gameWon) return;
+ if(gamePaused||gameWon) return;
 
-  const speed=.045;
+ const speed=.045;
 
-  let moveX=0;
-  let moveY=0;
+ let moveX=0;
+ let moveY=0;
 
-  if(keys.forward){
+ if(keys.forward){
+  moveX+=Math.cos(player.angle)*speed;
+  moveY+=Math.sin(player.angle)*speed;
+ }
 
-    moveX+=Math.cos(player.angle)*speed;
-    moveY+=Math.sin(player.angle)*speed;
+ if(keys.back){
+  moveX-=Math.cos(player.angle)*speed;
+  moveY-=Math.sin(player.angle)*speed;
+ }
 
-  }
+ if(keys.left)
+  player.angle-=.045;
 
-  if(keys.back){
-
-    moveX-=Math.cos(player.angle)*speed;
-    moveY-=Math.sin(player.angle)*speed;
-
-  }
-
-  if(keys.left){
-
-    player.angle-=.045;
-
-  }
-
-  if(keys.right){
-
-    player.angle+=.045;
-
-  }
-
-  if(!isWall(player.x+moveX,player.y))
-    player.x+=moveX;
-
-  if(!isWall(player.x,player.y+moveY))
-    player.y+=moveY;
+ if(keys.right)
+  player.angle+=.045;
 
 
-  /*
-     SALIDA
-  */
+ /*
+    MOVIMIENTO CON COLISIÓN
+ */
+ if(!isWall(player.x+moveX,player.y))
+  player.x+=moveX;
 
-  const exitX=mazeSize-1.5;
-  const exitY=mazeSize-1.5;
+ if(!isWall(player.x,player.y+moveY))
+  player.y+=moveY;
 
-  const distance=
-    Math.hypot(
-      player.x-exitX,
-      player.y-exitY
-    );
 
-  if(distance<.6){
+ /*
+    RECOGER LLAVE
+ */
+ if(!key.collected){
 
-    completeLevel();
+  const distanceToKey=
+   Math.hypot(
+    player.x-key.x,
+    player.y-key.y
+   );
+
+  if(distanceToKey<.55){
+
+   key.collected=true;
+
+   document.getElementById("keyHud").style.display="inline";
 
   }
+ }
 
+
+ /*
+    PUERTA
+ */
+ const distanceToDoor=
+  Math.hypot(
+   player.x-door.x,
+   player.y-door.y
+  );
+
+ if(distanceToDoor<.75){
+
+  if(key.collected){
+
+   door.open=true;
+
+   completeLevel();
+
+  }else{
+
+   /*
+      Evitamos que atraviese la puerta.
+   */
+   if(distanceToDoor<.48){
+
+    const dx=player.x-door.x;
+    const dy=player.y-door.y;
+    const d=Math.max(.01,Math.hypot(dx,dy));
+
+    player.x=door.x+(dx/d)*.49;
+    player.y=door.y+(dy/d)*.49;
+   }
+
+   /*
+      Mensaje sin bloquear el juego
+      permanentemente.
+   */
+   if(!door.messageShown){
+
+    door.messageShown=true;
+
+    setTimeout(()=>{
+     door.messageShown=false;
+    },1800);
+
+    alert("🔒 No tienes la llave");
+   }
+  }
+ }
 }
 
 
-/* =====================================================
-   MOTOR 3D
-===================================================== */
+/* =========================
+   RAYCASTING 3D
+========================= */
 
 const FOV=Math.PI/3;
 
 function castRay(angle){
 
-  let distance=0;
+ let distance=0;
+ const step=.025;
 
-  const step=.025;
+ while(distance<30){
 
-  while(distance<30){
+  distance+=step;
 
-    distance+=step;
+  const x=
+   player.x+
+   Math.cos(angle)*distance;
 
-    const x=
-      player.x+
-      Math.cos(angle)*distance;
+  const y=
+   player.y+
+   Math.sin(angle)*distance;
 
-    const y=
-      player.y+
-      Math.sin(angle)*distance;
+  if(isWall(x,y))
+   return distance;
 
-    if(isWall(x,y)){
+ }
 
-      return distance;
-
-    }
-
-  }
-
-  return 30;
+ return 30;
 }
 
+
+/* =========================
+   RENDER 3D
+========================= */
 
 function render3D(){
 
-  const w=canvas.width;
-  const h=canvas.height;
+ const w=canvas.width;
+ const h=canvas.height;
 
-  /*
-     Cielo
-  */
+ /*
+    CIELO
+ */
+ const sky=ctx.createLinearGradient(0,0,0,h/2);
+ sky.addColorStop(0,"#02030b");
+ sky.addColorStop(1,"#111b38");
 
-  const sky=ctx.createLinearGradient(0,0,0,h/2);
-
-  sky.addColorStop(0,"#02030b");
-  sky.addColorStop(1,"#111b38");
-
-  ctx.fillStyle=sky;
-  ctx.fillRect(0,0,w,h/2);
+ ctx.fillStyle=sky;
+ ctx.fillRect(0,0,w,h/2);
 
 
-  /*
-     Suelo
-  */
+ /*
+    SUELO
+ */
+ const floor=ctx.createLinearGradient(0,h/2,0,h);
+ floor.addColorStop(0,"#151515");
+ floor.addColorStop(1,"#030303");
 
-  const floor=ctx.createLinearGradient(0,h/2,0,h);
-
-  floor.addColorStop(0,"#151515");
-  floor.addColorStop(1,"#030303");
-
-  ctx.fillStyle=floor;
-  ctx.fillRect(0,h/2,w,h/2);
+ ctx.fillStyle=floor;
+ ctx.fillRect(0,h/2,w,h/2);
 
 
-  /*
-     Raycasting
-  */
+ /*
+    PAREDES
+ */
+ const rays=Math.min(w,900);
+ const columnWidth=w/rays;
 
-  const rays=Math.min(w,900);
-  const columnWidth=w/rays;
+ for(let i=0;i<rays;i++){
 
-  for(let i=0;i<rays;i++){
+  const rayAngle=
+   player.angle-
+   FOV/2+
+   FOV*(i/rays);
 
-    const rayAngle=
-      player.angle-
-      FOV/2+
-      FOV*(i/rays);
+  let distance=castRay(rayAngle);
 
-    let distance=castRay(rayAngle);
+  distance*=Math.cos(rayAngle-player.angle);
 
-    /*
-       Corrección de efecto ojo de pez
-    */
+  const wallHeight=
+   Math.min(h*1.5,h/(distance*.75));
 
-    distance *=
-      Math.cos(rayAngle-player.angle);
+  const top=h/2-wallHeight/2;
 
-    const wallHeight=
-      Math.min(
-        h*1.5,
-        h/(distance*.75)
-      );
+  const brightness=
+   Math.max(25,210-distance*14);
 
-    const top=
-      h/2-wallHeight/2;
+  ctx.fillStyle=
+   `rgb(${brightness*.35},
+        ${brightness*.55},
+        ${brightness})`;
 
-    /*
-       Color según distancia
-    */
-
-    const brightness=
-      Math.max(
-        25,
-        210-distance*14
-      );
-
-    ctx.fillStyle=
-      `rgb(${brightness*.35},
-           ${brightness*.55},
-           ${brightness})`;
-
-    ctx.fillRect(
-      i*columnWidth,
-      top,
-      columnWidth+1,
-      wallHeight
-    );
-
-  }
+  ctx.fillRect(
+   i*columnWidth,
+   top,
+   columnWidth+1,
+   wallHeight
+  );
+ }
 
 
-  /*
-     Cruz central
-  */
+ /*
+    OBJETOS
+ */
+ drawKey3D();
+ drawDoor3D();
 
-  ctx.strokeStyle="rgba(255,255,255,.65)";
-  ctx.lineWidth=2;
+
+ /*
+    CRUZ
+ */
+ ctx.strokeStyle="rgba(255,255,255,.65)";
+ ctx.lineWidth=2;
+
+ ctx.beginPath();
+ ctx.moveTo(w/2-8,h/2);
+ ctx.lineTo(w/2+8,h/2);
+ ctx.moveTo(w/2,h/2-8);
+ ctx.lineTo(w/2,h/2+8);
+ ctx.stroke();
+}
+
+
+/* =========================
+   PROYECCIÓN DE OBJETOS
+========================= */
+
+function projectObject(x,y){
+
+ const dx=x-player.x;
+ const dy=y-player.y;
+
+ const distance=Math.hypot(dx,dy);
+
+ let angle=
+  Math.atan2(dy,dx)-player.angle;
+
+ while(angle>Math.PI)
+  angle-=Math.PI*2;
+
+ while(angle<-Math.PI)
+  angle+=Math.PI*2;
+
+ if(Math.abs(angle)>FOV/2)
+  return null;
+
+ const screenX=
+  canvas.width/2+
+  (angle/(FOV/2))*
+  (canvas.width/2);
+
+ return {
+  x:screenX,
+  distance:distance
+ };
+}
+
+
+/* =========================
+   LLAVE 3D
+========================= */
+
+function drawKey3D(){
+
+ if(key.collected) return;
+
+ const p=projectObject(key.x,key.y);
+
+ if(!p||p.distance>.55+18) return;
+
+ const size=Math.max(8,85/p.distance);
+
+ ctx.save();
+
+ ctx.translate(p.x,canvas.height/2);
+
+ ctx.shadowBlur=18;
+ ctx.shadowColor="#ffd84d";
+ ctx.strokeStyle="#ffd84d";
+ ctx.fillStyle="#ffd84d";
+ ctx.lineWidth=Math.max(2,size*.12);
+
+ /*
+    Cabeza
+ */
+ ctx.beginPath();
+ ctx.arc(
+  0,
+  -size*.18,
+  size*.25,
+  0,
+  Math.PI*2
+ );
+ ctx.stroke();
+
+ /*
+    Palo
+ */
+ ctx.fillRect(
+  -size*.04,
+  -size*.02,
+  size*.08,
+  size*.58
+ );
+
+ /*
+    Dientes
+ */
+ ctx.fillRect(
+  0,
+  size*.35,
+  size*.22,
+  size*.08
+ );
+
+ ctx.fillRect(
+  0,
+  size*.48,
+  size*.18,
+  size*.08
+ );
+
+ ctx.restore();
+}
+
+
+/* =========================
+   PUERTA 3D
+========================= */
+
+function drawDoor3D(){
+
+ const p=projectObject(door.x,door.y);
+
+ if(!p||p.distance>25) return;
+
+ const size=Math.max(20,260/p.distance);
+
+ const doorW=size*.72;
+ const doorH=size*1.25;
+
+ const bottom=canvas.height/2+size*.72;
+ const top=bottom-doorH;
+
+ ctx.save();
+
+ /*
+    Marco
+ */
+ ctx.fillStyle="#3b2111";
+
+ ctx.fillRect(
+  p.x-doorW/2-size*.08,
+  top-size*.08,
+  doorW+size*.16,
+  doorH+size*.08
+ );
+
+ /*
+    Puerta
+ */
+ if(door.open){
+
+  ctx.fillStyle="#21130c";
+
+ }else{
+
+  const wood=ctx.createLinearGradient(
+   p.x-doorW/2,0,
+   p.x+doorW/2,0
+  );
+
+  wood.addColorStop(0,"#4b2814");
+  wood.addColorStop(.5,"#8a5428");
+  wood.addColorStop(1,"#3e2110");
+
+  ctx.fillStyle=wood;
+ }
+
+ ctx.fillRect(
+  p.x-doorW/2,
+  top,
+  doorW,
+  doorH
+ );
+
+
+ /*
+    Tablones
+ */
+ ctx.strokeStyle="#291508";
+ ctx.lineWidth=Math.max(1,size*.025);
+
+ for(let i=1;i<4;i++){
+
+  const yy=top+(doorH/4)*i;
+
+  ctx.beginPath();
+  ctx.moveTo(p.x-doorW/2,yy);
+  ctx.lineTo(p.x+doorW/2,yy);
+  ctx.stroke();
+ }
+
+
+ /*
+    Tirador
+ */
+ if(!door.open){
+
+  ctx.fillStyle="#e0b84f";
 
   ctx.beginPath();
 
-  ctx.moveTo(w/2-8,h/2);
-  ctx.lineTo(w/2+8,h/2);
-
-  ctx.moveTo(w/2,h/2-8);
-  ctx.lineTo(w/2,h/2+8);
-
-  ctx.stroke();
-
-
-  /*
-     Salida luminosa
-  */
-
-  drawExitMarker();
-
-}
-
-
-/* =====================================================
-   SALIDA
-===================================================== */
-
-function drawExitMarker(){
-
-  const dx=
-    mazeSize-1.5-player.x;
-
-  const dy=
-    mazeSize-1.5-player.y;
-
-  const distance=Math.hypot(dx,dy);
-
-  let angle=
-    Math.atan2(dy,dx)-player.angle;
-
-  while(angle>Math.PI)
-    angle-=Math.PI*2;
-
-  while(angle<-Math.PI)
-    angle+=Math.PI*2;
-
-  if(Math.abs(angle)>FOV/2)
-    return;
-
-  const screenX=
-    canvas.width/2+
-    (angle/(FOV/2))*
-    (canvas.width/2);
-
-  const size=
-    Math.max(
-      10,
-      100/distance
-    );
-
-  ctx.fillStyle="#62aaff";
-
-  ctx.fillRect(
-    screenX-size/2,
-    canvas.height/2-size,
-    size,
-    size*2
+  ctx.arc(
+   p.x+doorW*.22,
+   top+doorH*.52,
+   Math.max(2,size*.035),
+   0,
+   Math.PI*2
   );
 
+  ctx.fill();
+ }
+
+
+ /*
+    Texto sobre puerta
+ */
+ if(p.distance<6){
+
+  ctx.textAlign="center";
+  ctx.font="bold 16px Arial";
+  ctx.fillStyle="#fff";
+
+  ctx.fillText(
+   key.collected ? "🚪 SALIDA" : "🔒 NECESITAS LA LLAVE",
+   p.x,
+   top-12
+  );
+ }
+
+ ctx.restore();
 }
 
 
-/* =====================================================
+/* =========================
    MAPA
-===================================================== */
+========================= */
 
 function toggleMap(){
 
-  const panel=
-    document.getElementById("mapPanel");
+ const panel=document.getElementById("mapPanel");
 
-  if(panel.style.display==="block"){
-
-    panel.style.display="none";
-
-  }else{
-
-    panel.style.display="block";
-
-    updateMap();
-
-  }
-
+ if(panel.style.display==="block")
+  panel.style.display="none";
+ else{
+  panel.style.display="block";
+  updateMap();
+ }
 }
 
 
 function updateMap(){
 
-  if(!maze.length) return;
+ if(!maze.length) return;
 
-  const size=210;
-  const cell=size/mazeSize;
+ const size=210;
+ const cell=size/mazeSize;
 
-  mapCtx.fillStyle="#05060b";
-  mapCtx.fillRect(0,0,size,size);
+ mapCtx.fillStyle="#05060b";
+ mapCtx.fillRect(0,0,size,size);
 
-  for(let y=0;y<mazeSize;y++){
+ for(let y=0;y<mazeSize;y++){
 
-    for(let x=0;x<mazeSize;x++){
+  for(let x=0;x<mazeSize;x++){
 
-      if(maze[y][x]===1){
+   if(maze[y][x]===1)
+    mapCtx.fillStyle="#6b7280";
+   else
+    mapCtx.fillStyle="#151922";
 
-        mapCtx.fillStyle="#6b7280";
-
-      }else{
-
-        mapCtx.fillStyle="#151922";
-
-      }
-
-      mapCtx.fillRect(
-        x*cell,
-        y*cell,
-        cell+.5,
-        cell+.5
-      );
-
-    }
-
+   mapCtx.fillRect(
+    x*cell,
+    y*cell,
+    cell+.5,
+    cell+.5
+   );
   }
+ }
 
 
-  /*
-     SALIDA
-  */
+ /*
+    LLAVE EN MAPA
+ */
+ if(!key.collected){
 
-  mapCtx.fillStyle="#62aaff";
-
-  mapCtx.fillRect(
-    (mazeSize-2)*cell,
-    (mazeSize-2)*cell,
-    cell,
-    cell
-  );
-
-
-  /*
-     JUGADOR
-  */
-
-  const px=player.x*cell;
-  const py=player.y*cell;
-
-  mapCtx.fillStyle="#ff3b7a";
+  mapCtx.fillStyle="#ffd84d";
 
   mapCtx.beginPath();
 
   mapCtx.arc(
-    px,
-    py,
-    Math.max(4,cell*.25),
-    0,
-    Math.PI*2
+   key.x*cell,
+   key.y*cell,
+   Math.max(3,cell*.18),
+   0,
+   Math.PI*2
   );
 
   mapCtx.fill();
+ }
 
 
-  /*
-     Dirección
-  */
+ /*
+    PUERTA
+ */
+ mapCtx.fillStyle=key.collected?"#62aaff":"#9b5429";
 
-  mapCtx.strokeStyle="#fff";
-  mapCtx.lineWidth=2;
+ mapCtx.fillRect(
+  (mazeSize-2)*cell,
+  (mazeSize-2)*cell,
+  cell,
+  cell
+ );
 
-  mapCtx.beginPath();
 
-  mapCtx.moveTo(px,py);
+ /*
+    JUGADOR
+ */
+ const px=player.x*cell;
+ const py=player.y*cell;
 
-  mapCtx.lineTo(
-    px+
-    Math.cos(player.angle)*cell,
-    py+
-    Math.sin(player.angle)*cell
-  );
+ mapCtx.fillStyle="#ff3b7a";
 
-  mapCtx.stroke();
+ mapCtx.beginPath();
 
+ mapCtx.arc(
+  px,
+  py,
+  Math.max(4,cell*.25),
+  0,
+  Math.PI*2
+ );
+
+ mapCtx.fill();
+
+
+ mapCtx.strokeStyle="#fff";
+ mapCtx.lineWidth=2;
+
+ mapCtx.beginPath();
+
+ mapCtx.moveTo(px,py);
+
+ mapCtx.lineTo(
+  px+Math.cos(player.angle)*cell,
+  py+Math.sin(player.angle)*cell
+ );
+
+ mapCtx.stroke();
 }
 
 
-/* =====================================================
+/* =========================
    PAUSA
-===================================================== */
+========================= */
 
 function pauseGame(){
 
-  if(gameWon) return;
+ if(gameWon) return;
 
-  gamePaused=true;
+ gamePaused=true;
 
-  document.getElementById("pauseMenu").style.display="flex";
-
+ document.getElementById("pauseMenu").style.display="flex";
 }
-
 
 function continueGame(){
 
-  gamePaused=false;
+ gamePaused=false;
 
-  document.getElementById("pauseMenu").style.display="none";
-
+ document.getElementById("pauseMenu").style.display="none";
 }
 
 
-/* =====================================================
-   COMPLETAR NIVEL
-===================================================== */
+/* =========================
+   COMPLETAR
+========================= */
 
 function completeLevel(){
 
-  gameWon=true;
+ if(gameWon) return;
 
-  /*
-     Desbloqueamos el siguiente.
-  */
+ gameWon=true;
 
-  if(currentLevel===unlocked && unlocked<100){
+ if(currentLevel===unlocked && unlocked<100)
+  unlocked++;
 
-    unlocked++;
+ document.getElementById("finishText").textContent=
+  "🔑 Has encontrado la llave y has abierto la puerta.";
 
-  }
-
-  document.getElementById("finishText").textContent=
-    "Has completado el nivel "+currentLevel+".";
-
-  document.getElementById("finish").style.display="flex";
-
+ document.getElementById("finish").style.display="flex";
 }
 
 
-/* =====================================================
-   SIGUIENTE NIVEL
-===================================================== */
+/* =========================
+   SIGUIENTE
+========================= */
 
 function nextLevel(){
 
-  const next=currentLevel+1;
+ const next=currentLevel+1;
 
-  if(next<=100){
-
-    startLevel(next);
-
-  }else{
-
-    backToLevels();
-
-  }
-
+ if(next<=100)
+  startLevel(next);
+ else
+  backToLevels();
 }
 
 
-/* =====================================================
-   BUCLE PRINCIPAL
-===================================================== */
+/* =========================
+   BUCLE
+========================= */
 
 function gameLoop(){
 
-  movePlayer();
+ movePlayer();
+ render3D();
+ updateMap();
 
-  render3D();
-
-  updateMap();
-
-  requestAnimationFrame(gameLoop);
-
+ requestAnimationFrame(gameLoop);
 }
 
 gameLoop();
-
-
-/* =====================================================
-   INICIO
-===================================================== */
 
 createLevelButtons();
 
