@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Super Adventures</title>
 
 <style>
 *{
     box-sizing:border-box;
+    user-select:none;
 }
 
 html,body{
@@ -18,420 +19,923 @@ html,body{
     font-family:Arial,sans-serif;
 }
 
-/* FONDO PIXELADO */
-body{
-    background:
-        linear-gradient(
-            to bottom,
-            #17224a 0%,
-            #315a91 38%,
-            #69a9d0 60%,
-            #76bd45 61%,
-            #3f792b 100%
-        );
-}
+/* =========================
+   PANTALLA DE ENTRADA
+========================= */
 
-/* Estrellas */
-body::before{
-    content:"";
+#startScreen{
     position:fixed;
     inset:0;
-    background-image:
-        radial-gradient(circle,#fff 1px,transparent 2px),
-        radial-gradient(circle,#b9d8ff 1px,transparent 2px);
-    background-size:90px 90px,140px 140px;
-    opacity:.22;
-}
-
-/* MUNDO */
-.world{
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-}
-
-/* SOL */
-.sun{
-    position:absolute;
-    width:95px;
-    height:95px;
-    right:10%;
-    top:10%;
-    background:#ffe477;
-    box-shadow:
-        0 0 0 8px #ffd45a,
-        0 0 40px #ffe98c;
-}
-
-/* MONTAÑAS */
-.mountain{
-    position:absolute;
-    bottom:30%;
-    width:0;
-    height:0;
-    border-left:190px solid transparent;
-    border-right:190px solid transparent;
-    border-bottom:230px solid #355b54;
-}
-
-.mountain.one{
-    left:-120px;
-}
-
-.mountain.two{
-    left:28%;
-    border-left-width:220px;
-    border-right-width:220px;
-    border-bottom-width:260px;
-    border-bottom-color:#426d59;
-}
-
-.mountain.three{
-    right:-140px;
-    border-left-width:220px;
-    border-right-width:220px;
-    border-bottom-width:245px;
-    border-bottom-color:#31534d;
-}
-
-/* ÁRBOLES */
-.tree{
-    position:absolute;
-    bottom:25%;
-    width:90px;
-    height:175px;
-}
-
-.tree::before{
-    content:"";
-    position:absolute;
-    top:0;
-    left:0;
-    width:90px;
-    height:90px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #69c83d 0 35%,
-            #39962a 35% 70%,
-            #267622 70%
-        );
-
-    box-shadow:
-        -22px 20px 0 #318b27,
-        22px 20px 0 #318b27,
-        0 38px 0 #277b20;
-}
-
-.tree::after{
-    content:"";
-    position:absolute;
-    bottom:0;
-    left:29px;
-    width:32px;
-    height:90px;
-
-    background:
-        repeating-linear-gradient(
-            90deg,
-            #633b20 0 8px,
-            #7b4a26 8px 16px
-        );
-}
-
-.tree.left{
-    left:5%;
-    transform:scale(.85);
-}
-
-.tree.middle{
-    left:45%;
-    transform:scale(1.1);
-}
-
-.tree.right{
-    right:5%;
-    transform:scale(.9);
-}
-
-/* SUELO */
-.ground{
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
-    height:31%;
-
-    background:
-        linear-gradient(
-            to bottom,
-            #69bd3d 0 35px,
-            #744625 35px 100%
-        );
-
-    box-shadow:
-        inset 0 8px 0 #84d64c;
-}
-
-/* CUADRÍCULA PIXELADA DE TIERRA */
-.ground::after{
-    content:"";
-    position:absolute;
-    left:0;
-    right:0;
-    top:35px;
-    bottom:0;
-
-    background-image:
-        linear-gradient(
-            90deg,
-            transparent 0 48px,
-            rgba(40,20,10,.25) 48px 52px
-        ),
-        linear-gradient(
-            transparent 0 48px,
-            rgba(40,20,10,.2) 48px 52px
-        );
-
-    background-size:52px 52px;
-}
-
-/* TARJETAS DE CÉSPED */
-.grass{
-    position:absolute;
-    bottom:0;
-    width:90px;
-    height:70px;
-
-    background:
-        linear-gradient(
-            to bottom,
-            #6bc83e 0 18px,
-            #704522 18px 100%
-        );
-
-    border:3px solid rgba(0,0,0,.12);
-}
-
-.grass.a{
-    left:15%;
-}
-
-.grass.b{
-    left:68%;
-}
-
-.grass.c{
-    right:3%;
-    width:110px;
-}
-
-/* MENÚ */
-.menu{
-    position:relative;
-    z-index:10;
-
-    width:100%;
-    height:100%;
+    z-index:100;
 
     display:flex;
     align-items:center;
     justify-content:center;
-    text-align:center;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #172650 0%,
+            #4479a9 50%,
+            #70b94a 51%,
+            #744522 100%
+        );
 }
 
-.menu-box{
+.startBox{
     width:min(90%,700px);
-    padding:42px 35px;
+    padding:45px 30px;
+    text-align:center;
 
-    border-radius:24px;
+    background:rgba(4,10,25,.82);
 
-    background:rgba(4,10,25,.78);
-
-    border:2px solid rgba(90,155,255,.7);
+    border:2px solid #4e9cff;
+    border-radius:25px;
 
     box-shadow:
-        0 15px 50px rgba(0,0,0,.55),
-        0 0 35px rgba(50,120,255,.2);
-
-    backdrop-filter:blur(7px);
+        0 15px 50px rgba(0,0,0,.6),
+        0 0 30px rgba(40,120,255,.25);
 }
 
-/* TÍTULO */
-.title{
+.startTitle{
     margin:0;
 
-    font-size:clamp(48px,9vw,88px);
-
+    font-size:clamp(45px,9vw,85px);
     font-weight:900;
     letter-spacing:4px;
 
     color:#000;
 
     text-shadow:
-        0 3px 0 #fff,
-        0 0 18px rgba(255,255,255,.65);
+        0 3px 0 white,
+        0 0 20px white;
 }
 
-.subtitle{
-    margin-top:18px;
-
+.startSub{
+    margin-top:15px;
     color:white;
-
     font-size:20px;
-
-    text-shadow:0 2px 4px #000;
 }
 
-/* BOTÓN */
-.play{
+.startButton{
     margin-top:35px;
 
-    padding:17px 75px;
+    padding:16px 70px;
 
-    border:none;
+    border:2px solid rgba(255,255,255,.5);
     border-radius:14px;
 
-    background:
-        linear-gradient(
-            180deg,
-            #2588ff,
-            #0755c8
-        );
+    background:linear-gradient(#2588ff,#0755c8);
 
     color:white;
-
     font-size:25px;
     font-weight:900;
 
     cursor:pointer;
-
-    border:2px solid rgba(255,255,255,.5);
-
-    box-shadow:
-        0 7px 18px rgba(0,0,0,.4);
-
-    transition:.15s;
 }
 
-.play:hover{
-    transform:scale(1.06);
-    filter:brightness(1.15);
-}
+/* =========================
+   MENÚ JUGAR / TIENDA
+========================= */
 
-/* PANTALLA DESPUÉS DE JUGAR */
-#gameScreen{
-    display:none;
-
+#mainMenu{
     position:fixed;
     inset:0;
-    z-index:50;
+    z-index:90;
 
+    display:none;
     align-items:center;
     justify-content:center;
-
-    text-align:center;
 
     background:
         linear-gradient(
             to bottom,
-            #5fa9dc 0%,
-            #8bd15c 60%,
-            #704523 60%,
-            #704523 100%
+            #4b91c4,
+            #83c85a 60%,
+            #714523 60%
         );
 }
 
-.game-title{
-    font-size:clamp(40px,8vw,80px);
+.menuBox{
+    width:min(90%,600px);
+
+    padding:35px;
+
+    text-align:center;
+
+    background:rgba(3,10,25,.82);
+
+    border:2px solid #4e9cff;
+    border-radius:24px;
+}
+
+.menuTitle{
+    color:white;
+    font-size:48px;
     font-weight:900;
 
-    color:white;
-
-    text-shadow:
-        0 4px 0 #000;
+    text-shadow:0 3px 0 #000;
 }
 
-.game-message{
-    margin-top:10px;
-    font-size:20px;
+.menuButton{
+    display:block;
+
+    width:100%;
+
+    margin:18px 0;
+    padding:16px;
+
+    border:2px solid rgba(255,255,255,.4);
+    border-radius:13px;
+
+    background:linear-gradient(#2588ff,#0755c8);
+
     color:white;
-}
 
-.back{
-    margin-top:25px;
+    font-size:22px;
+    font-weight:900;
 
-    padding:12px 30px;
-
-    border-radius:12px;
-
-    background:#000;
-    color:white;
-
-    border:1px solid white;
-
-    font-weight:bold;
     cursor:pointer;
 }
 
-/* MÓVIL */
-@media(max-width:600px){
+/* =========================
+   MUNDO
+========================= */
 
-    .menu-box{
-        padding:32px 20px;
-    }
+#game{
+    display:none;
 
-    .play{
-        padding:15px 55px;
-    }
+    position:fixed;
+    inset:0;
 
-    .tree.middle{
-        display:none;
-    }
+    overflow:hidden;
 
+    background:
+        linear-gradient(
+            to bottom,
+            #76b8e5 0%,
+            #c0e0ed 47%,
+            #7fc84d 48%,
+            #4d8c30 100%
+        );
 }
+
+/* Sol */
+
+.sun{
+    position:absolute;
+
+    width:90px;
+    height:90px;
+
+    right:12%;
+    top:12%;
+
+    border-radius:50%;
+
+    background:#ffe66d;
+
+    box-shadow:0 0 40px #ffeaa0;
+}
+
+/* Montañas */
+
+.mountain{
+    position:absolute;
+    bottom:43%;
+
+    width:0;
+    height:0;
+
+    border-left:210px solid transparent;
+    border-right:210px solid transparent;
+    border-bottom:280px solid #55796c;
+}
+
+.m1{
+    left:-100px;
+}
+
+.m2{
+    left:28%;
+    border-bottom-color:#658a76;
+}
+
+.m3{
+    right:-120px;
+    border-bottom-color:#48685f;
+}
+
+/* Nieve en montaña */
+
+.snow{
+    position:absolute;
+    left:50%;
+    bottom:67%;
+
+    width:0;
+    height:0;
+
+    border-left:65px solid transparent;
+    border-right:65px solid transparent;
+    border-bottom:90px solid white;
+
+    opacity:.8;
+}
+
+/* Suelo */
+
+.ground{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:54%;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #69bd3e 0 25px,
+            #754625 25px 100%
+        );
+}
+
+/* Agua */
+
+.water{
+    position:absolute;
+
+    width:32%;
+    height:13%;
+
+    left:38%;
+    bottom:25%;
+
+    background:
+        linear-gradient(
+            #4bc7ee,
+            #197fc1
+        );
+
+    opacity:.9;
+
+    border:4px solid #276a79;
+}
+
+/* Árbol */
+
+.tree{
+    position:absolute;
+
+    width:90px;
+    height:170px;
+
+    bottom:35%;
+}
+
+.tree::before{
+    content:"";
+
+    position:absolute;
+
+    width:90px;
+    height:90px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6bd143 0 35%,
+            #3d9b2c 35% 70%,
+            #287721 70%
+        );
+
+    box-shadow:
+        -20px 20px #318d28,
+        20px 20px #318d28;
+}
+
+.tree::after{
+    content:"";
+
+    position:absolute;
+
+    width:30px;
+    height:85px;
+
+    left:30px;
+    bottom:0;
+
+    background:#714321;
+}
+
+.t1{
+    left:7%;
+}
+
+.t2{
+    right:9%;
+}
+
+/* =========================
+   PERSONAJE
+========================= */
+
+.player{
+    position:absolute;
+
+    width:55px;
+    height:90px;
+
+    left:50%;
+    bottom:24%;
+
+    transform:translateX(-50%);
+
+    z-index:15;
+}
+
+/* cabeza */
+
+.playerHead{
+    position:absolute;
+
+    left:9px;
+    top:0;
+
+    width:38px;
+    height:38px;
+
+    background:#d79a6b;
+
+    border:3px solid #5c341e;
+}
+
+/* pelo */
+
+.playerHair{
+    position:absolute;
+
+    left:8px;
+    top:-4px;
+
+    width:40px;
+    height:15px;
+
+    background:#5b351f;
+
+    z-index:2;
+}
+
+/* cuerpo */
+
+.playerBody{
+    position:absolute;
+
+    left:5px;
+    top:40px;
+
+    width:45px;
+    height:32px;
+
+    background:#1672dc;
+
+    border:3px solid #123f78;
+}
+
+/* piernas */
+
+.playerLeg1,
+.playerLeg2{
+    position:absolute;
+
+    top:70px;
+
+    width:18px;
+    height:20px;
+
+    background:#222;
+
+    border:3px solid #111;
+}
+
+.playerLeg1{
+    left:7px;
+}
+
+.playerLeg2{
+    right:7px;
+}
+
+/* =========================
+   PERRO
+========================= */
+
+.dog{
+    position:absolute;
+
+    width:70px;
+    height:48px;
+
+    left:42%;
+    bottom:23%;
+
+    z-index:14;
+}
+
+.dogBody{
+    position:absolute;
+
+    left:15px;
+    top:15px;
+
+    width:45px;
+    height:25px;
+
+    background:#c9c9c9;
+
+    border:3px solid #777;
+}
+
+.dogHead{
+    position:absolute;
+
+    left:0;
+    top:4px;
+
+    width:25px;
+    height:25px;
+
+    background:#ddd;
+
+    border:3px solid #777;
+}
+
+.dogEar{
+    position:absolute;
+
+    width:9px;
+    height:12px;
+
+    background:#777;
+
+    top:0;
+}
+
+.dogEar.a{
+    left:2px;
+}
+
+.dogEar.b{
+    left:15px;
+}
+
+.dogTail{
+    position:absolute;
+
+    right:-5px;
+    top:8px;
+
+    width:15px;
+    height:8px;
+
+    background:#ddd;
+
+    transform:rotate(-30deg);
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+    position:absolute;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:30;
+}
+
+/* VIDA */
+
+#health{
+    position:absolute;
+
+    top:15px;
+    left:18px;
+
+    font-size:28px;
+
+    letter-spacing:2px;
+}
+
+/* HAMBRE */
+
+#hunger{
+    position:absolute;
+
+    top:15px;
+    right:18px;
+
+    font-size:27px;
+
+    letter-spacing:2px;
+}
+
+/* =========================
+   TRES PUNTOS
+========================= */
+
+#dots{
+    position:absolute;
+
+    right:18px;
+    bottom:18px;
+
+    width:75px;
+    height:65px;
+
+    border-radius:15px;
+
+    border:2px solid white;
+
+    background:rgba(0,0,0,.65);
+
+    color:white;
+
+    font-size:35px;
+    font-weight:bold;
+
+    z-index:45;
+
+    pointer-events:auto;
+}
+
+/* =========================
+   BOTONES MÓVILES
+========================= */
+
+.controls{
+    position:absolute;
+
+    left:20px;
+    bottom:20px;
+
+    width:180px;
+    height:180px;
+
+    z-index:40;
+}
+
+.control{
+    position:absolute;
+
+    width:55px;
+    height:55px;
+
+    border-radius:12px;
+
+    background:rgba(0,0,0,.55);
+
+    border:2px solid rgba(255,255,255,.7);
+
+    color:white;
+
+    font-size:27px;
+
+    pointer-events:auto;
+}
+
+.up{
+    left:62px;
+    top:0;
+}
+
+.left{
+    left:0;
+    top:62px;
+}
+
+.right{
+    right:0;
+    top:62px;
+}
+
+.down{
+    left:62px;
+    bottom:0;
+}
+
+/* SALTAR */
+
+#jump{
+    position:absolute;
+
+    right:110px;
+    bottom:25px;
+
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.65);
+
+    border:2px solid white;
+
+    color:white;
+
+    font-size:20px;
+    font-weight:bold;
+
+    z-index:40;
+}
+
+/* PICAR */
+
+#mine{
+    position:absolute;
+
+    right:15px;
+    bottom:25px;
+
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.65);
+
+    border:2px solid white;
+
+    color:white;
+
+    font-size:20px;
+    font-weight:bold;
+
+    z-index:40;
+}
+
+/* =========================
+   MENÚ DE BLOQUES
+========================= */
+
+#blockMenu{
+    display:none;
+
+    position:absolute;
+
+    inset:8% 5%;
+
+    z-index:70;
+
+    background:rgba(3,12,27,.96);
+
+    border:3px solid #318cff;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    overflow:auto;
+}
+
+.blockTitle{
+    color:white;
+
+    text-align:center;
+
+    font-size:32px;
+
+    font-weight:900;
+}
+
+.close{
+    position:absolute;
+
+    right:15px;
+    top:12px;
+
+    width:45px;
+    height:45px;
+
+    border-radius:10px;
+
+    background:#b52323;
+
+    color:white;
+
+    border:2px solid white;
+
+    font-size:25px;
+}
+
+.blocks{
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(90px,1fr));
+
+    gap:12px;
+
+    margin-top:20px;
+}
+
+.block{
+    min-height:105px;
+
+    background:#102b49;
+
+    border:2px solid #326ca8;
+
+    border-radius:12px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:white;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.blockCube{
+    width:48px;
+    height:48px;
+
+    margin-bottom:7px;
+
+    border:3px solid rgba(0,0,0,.3);
+}
+
+/* Colores de bloques */
+
+.dirt{
+    background:#754625;
+}
+
+.grassBlock{
+    background:linear-gradient(#68c33e 30%,#754625 30%);
+}
+
+.sand{
+    background:#e5cd8c;
+}
+
+.stone{
+    background:#8b8b8b;
+}
+
+.wood{
+    background:#8a552c;
+}
+
+.waterBlock{
+    background:#258bd1;
+}
+
+.lavaBlock{
+    background:#ff5b19;
+}
+
+.glass{
+    background:rgba(150,220,255,.45);
+}
+
+.whiteWool{
+    background:#eee;
+}
+
+.redWool{
+    background:#c93434;
+}
+
+.fence{
+    background:#9a6031;
+}
+
+/* =========================
+   PANEL MENÚ
+========================= */
+
+#menuPanel{
+    display:none;
+
+    position:absolute;
+
+    inset:20% 10%;
+
+    z-index:80;
+
+    background:rgba(3,12,27,.97);
+
+    border:3px solid #318cff;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    text-align:center;
+
+    color:white;
+}
+
+.panelButton{
+    display:block;
+
+    width:100%;
+
+    margin:12px 0;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:2px solid white;
+
+    background:#0755c8;
+
+    color:white;
+
+    font-weight:bold;
+
+    font-size:18px;
+}
+
+/* =========================
+   HOTBAR
+========================= */
+
+#hotbar{
+    position:absolute;
+
+    bottom:18px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    display:flex;
+
+    gap:7px;
+
+    z-index:35;
+}
+
+.slot{
+    width:65px;
+    height:65px;
+
+    border-radius:9px;
+
+    border:3px solid #222;
+
+    background:rgba(0,0,0,.55);
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+
+    font-size:27px;
+}
+
+.slot.selected{
+    border-color:#fff;
+    box-shadow:0 0 12px white;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- FONDO DEL MUNDO -->
-<div class="world">
+<!-- =========================
+     ENTRADA
+========================= -->
 
-    <div class="sun"></div>
+<div id="startScreen">
 
-    <div class="mountain one"></div>
-    <div class="mountain two"></div>
-    <div class="mountain three"></div>
+    <div class="startBox">
 
-    <div class="tree left"></div>
-    <div class="tree middle"></div>
-    <div class="tree right"></div>
-
-    <div class="ground"></div>
-
-    <div class="grass a"></div>
-    <div class="grass b"></div>
-    <div class="grass c"></div>
-
-</div>
-
-
-<!-- MENÚ PRINCIPAL -->
-<div class="menu" id="menu">
-
-    <div class="menu-box">
-
-        <h1 class="title">
+        <h1 class="startTitle">
             SUPER ADVENTURES
         </h1>
 
-        <div class="subtitle">
+        <div class="startSub">
             Construye · Explora · Sobrevive
         </div>
 
-        <button class="play" onclick="startGame()">
+        <button class="startButton" onclick="openMainMenu()">
             ▶ JUGAR
         </button>
 
@@ -440,20 +944,279 @@ body::before{
 </div>
 
 
-<!-- PANTALLA TEMPORAL DEL JUEGO -->
-<div id="gameScreen">
+<!-- =========================
+     MENÚ PRINCIPAL
+========================= -->
 
-    <div>
+<div id="mainMenu">
 
-        <div class="game-title">
+    <div class="menuBox">
+
+        <div class="menuTitle">
             SUPER ADVENTURES
         </div>
 
-        <div class="game-message">
-            🌍 Preparando tu mundo...
+        <button class="menuButton" onclick="startWorld()">
+            ▶ JUGAR
+        </button>
+
+        <button class="menuButton" onclick="openBlocks()">
+            🧱 TIENDA
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     MUNDO
+========================= -->
+
+<div id="game">
+
+    <div class="sun"></div>
+
+    <div class="mountain m1"></div>
+    <div class="mountain m2"></div>
+    <div class="mountain m3"></div>
+
+    <div class="snow"></div>
+
+    <div class="tree t1"></div>
+    <div class="tree t2"></div>
+
+    <div class="water"></div>
+
+    <div class="ground"></div>
+
+
+    <!-- PERSONAJE -->
+
+    <div class="player">
+
+        <div class="playerHair"></div>
+        <div class="playerHead"></div>
+        <div class="playerBody"></div>
+
+        <div class="playerLeg1"></div>
+        <div class="playerLeg2"></div>
+
+    </div>
+
+
+    <!-- PERRO -->
+
+    <div class="dog">
+
+        <div class="dogEar a"></div>
+        <div class="dogEar b"></div>
+
+        <div class="dogHead"></div>
+        <div class="dogBody"></div>
+
+        <div class="dogTail"></div>
+
+    </div>
+
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        <div id="health">
+            ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️
         </div>
 
-        <button class="back" onclick="backToMenu()">
+        <div id="hunger">
+            🍗🍗🍗🍗🍗🍗🍗🍗🍗🍗
+        </div>
+
+    </div>
+
+
+    <!-- CONTROLES -->
+
+    <div class="controls">
+
+        <button class="control up" id="moveUp">
+            ▲
+        </button>
+
+        <button class="control left" id="moveLeft">
+            ◀
+        </button>
+
+        <button class="control right" id="moveRight">
+            ▶
+        </button>
+
+        <button class="control down" id="moveDown">
+            ▼
+        </button>
+
+    </div>
+
+
+    <!-- ACCIONES -->
+
+    <button id="jump">
+        ▲<br>
+        SALTAR
+    </button>
+
+    <button id="mine">
+        ⛏️<br>
+        PICAR
+    </button>
+
+
+    <!-- HOTBAR -->
+
+    <div id="hotbar">
+
+        <div class="slot selected">
+            🟩
+        </div>
+
+        <div class="slot">
+            🪨
+        </div>
+
+        <div class="slot">
+            🪵
+        </div>
+
+        <div class="slot">
+            🪟
+        </div>
+
+        <div class="slot">
+            🔥
+        </div>
+
+        <button class="slot" id="dots">
+            •••
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         MENÚ DE BLOQUES
+    ========================= -->
+
+    <div id="blockMenu">
+
+        <button class="close" onclick="closeBlocks()">
+            ✕
+        </button>
+
+        <div class="blockTitle">
+            SUPER ADVENTURES
+        </div>
+
+        <div class="blockTitle" style="font-size:24px;margin-top:5px;">
+            MENÚ DE BLOQUES
+        </div>
+
+        <div class="blocks">
+
+            <div class="block" onclick="selectBlock('🟫')">
+                <div class="blockCube dirt"></div>
+                Tierra
+            </div>
+
+            <div class="block" onclick="selectBlock('🟩')">
+                <div class="blockCube grassBlock"></div>
+                Césped
+            </div>
+
+            <div class="block" onclick="selectBlock('🟨')">
+                <div class="blockCube sand"></div>
+                Arena
+            </div>
+
+            <div class="block" onclick="selectBlock('⬜')">
+                <div class="blockCube stone"></div>
+                Piedra
+            </div>
+
+            <div class="block" onclick="selectBlock('🪵')">
+                <div class="blockCube wood"></div>
+                Madera
+            </div>
+
+            <div class="block" onclick="selectBlock('💧')">
+                <div class="blockCube waterBlock"></div>
+                Agua
+            </div>
+
+            <div class="block" onclick="selectBlock('🌋')">
+                <div class="blockCube lavaBlock"></div>
+                Lava
+            </div>
+
+            <div class="block" onclick="selectBlock('🪟')">
+                <div class="blockCube glass"></div>
+                Cristal
+            </div>
+
+            <div class="block" onclick="selectBlock('⬜')">
+                <div class="blockCube whiteWool"></div>
+                Lana blanca
+            </div>
+
+            <div class="block" onclick="selectBlock('🟥')">
+                <div class="blockCube redWool"></div>
+                Lana roja
+            </div>
+
+            <div class="block" onclick="selectBlock('🚧')">
+                <div class="blockCube fence"></div>
+                Valla
+            </div>
+
+        </div>
+
+        <button
+            class="panelButton"
+            onclick="openShop()">
+            🏪 TIENDA
+        </button>
+
+        <button
+            class="panelButton"
+            onclick="openMenuPanel()">
+            ⚙️ MENÚ
+        </button>
+
+    </div>
+
+
+    <!-- MENÚ -->
+
+    <div id="menuPanel">
+
+        <h2>⚙️ MENÚ</h2>
+
+        <button class="panelButton">
+            👤 CAMBIAR AVATAR
+        </button>
+
+        <button class="panelButton">
+            🗺️ MAPA
+        </button>
+
+        <button
+            class="panelButton"
+            onclick="openShop()">
+            🏪 TIENDA
+        </button>
+
+        <button
+            class="panelButton"
+            onclick="closeMenuPanel()">
             ← VOLVER
         </button>
 
@@ -464,21 +1227,248 @@ body::before{
 
 <script>
 
-function startGame(){
+/* =========================
+   CAMBIAR PANTALLAS
+========================= */
 
-    document.getElementById("menu").style.display="none";
+function openMainMenu(){
 
-    document.getElementById("gameScreen").style.display="flex";
+    document.getElementById("startScreen").style.display="none";
+
+    document.getElementById("mainMenu").style.display="flex";
+
+}
+
+
+function startWorld(){
+
+    document.getElementById("mainMenu").style.display="none";
+
+    document.getElementById("game").style.display="block";
 
 }
 
-function backToMenu(){
 
-    document.getElementById("gameScreen").style.display="none";
+/* =========================
+   MENÚ DE BLOQUES
+========================= */
 
-    document.getElementById("menu").style.display="flex";
+document.getElementById("dots").onclick=function(){
+
+    document.getElementById("blockMenu").style.display="block";
+
+};
+
+
+function openBlocks(){
+
+    document.getElementById("mainMenu").style.display="none";
+
+    document.getElementById("game").style.display="block";
+
+    document.getElementById("blockMenu").style.display="block";
 
 }
+
+
+function closeBlocks(){
+
+    document.getElementById("blockMenu").style.display="none";
+
+}
+
+
+/* =========================
+   SELECCIONAR BLOQUE
+========================= */
+
+function selectBlock(block){
+
+    const slots=document.querySelectorAll(".slot");
+
+    slots[0].textContent=block;
+
+    closeBlocks();
+
+}
+
+
+/* =========================
+   TIENDA
+========================= */
+
+function openShop(){
+
+    alert(
+        "🏪 TIENDA\n\n" +
+        "Aquí podremos comprar:\n\n" +
+        "👤 Avatares\n" +
+        "🐺 Animales\n" +
+        "🪽 Objetos para volar\n" +
+        "🧱 Bloques\n" +
+        "⛏️ Picos"
+    );
+
+}
+
+
+/* =========================
+   MENÚ
+========================= */
+
+function openMenuPanel(){
+
+    document.getElementById("blockMenu").style.display="none";
+
+    document.getElementById("menuPanel").style.display="block";
+
+}
+
+
+function closeMenuPanel(){
+
+    document.getElementById("menuPanel").style.display="none";
+
+}
+
+
+/* =========================
+   TECLADO
+========================= */
+
+document.addEventListener("keydown",function(e){
+
+    if(e.code==="Space"){
+
+        jump();
+
+    }
+
+    if(e.key==="Shift"){
+
+        mine();
+
+    }
+
+});
+
+
+/* =========================
+   SALTAR
+========================= */
+
+document.getElementById("jump").onclick=jump;
+
+function jump(){
+
+    const player=document.querySelector(".player");
+
+    player.style.transition="bottom .25s";
+
+    player.style.bottom="34%";
+
+    setTimeout(function(){
+
+        player.style.bottom="24%";
+
+    },250);
+
+}
+
+
+/* =========================
+   PICAR
+========================= */
+
+document.getElementById("mine").onclick=mine;
+
+function mine(){
+
+    const selected=document.querySelector(".slot.selected");
+
+    selected.style.transform="scale(1.15)";
+
+    setTimeout(function(){
+
+        selected.style.transform="scale(1)";
+
+    },150);
+
+}
+
+
+/* =========================
+   MOVIMIENTO TÁCTIL
+========================= */
+
+function movePlayer(dx){
+
+    const player=document.querySelector(".player");
+
+    let left=parseFloat(
+        getComputedStyle(player).left
+    );
+
+    left+=dx;
+
+    if(left<5) left=5;
+    if(left>95) left=95;
+
+    player.style.left=left+"%";
+
+}
+
+
+document.getElementById("moveLeft").onclick=function(){
+
+    movePlayer(-3);
+
+};
+
+document.getElementById("moveRight").onclick=function(){
+
+    movePlayer(3);
+
+};
+
+document.getElementById("moveUp").onclick=function(){
+
+    jump();
+
+};
+
+document.getElementById("moveDown").onclick=function(){
+
+    movePlayer(0);
+
+};
+
+
+/* =========================
+   FLECHAS DEL ORDENADOR
+========================= */
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key==="ArrowLeft"){
+
+        movePlayer(-3);
+
+    }
+
+    if(e.key==="ArrowRight"){
+
+        movePlayer(3);
+
+    }
+
+    if(e.key==="ArrowUp"){
+
+        jump();
+
+    }
+
+});
 
 </script>
 
