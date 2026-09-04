@@ -7,248 +7,740 @@
 <title>Pixel Games - Juegos</title>
 
 <style>
+
 *{
-  box-sizing:border-box;
+    box-sizing:border-box;
 }
 
 html,body{
-  margin:0;
-  min-height:100%;
-  font-family:Arial,sans-serif;
-  color:white;
+    margin:0;
+    min-height:100%;
+    font-family:Arial,sans-serif;
+    color:white;
 }
 
 body{
-  min-height:100vh;
-  overflow-x:hidden;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(80,120,255,.25), transparent 25%),
-    radial-gradient(circle at 85% 70%, rgba(180,70,255,.20), transparent 28%),
-    linear-gradient(135deg,#050816,#101735,#070a18);
+    min-height:100vh;
+    overflow-x:hidden;
+
+    /* FONDO GALAXIA DE PIXEL GAMES */
+    background:
+        radial-gradient(circle at 15% 20%,rgba(120,70,210,.55),transparent 30%),
+        radial-gradient(circle at 85% 70%,rgba(40,60,180,.5),transparent 30%),
+        linear-gradient(135deg,#02020a,#11102b,#050510);
 }
 
+/* ESTRELLAS */
 body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background-image:
-    radial-gradient(circle,rgba(255,255,255,.8) 1px,transparent 1px),
-    radial-gradient(circle,rgba(255,255,255,.5) 1px,transparent 1px);
-  background-size:80px 80px,130px 130px;
-  background-position:10px 20px,50px 70px;
-  opacity:.25;
+    content:"";
+    position:fixed;
+    inset:-40px;
+
+    background:
+        radial-gradient(circle,rgba(255,255,255,.8) 1px,transparent 2px);
+
+    background-size:75px 75px;
+    opacity:.4;
+    filter:blur(1px);
+
+    pointer-events:none;
 }
+
+/* OSCURECIDO DE LOS BORDES */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            transparent 20%,
+            rgba(0,0,0,.3) 100%
+        );
+
+    pointer-events:none;
+}
+
+/* CABECERA */
 
 header{
-  text-align:center;
-  padding:42px 20px 25px;
-  position:relative;
-  z-index:2;
+    position:relative;
+    z-index:2;
+    text-align:center;
+    padding:45px 20px 25px;
 }
 
+/* TÍTULO COMO EL ANTERIOR */
+
 .logo{
-  margin:0;
-  font-size:clamp(48px,9vw,78px);
-  font-weight:900;
-  letter-spacing:4px;
-  text-shadow:
-    4px 4px 0 #111,
-    0 0 18px rgba(255,255,255,.35);
+    margin:0;
+
+    font-size:clamp(48px,9vw,78px);
+    font-weight:900;
+    letter-spacing:4px;
+
+    color:#000;
+
+    text-shadow:
+        0 2px 0 rgba(255,255,255,.4),
+        0 0 18px rgba(255,255,255,.35);
 }
 
 .subtitle{
-  margin-top:10px;
-  font-size:18px;
-  color:rgba(255,255,255,.75);
+    margin-top:12px;
+
+    color:rgba(255,255,255,.75);
+
+    font-size:18px;
 }
+
+/* CONTENEDOR */
 
 .container{
-  width:94%;
-  max-width:1250px;
-  margin:auto;
-  position:relative;
-  z-index:2;
-  padding-bottom:50px;
+    position:relative;
+    z-index:2;
+
+    width:94%;
+    max-width:1250px;
+
+    margin:auto;
+
+    padding-bottom:60px;
 }
+
+/* TÍTULO JUEGOS */
 
 .section-title{
-  text-align:center;
-  margin:25px 0 28px;
-  font-size:clamp(42px,7vw,64px);
-  font-weight:900;
-  text-shadow:3px 3px 0 #111;
+    text-align:center;
+
+    margin:25px 0 28px;
+
+    font-size:clamp(42px,7vw,64px);
+    font-weight:900;
+
+    color:#000;
+
+    letter-spacing:3px;
+
+    text-shadow:
+        0 2px 0 rgba(255,255,255,.4),
+        0 0 18px rgba(255,255,255,.3);
 }
+
+/* CUADRÍCULA */
 
 .games-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:20px;
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:20px;
 }
+
+/* TARJETAS */
 
 .game{
-  min-height:220px;
-  padding:22px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.16);
-  background:rgba(10,15,40,.72);
-  box-shadow:0 12px 30px rgba(0,0,0,.35);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  transition:.2s;
-  backdrop-filter:blur(5px);
+    min-height:230px;
+
+    padding:22px;
+
+    border-radius:22px;
+
+    border:2px solid rgba(60,130,255,.65);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(15,30,65,.88),
+            rgba(2,7,22,.92)
+        );
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.4),
+        inset 0 0 20px rgba(40,100,255,.08);
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    backdrop-filter:blur(8px);
+
+    transition:
+        transform .2s,
+        border-color .2s,
+        box-shadow .2s;
 }
+
+/* EFECTO AL PASAR POR ENCIMA */
 
 .game.available:hover{
-  transform:translateY(-7px);
-  border-color:rgba(255,255,255,.5);
+    transform:translateY(-7px);
+
+    border-color:#69a7ff;
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.5),
+        0 0 18px rgba(50,120,255,.25);
 }
+
+/* ICONO */
 
 .game-icon{
-  font-size:54px;
-  margin-bottom:10px;
+    font-size:52px;
+
+    min-height:58px;
+
+    display:flex;
+
+    align-items:center;
 }
+
+/* NÚMERO */
 
 .game-number{
-  font-size:14px;
-  font-weight:bold;
-  color:#8eaaff;
-  margin-bottom:5px;
+    margin-top:8px;
+
+    color:#aebee8;
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
 }
+
+/* NOMBRE */
 
 .game-name{
-  font-size:24px;
-  font-weight:900;
-  margin-bottom:18px;
+    margin-top:7px;
+
+    font-size:21px;
+
+    font-weight:800;
+
+    line-height:1.2;
 }
 
-.play{
-  display:inline-block;
-  padding:12px 25px;
-  border-radius:14px;
-  background:#050505;
-  border:1px solid rgba(255,255,255,.25);
-  color:white;
-  text-decoration:none;
-  font-weight:bold;
-  cursor:pointer;
-  transition:.2s;
+/* BOTÓN */
+
+.play-button{
+    display:block;
+
+    margin-top:18px;
+
+    padding:13px;
+
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #2384ff,
+            #0756c9
+        );
+
+    color:white;
+
+    text-decoration:none;
+
+    text-align:center;
+
+    font-weight:900;
+
+    border:1px solid rgba(255,255,255,.35);
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.3);
+
+    transition:
+        transform .15s,
+        filter .15s;
 }
 
-.play:hover{
-  transform:scale(1.05);
-  background:#151515;
+.play-button:hover{
+    filter:brightness(1.15);
+
+    transform:scale(1.02);
 }
 
-.locked{
-  opacity:.55;
+/* JUEGOS BLOQUEADOS */
+
+.coming-soon{
+    opacity:.68;
+
+    min-height:210px;
+
+    border-color:
+        rgba(255,255,255,.18);
+
+    background:
+        rgba(0,0,0,.35);
+}
+
+.coming-soon:hover{
+    transform:none;
 }
 
 .lock{
-  font-size:48px;
-  margin-bottom:12px;
+    font-size:52px;
+
+    min-height:58px;
+
+    display:flex;
+
+    align-items:center;
 }
 
-.locked .game-name{
-  margin-bottom:0;
+/* BOTÓN PRÓXIMAMENTE */
+
+.lock-button{
+    display:block;
+
+    margin-top:18px;
+
+    padding:13px;
+
+    border-radius:12px;
+
+    background:#1d3155;
+
+    color:#9eafd2;
+
+    text-align:center;
+
+    font-weight:900;
+
+    border:1px solid rgba(255,255,255,.15);
 }
 
-@media(max-width:900px){
-  .games-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
+/* TABLET */
+
+@media(max-width:1100px){
+
+    .games-grid{
+        grid-template-columns:
+            repeat(3,minmax(0,1fr));
+    }
+
 }
+
+/* MÓVIL */
+
+@media(max-width:800px){
+
+    .games-grid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+}
+
+/* MÓVIL PEQUEÑO */
 
 @media(max-width:520px){
-  .games-grid{
-    grid-template-columns:1fr;
-  }
 
-  .game{
-    min-height:200px;
-  }
+    .games-grid{
+        grid-template-columns:1fr;
+    }
+
+    .container{
+        width:90%;
+    }
+
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1 class="logo">PIXEL GAMES</h1>
-  <div class="subtitle">Tu juego, tu aventura</div>
+
+    <div class="logo">
+        PIXEL GAMES
+    </div>
+
+    <div class="subtitle">
+        Tu juego. Tu aventura.
+    </div>
+
 </header>
+
 
 <main class="container">
 
-  <h2 class="section-title">JUEGOS</h2>
+    <h1 class="section-title">
+        Juegos
+    </h1>
 
-  <div class="games-grid">
 
-    <!-- JUEGO 1 -->
-    <div class="game available">
-      <div class="game-icon">🪙</div>
-      <div class="game-number">JUEGO 1</div>
-      <div class="game-name">Juego 1</div>
-      <a class="play" href="juego1.html">JUGAR</a>
+    <!-- ========================= -->
+    <!-- JUEGOS DISPONIBLES -->
+    <!-- ========================= -->
+
+    <div class="games-grid">
+
+
+        <!-- JUEGO 1 -->
+
+        <div class="game available">
+
+            <div>
+
+                <div class="game-icon">
+                    🪙
+                </div>
+
+                <div class="game-number">
+                    JUEGO 1
+                </div>
+
+                <div class="game-name">
+                    Juego de Monedas
+                </div>
+
+            </div>
+
+            <a
+                class="play-button"
+                href="juego1.html"
+            >
+                ▶ JUGAR
+            </a>
+
+        </div>
+
+
+        <!-- JUEGO 2 -->
+
+        <div class="game available">
+
+            <div>
+
+                <div class="game-icon">
+                    🌲
+                </div>
+
+                <div class="game-number">
+                    JUEGO 2
+                </div>
+
+                <div class="game-name">
+                    Spirit 3D 2000
+                </div>
+
+            </div>
+
+            <a
+                class="play-button"
+                href="juego2.html"
+            >
+                ▶ JUGAR
+            </a>
+
+        </div>
+
+
+        <!-- JUEGO 3 -->
+
+        <div class="game available">
+
+            <div>
+
+                <div class="game-icon">
+                    ⚽
+                </div>
+
+                <div class="game-number">
+                    JUEGO 3
+                </div>
+
+                <div class="game-name">
+                    Football Legends
+                </div>
+
+            </div>
+
+            <a
+                class="play-button"
+                href="juego3.html"
+            >
+                ▶ JUGAR
+            </a>
+
+        </div>
+
+
+        <!-- JUEGO 4 -->
+
+        <div class="game available">
+
+            <div>
+
+                <div class="game-icon">
+                    🤖
+                </div>
+
+                <div class="game-number">
+                    JUEGO 4
+                </div>
+
+                <div class="game-name">
+                    Pixel AI
+                </div>
+
+            </div>
+
+            <a
+                class="play-button"
+                href="juego 4 pixel ai.html"
+            >
+                ▶ USAR
+            </a>
+
+        </div>
+
+
+        <!-- JUEGO 5 -->
+
+        <div class="game available">
+
+            <div>
+
+                <div class="game-icon">
+                    🧩
+                </div>
+
+                <div class="game-number">
+                    JUEGO 5
+                </div>
+
+                <div class="game-name">
+                    Mega Laberintos
+                </div>
+
+            </div>
+
+            <a
+                class="play-button"
+                href="juego5.html"
+            >
+                ▶ JUGAR
+            </a>
+
+        </div>
+
+
+        <!-- JUEGO 6 -->
+        <!-- EL ARCHIVO TODAVÍA NO EXISTE -->
+        <!-- POR ESO AL PULSAR APARECERÁ 404 -->
+
+        <div class="game available">
+
+            <div>
+
+                <div class="game-icon">
+                    🗺️
+                </div>
+
+                <div class="game-number">
+                    JUEGO 6
+                </div>
+
+                <div class="game-name">
+                    Super Adventures
+                </div>
+
+            </div>
+
+            <a
+                class="play-button"
+                href="super-adventures.html"
+            >
+                ▶ JUGAR
+            </a>
+
+        </div>
+
     </div>
 
-    <!-- JUEGO 2 -->
-    <div class="game available">
-      <div class="game-icon">🎮</div>
-      <div class="game-number">JUEGO 2</div>
-      <div class="game-name">Juego 2</div>
-      <a class="play" href="juego2.html">JUGAR</a>
-    </div>
 
-    <!-- JUEGO 3 -->
-    <div class="game available">
-      <div class="game-icon">⚽</div>
-      <div class="game-number">JUEGO 3</div>
-      <div class="game-name">Juego 3</div>
-      <a class="play" href="juego3.html">JUGAR</a>
-    </div>
+    <!-- ========================= -->
+    <!-- JUEGOS BLOQUEADOS -->
+    <!-- ========================= -->
 
-    <!-- JUEGO 4 - PIXEL AI -->
-    <div class="game available">
-      <div class="game-icon">🤖</div>
-      <div class="game-number">JUEGO 4</div>
-      <div class="game-name">Pixel AI</div>
-      <a class="play" href="juego 4 pixel ai.html">USAR</a>
-    </div>
+    <div
+        class="games-grid"
+        style="margin-top:20px"
+    >
 
-    <!-- JUEGO 5 - MEGA LABERINTOS -->
-    <div class="game available">
-      <div class="game-icon">🧩</div>
-      <div class="game-number">JUEGO 5</div>
-      <div class="game-name">Mega Laberintos</div>
-      <a class="play" href="juego5.html">JUGAR</a>
-    </div>
 
-    <!-- JUEGO 6 -->
-    <div class="game locked">
-      <div class="lock">🔒</div>
-      <div class="game-number">JUEGO 6</div>
-      <div class="game-name">Bloqueado</div>
-    </div>
+        <!-- JUEGO 7 -->
 
-    <!-- JUEGO 7 -->
-    <div class="game locked">
-      <div class="lock">🔒</div>
-      <div class="game-number">JUEGO 7</div>
-      <div class="game-name">Bloqueado</div>
-    </div>
+        <div class="game coming-soon">
 
-    <!-- JUEGO 8 -->
-    <div class="game locked">
-      <div class="lock">🔒</div>
-      <div class="game-number">JUEGO 8</div>
-      <div class="game-name">Bloqueado</div>
-    </div>
+            <div>
 
-  </div>
+                <div class="lock">
+                    🔒
+                </div>
+
+                <div class="game-number">
+                    JUEGO 7
+                </div>
+
+                <div class="game-name">
+                    Bloqueado
+                </div>
+
+            </div>
+
+            <div class="lock-button">
+                PRÓXIMAMENTE
+            </div>
+
+        </div>
+
+
+        <!-- JUEGO 8 -->
+
+        <div class="game coming-soon">
+
+            <div>
+
+                <div class="lock">
+                    🔒
+                </div>
+
+                <div class="game-number">
+                    JUEGO 8
+                </div>
+
+                <div class="game-name">
+                    Bloqueado
+                </div>
+
+            </div>
+
+            <div class="lock-button">
+                PRÓXIMAMENTE
+            </div>
+
+        </div>
+
+
+        <!-- JUEGO 9 -->
+
+        <div class="game coming-soon">
+
+            <div>
+
+                <div class="lock">
+                    🔒
+                </div>
+
+                <div class="game-number">
+                    JUEGO 9
+                </div>
+
+                <div class="game-name">
+                    Bloqueado
+                </div>
+
+            </div>
+
+            <div class="lock-button">
+                PRÓXIMAMENTE
+            </div>
+
+        </div>
+
+
+        <!-- JUEGO 10 -->
+
+        <div class="game coming-soon">
+
+            <div>
+
+                <div class="lock">
+                    🔒
+                </div>
+
+                <div class="game-number">
+                    JUEGO 10
+                </div>
+
+                <div class="game-name">
+                    Bloqueado
+                </div>
+
+            </div>
+
+            <div class="lock-button">
+                PRÓXIMAMENTE
+            </div>
+
+        </div>
+
+
+        <!-- JUEGO 11 -->
+
+        <div class="game coming-soon">
+
+            <div>
+
+                <div class="lock">
+                    🔒
+                </div>
+
+                <div class="game-number">
+                    JUEGO 11
+                </div>
+
+                <div class="game-name">
+                    Bloqueado
+                </div>
+
+            </div>
+
+            <div class="lock-button">
+                PRÓXIMAMENTE
+            </div>
+
+        </div>
+
+
+        <!-- JUEGO 12 -->
+
+        <div class="game coming-soon">
+
+            <div>
+
+                <div class="lock">
+                    🔒
+                </div>
+
+                <div class="game-number">
+                    JUEGO 12
+                </div>
+
+                <div class="game-name">
+                    Bloqueado
+                </div>
+
+            </div>
+
+            <div class="lock-button">
+                PRÓXIMAMENTE
+            </div>
+
+        </div>
+
+    </div>
 
 </main>
 
