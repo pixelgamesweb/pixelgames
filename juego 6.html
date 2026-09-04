@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Adventures</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+}
+
+/* FONDO PIXELADO */
+body{
+    background:
+        linear-gradient(
+            to bottom,
+            #17224a 0%,
+            #315a91 38%,
+            #69a9d0 60%,
+            #76bd45 61%,
+            #3f792b 100%
+        );
+}
+
+/* Estrellas */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+        radial-gradient(circle,#fff 1px,transparent 2px),
+        radial-gradient(circle,#b9d8ff 1px,transparent 2px);
+    background-size:90px 90px,140px 140px;
+    opacity:.22;
+}
+
+/* MUNDO */
+.world{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+}
+
+/* SOL */
+.sun{
+    position:absolute;
+    width:95px;
+    height:95px;
+    right:10%;
+    top:10%;
+    background:#ffe477;
+    box-shadow:
+        0 0 0 8px #ffd45a,
+        0 0 40px #ffe98c;
+}
+
+/* MONTAÑAS */
+.mountain{
+    position:absolute;
+    bottom:30%;
+    width:0;
+    height:0;
+    border-left:190px solid transparent;
+    border-right:190px solid transparent;
+    border-bottom:230px solid #355b54;
+}
+
+.mountain.one{
+    left:-120px;
+}
+
+.mountain.two{
+    left:28%;
+    border-left-width:220px;
+    border-right-width:220px;
+    border-bottom-width:260px;
+    border-bottom-color:#426d59;
+}
+
+.mountain.three{
+    right:-140px;
+    border-left-width:220px;
+    border-right-width:220px;
+    border-bottom-width:245px;
+    border-bottom-color:#31534d;
+}
+
+/* ÁRBOLES */
+.tree{
+    position:absolute;
+    bottom:25%;
+    width:90px;
+    height:175px;
+}
+
+.tree::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:90px;
+    height:90px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #69c83d 0 35%,
+            #39962a 35% 70%,
+            #267622 70%
+        );
+
+    box-shadow:
+        -22px 20px 0 #318b27,
+        22px 20px 0 #318b27,
+        0 38px 0 #277b20;
+}
+
+.tree::after{
+    content:"";
+    position:absolute;
+    bottom:0;
+    left:29px;
+    width:32px;
+    height:90px;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #633b20 0 8px,
+            #7b4a26 8px 16px
+        );
+}
+
+.tree.left{
+    left:5%;
+    transform:scale(.85);
+}
+
+.tree.middle{
+    left:45%;
+    transform:scale(1.1);
+}
+
+.tree.right{
+    right:5%;
+    transform:scale(.9);
+}
+
+/* SUELO */
+.ground{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:31%;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #69bd3d 0 35px,
+            #744625 35px 100%
+        );
+
+    box-shadow:
+        inset 0 8px 0 #84d64c;
+}
+
+/* CUADRÍCULA PIXELADA DE TIERRA */
+.ground::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    top:35px;
+    bottom:0;
+
+    background-image:
+        linear-gradient(
+            90deg,
+            transparent 0 48px,
+            rgba(40,20,10,.25) 48px 52px
+        ),
+        linear-gradient(
+            transparent 0 48px,
+            rgba(40,20,10,.2) 48px 52px
+        );
+
+    background-size:52px 52px;
+}
+
+/* TARJETAS DE CÉSPED */
+.grass{
+    position:absolute;
+    bottom:0;
+    width:90px;
+    height:70px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #6bc83e 0 18px,
+            #704522 18px 100%
+        );
+
+    border:3px solid rgba(0,0,0,.12);
+}
+
+.grass.a{
+    left:15%;
+}
+
+.grass.b{
+    left:68%;
+}
+
+.grass.c{
+    right:3%;
+    width:110px;
+}
+
+/* MENÚ */
+.menu{
+    position:relative;
+    z-index:10;
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.menu-box{
+    width:min(90%,700px);
+    padding:42px 35px;
+
+    border-radius:24px;
+
+    background:rgba(4,10,25,.78);
+
+    border:2px solid rgba(90,155,255,.7);
+
+    box-shadow:
+        0 15px 50px rgba(0,0,0,.55),
+        0 0 35px rgba(50,120,255,.2);
+
+    backdrop-filter:blur(7px);
+}
+
+/* TÍTULO */
+.title{
+    margin:0;
+
+    font-size:clamp(48px,9vw,88px);
+
+    font-weight:900;
+    letter-spacing:4px;
+
+    color:#000;
+
+    text-shadow:
+        0 3px 0 #fff,
+        0 0 18px rgba(255,255,255,.65);
+}
+
+.subtitle{
+    margin-top:18px;
+
+    color:white;
+
+    font-size:20px;
+
+    text-shadow:0 2px 4px #000;
+}
+
+/* BOTÓN */
+.play{
+    margin-top:35px;
+
+    padding:17px 75px;
+
+    border:none;
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #2588ff,
+            #0755c8
+        );
+
+    color:white;
+
+    font-size:25px;
+    font-weight:900;
+
+    cursor:pointer;
+
+    border:2px solid rgba(255,255,255,.5);
+
+    box-shadow:
+        0 7px 18px rgba(0,0,0,.4);
+
+    transition:.15s;
+}
+
+.play:hover{
+    transform:scale(1.06);
+    filter:brightness(1.15);
+}
+
+/* PANTALLA DESPUÉS DE JUGAR */
+#gameScreen{
+    display:none;
+
+    position:fixed;
+    inset:0;
+    z-index:50;
+
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #5fa9dc 0%,
+            #8bd15c 60%,
+            #704523 60%,
+            #704523 100%
+        );
+}
+
+.game-title{
+    font-size:clamp(40px,8vw,80px);
+    font-weight:900;
+
+    color:white;
+
+    text-shadow:
+        0 4px 0 #000;
+}
+
+.game-message{
+    margin-top:10px;
+    font-size:20px;
+    color:white;
+}
+
+.back{
+    margin-top:25px;
+
+    padding:12px 30px;
+
+    border-radius:12px;
+
+    background:#000;
+    color:white;
+
+    border:1px solid white;
+
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* MÓVIL */
+@media(max-width:600px){
+
+    .menu-box{
+        padding:32px 20px;
+    }
+
+    .play{
+        padding:15px 55px;
+    }
+
+    .tree.middle{
+        display:none;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- FONDO DEL MUNDO -->
+<div class="world">
+
+    <div class="sun"></div>
+
+    <div class="mountain one"></div>
+    <div class="mountain two"></div>
+    <div class="mountain three"></div>
+
+    <div class="tree left"></div>
+    <div class="tree middle"></div>
+    <div class="tree right"></div>
+
+    <div class="ground"></div>
+
+    <div class="grass a"></div>
+    <div class="grass b"></div>
+    <div class="grass c"></div>
+
+</div>
+
+
+<!-- MENÚ PRINCIPAL -->
+<div class="menu" id="menu">
+
+    <div class="menu-box">
+
+        <h1 class="title">
+            SUPER ADVENTURES
+        </h1>
+
+        <div class="subtitle">
+            Construye · Explora · Sobrevive
+        </div>
+
+        <button class="play" onclick="startGame()">
+            ▶ JUGAR
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- PANTALLA TEMPORAL DEL JUEGO -->
+<div id="gameScreen">
+
+    <div>
+
+        <div class="game-title">
+            SUPER ADVENTURES
+        </div>
+
+        <div class="game-message">
+            🌍 Preparando tu mundo...
+        </div>
+
+        <button class="back" onclick="backToMenu()">
+            ← VOLVER
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function startGame(){
+
+    document.getElementById("menu").style.display="none";
+
+    document.getElementById("gameScreen").style.display="flex";
+
+}
+
+function backToMenu(){
+
+    document.getElementById("gameScreen").style.display="none";
+
+    document.getElementById("menu").style.display="flex";
+
+}
+
+</script>
+
+</body>
+</html>
