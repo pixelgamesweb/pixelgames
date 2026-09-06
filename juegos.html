@@ -2,747 +2,120 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Pixel Games - Juegos</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pixel Games</title>
 <style>
-
-*{
-    box-sizing:border-box;
-}
-
-html,body{
-    margin:0;
-    min-height:100%;
-    font-family:Arial,sans-serif;
-    color:white;
-}
-
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;color:#fff}
 body{
-    min-height:100vh;
-    overflow-x:hidden;
-
-    /* FONDO GALAXIA DE PIXEL GAMES */
-    background:
-        radial-gradient(circle at 15% 20%,rgba(120,70,210,.55),transparent 30%),
-        radial-gradient(circle at 85% 70%,rgba(40,60,180,.5),transparent 30%),
-        linear-gradient(135deg,#02020a,#11102b,#050510);
+  background:
+    radial-gradient(circle at 20% 20%,rgba(80,120,255,.18),transparent 28%),
+    radial-gradient(circle at 80% 70%,rgba(180,70,255,.14),transparent 30%),
+    linear-gradient(135deg,#030817,#07132d 50%,#02040d);
+  overflow-x:hidden;
 }
-
-/* ESTRELLAS */
-body::before{
-    content:"";
-    position:fixed;
-    inset:-40px;
-
-    background:
-        radial-gradient(circle,rgba(255,255,255,.8) 1px,transparent 2px);
-
-    background-size:75px 75px;
-    opacity:.4;
-    filter:blur(1px);
-
-    pointer-events:none;
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.65;
+  background-image:
+    radial-gradient(circle,#fff 1px,transparent 1.5px),
+    radial-gradient(circle,#9fd5ff 1px,transparent 1.5px);
+  background-size:83px 83px,137px 137px;
+  background-position:10px 20px,50px 80px;
 }
-
-/* OSCURECIDO DE LOS BORDES */
-body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-
-    background:
-        radial-gradient(
-            circle at 50% 50%,
-            transparent 20%,
-            rgba(0,0,0,.3) 100%
-        );
-
-    pointer-events:none;
+header{text-align:center;padding:34px 18px 18px;position:relative;z-index:1}
+h1{
+  margin:0;font-size:clamp(42px,7vw,76px);letter-spacing:5px;
+  text-shadow:0 5px 0 #111,0 0 24px rgba(100,170,255,.65);
 }
-
-/* CABECERA */
-
-header{
-    position:relative;
-    z-index:2;
-    text-align:center;
-    padding:45px 20px 25px;
+.subtitle{margin-top:8px;color:#9fb9e8;font-size:16px}
+.grid{
+  width:min(1500px,94%);
+  margin:22px auto 50px;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:22px;
+  position:relative;z-index:1;
 }
-
-/* TÍTULO COMO EL ANTERIOR */
-
-.logo{
-    margin:0;
-
-    font-size:clamp(48px,9vw,78px);
-    font-weight:900;
-    letter-spacing:4px;
-
-    color:#000;
-
-    text-shadow:
-        0 2px 0 rgba(255,255,255,.4),
-        0 0 18px rgba(255,255,255,.35);
+.card{
+  min-height:235px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:24px;
+  padding:20px;
+  background:linear-gradient(145deg,rgba(20,35,70,.88),rgba(5,10,24,.92));
+  box-shadow:0 16px 40px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.08);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  transition:.2s transform,.2s box-shadow;
 }
-
-.subtitle{
-    margin-top:12px;
-
-    color:rgba(255,255,255,.75);
-
-    font-size:18px;
+.card.available:hover{transform:translateY(-7px);box-shadow:0 24px 50px rgba(0,0,0,.5),0 0 25px rgba(75,140,255,.18)}
+.icon{
+  font-size:68px;line-height:1;
+  margin-bottom:15px;
+  filter:drop-shadow(0 12px 7px rgba(0,0,0,.6));
+  transform:perspective(350px) rotateX(8deg) rotateY(-10deg);
+  text-shadow:5px 7px 0 rgba(0,0,0,.25);
 }
-
-/* CONTENEDOR */
-
-.container{
-    position:relative;
-    z-index:2;
-
-    width:94%;
-    max-width:1250px;
-
-    margin:auto;
-
-    padding-bottom:60px;
+.name{font-size:22px;font-weight:800;margin-bottom:10px}
+.play{
+  display:inline-block;padding:10px 24px;border-radius:13px;
+  background:linear-gradient(180deg,#35a8ff,#1266e8);
+  color:#fff;text-decoration:none;font-weight:800;
+  box-shadow:0 5px 0 #0844a0,0 8px 18px rgba(0,100,255,.25);
 }
-
-/* TÍTULO JUEGOS */
-
-.section-title{
-    text-align:center;
-
-    margin:25px 0 28px;
-
-    font-size:clamp(42px,7vw,64px);
-    font-weight:900;
-
-    color:#000;
-
-    letter-spacing:3px;
-
-    text-shadow:
-        0 2px 0 rgba(255,255,255,.4),
-        0 0 18px rgba(255,255,255,.3);
+.locked{opacity:.68}
+.lock{font-size:62px;margin-bottom:13px;filter:drop-shadow(0 10px 5px rgba(0,0,0,.6))}
+.locked .name{color:#aab6cc}
+.badge{
+  font-size:12px;font-weight:800;letter-spacing:1px;
+  color:#8191aa;border:1px solid rgba(255,255,255,.12);
+  padding:8px 13px;border-radius:999px;background:rgba(0,0,0,.2);
 }
-
-/* CUADRÍCULA */
-
-.games-grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
-    gap:20px;
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){
+  .grid{grid-template-columns:1fr;width:92%}
+  .card{min-height:210px}
 }
-
-/* TARJETAS */
-
-.game{
-    min-height:230px;
-
-    padding:22px;
-
-    border-radius:22px;
-
-    border:2px solid rgba(60,130,255,.65);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(15,30,65,.88),
-            rgba(2,7,22,.92)
-        );
-
-    box-shadow:
-        0 8px 30px rgba(0,0,0,.4),
-        inset 0 0 20px rgba(40,100,255,.08);
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:space-between;
-
-    backdrop-filter:blur(8px);
-
-    transition:
-        transform .2s,
-        border-color .2s,
-        box-shadow .2s;
-}
-
-/* EFECTO AL PASAR POR ENCIMA */
-
-.game.available:hover{
-    transform:translateY(-7px);
-
-    border-color:#69a7ff;
-
-    box-shadow:
-        0 12px 35px rgba(0,0,0,.5),
-        0 0 18px rgba(50,120,255,.25);
-}
-
-/* ICONO */
-
-.game-icon{
-    font-size:52px;
-
-    min-height:58px;
-
-    display:flex;
-
-    align-items:center;
-}
-
-/* NÚMERO */
-
-.game-number{
-    margin-top:8px;
-
-    color:#aebee8;
-
-    font-size:14px;
-
-    font-weight:bold;
-
-    letter-spacing:1px;
-}
-
-/* NOMBRE */
-
-.game-name{
-    margin-top:7px;
-
-    font-size:21px;
-
-    font-weight:800;
-
-    line-height:1.2;
-}
-
-/* BOTÓN */
-
-.play-button{
-    display:block;
-
-    margin-top:18px;
-
-    padding:13px;
-
-    border-radius:12px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #2384ff,
-            #0756c9
-        );
-
-    color:white;
-
-    text-decoration:none;
-
-    text-align:center;
-
-    font-weight:900;
-
-    border:1px solid rgba(255,255,255,.35);
-
-    box-shadow:
-        0 4px 12px rgba(0,0,0,.3);
-
-    transition:
-        transform .15s,
-        filter .15s;
-}
-
-.play-button:hover{
-    filter:brightness(1.15);
-
-    transform:scale(1.02);
-}
-
-/* JUEGOS BLOQUEADOS */
-
-.coming-soon{
-    opacity:.68;
-
-    min-height:210px;
-
-    border-color:
-        rgba(255,255,255,.18);
-
-    background:
-        rgba(0,0,0,.35);
-}
-
-.coming-soon:hover{
-    transform:none;
-}
-
-.lock{
-    font-size:52px;
-
-    min-height:58px;
-
-    display:flex;
-
-    align-items:center;
-}
-
-/* BOTÓN PRÓXIMAMENTE */
-
-.lock-button{
-    display:block;
-
-    margin-top:18px;
-
-    padding:13px;
-
-    border-radius:12px;
-
-    background:#1d3155;
-
-    color:#9eafd2;
-
-    text-align:center;
-
-    font-weight:900;
-
-    border:1px solid rgba(255,255,255,.15);
-}
-
-/* TABLET */
-
-@media(max-width:1100px){
-
-    .games-grid{
-        grid-template-columns:
-            repeat(3,minmax(0,1fr));
-    }
-
-}
-
-/* MÓVIL */
-
-@media(max-width:800px){
-
-    .games-grid{
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
-    }
-
-}
-
-/* MÓVIL PEQUEÑO */
-
-@media(max-width:520px){
-
-    .games-grid{
-        grid-template-columns:1fr;
-    }
-
-    .container{
-        width:90%;
-    }
-
-}
-
 </style>
 </head>
-
 <body>
-
 <header>
-
-    <div class="logo">
-        PIXEL GAMES
-    </div>
-
-    <div class="subtitle">
-        Tu juego. Tu aventura.
-    </div>
-
+  <h1>PIXEL GAMES</h1>
+  <div class="subtitle">ELIGE TU JUEGO</div>
 </header>
 
-
-<main class="container">
-
-    <h1 class="section-title">
-        Juegos
-    </h1>
-
-
-    <!-- ========================= -->
-    <!-- JUEGOS DISPONIBLES -->
-    <!-- ========================= -->
-
-    <div class="games-grid">
-
-
-        <!-- JUEGO 1 -->
-
-        <div class="game available">
-
-            <div>
-
-                <div class="game-icon">
-                    🪙
-                </div>
-
-                <div class="game-number">
-                    JUEGO 1
-                </div>
-
-                <div class="game-name">
-                    Juego de Monedas
-                </div>
-
-            </div>
-
-            <a
-                class="play-button"
-                href="juego1.html"
-            >
-                ▶ JUGAR
-            </a>
-
-        </div>
-
-
-        <!-- JUEGO 2 -->
-
-        <div class="game available">
-
-            <div>
-
-                <div class="game-icon">
-                    🌲
-                </div>
-
-                <div class="game-number">
-                    JUEGO 2
-                </div>
-
-                <div class="game-name">
-                    Spirit 3D 2000
-                </div>
-
-            </div>
-
-            <a
-                class="play-button"
-                href="juego2.html"
-            >
-                ▶ JUGAR
-            </a>
-
-        </div>
-
-
-        <!-- JUEGO 3 -->
-
-        <div class="game available">
-
-            <div>
-
-                <div class="game-icon">
-                    ⚽
-                </div>
-
-                <div class="game-number">
-                    JUEGO 3
-                </div>
-
-                <div class="game-name">
-                    Football Legends
-                </div>
-
-            </div>
-
-            <a
-                class="play-button"
-                href="juego3.html"
-            >
-                ▶ JUGAR
-            </a>
-
-        </div>
-
-
-        <!-- JUEGO 4 -->
-
-        <div class="game available">
-
-            <div>
-
-                <div class="game-icon">
-                    🤖
-                </div>
-
-                <div class="game-number">
-                    JUEGO 4
-                </div>
-
-                <div class="game-name">
-                    Pixel AI
-                </div>
-
-            </div>
-
-            <a
-                class="play-button"
-                href="juego 4 pixel ai.html"
-            >
-                ▶ USAR
-            </a>
-
-        </div>
-
-
-        <!-- JUEGO 5 -->
-
-        <div class="game available">
-
-            <div>
-
-                <div class="game-icon">
-                    🧩
-                </div>
-
-                <div class="game-number">
-                    JUEGO 5
-                </div>
-
-                <div class="game-name">
-                    Mega Laberintos
-                </div>
-
-            </div>
-
-            <a
-                class="play-button"
-                href="juego5.html"
-            >
-                ▶ JUGAR
-            </a>
-
-        </div>
-
-
-        <!-- JUEGO 6 -->
-        <!-- EL ARCHIVO TODAVÍA NO EXISTE -->
-        <!-- POR ESO AL PULSAR APARECERÁ 404 -->
-
-        <div class="game available">
-
-            <div>
-
-                <div class="game-icon">
-                    🗺️
-                </div>
-
-                <div class="game-number">
-                    JUEGO 6
-                </div>
-
-                <div class="game-name">
-                    Super Adventures
-                </div>
-
-            </div>
-
-            <a
-                class="play-button"
-                href="super-adventures.html"
-            >
-                ▶ JUGAR
-            </a>
-
-        </div>
-
-    </div>
-
-
-    <!-- ========================= -->
-    <!-- JUEGOS BLOQUEADOS -->
-    <!-- ========================= -->
-
-    <div
-        class="games-grid"
-        style="margin-top:20px"
-    >
-
-
-        <!-- JUEGO 7 -->
-
-        <div class="game coming-soon">
-
-            <div>
-
-                <div class="lock">
-                    🔒
-                </div>
-
-                <div class="game-number">
-                    JUEGO 7
-                </div>
-
-                <div class="game-name">
-                    Bloqueado
-                </div>
-
-            </div>
-
-            <div class="lock-button">
-                PRÓXIMAMENTE
-            </div>
-
-        </div>
-
-
-        <!-- JUEGO 8 -->
-
-        <div class="game coming-soon">
-
-            <div>
-
-                <div class="lock">
-                    🔒
-                </div>
-
-                <div class="game-number">
-                    JUEGO 8
-                </div>
-
-                <div class="game-name">
-                    Bloqueado
-                </div>
-
-            </div>
-
-            <div class="lock-button">
-                PRÓXIMAMENTE
-            </div>
-
-        </div>
-
-
-        <!-- JUEGO 9 -->
-
-        <div class="game coming-soon">
-
-            <div>
-
-                <div class="lock">
-                    🔒
-                </div>
-
-                <div class="game-number">
-                    JUEGO 9
-                </div>
-
-                <div class="game-name">
-                    Bloqueado
-                </div>
-
-            </div>
-
-            <div class="lock-button">
-                PRÓXIMAMENTE
-            </div>
-
-        </div>
-
-
-        <!-- JUEGO 10 -->
-
-        <div class="game coming-soon">
-
-            <div>
-
-                <div class="lock">
-                    🔒
-                </div>
-
-                <div class="game-number">
-                    JUEGO 10
-                </div>
-
-                <div class="game-name">
-                    Bloqueado
-                </div>
-
-            </div>
-
-            <div class="lock-button">
-                PRÓXIMAMENTE
-            </div>
-
-        </div>
-
-
-        <!-- JUEGO 11 -->
-
-        <div class="game coming-soon">
-
-            <div>
-
-                <div class="lock">
-                    🔒
-                </div>
-
-                <div class="game-number">
-                    JUEGO 11
-                </div>
-
-                <div class="game-name">
-                    Bloqueado
-                </div>
-
-            </div>
-
-            <div class="lock-button">
-                PRÓXIMAMENTE
-            </div>
-
-        </div>
-
-
-        <!-- JUEGO 12 -->
-
-        <div class="game coming-soon">
-
-            <div>
-
-                <div class="lock">
-                    🔒
-                </div>
-
-                <div class="game-number">
-                    JUEGO 12
-                </div>
-
-                <div class="game-name">
-                    Bloqueado
-                </div>
-
-            </div>
-
-            <div class="lock-button">
-                PRÓXIMAMENTE
-            </div>
-
-        </div>
-
-    </div>
-
-</main>
-
+<main class="grid" id="games"></main>
+
+<script>
+const unlocked = [
+  {n:1,icon:"🪙",name:"Juego de Monedas",url:"juego1.html"},
+  {n:2,icon:"🌲",name:"Spirit Wilds",url:"juego2.html"},
+  {n:3,icon:"⚽",name:"Football Legends",url:"juego3.html"},
+  {n:4,icon:"🤖",name:"Pixel AI",url:"juego 4 pixel ai.html"},
+  {n:5,icon:"🧩",name:"Mega Laberintos",url:"juego5.html"}
+];
+
+const container=document.getElementById("games");
+
+for(let n=1;n<=200;n++){
+  const data=unlocked.find(g=>g.n===n);
+  const card=document.createElement("article");
+  card.className="card "+(data?"available":"locked");
+
+  if(data){
+    card.innerHTML=`
+      <div class="icon">${data.icon}</div>
+      <div class="name">${data.name}</div>
+      <a class="play" href="${data.url}">JUGAR</a>
+    `;
+  }else{
+    card.innerHTML=`
+      <div class="lock">🔒</div>
+      <div class="name">Juego ${n}</div>
+      <div class="badge">PRÓXIMAMENTE</div>
+    `;
+  }
+  container.appendChild(card);
+}
+</script>
 </body>
 </html>
