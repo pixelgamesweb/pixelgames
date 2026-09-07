@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Dreamer - Monedas</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#02030a;
+}
+
+#game{
+    width:100vw;
+    height:100vh;
+}
+
+/* MARCADORES */
+
+#hud{
+    position:fixed;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
+
+    display:flex;
+    gap:10px;
+
+    background:rgba(0,0,0,.65);
+    padding:8px;
+
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.16);
+
+    backdrop-filter:blur(10px);
+}
+
+.marcador{
+    min-width:95px;
+    padding:10px 15px;
+
+    border-radius:13px;
+
+    background:rgba(0,0,0,.75);
+
+    color:white;
+
+    font-size:21px;
+    font-weight:900;
+
+    text-align:center;
+
+    box-shadow:
+        inset 0 0 12px rgba(255,255,255,.04),
+        0 5px 18px rgba(0,0,0,.4);
+}
+
+.moneda{
+    color:#ffd21c;
+}
+
+.dinero{
+    color:#63ff91;
+}
+
+.vida{
+    color:#ff4242;
+}
+
+/* PREGUNTA */
+
+#pregunta{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:60;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.82);
+}
+
+.panelPregunta{
+    width:min(90vw,460px);
+    padding:32px;
+    background:#0a0b14;
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:24px;
+    color:white;
+    text-align:center;
+    box-shadow:0 25px 70px rgba(0,0,0,.8);
+}
+
+.panelPregunta .eyebrow{
+    color:#ffd21c;
+    font-size:13px;
+    letter-spacing:1px;
+    margin-bottom:10px;
+    font-weight:700;
+}
+
+.panelPregunta p{
+    font-size:21px;
+    line-height:1.5;
+    margin:0 0 26px;
+}
+
+.opcionesPregunta{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+}
+
+.opcionesPregunta button{
+    flex:1;
+    border:0;
+    border-radius:15px;
+    padding:16px;
+    font-size:19px;
+    font-weight:900;
+    cursor:pointer;
+    color:white;
+}
+
+#btnSi{background:#1a9b52;}
+#btnNo{background:#c62828;}
+
+.feedback{
+    display:none;
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:18px;
+}
+
+.feedback.correcto{color:#63ff91;}
+.feedback.incorrecto{color:#ff6a6a;}
+
+/* CONTROLES */
+
+#controles{
+    position:fixed;
+    left:50%;
+    bottom:22px;
+    transform:translateX(-50%);
+    z-index:20;
+
+    width:min(90vw,520px);
+
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.control{
+    width:150px;
+    height:75px;
+
+    border:2px solid rgba(255,255,255,.2);
+    border-radius:22px;
+
+    background:rgba(0,0,0,.7);
+
+    color:white;
+
+    font-size:38px;
+    font-weight:bold;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.5);
+
+    touch-action:none;
+}
+
+.control:active{
+    transform:scale(.94);
+    background:#111;
+}
+
+/* GAME OVER */
+
+#gameOver{
+    display:none;
+
+    position:fixed;
+    inset:0;
+
+    z-index:50;
+
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(0,0,0,.8);
+}
+
+.panel{
+    width:min(90vw,420px);
+
+    padding:35px;
+
+    background:#080910;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:25px;
+
+    color:white;
+
+    text-align:center;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.8);
+}
+
+.panel h1{
+    font-size:42px;
+    margin-top:0;
+}
+
+.reiniciar{
+    border:0;
+    border-radius:15px;
+
+    padding:15px 28px;
+
+    background:#000;
+    color:white;
+
+    font-size:19px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game"></div>
+
+<!-- TRES MARCADORES EN UNA SOLA FILA -->
+
+<div id="hud">
+
+    <div class="marcador moneda">
+        🪙 <span id="monedas">0</span>
+    </div>
+
+    <div class="marcador vida">
+        ♥ <span id="vidas">3</span>
+    </div>
+
+</div>
+
+
+<!-- SOLO IZQUIERDA Y DERECHA -->
+
+<div id="controles">
+
+    <button class="control" id="izquierda">
+        ←
+    </button>
+
+    <button class="control" id="derecha">
+        →
+    </button>
+
+</div>
+
+
+<div id="pregunta">
+    <div class="panelPregunta">
+        <div class="eyebrow">🪙 PREGUNTA</div>
+        <p id="textoPregunta"></p>
+        <p class="feedback" id="feedbackPregunta"></p>
+        <div class="opcionesPregunta">
+            <button id="btnSi">SÍ</button>
+            <button id="btnNo">NO</button>
+        </div>
+    </div>
+</div>
+
+<div id="gameOver">
+
+    <div class="panel">
+
+        <h1>GAME OVER</h1>
+
+        <p>
+            Monedas:
+            <b id="resultadoMonedas">0</b>
+        </p>
+
+        <p>
+            Aciertos:
+            <b id="resultadoAciertos">0</b>
+        </p>
+
+        <button
+            class="reiniciar"
+            onclick="location.reload()">
+
+            Volver a jugar
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+
+/* =====================================================
+   ESCENA
+===================================================== */
+
+const scene =
+new THREE.Scene();
+
+scene.background =
+new THREE.Color(0x02040c);
+
+scene.fog =
+new THREE.Fog(
+    0x02040c,
+    35,
+    190
+);
+
+
+/* =====================================================
+   CÁMARA
+===================================================== */
+
+const camera =
+new THREE.PerspectiveCamera(
+    60,
+    innerWidth / innerHeight,
+    .1,
+    700
+);
+
+camera.position.set(
+    0,
+    5.3,
+    10
+);
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+const renderer =
+new THREE.WebGLRenderer({
+    antialias:true
+});
+
+renderer.setSize(
+    innerWidth,
+    innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(devicePixelRatio,2)
+);
+
+renderer.shadowMap.enabled=true;
+
+renderer.shadowMap.type =
+THREE.PCFSoftShadowMap;
+
+document
+.getElementById("game")
+.appendChild(renderer.domElement);
+
+
+/* =====================================================
+   LUCES
+===================================================== */
+
+scene.add(
+    new THREE.HemisphereLight(
+        0x425c9a,
+        0x07100c,
+        1.1
+    )
+);
+
+const moonLight =
+new THREE.DirectionalLight(
+    0x9db9ff,
+    2.2
+);
+
+moonLight.position.set(
+    -30,
+    45,
+    15
+);
+
+moonLight.castShadow=true;
+
+scene.add(moonLight);
+
+
+/* =====================================================
+   LUNA MEDIO LLENA
+===================================================== */
+
+const moon =
+new THREE.Mesh(
+    new THREE.SphereGeometry(
+        8,
+        32,
+        32
+    ),
+    new THREE.MeshStandardMaterial({
+        color:0xe7e9ef,
+        emissive:0x7b88a7,
+        emissiveIntensity:.45,
+        roughness:.9
+    })
+);
+
+moon.position.set(
+    38,
+    35,
+    -100
+);
+
+scene.add(moon);
+
+
+/* =====================================================
+   AURORA BOREAL
+===================================================== */
+
+const auroraColors=[
+    0x31ffb0,
+    0x54ff9a,
+    0x7d5cff,
+    0xc44dff
+];
+
+for(
+    let i=0;
+    i<13;
+    i++
+){
+
+    const geometry =
+    new THREE.PlaneGeometry(
+        18,
+        38,
+        12,
+        20
+    );
+
+    const material =
+    new THREE.MeshBasicMaterial({
+        color:
+        auroraColors[
+            i%auroraColors.length
+        ],
+
+        transparent:true,
+
+        opacity:.12,
+
+        side:
+        THREE.DoubleSide,
+
+        depthWrite:false
+    });
+
+    const aurora =
+    new THREE.Mesh(
+        geometry,
+        material
+    );
+
+    aurora.position.set(
+        -75+i*12,
+        35+(i%3)*4,
+        -110
+    );
+
+    aurora.rotation.y =
+    (Math.random()-.5)*.4;
+
+    aurora.rotation.z =
+    (Math.random()-.5)*.2;
+
+    scene.add(aurora);
+}
+
+
+/* =====================================================
+   ESTRELLAS
+===================================================== */
+
+const starGeometry =
+new THREE.BufferGeometry();
+
+const starPositions=[];
+
+for(
+    let i=0;
+    i<900;
+    i++
+){
+
+    starPositions.push(
+        (Math.random()-.5)*350,
+        15+Math.random()*120,
+        -20-Math.random()*220
+    );
+
+}
+
+starGeometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(
+        starPositions,
+        3
+    )
+);
+
+const stars =
+new THREE.Points(
+    starGeometry,
+    new THREE.PointsMaterial({
+        color:0xffffff,
+        size:.45,
+        transparent:true,
+        opacity:.8
+    })
+);
+
+scene.add(stars);
+
+
+/* =====================================================
+   TERRENO
+===================================================== */
+
+const terreno =
+new THREE.Mesh(
+    new THREE.PlaneGeometry(
+        600,
+        600
+    ),
+    new THREE.MeshStandardMaterial({
+        color:0x08120f,
+        roughness:1
+    })
+);
+
+terreno.rotation.x =
+-Math.PI/2;
+
+terreno.position.y=-.05;
+
+terreno.receiveShadow=true;
+
+scene.add(terreno);
+
+
+/* =====================================================
+   CARRETERA
+===================================================== */
+
+const carretera =
+new THREE.Mesh(
+    new THREE.PlaneGeometry(
+        13,
+        600
+    ),
+    new THREE.MeshStandardMaterial({
+        color:0x20242b,
+        roughness:.8,
+        metalness:.1
+    })
+);
+
+carretera.rotation.x =
+-Math.PI/2;
+
+carretera.position.y=.02;
+
+carretera.receiveShadow=true;
+
+scene.add(carretera);
+
+
+/* =====================================================
+   LÍNEAS DE CARRETERA
+===================================================== */
+
+const lineas=[];
+
+for(
+    let z=-290;
+    z<100;
+    z+=11
+){
+
+    const linea =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(
+            .18,
+            .06,
+            5
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0xdde1e6
+        })
+    );
+
+    linea.position.set(
+        0,
+        .08,
+        z
+    );
+
+    scene.add(linea);
+
+    lineas.push(linea);
+}
+
+
+/* =====================================================
+   AGUA A LOS LADOS
+===================================================== */
+
+const aguaMaterial =
+new THREE.MeshStandardMaterial({
+    color:0x071b2e,
+    metalness:.5,
+    roughness:.2
+});
+
+for(
+    const x of [-24,24]
+){
+
+    const agua =
+    new THREE.Mesh(
+        new THREE.PlaneGeometry(
+            32,
+            600
+        ),
+        aguaMaterial
+    );
+
+    agua.rotation.x =
+    -Math.PI/2;
+
+    agua.position.set(
+        x,
+        -.02,
+        0
+    );
+
+    scene.add(agua);
+
+}
+
+
+/* =====================================================
+   MONTAÑAS
+===================================================== */
+
+for(
+    let i=0;
+    i<25;
+    i++
+){
+
+    const montaña =
+    new THREE.Mesh(
+        new THREE.ConeGeometry(
+            12+Math.random()*12,
+            20+Math.random()*25,
+            7
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x111a29,
+            roughness:1
+        })
+    );
+
+    const lado =
+    Math.random()<.5
+    ? -1
+    : 1;
+
+    montaña.position.set(
+        lado*(25+Math.random()*30),
+        10,
+        -30-i*12
+    );
+
+    montaña.castShadow=true;
+
+    scene.add(montaña);
+
+}
+
+
+/* =====================================================
+   ÁRBOLES
+===================================================== */
+
+function crearArbol(
+    x,
+    z,
+    escala=1
+){
+
+    const grupo =
+    new THREE.Group();
+
+
+    const tronco =
+    new THREE.Mesh(
+        new THREE.CylinderGeometry(
+            .35,
+            .5,
+            4,
+            10
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x51341f
+        })
+    );
+
+    tronco.position.y=2;
+
+    tronco.castShadow=true;
+
+    grupo.add(tronco);
+
+
+    const hojasMaterial =
+    new THREE.MeshStandardMaterial({
+        color:0x0c4c32,
+        roughness:1
+    });
+
+
+    for(
+        let i=0;
+        i<3;
+        i++
+    ){
+
+        const hojas =
+        new THREE.Mesh(
+            new THREE.ConeGeometry(
+                2.3-i*.45,
+                3,
+                10
+            ),
+            hojasMaterial
+        );
+
+        hojas.position.y=
+        4+i*1.5;
+
+        hojas.castShadow=true;
+
+        grupo.add(hojas);
+
+    }
+
+
+    grupo.position.set(
+        x,
+        0,
+        z
+    );
+
+    grupo.scale.setScalar(
+        escala
+    );
+
+    scene.add(grupo);
+
+}
+
+
+for(
+    let z=-280;
+    z<80;
+    z+=17
+){
+
+    crearArbol(
+        -11-Math.random()*8,
+        z,
+        .7+Math.random()*.7
+    );
+
+    crearArbol(
+        11+Math.random()*8,
+        z+7,
+        .7+Math.random()*.7
+    );
+
+}
+
+
+/* =====================================================
+   PERSONAJE
+===================================================== */
+
+function crearPersonaje(){
+
+    const persona =
+    new THREE.Group();
+
+
+    const piel =
+    new THREE.MeshStandardMaterial({
+        color:0xd89a73
+    });
+
+    const camiseta =
+    new THREE.MeshStandardMaterial({
+        color:0x151b28
+    });
+
+    const pantalon =
+    new THREE.MeshStandardMaterial({
+        color:0x090b10
+    });
+
+
+    const cabeza =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(
+            .55,
+            .55,
+            .55
+        ),
+        piel
+    );
+
+    cabeza.position.y=2.15;
+
+    cabeza.castShadow=true;
+
+    persona.add(cabeza);
+
+
+    const cuerpo =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(
+            .7,
+            .85,
+            .42
+        ),
+        camiseta
+    );
+
+    cuerpo.position.y=1.45;
+
+    cuerpo.castShadow=true;
+
+    persona.add(cuerpo);
+
+
+    for(
+        const x of [-.22,.22]
+    ){
+
+        const pierna =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                .22,
+                .7,
+                .25
+            ),
+            pantalon
+        );
+
+        pierna.position.set(
+            x,
+            .67,
+            0
+        );
+
+        pierna.castShadow=true;
+
+        persona.add(pierna);
+
+    }
+
+
+    return persona;
+
+}
+
+
+const jugador =
+crearPersonaje();
+
+/*
+   Más pequeño y un poco más adelante.
+*/
+
+jugador.scale.setScalar(.75);
+
+jugador.position.set(
+    0,
+    0,
+    5
+);
+
+scene.add(jugador);
+
+
+/* =====================================================
+   OBJETOS
+===================================================== */
+
+const monedas=[];
+const monstruos=[];
+
+
+/* =====================================================
+   MONEDA
+===================================================== */
+
+function crearMoneda(
+    x,
+    z
+){
+
+    const moneda =
+    new THREE.Mesh(
+        new THREE.CylinderGeometry(
+            .48,
+            .48,
+            .16,
+            24
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0xffc400,
+            metalness:.85,
+            roughness:.16,
+            emissive:0x6b4000,
+            emissiveIntensity:.7
+        })
+    );
+
+    moneda.rotation.z =
+    Math.PI/2;
+
+    moneda.position.set(
+        x,
+        1.1,
+        z
+    );
+
+    moneda.castShadow=true;
+
+    scene.add(moneda);
+
+    monedas.push(moneda);
+
+}
+
+
+/* =====================================================
+   MONSTRUO
+===================================================== */
+
+function crearMonstruo(
+    x,
+    z
+){
+
+    const monstruo =
+    new THREE.Group();
+
+
+    const cuerpo =
+    new THREE.Mesh(
+        new THREE.SphereGeometry(
+            .66,
+            16,
+            12
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x5c1e8a,
+            roughness:.7
+        })
+    );
+
+    cuerpo.scale.y=1.2;
+
+    cuerpo.position.y=.68;
+
+    cuerpo.castShadow=true;
+
+    monstruo.add(cuerpo);
+
+
+    const ojoMaterialBlanco =
+    new THREE.MeshBasicMaterial({
+        color:0xffffff
+    });
+
+    const ojoMaterialNegro =
+    new THREE.MeshBasicMaterial({
+        color:0x000000
+    });
+
+    for(
+        const dx of [-.24,.24]
+    ){
+
+        const ojo =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .16,
+                10,
+                10
+            ),
+            ojoMaterialBlanco
+        );
+
+        ojo.position.set(
+            dx,
+            .95,
+            -.55
+        );
+
+        monstruo.add(ojo);
+
+
+        const pupila =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .08,
+                8,
+                8
+            ),
+            ojoMaterialNegro
+        );
+
+        pupila.position.set(
+            dx,
+            .95,
+            -.68
+        );
+
+        monstruo.add(pupila);
+
+    }
+
+
+    monstruo.position.set(
+        x,
+        0,
+        z
+    );
+
+    scene.add(monstruo);
+
+    monstruos.push(monstruo);
+
+}
+
+
+/* =====================================================
+   CREAR OBJETOS EN LA CARRETERA
+===================================================== */
+
+const carriles=[
+    -3.6,
+    0,
+    3.6
+];
+
+for(
+    let z=-25;
+    z>-330;
+    z-=13
+){
+
+    const carril =
+    carriles[
+        Math.floor(
+            Math.random()*3
+        )
+    ];
+
+
+    crearMoneda(
+        carril,
+        z
+    );
+
+
+    /*
+       Algunas veces hacemos
+       filas de monedas.
+    */
+
+    if(
+        Math.random()<.55
+    ){
+
+        crearMoneda(
+            carriles[
+                Math.floor(
+                    Math.random()*3
+                )
+            ],
+            z-4
+        );
+
+    }
+
+
+    if(
+        Math.random()<.28
+    ){
+
+        crearMonstruo(
+            carriles[
+                Math.floor(
+                    Math.random()*3
+                )
+            ],
+            z-8
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let monedasConseguidas=0;
+
+let aciertos=0;
+
+let vidas=3;
+
+let velocidad=.22;
+
+let jugando=true;
+
+let pausado=false;
+
+let izquierda=false;
+
+let derecha=false;
+
+
+/* =====================================================
+   CONTROLES
+===================================================== */
+
+function activarIzquierda(){
+    izquierda=true;
+}
+
+function desactivarIzquierda(){
+    izquierda=false;
+}
+
+function activarDerecha(){
+    derecha=true;
+}
+
+function desactivarDerecha(){
+    derecha=false;
+}
+
+
+const botonIzquierda =
+document.getElementById(
+    "izquierda"
+);
+
+const botonDerecha =
+document.getElementById(
+    "derecha"
+);
+
+
+botonIzquierda.addEventListener(
+    "pointerdown",
+    activarIzquierda
+);
+
+botonIzquierda.addEventListener(
+    "pointerup",
+    desactivarIzquierda
+);
+
+botonIzquierda.addEventListener(
+    "pointercancel",
+    desactivarIzquierda
+);
+
+botonIzquierda.addEventListener(
+    "pointerleave",
+    desactivarIzquierda
+);
+
+
+botonDerecha.addEventListener(
+    "pointerdown",
+    activarDerecha
+);
+
+botonDerecha.addEventListener(
+    "pointerup",
+    desactivarDerecha
+);
+
+botonDerecha.addEventListener(
+    "pointercancel",
+    desactivarDerecha
+);
+
+botonDerecha.addEventListener(
+    "pointerleave",
+    desactivarDerecha
+);
+
+
+/* TECLADO */
+
+addEventListener(
+    "keydown",
+    e=>{
+
+        if(
+            e.key==="ArrowLeft"
+        )
+        izquierda=true;
+
+        if(
+            e.key==="ArrowRight"
+        )
+        derecha=true;
+
+    }
+);
+
+
+addEventListener(
+    "keyup",
+    e=>{
+
+        if(
+            e.key==="ArrowLeft"
+        )
+        izquierda=false;
+
+        if(
+            e.key==="ArrowRight"
+        )
+        derecha=false;
+
+    }
+);
+
+
+/* =====================================================
+   PREGUNTAS (SÍ / NO)
+===================================================== */
+
+const preguntas=[
+    { texto:"If you heat ice, it melts. ¿Es correcta esta frase?", respuesta:true },
+    { texto:"'If I will have time, I will call you' — ¿es correcto este condicional?", respuesta:false },
+    { texto:"'She has lived here since 2015' usa el Present Perfect. ¿Correcto?", respuesta:true },
+    { texto:"'I have seen him yesterday' — ¿es correcta esta frase?", respuesta:false },
+    { texto:"El comparativo de 'good' es 'gooder'. ¿Correcto?", respuesta:false },
+    { texto:"'If it rains tomorrow, we will stay home' — ¿es correcto este condicional?", respuesta:true },
+    { texto:"'Water' es un sustantivo incontable. ¿Correcto?", respuesta:true },
+    { texto:"El plural de 'child' es 'childs'. ¿Correcto?", respuesta:false },
+    { texto:"'He don't like coffee' — ¿es correcta esta frase?", respuesta:false },
+    { texto:"'If I were you, I would study more' — ¿es correcto este condicional?", respuesta:true },
+    { texto:"'They is playing football' — ¿es correcta esta frase?", respuesta:false },
+    { texto:"El superlativo de 'happy' es 'happiest'. ¿Correcto?", respuesta:true },
+    { texto:"'I am agree with you' — ¿es correcta esta frase?", respuesta:false },
+    { texto:"'Neither of us like the plan' — ¿es correcta esta frase?", respuesta:true },
+    { texto:"'Yesterday I go to the cinema' — ¿es correcta esta frase?", respuesta:false }
+];
+
+let preguntaActual=null;
+
+function mostrarPregunta(){
+
+    pausado=true;
+
+    preguntaActual=
+    preguntas[
+        Math.floor(
+            Math.random()*preguntas.length
+        )
+    ];
+
+    document.getElementById(
+        "textoPregunta"
+    ).textContent=
+    preguntaActual.texto;
+
+    const feedback=
+    document.getElementById(
+        "feedbackPregunta"
+    );
+
+    feedback.style.display=
+    "none";
+
+    document.getElementById(
+        "btnSi"
+    ).style.display=
+    "block";
+
+    document.getElementById(
+        "btnNo"
+    ).style.display=
+    "block";
+
+    document.getElementById(
+        "pregunta"
+    ).style.display=
+    "flex";
+
+}
+
+function responderPregunta(
+    respuestaDada
+){
+
+    const feedback=
+    document.getElementById(
+        "feedbackPregunta"
+    );
+
+    const correcta=
+    respuestaDada===
+    preguntaActual.respuesta;
+
+    if(correcta){
+
+        monedasConseguidas++;
+
+        aciertos++;
+
+        document.getElementById(
+            "monedas"
+        ).textContent=
+        monedasConseguidas;
+
+        feedback.textContent=
+        "✅ ¡Correcto! Moneda conseguida.";
+
+        feedback.className=
+        "feedback correcto";
+
+    }else{
+
+        feedback.textContent=
+        "❌ No era correcto. Sin moneda esta vez.";
+
+        feedback.className=
+        "feedback incorrecto";
+
+    }
+
+    feedback.style.display=
+    "block";
+
+    document.getElementById(
+        "btnSi"
+    ).style.display=
+    "none";
+
+    document.getElementById(
+        "btnNo"
+    ).style.display=
+    "none";
+
+    setTimeout(
+        ()=>{
+
+            document.getElementById(
+                "pregunta"
+            ).style.display=
+            "none";
+
+            pausado=false;
+
+        },
+        1100
+    );
+
+}
+
+document.getElementById(
+    "btnSi"
+).addEventListener(
+    "click",
+    ()=>responderPregunta(true)
+);
+
+document.getElementById(
+    "btnNo"
+).addEventListener(
+    "click",
+    ()=>responderPregunta(false)
+);
+
+
+/* =====================================================
+   COLISIÓN
+===================================================== */
+
+function colision(
+    objeto,
+    distancia=1.2
+){
+
+    return(
+        Math.abs(
+            jugador.position.x-
+            objeto.position.x
+        )<distancia
+        &&
+        Math.abs(
+            jugador.position.z-
+            objeto.position.z
+        )<2
+    );
+
+}
+
+
+/* =====================================================
+   GAME OVER
+===================================================== */
+
+function gameOver(){
+
+    document.getElementById(
+        "resultadoMonedas"
+    ).textContent=
+    monedasConseguidas;
+
+    document.getElementById(
+        "resultadoAciertos"
+    ).textContent=
+    aciertos;
+
+    jugando=false;
+
+    document.getElementById(
+        "gameOver"
+    ).style.display="flex";
+
+}
+
+
+/* =====================================================
+   ACTUALIZAR JUEGO
+===================================================== */
+
+function actualizar(){
+
+    if(
+        pausado
+        ||
+        !jugando
+    ){
+
+        return;
+
+    }
+
+
+    /*
+       EL PERSONAJE AVANZA SOLO.
+       El jugador únicamente controla
+       izquierda y derecha.
+    */
+
+    if(izquierda){
+
+        jugador.position.x-=.13;
+
+    }
+
+    if(derecha){
+
+        jugador.position.x+=.13;
+
+    }
+
+
+    jugador.position.x=
+    Math.max(
+        -4.8,
+        Math.min(
+            4.8,
+            jugador.position.x
+        )
+    );
+
+
+    /*
+       Las líneas se mueven hacia nosotros.
+    */
+
+    lineas.forEach(
+        linea=>{
+
+            linea.position.z+=
+            velocidad;
+
+            if(
+                linea.position.z>15
+            ){
+
+                linea.position.z=
+                -290;
+
+            }
+
+        }
+    );
+
+
+    /*
+       MONEDAS:
+       vienen automáticamente
+       hacia el jugador.
+    */
+
+    monedas.forEach(
+        moneda=>{
+
+            moneda.position.z+=
+            velocidad;
+
+            moneda.rotation.y+=
+            .08;
+
+
+            if(
+                moneda.position.z>14
+            ){
+
+                moneda.position.z=
+                -320-
+                Math.random()*40;
+
+                moneda.position.x=
+                carriles[
+                    Math.floor(
+                        Math.random()*3
+                    )
+                ];
+
+            }
+
+
+            if(
+                colision(
+                    moneda,
+                    1.15
+                )
+            ){
+
+                moneda.position.z=
+                -320-
+                Math.random()*50;
+
+
+                moneda.position.x=
+                carriles[
+                    Math.floor(
+                        Math.random()*3
+                    )
+                ];
+
+
+                mostrarPregunta();
+
+            }
+
+        }
+    );
+
+
+    /*
+       MONSTRUOS
+    */
+
+    monstruos.forEach(
+        monstruo=>{
+
+            monstruo.position.z+=
+            velocidad;
+
+            monstruo.rotation.y+=
+            .025;
+
+
+            if(
+                monstruo.position.z>14
+            ){
+
+                monstruo.position.z=
+                -320-
+                Math.random()*50;
+
+            }
+
+
+            if(
+                colision(
+                    monstruo,
+                    1.2
+                )
+            ){
+
+                vidas--;
+
+
+                document.getElementById(
+                    "vidas"
+                ).textContent=
+                vidas;
+
+
+                monstruo.position.z=
+                -320-
+                Math.random()*50;
+
+
+                if(
+                    vidas<=0
+                ){
+
+                    gameOver();
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /*
+       CÁMARA:
+       sigue al personaje.
+    */
+
+    camera.position.x+=
+    (
+        jugador.position.x*.35-
+        camera.position.x
+    )*.09;
+
+
+    camera.position.y+=
+    (
+        5.1-
+        camera.position.y
+    )*.08;
+
+
+    camera.position.z+=
+    (
+        10-
+        camera.position.z
+    )*.08;
+
+
+    camera.lookAt(
+        jugador.position.x,
+        1.25,
+        jugador.position.z-15
+    );
+
+}
+
+
+/* =====================================================
+   ANIMACIÓN
+===================================================== */
+
+function animar(){
+
+    requestAnimationFrame(
+        animar
+    );
+
+    actualizar();
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+animar();
+
+
+/* =====================================================
+   REDIMENSIONAR
+===================================================== */
+
+addEventListener(
+    "resize",
+    ()=>{
+
+        camera.aspect=
+        innerWidth/
+        innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            innerWidth,
+            innerHeight
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
