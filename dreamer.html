@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Dreamer</title>
+<style>
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07100a;font-family:Arial,sans-serif}
+#menu{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),#05070b}
+.panel{width:min(92vw,620px);padding:30px;border-radius:28px;background:#050509ed;border:1px solid #ffffff20;box-shadow:0 30px 100px #000;color:white;text-align:center}
+.icon{font-size:64px;margin-bottom:6px}
+h1{font-size:clamp(42px,9vw,75px);margin:0}
+.description{line-height:1.6;opacity:.75;margin:10px 0 26px}
+button{width:100%;border:1px solid #ffffff25;border-radius:14px;background:#050505;color:#62aaff;font-weight:bold;padding:17px;font-size:18px;cursor:pointer}
+button:hover{background:#111}
+#game{display:none;position:fixed;inset:0;align-items:center;justify-content:center;color:white;font-size:22px;text-align:center;padding:20px}
+</style>
+</head>
+<body>
+
+<div id="menu">
+  <div class="panel">
+    <div class="icon">🌙</div>
+    <h1>Dreamer</h1>
+    <p class="description">Practica inglés jugando</p>
+    <button id="practicar">PRACTICAR</button>
+  </div>
+</div>
+
+<div id="game">Aquí irá el juego — lo construimos en el próximo paso.</div>
+
+<script>
+document.getElementById("practicar").onclick=function(){
+  document.getElementById("menu").style.display="none";
+  document.getElementById("game").style.display="flex";
+};
+</script>
+</body>
+</html>
