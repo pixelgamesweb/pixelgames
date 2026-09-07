@@ -91,7 +91,8 @@ const unlocked = [
   {n:2,icon:"🌲",name:"Spirit Wilds",url:"juego2.html"},
   {n:3,icon:"⚽",name:"Football Legends",url:"juego3.html"},
   {n:4,icon:"🤖",name:"Pixel AI",url:"juego 4 pixel ai.html"},
-  {n:5,icon:"🧩",name:"Mega Laberintos",url:"juego5.html"}
+  {n:5,icon:"🧩",name:"Mega Laberintos",url:"juego5.html"},
+  {n:6,icon:"🌙",name:"Dreamer",url:"dreamer.html",label:"PRACTICAR"}
 ];
 
 const container=document.getElementById("games");
@@ -105,7 +106,7 @@ for(let n=1;n<=200;n++){
     card.innerHTML=`
       <div class="icon">${data.icon}</div>
       <div class="name">${data.name}</div>
-      <a class="play" href="${data.url}">JUGAR</a>
+      <a class="play" href="${data.url}">${data.label||"JUGAR"}</a>
     `;
   }else{
     card.innerHTML=`
