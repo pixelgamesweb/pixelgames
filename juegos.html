@@ -4,9 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Pixel Games</title>
+
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;color:#fff}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:Arial,sans-serif;
+  color:#fff;
+}
+
 body{
   background:
     radial-gradient(circle at 20% 20%,rgba(80,120,255,.18),transparent 28%),
@@ -14,64 +22,116 @@ body{
     linear-gradient(135deg,#030817,#07132d 50%,#02040d);
   overflow-x:hidden;
 }
+
 body:before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.65;
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.65;
   background-image:
     radial-gradient(circle,#fff 1px,transparent 1.5px),
     radial-gradient(circle,#9fd5ff 1px,transparent 1.5px);
   background-size:83px 83px,137px 137px;
   background-position:10px 20px,50px 80px;
 }
-header{text-align:center;padding:34px 18px 18px;position:relative;z-index:1}
+
+header{
+  text-align:center;
+  padding:34px 18px 18px;
+  position:relative;
+  z-index:1;
+}
+
 h1{
-  margin:0;font-size:clamp(42px,7vw,76px);letter-spacing:5px;
+  margin:0;
+  font-size:clamp(42px,7vw,76px);
+  letter-spacing:5px;
   text-shadow:0 5px 0 #111,0 0 24px rgba(100,170,255,.65);
 }
-.subtitle{margin-top:8px;color:#9fb9e8;font-size:16px}
+
+.subtitle{
+  margin-top:8px;
+  color:#9fb9e8;
+  font-size:16px;
+}
+
 .grid{
   width:min(1500px,94%);
   margin:22px auto 50px;
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:22px;
-  position:relative;z-index:1;
+  position:relative;
+  z-index:1;
 }
+
 .card{
   min-height:235px;
   border:1px solid rgba(255,255,255,.16);
   border-radius:24px;
   padding:20px;
   background:linear-gradient(145deg,rgba(20,35,70,.88),rgba(5,10,24,.92));
-  box-shadow:0 16px 40px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.08);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
   text-align:center;
   transition:.2s transform,.2s box-shadow;
 }
+
 .card.available:hover{
   transform:translateY(-7px);
-  box-shadow:0 24px 50px rgba(0,0,0,.5),0 0 25px rgba(75,140,255,.18)
+  box-shadow:
+    0 24px 50px rgba(0,0,0,.5),
+    0 0 25px rgba(75,140,255,.18);
 }
+
 .icon{
-  font-size:68px;line-height:1;
+  font-size:68px;
+  line-height:1;
   margin-bottom:15px;
   filter:drop-shadow(0 12px 7px rgba(0,0,0,.6));
   transform:perspective(350px) rotateX(8deg) rotateY(-10deg);
   text-shadow:5px 7px 0 rgba(0,0,0,.25);
 }
-.name{font-size:22px;font-weight:800;margin-bottom:10px}
-.play{
-  display:inline-block;padding:10px 24px;border-radius:13px;
-  background:linear-gradient(180deg,#35a8ff,#1266e8);
-  color:#fff;text-decoration:none;font-weight:800;
-  box-shadow:0 5px 0 #0844a0,0 8px 18px rgba(0,100,255,.25);
+
+.name{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:10px;
 }
-.locked{opacity:.68}
+
+.play{
+  display:inline-block;
+  padding:10px 24px;
+  border-radius:13px;
+  background:linear-gradient(180deg,#35a8ff,#1266e8);
+  color:#fff;
+  text-decoration:none;
+  font-weight:800;
+  box-shadow:
+    0 5px 0 #0844a0,
+    0 8px 18px rgba(0,100,255,.25);
+}
+
+.locked{
+  opacity:.68;
+}
+
 .lock{
   font-size:62px;
   margin-bottom:13px;
-  filter:drop-shadow(0 10px 5px rgba(0,0,0,.6))
+  filter:drop-shadow(0 10px 5px rgba(0,0,0,.6));
 }
-.locked .name{color:#aab6cc}
+
+.locked .name{
+  color:#aab6cc;
+}
+
 .badge{
   font-size:12px;
   font-weight:800;
@@ -82,15 +142,22 @@ h1{
   border-radius:999px;
   background:rgba(0,0,0,.2);
 }
+
 @media(max-width:1000px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
 }
+
 @media(max-width:560px){
   .grid{
     grid-template-columns:1fr;
     width:92%;
   }
-  .card{min-height:210px}
+
+  .card{
+    min-height:210px;
+  }
 }
 </style>
 </head>
@@ -107,14 +174,49 @@ h1{
 <script>
 
 const unlocked = [
-  {n:1,icon:"🪙",name:"Juego de Monedas",url:"juego1.html"},
-  {n:2,icon:"🌲",name:"Spirit Wilds",url:"juego2.html"},
-  {n:3,icon:"⚽",name:"Football Legends",url:"juego3.html"},
-  {n:4,icon:"🤖",name:"Pixel AI",url:"juego 4 pixel ai.html"},
-  {n:5,icon:"🧩",name:"Mega Laberintos",url:"juego5.html"},
-  {n:6,icon:"🌙",name:"Dreamer",url:"dreamer.html"},
-  {n:7,icon:"🟩",name:"Pizarra Magnética",url:"pizarra_magnetica_v2.html"},
-  {n:8,icon:"🔴🔵",name:"Cuatro en Raya",url:"juego 8.html"}
+
+  {
+    n:1,
+    icon:"🪙",
+    name:"Juego de Monedas",
+    url:"juego1.html"
+  },
+
+  {
+    n:2,
+    icon:"🌲",
+    name:"Spirit Wilds",
+    url:"juego2.html"
+  },
+
+  {
+    n:3,
+    icon:"⚽",
+    name:"Football Legends",
+    url:"juego3.html"
+  },
+
+  {
+    n:4,
+    icon:"🤖",
+    name:"Pixel AI",
+    url:"juego 4 pixel ai.html"
+  },
+
+  {
+    n:5,
+    icon:"🧩",
+    name:"Mega Laberintos",
+    url:"juego5.html"
+  },
+
+  {
+    n:6,
+    icon:"🌙",
+    name:"Dreamer",
+    url:"dreamer.html"
+  }
+
 ];
 
 const container=document.getElementById("games");
@@ -132,9 +234,7 @@ for(let n=1;n<=200;n++){
     card.innerHTML=`
       <div class="icon">${data.icon}</div>
       <div class="name">${data.name}</div>
-      <a class="play" href="${data.url}">
-        ${data.label||"JUGAR"}
-      </a>
+      <a class="play" href="${data.url}">JUGAR</a>
     `;
 
   }else{
