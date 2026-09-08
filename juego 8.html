@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Cuatro en Raya - Pixel Games</title>
+<style>
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;color:#fff;background:#02030a}
+body{
+  background:
+    radial-gradient(circle at 18% 18%,rgba(45,105,255,.24),transparent 30%),
+    radial-gradient(circle at 82% 75%,rgba(255,40,75,.16),transparent 32%),
+    linear-gradient(145deg,#02030a,#080b18 52%,#02030a);
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.34;
+  background-image:radial-gradient(circle,rgba(255,255,255,.9) 1px,transparent 1.5px);
+  background-size:82px 82px;
+}
+#app{height:100%;position:relative;display:flex;align-items:center;justify-content:center;padding:20px}
+.topbar{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:20;
+  display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:18px;
+  background:rgba(0,0,0,.66);border:1px solid rgba(255,255,255,.13);
+  backdrop-filter:blur(10px);box-shadow:0 10px 30px #0008;
+}
+.logo{font-size:25px}.title{font-size:19px;font-weight:900;letter-spacing:1px}.turn{
+  padding:7px 12px;border-radius:10px;background:#090d18;border:1px solid #ffffff1c;
+  font-size:13px;font-weight:800;color:#dbe6ff;
+}
+.turn.red{color:#ff5b65}.turn.blue{color:#57a9ff}
+.game-wrap{width:min(900px,96vw);display:flex;flex-direction:column;align-items:center;gap:20px}
+.board-shell{
+  position:relative;width:min(720px,94vw);aspect-ratio:7/6;padding:15px;
+  border-radius:28px;
+  background:linear-gradient(145deg,#254b99 0%,#10285d 45%,#071633 100%);
+  border:2px solid rgba(120,175,255,.42);
+  box-shadow:
+    0 28px 0 #030817,
+    0 42px 65px rgba(0,0,0,.7),
+    inset 0 2px 2px rgba(255,255,255,.2),
+    inset 0 -9px 18px rgba(0,0,0,.45);
+  transform:perspective(1200px) rotateX(5deg);
+}
+.board-shell:before{
+  content:"";position:absolute;left:8%;right:8%;bottom:-30px;height:30px;border-radius:50%;
+  background:#0009;filter:blur(14px);z-index:-1;
+}
+.board{
+  width:100%;height:100%;display:grid;grid-template-columns:repeat(7,1fr);
+  gap:9px;padding:9px;border-radius:20px;
+  background:linear-gradient(145deg,#071737,#0d2b67);
+  box-shadow:inset 0 6px 12px #0009,inset 0 -2px 2px #ffffff18;
+}
+.slot{
+  position:relative;min-width:0;min-height:0;border:0;background:transparent;border-radius:50%;
+  cursor:pointer;padding:0;touch-action:manipulation;
+}
+.slot:before{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 35% 28%,#1c315d,#030817 72%);
+  box-shadow:inset 0 6px 9px #000b, inset 0 -2px 2px #ffffff12,0 1px 1px #ffffff10;
+}
+.slot.red:before{
+  background:radial-gradient(circle at 34% 27%,#ff8990 0 7%,#ff3345 30%,#ba081b 75%,#65000c 100%);
+  box-shadow:inset 0 7px 10px #fff4,inset 0 -8px 12px #42000a,0 4px 9px #000b;
+}
+.slot.blue:before{
+  background:radial-gradient(circle at 34% 27%,#8ec8ff 0 7%,#298cff 30%,#0750c4 75%,#03245e 100%);
+  box-shadow:inset 0 7px 10px #fff4,inset 0 -8px 12px #00194b,0 4px 9px #000b;
+}
+.slot.win:before{animation:winGlow .62s ease-in-out infinite alternate}
+@keyframes winGlow{
+ from{filter:brightness(1.2);box-shadow:0 0 9px currentColor,inset 0 7px 10px #fff7,inset 0 -8px 12px #000}
+ to{filter:brightness(1.9);box-shadow:0 0 28px 8px currentColor,inset 0 7px 10px #fff9,inset 0 -8px 12px #000}
+}
+.slot.red.win{color:#ff3345}.slot.blue.win{color:#298cff}
+.slot.preview:before{opacity:.35;transform:scale(.9)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+button.action,.result button{
+  border:1px solid #ffffff25;border-radius:14px;background:#070a12;color:#72b6ff;
+  font-weight:900;padding:12px 18px;font-size:15px;cursor:pointer;
+  box-shadow:0 6px 18px #0007;
+}
+button.action:hover,.result button:hover{background:#10182a;transform:translateY(-1px)}
+.result{
+  position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.68);backdrop-filter:blur(7px);
+}
+.result.show{display:flex}
+.result-card{
+  width:min(520px,90vw);padding:34px 28px;border-radius:28px;text-align:center;
+  background:linear-gradient(145deg,#080b16f5,#03050cf5);border:1px solid #ffffff20;
+  box-shadow:0 30px 100px #000;color:#fff;
+}
+.result-icon{font-size:58px;line-height:1;margin-bottom:12px}
+.result h2{font-size:clamp(30px,7vw,48px);margin:0 0 10px;text-shadow:0 0 22px #ffffff33}
+.result p{margin:0 0 25px;color:#aebbd4}
+.result.red h2{color:#ff4b59;text-shadow:0 0 25px #ff263c99}
+.result.blue h2{color:#4ca5ff;text-shadow:0 0 25px #147dff99}
+.result.draw h2{color:#fff}
+.result .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.result button.primary{background:linear-gradient(180deg,#319dff,#145ee0);color:#fff;border-color:#6bbaff55}
+.hint{font-size:13px;color:#8394b2;text-align:center}
+@media(max-width:600px){
+ .topbar{top:10px;padding:8px 10px}.logo{font-size:21px}.title{font-size:16px}.turn{font-size:11px}
+ .game-wrap{gap:13px}.board-shell{padding:10px;border-radius:21px;box-shadow:0 20px 0 #030817,0 28px 50px #000b,inset 0 2px 2px #ffffff22}
+ .board{gap:5px;padding:5px;border-radius:15px}.slot:before{box-shadow:inset 0 4px 7px #000b,inset 0 -2px 2px #ffffff12}
+ .hint{font-size:12px}.controls{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar"><div class="logo">🔴🔵</div><div class="title">CUATRO EN RAYA</div><div id="turn" class="turn red">TURNO: ROJO</div></div>
+  <main class="game-wrap">
+    <div class="board-shell"><div id="board" class="board" aria-label="Tablero de cuatro en raya"></div></div>
+    <div class="hint">Pulsa una columna para dejar caer tu ficha</div>
+    <div class="controls"><button class="action" onclick="newGame()">↻ Nueva partida</button></div>
+  </main>
+</div>
+
+<div id="result" class="result">
+  <div id="resultCard" class="result-card">
+    <div id="resultIcon" class="result-icon">🏆</div>
+    <h2 id="resultTitle">Jugador rojo ha ganado</h2>
+    <p id="resultText">¡Cuatro en raya!</p>
+    <div class="actions">
+      <button class="primary" onclick="newGame()">VOLVER A JUGAR</button>
+      <button onclick="location.href='juegos_HTML.html'">VOLVER AL MENÚ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ROWS=6,COLS=7;
+let board=[],player=1,gameOver=false;
+const elBoard=document.getElementById('board');
+const elTurn=document.getElementById('turn');
+const result=document.getElementById('result');
+const resultCard=document.getElementById('resultCard');
+
+function newGame(){
+  board=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+  player=1;gameOver=false;result.className='result';render();
+}
+function render(){
+  elBoard.innerHTML='';
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const b=document.createElement('button');
+    b.className='slot '+(board[r][c]===1?'red':board[r][c]===2?'blue':'');
+    b.dataset.col=c;b.setAttribute('aria-label',`Fila ${r+1}, columna ${c+1}`);
+    b.addEventListener('click',()=>drop(c));elBoard.appendChild(b);
+  }
+  elTurn.textContent=gameOver?'PARTIDA TERMINADA':`TURNO: ${player===1?'ROJO':'AZUL'}`;
+  elTurn.className='turn '+(player===1?'red':'blue');
+}
+function drop(col){
+  if(gameOver)return;
+  let row=-1;
+  for(let r=ROWS-1;r>=0;r--) if(board[r][col]===0){row=r;break}
+  if(row<0)return;
+  board[row][col]=player;render();
+  const win=getWin(row,col,player);
+  if(win){gameOver=true;highlight(win);showResult(player);return}
+  if(board.every(row=>row.every(Boolean))){gameOver=true;showResult(0);return}
+  player=player===1?2:1;render();
+}
+function getWin(r,c,p){
+  const dirs=[[0,1],[1,0],[1,1],[1,-1]];
+  for(const [dr,dc] of dirs){
+    let cells=[[r,c]];
+    for(let k=1;k<4;k++){let rr=r+dr*k,cc=c+dc*k;if(rr<0||rr>=ROWS||cc<0||cc>=COLS||board[rr][cc]!==p)break;cells.push([rr,cc])}
+    for(let k=1;k<4;k++){let rr=r-dr*k,cc=c-dc*k;if(rr<0||rr>=ROWS||cc<0||cc>=COLS||board[rr][cc]!==p)break;cells.push([rr,cc])}
+    if(cells.length>=4)return cells;
+  }
+  return null;
+}
+function highlight(cells){
+  const slots=[...document.querySelectorAll('.slot')];
+  cells.forEach(([r,c])=>slots[r*COLS+c].classList.add('win'));
+}
+function showResult(winner){
+  resultCard.className='result-card '+(winner===1?'red':winner===2?'blue':'draw');
+  document.getElementById('resultIcon').textContent=winner===0?'🤝':'🏆';
+  document.getElementById('resultTitle').textContent=winner===1?'Jugador rojo ha ganado':winner===2?'Jugador azul ha ganado':'Empate';
+  document.getElementById('resultText').textContent=winner===0?'El tablero está completo.':'¡Cuatro en raya!';
+  result.className='result show';
+}
+newGame();
+</script>
+</body>
+</html>
