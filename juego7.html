@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4 en Raya - Pixel Games</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(80,120,255,.18), transparent 28%),
+        radial-gradient(circle at 80% 70%, rgba(180,70,255,.14), transparent 30%),
+        linear-gradient(135deg, #030817, #07132d 50%, #02040d);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 5vw, 54px);
+      letter-spacing: 3px;
+      text-shadow: 0 5px 0 #111, 0 0 20px rgba(100, 170, 255, .65);
+      margin-bottom: 10px;
+    }
+
+    .status {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #9fb9e8;
+    }
+
+    .mode-select {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .mode-btn {
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(20, 35, 70, 0.88);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .mode-btn.active {
+      background: #35a8ff;
+      border-color: #35a8ff;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      background: rgba(20, 35, 70, 0.88);
+      padding: 15px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, .5);
+      max-width: 450px;
+      width: 100%;
+    }
+
+    .cell {
+      aspect-ratio: 1;
+      background: #07132d;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.05);
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .cell:hover {
+      transform: scale(1.05);
+    }
+
+    .cell.red {
+      background: radial-gradient(circle, #ff5252, #c62828);
+      box-shadow: 0 0 15px rgba(255, 82, 82, 0.6);
+    }
+
+    .cell.yellow {
+      background: radial-gradient(circle, #ffd54f, #f57f17);
+      box-shadow: 0 0 15px rgba(255, 213, 79, 0.6);
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #35a8ff, #1266e8);
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #0844a0;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-back {
+      background: linear-gradient(180deg, #ff4757, #c0392b);
+      box-shadow: 0 5px 0 #841d13;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>4 EN RAYA</h1>
+  
+  <div class="mode-select">
+    <button class="mode-btn active" id="btn-pvp" onclick="setMode('pvp')">2 Jugadores</button>
+    <button class="mode-btn" id="btn-ai" onclick="setMode('ai')">vs Robot IA</button>
+  </div>
+
+  <div class="status" id="status">Turno del Jugador 🔴</div>
+
+  <div class="board" id="board"></div>
+
+  <div class="controls">
+    <button class="btn" onclick="resetGame()">REINICIAR</button>
+    <a href="juegos.html" class="btn btn-back">VOLVER AL MENÚ</a>
+  </div>
+
+  <script>
+    const ROWS = 6;
+    const COLS = 7;
+    let board = [];
+    let currentPlayer = 'red';
+    let gameActive = true;
+    let vsAI = false;
+
+    const boardElement = document.getElementById('board');
+    const statusElement = document.getElementById('status');
+
+    function createBoard() {
+      boardElement.innerHTML = '';
+      board = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
+      
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = document.createElement('div');
+          cell.classList.add('cell');
+          cell.dataset.col = c;
+          cell.addEventListener('click', () => handleCellClick(c));
+          boardElement.appendChild(cell);
+        }
+      }
+    }
+
+    function setMode(mode) {
+      vsAI = (mode === 'ai');
+      document.getElementById('btn-pvp').classList.toggle('active', !vsAI);
+      document.getElementById('btn-ai').classList.toggle('active', vsAI);
+      resetGame();
+    }
+
+    function handleCellClick(col) {
+      if (!gameActive) return;
+
+      for (let r = ROWS - 1; r >= 0; r--) {
+        if (!board[r][col]) {
+          board[r][col] = currentPlayer;
+          updateBoard();
+          
+          if (checkWin(r, col)) {
+            statusElement.textContent = `¡Gana el Jugador ${currentPlayer === 'red' ? '🔴' : '🟡'}!`;
+            gameActive = false;
+            return;
+          }
+
+          if (board.every(row => row.every(cell => cell !== null))) {
+            statusElement.textContent = '¡Empate!';
+            gameActive = false;
+            return;
+          }
+
+          currentPlayer = currentPlayer === 'red' ? 'yellow' : 'red';
+          statusElement.textContent = `Turno del Jugador ${currentPlayer === 'red' ? '🔴' : '🟡'}`;
+
+          if (vsAI && currentPlayer === 'yellow' && gameActive) {
+            setTimeout(makeAIMove, 400);
+          }
+          return;
+        }
+      }
+    }
+
+    function makeAIMove() {
+      let validCols = [];
+      for (let c = 0; c < COLS; c++) {
+        if (!board[0][c]) validCols.push(c);
+      }
+      if (validCols.length > 0) {
+        let randomCol = validCols[Math.floor(Math.random() * validCols.length)];
+        handleCellClick(randomCol);
+      }
+    }
+
+    function updateBoard() {
+      const cells = boardElement.children;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const index = r * COLS + c;
+          cells[index].className = 'cell';
+          if (board[r][c]) {
+            cells[index].classList.add(board[r][c]);
+          }
+        }
+      }
+    }
+
+    function checkWin(r, c) {
+      const color = board[r][c];
+      const directions = [
+        [[0, 1], [0, -1]], // Horizontal
+        [[1, 0], [-1, 0]], // Vertical
+        [[1, 1], [-1, -1]], // Diagonal \
+        [[1, -1], [-1, 1]]  // Diagonal /
+      ];
+
+      return directions.some(dir => {
+        let count = 1;
+        dir.forEach(([dr, dc]) => {
+          let nr = r + dr;
+          let nc = c + dc;
+          while (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc] === color) {
+            count++;
+            nr += dr;
+            nc += dc;
+          }
+        });
+        return count >= 4;
+      });
+    }
+
+    function resetGame() {
+      currentPlayer = 'red';
+      gameActive = true;
+      statusElement.textContent = 'Turno del Jugador 🔴';
+      createBoard();
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
