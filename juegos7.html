@@ -85,7 +85,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans
   <h1>GAME OVER</h1>
   <p>Has llegado al nivel <b id="nivelFinal">1</b>.</p>
   <p>Puntuación: <b id="puntosFinal">0</b></p>
-  <button onclick="location.reload()">↻ VOLVER A JUGAR</button>
+  <button onclick="window.pixelGameRetry()">↻ VOLVER A JUGAR</button>
  </div>
 </div>
 
@@ -94,7 +94,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans
   <h1>¡FELICIDADES!</h1>
   <p id="textoVictoria">Nivel superado.</p>
   <button id="siguienteBtn">▶ SIGUIENTE NIVEL</button>
-  <button onclick="location.reload()">↻ VOLVER A JUGAR</button>
+  <button onclick="window.pixelGameRetry()">↻ VOLVER A JUGAR</button>
  </div>
 </div>
 
@@ -511,6 +511,29 @@ function volverAlMenu(){
 })();
 </script>
 
+
+<script>
+window.pixelGameRetryLevel = 1;
+window.pixelGameCurrentLevel = 1;
+window.pixelGameSetLevel = function(n){
+  window.pixelGameCurrentLevel = n;
+  window.pixelGameRetryLevel = n;
+};
+window.pixelGameRetry = function(){
+  const n = window.pixelGameRetryLevel || window.pixelGameCurrentLevel || 1;
+  if(typeof window.startLevel === "function") window.startLevel(n);
+  else if(typeof startLevel === "function") startLevel(n);
+};
+window.pixelGameNext = function(){
+  const n = (window.pixelGameCurrentLevel || 1) + 1;
+  window.pixelGameSetLevel(n);
+  if(typeof window.startLevel === "function") window.startLevel(n);
+  else if(typeof startLevel === "function") startLevel(n);
+};
+window.pixelGameBack = function(){
+  window.location.href = "juegos_HTML.html";
+};
+</script>
 </body>
 </html>
 <script>
