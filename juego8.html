@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Games - La Serpiente de Colores</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #121218;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
+
+    h1 {
+      color: #00ffcc;
+      text-shadow: 3px 3px #ff0055;
+      font-size: 20px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .scoreboard {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .score-box {
+      background: #1a1a24;
+      padding: 8px 12px;
+      border: 3px solid #ff0055;
+      border-radius: 4px;
+    }
+
+    #game-container {
+      position: relative;
+    }
+
+    canvas {
+      background-color: #0d0d11;
+      border: 4px solid #00ffcc;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+      image-rendering: pixelated;
+    }
+
+    /* Leyenda de poderes */
+    .legend {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+      font-size: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      border: 1px solid #fff;
+    }
+
+    /* Controles táctiles para móviles */
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-template-rows: repeat(2, 50px);
+      gap: 5px;
+      margin-top: 15px;
+    }
+
+    .btn-control {
+      background: #1a1a24;
+      border: 2px solid #00ffcc;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .btn-control:active {
+      background: #00ffcc;
+      color: #000;
+    }
+
+    #up { grid-column: 2; grid-row: 1; }
+    #left { grid-column: 1; grid-row: 2; }
+    #down { grid-column: 2; grid-row: 2; }
+    #right { grid-column: 3; grid-row: 2; }
+
+    .back-btn {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: #ff0055;
+      color: #fff;
+      text-decoration: none;
+      border: 2px solid #fff;
+      font-size: 10px;
+      border-radius: 4px;
+    }
+
+    .back-btn:hover {
+      background: #cc0044;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🐍 SERPIENTE PIXEL DE COLORES</h1>
+
+  <div class="scoreboard">
+    <div class="score-box">PUNTOS: <span id="score">0</span></div>
+    <div class="score-box">RECORD: <span id="high-score">0</span></div>
+  </div>
+
+  <div id="game-container">
+    <canvas id="gameCanvas" width="320" height="320"></canvas>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="dot" style="background:#ff0055;"></span> Roja (+1)</div>
+    <div class="legend-item"><span class="dot" style="background:#ffd700;"></span> Dorada (+3)</div>
+    <div class="legend-item"><span class="dot" style="background:#00ffff;"></span> Azul (Lento)</div>
+  </div>
+
+  <!-- Botones de dirección para móviles -->
+  <div class="controls">
+    <button class="btn-control" id="up">▲</button>
+    <button class="btn-control" id="left">◀</button>
+    <button class="btn-control" id="down">▼</button>
+    <button class="btn-control" id="right">▶</button>
+  </div>
+
+  <a href="index.html" class="back-btn">⬅ VOLVER A LA WEB</a>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    const highScoreElement = document.getElementById('high-score');
+
+    const gridSize = 16;
+    const tileCount = canvas.width / gridSize;
+
+    let snake = [
+      { x: 10, y: 10 },
+      { x: 10, y: 11 },
+      { x: 10, y: 12 }
+    ];
+
+    let dx = 0;
+    let dy = -1;
+    let score = 0;
+    let highScore = localStorage.getItem('snakeHighScore') || 0;
+    highScoreElement.textContent = highScore;
+
+    let apple = { x: 5, y: 5, type: 'red' };
+    let gameSpeed = 120;
+    let gameLoop;
+    let isGameOver = false;
+
+    // Tipos de manzanas
+    const APPLE_TYPES = [
+      { type: 'red', color: '#ff0055', points: 1, probability: 0.7 },
+      { type: 'gold', color: '#ffd700', points: 3, probability: 0.2 },
+      { type: 'blue', color: '#00ffff', points: 1, probability: 0.1 }
+    ];
+
+    function main() {
+      if (isGameOver) return;
+
+      setTimeout(function onTick() {
+        clearCanvas();
+        drawApple();
+        moveSnake();
+        drawSnake();
+        checkCollision();
+        main();
+      }, gameSpeed);
+    }
+
+    function clearCanvas() {
+      ctx.fillStyle = '#0d0d11';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Dibujar cuadrícula tenue
+      ctx.strokeStyle = '#1a1a24';
+      for (let i = 0; i < canvas.width; i += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+    }
+
+    function drawSnake() {
+      snake.forEach((part, index) => {
+        // La cabeza tiene un color especial
+        if (index === 0) {
+          ctx.fillStyle = '#00ffcc';
+        } else {
+          // El cuerpo cambia de color progresivamente
+          const hue = (index * 20 + score * 10) % 360;
+          ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+        }
+
+        ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 1, gridSize - 1);
+      });
+    }
+
+    function moveSnake() {
+      const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+      snake.unshift(head);
+
+      // Si come manzana
+      if (head.x === apple.x && head.y === apple.y) {
+        score += apple.points;
+        scoreElement.textContent = score;
+
+        // Efecto especial manzana azul (ralentiza temporalmente)
+        if (apple.type === 'blue') {
+          gameSpeed = 180;
+          setTimeout(() => { gameSpeed = 120; }, 5000);
+        }
+
+        generateApple();
+      } else {
+        snake.pop();
+      }
+    }
+
+    function generateApple() {
+      apple.x = Math.floor(Math.random() * tileCount);
+      apple.y = Math.floor(Math.random() * tileCount);
+
+      // Elegir tipo de manzana por probabilidad
+      const rand = Math.random();
+      if (rand < 0.7) {
+        apple.type = 'red';
+        apple.color = '#ff0055';
+        apple.points = 1;
+      } else if (rand < 0.9) {
+        apple.type = 'gold';
+        apple.color = '#ffd700';
+        apple.points = 3;
+      } else {
+        apple.type = 'blue';
+        apple.color = '#00ffff';
+        apple.points = 1;
+      }
+
+      // Asegurar que no aparezca sobre la serpiente
+      snake.forEach(part => {
+        if (part.x === apple.x && part.y === apple.y) {
+          generateApple();
+        }
+      });
+    }
+
+    function drawApple() {
+      ctx.fillStyle = apple.color;
+      ctx.fillRect(apple.x * gridSize + 1, apple.y * gridSize + 1, gridSize - 2, gridSize - 2);
+    }
+
+    function checkCollision() {
+      const head = snake[0];
+
+      // Choque con paredes
+      if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+        gameOver();
+      }
+
+      // Choque consigo misma
+      for (let i = 1; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+          gameOver();
+        }
+      }
+    }
+
+    function gameOver() {
+      isGameOver = true;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('snakeHighScore', highScore);
+        highScoreElement.textContent = highScore;
+      }
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#ff0055';
+      ctx.font = '16px "Press Start 2P"';
+      ctx.textAlign = 'center';
+      ctx.fillText('¡GAME OVER!', canvas.width / 2, canvas.height / 2 - 10);
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '8px "Press Start 2P"';
+      ctx.fillText('Toca o pulsa espacio', canvas.width / 2, canvas.height / 2 + 20);
+      ctx.fillText('para reiniciar', canvas.width / 2, canvas.height / 2 + 35);
+    }
+
+    function resetGame() {
+      snake = [
+        { x: 10, y: 10 },
+        { x: 10, y: 11 },
+        { x: 10, y: 12 }
+      ];
+      dx = 0;
+      dy = -1;
+      score = 0;
+      gameSpeed = 120;
+      scoreElement.textContent = score;
+      isGameOver = false;
+      generateApple();
+      main();
+    }
+
+    // Controles por Teclado
+    document.addEventListener('keydown', e => {
+      if (isGameOver && e.code === 'Space') {
+        resetGame();
+        return;
+      }
+
+      if (e.key === 'ArrowUp' && dy !== 1) { dx = 0; dy = -1; }
+      if (e.key === 'ArrowDown' && dy !== -1) { dx = 0; dy = 1; }
+      if (e.key === 'ArrowLeft' && dx !== 1) { dx = -1; dy = 0; }
+      if (e.key === 'ArrowRight' && dx !== -1) { dx = 1; dy = 0; }
+    });
+
+    // Controles Táctiles (Botones)
+    document.getElementById('up').addEventListener('click', () => { if (dy !== 1) { dx = 0; dy = -1; } });
+    document.getElementById('down').addEventListener('click', () => { if (dy !== -1) { dx = 0; dy = 1; } });
+    document.getElementById('left').addEventListener('click', () => { if (dx !== 1) { dx = -1; dy = 0; } });
+    document.getElementById('right').addEventListener('click', () => { if (dx !== -1) { dx = 1; dy = 0; } });
+
+    canvas.addEventListener('click', () => {
+      if (isGameOver) resetGame();
+    });
+
+    // Iniciar juego
+    generateApple();
+    main();
+  </script>
+</body>
+</html>
