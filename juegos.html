@@ -1,91 +1,63 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juegos disponibles</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #121212;
-            color: white;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #00ffcc;
-            margin-bottom: 20px;
-        }
-
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            max-width: 800px;
-            margin: auto;
-        }
-
-        .btn {
-            display: inline-block;
-            width: 200px;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: #007bff;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background 0.3s, transform 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        .btn-locked {
-            background-color: #444;
-            color: #888;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .btn-locked:hover {
-            background-color: #444;
-            transform: none;
-        }
-
-        .btn-back {
-            background-color: #ff3333;
-            margin-top: 30px;
-        }
-
-        .btn-back:hover {
-            background-color: #cc0000;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú de Juegos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #1a1a1a;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #333;
+      padding: 20px;
+      font-size: 24px;
+    }
+    .menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 50px;
+    }
+    .button {
+      background-color: #4CAF50; /* Verde */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 10px 0;
+      cursor: pointer;
+      border-radius: 8px;
+      width: 200px;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>🎮 Menú de Juegos 🎮</h1>
+  <header>
+    Selecciona un Juego
+  </header>
 
-    <div class="container">
-        <a href="juego1.html" class="btn">Juego 1</a>
-        <a href="juego2.html" class="btn">Juego 2</a>
-        <a href="juego3.html" class="btn">Juego 3</a>
-        <a href="juego 4 pixel ai.html" class="btn">Juego 4</a>
-        <a href="juego5.html" class="btn">Juego 5</a>
-        <a href="juegos7.html" class="btn">Juego 7</a>
-        <a href="juego8.html" class="btn">Juego 8</a>
-        <a href="#" class="btn btn-locked">Juego 9 (Bloqueado)</a>
-    </div>
-
-    <br>
-    <a href="index.html" class="btn btn-back">⬅ Volver al Inicio</a>
+  <div class="menu">
+    <a href="juego1.html" class="button">Juego 1</a>
+    <a href="juego2.html" class="button">Juego 2</a>
+    <a href="juego3.html" class="button">Juego 3</a>
+    <a href="juego 4 pixel ai.html" class="button">Juego 4</a>
+    <a href="juego5.html" class="button">Juego 5</a>
+    <a href="juegos7.html" class="button">Juego 7</a>
+    <a href="juego 8.html" class="button">Juego 8</a>
+  </div>
 
 </body>
 </html>
