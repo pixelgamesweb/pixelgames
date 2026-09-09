@@ -1,214 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel Games - Menú de Juegos</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos disponibles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        h1 {
+            color: #00ffcc;
+            margin-bottom: 20px;
+        }
 
-    body {
-      background-color: #121218;
-      color: #fff;
-      font-family: 'Press Start 2P', cursive;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 20px;
-    }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 800px;
+            margin: auto;
+        }
 
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-      margin-top: 10px;
-    }
+        .btn {
+            display: inline-block;
+            width: 200px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
 
-    h1 {
-      color: #00ffcc;
-      text-shadow: 3px 3px #ff0055;
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
+        .btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
 
-    p.subtitle {
-      color: #aaa;
-      font-size: 10px;
-      line-height: 1.5;
-    }
+        .btn-locked {
+            background-color: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
 
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      width: 100%;
-      max-width: 900px;
-      margin-bottom: 30px;
-    }
+        .btn-locked:hover {
+            background-color: #444;
+            transform: none;
+        }
 
-    .game-card {
-      background: #1a1a24;
-      border: 3px solid #00ffcc;
-      border-radius: 8px;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    }
+        .btn-back {
+            background-color: #ff3333;
+            margin-top: 30px;
+        }
 
-    .game-card:hover {
-      transform: translateY(-5px);
-      border-color: #ff0055;
-      box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
-    }
-
-    .game-icon {
-      font-size: 32px;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .game-title {
-      color: #ffd700;
-      font-size: 12px;
-      margin-bottom: 10px;
-      text-align: center;
-      line-height: 1.4;
-    }
-
-    .game-desc {
-      color: #bbb;
-      font-size: 8px;
-      line-height: 1.5;
-      margin-bottom: 15px;
-      text-align: center;
-      flex-grow: 1;
-    }
-
-    .play-btn {
-      display: block;
-      background: #00ffcc;
-      color: #121218;
-      text-decoration: none;
-      text-align: center;
-      padding: 10px;
-      font-size: 10px;
-      font-weight: bold;
-      border-radius: 4px;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .play-btn:hover {
-      background: #ff0055;
-      color: #fff;
-    }
-
-    .back-btn {
-      padding: 12px 20px;
-      background: #ff0055;
-      color: #fff;
-      text-decoration: none;
-      border: 2px solid #fff;
-      font-size: 10px;
-      border-radius: 4px;
-      margin-top: 10px;
-      transition: background 0.2s;
-    }
-
-    .back-btn:hover {
-      background: #cc0044;
-    }
-
-    footer {
-      margin-top: auto;
-      padding-top: 20px;
-      font-size: 8px;
-      color: #666;
-      text-align: center;
-    }
-  </style>
+        .btn-back:hover {
+            background-color: #cc0000;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>🎮 MENÚ DE JUEGOS</h1>
-    <p class="subtitle">¡Elige tu juego pixelado favorito y a jugar!</p>
-  </header>
+    <h1>🎮 Menú de Juegos 🎮</h1>
 
-  <div class="games-grid">
-
-    <!-- Juego 1 -->
-    <div class="game-card">
-      <div class="game-icon">🕹️</div>
-      <div class="game-title">Juego 1</div>
-      <div class="game-desc">Pon a prueba tus reflejos en esta aventura pixelada.</div>
-      <a href="juego1.html" class="play-btn">¡JUGAR!</a>
+    <div class="container">
+        <a href="juego1.html" class="btn">Juego 1</a>
+        <a href="juego2.html" class="btn">Juego 2</a>
+        <a href="juego3.html" class="btn">Juego 3</a>
+        <a href="juego 4 pixel ai.html" class="btn">Juego 4</a>
+        <a href="juego5.html" class="btn">Juego 5</a>
+        <a href="juegos7.html" class="btn">Juego 7</a>
+        <a href="juego8.html" class="btn">Juego 8</a>
+        <a href="#" class="btn btn-locked">Juego 9 (Bloqueado)</a>
     </div>
 
-    <!-- Juego 2 -->
-    <div class="game-card">
-      <div class="game-icon">🚀</div>
-      <div class="game-title">Juego 2</div>
-      <div class="game-desc">Esquiva obstáculos y llega lo más lejos posible.</div>
-      <a href="juego2.html" class="play-btn">¡JUGAR!</a>
-    </div>
-
-    <!-- Juego 3 -->
-    <div class="game-card">
-      <div class="game-icon">⚔️</div>
-      <div class="game-title">Juego 3</div>
-      <div class="game-desc">Supera todos los desafíos e incrementa tu récord.</div>
-      <a href="juego3.html" class="play-btn">¡JUGAR!</a>
-    </div>
-
-    <!-- Juego 4 -->
-    <div class="game-card">
-      <div class="game-icon">🤖</div>
-      <div class="game-title">Juego 4 (Pixel AI)</div>
-      <div class="game-desc">Un desafío inteligente creado con IA.</div>
-      <a href="juego 4 pixel ai.html" class="play-btn">¡JUGAR!</a>
-    </div>
-
-    <!-- Juego 5 -->
-    <div class="game-card">
-      <div class="game-icon">🧩</div>
-      <div class="game-title">Juego 5</div>
-      <div class="game-desc">Aventura arcade llena de acción y diversión.</div>
-      <a href="juego5.html" class="play-btn">¡JUGAR!</a>
-    </div>
-
-    <!-- Juego 7 -->
-    <div class="game-card">
-      <div class="game-icon">⭐</div>
-      <div class="game-title">Juego 7</div>
-      <div class="game-desc">Consigue la mayor puntuación antes de que se acabe el tiempo.</div>
-      <a href="juegos7.html" class="play-btn">¡JUGAR!</a>
-    </div>
-
-    <!-- Juego 8 -->
-    <div class="game-card" style="border-color: #ffd700;">
-      <div class="game-icon">🐍</div>
-      <div class="game-title" style="color: #00ffcc;">Serpiente Pixel</div>
-      <div class="game-desc">¡Atrapa las manzanas rojas, doradas y azules con tu serpiente multicolor!</div>
-      <a href="juego8.html" class="play-btn" style="background: #ffd700;">¡JUGAR!</a>
-    </div>
-
-  </div>
-
-  <a href="index.html" class="back-btn">⬅ INICIO</a>
-
-  <footer>
-    Creado por Pol con ChatGPT • Pixel Games
-  </footer>
+    <br>
+    <a href="index.html" class="btn btn-back">⬅ Volver al Inicio</a>
 
 </body>
 </html>
