@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mina de Gemas - Pixel Games</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(80,120,255,.18), transparent 28%),
+        radial-gradient(circle at 80% 70%, rgba(180,70,255,.14), transparent 30%),
+        linear-gradient(135deg, #030817, #07132d 50%, #02040d);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 5vw, 50px);
+      letter-spacing: 3px;
+      text-shadow: 0 5px 0 #111, 0 0 20px rgba(100, 170, 255, .65);
+      margin-bottom: 10px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .score-box {
+      background: rgba(20, 35, 70, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 15px 30px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      width: 100%;
+    }
+
+    .score {
+      font-size: 32px;
+      font-weight: 800;
+      color: #00e676;
+      text-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+    }
+
+    .gps {
+      font-size: 14px;
+      color: #9fb9e8;
+      margin-top: 5px;
+    }
+
+    .gem-btn {
+      font-size: 90px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+      margin: 10px 0;
+    }
+
+    .gem-btn:active {
+      transform: scale(0.88);
+    }
+
+    .upgrades {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .upgrade-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: rgba(20, 35, 70, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .upgrade-btn:hover:not(:disabled) {
+      background: rgba(35, 60, 115, 0.95);
+      transform: translateY(-2px);
+    }
+
+    .upgrade-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .controls {
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border-radius: 13px;
+      background: linear-gradient(180deg, #ff4757, #c0392b);
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      box-shadow: 0 5px 0 #841d13;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💎 MINA DE GEMAS</h1>
+
+  <div class="container">
+    <div class="score-box">
+      <div class="score" id="gems">0 💎</div>
+      <div class="gps" id="gps">+0 gemas por segundo</div>
+    </div>
+
+    <button class="gem-btn" id="gem">💎</button>
+
+    <div class="upgrades">
+      <button class="upgrade-btn" id="up1" onclick="buyPickaxe()">
+        <span>⛏️ Pico de Hierro (+1 por clic)</span>
+        <span id="cost1">10 💎</span>
+      </button>
+
+      <button class="upgrade-btn" id="up2" onclick="buyMiner()">
+        <span>🤖 Robot Minero (+1 por seg)</span>
+        <span id="cost2">50 💎</span>
+      </button>
+
+      <button class="upgrade-btn" id="up3" onclick="buyLaser()">
+        <span>⚡ Super Láser (+10 por seg)</span>
+        <span id="cost3">250 💎</span>
+      </button>
+    </div>
+
+    <div class="controls">
+      <a href="juegos.html" class="btn">VOLVER AL MENÚ</a>
+    </div>
+  </div>
+
+  <script>
+    let gems = 0;
+    let clickPower = 1;
+    let gps = 0;
+
+    let cost1 = 10;
+    let cost2 = 50;
+    let cost3 = 250;
+
+    const gemsEl = document.getElementById('gems');
+    const gpsEl = document.getElementById('gps');
+    const gemBtn = document.getElementById('gem');
+
+    gemBtn.addEventListener('click', () => {
+      gems += clickPower;
+      updateUI();
+    });
+
+    function buyPickaxe() {
+      if (gems >= cost1) {
+        gems -= cost1;
+        clickPower += 1;
+        cost1 = Math.floor(cost1 * 1.5);
+        updateUI();
+      }
+    }
+
+    function buyMiner() {
+      if (gems >= cost2) {
+        gems -= cost2;
+        gps += 1;
+        cost2 = Math.floor(cost2 * 1.5);
+        updateUI();
+      }
+    }
+
+    function buyLaser() {
+      if (gems >= cost3) {
+        gems -= cost3;
+        gps += 10;
+        cost3 = Math.floor(cost3 * 1.5);
+        updateUI();
+      }
+    }
+
+    // Producción automática cada segundo
+    setInterval(() => {
+      gems += gps;
+      updateUI();
+    }, 1000);
+
+    function updateUI() {
+      gemsEl.textContent = `${gems} 💎`;
+      gpsEl.textContent = `+${gps} gemas por segundo`;
+
+      document.getElementById('cost1').textContent = `${cost1} 💎`;
+      document.getElementById('cost2').textContent = `${cost2} 💎`;
+      document.getElementById('cost3').textContent = `${cost3} 💎`;
+
+      document.getElementById('up1').disabled = gems < cost1;
+      document.getElementById('up2').disabled = gems < cost2;
+      document.getElementById('up3').disabled = gems < cost3;
+    }
+
+    updateUI();
+  </script>
+</body>
+</html>
