@@ -1,1271 +1,420 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Money up gemas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Money Up 2 - Pixel Games</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<style>
-*{box-sizing:border-box}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(80,120,255,.18), transparent 28%),
+        radial-gradient(circle at 80% 70%, rgba(180,70,255,.14), transparent 30%),
+        linear-gradient(135deg, #030817, #07132d 50%, #02040d);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      overflow-x: hidden;
+    }
 
-html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    font-family:Arial,sans-serif;
-    background:#090604;
-}
+    h1 {
+      font-size: clamp(26px, 4vw, 44px);
+      letter-spacing: 3px;
+      text-shadow: 0 4px 0 #111, 0 0 18px rgba(100, 170, 255, .65);
+      margin-bottom: 10px;
+    }
 
-#game{
-    position:fixed;
-    inset:0;
-}
+    .hud {
+      display: flex;
+      gap: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      background: rgba(20, 35, 70, 0.88);
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
 
-#hud{
-    position:fixed;
-    top:15px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:20;
-    display:flex;
-    gap:8px;
-    padding:7px;
-    border-radius:18px;
-    background:rgba(0,0,0,.62);
-    border:1px solid rgba(255,255,255,.16);
-    backdrop-filter:blur(10px);
-}
+    canvas {
+      background: #050b18;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+      max-width: 100%;
+    }
 
-.stat{
-    min-width:82px;
-    padding:9px 13px;
-    border-radius:12px;
-    background:rgba(0,0,0,.7);
-    text-align:center;
-    font-size:19px;
-    font-weight:900;
-}
+    .controls-panel {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-.diamond{color:#61eaff}
-.shield{color:#74a9ff}
-.time{color:#fff}
+    .btn {
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #35a8ff, #1266e8);
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0844a0;
+      user-select: none;
+    }
 
-#special{
-    position:fixed;
-    top:78px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:20;
-    display:none;
-    padding:8px 15px;
-    border-radius:14px;
-    background:rgba(25,100,255,.82);
-    font-weight:900;
-    box-shadow:0 5px 20px rgba(0,0,0,.35);
-}
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #0844a0;
+    }
 
-#controles{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:20px;
-    z-index:20;
-    display:flex;
-    justify-content:space-between;
-    padding:0 20px;
-    pointer-events:none;
-}
+    .btn-jump {
+      background: linear-gradient(180deg, #00e676, #00a152);
+      box-shadow: 0 4px 0 #00701a;
+      font-size: 18px;
+      padding: 12px 30px;
+    }
 
-.lado{
-    display:flex;
-    gap:12px;
-    pointer-events:auto;
-}
-
-.control{
-    width:82px;
-    height:72px;
-    border:2px solid rgba(255,255,255,.25);
-    border-radius:21px;
-    background:rgba(0,0,0,.72);
-    color:#fff;
-    font-size:36px;
-    font-weight:900;
-    box-shadow:0 8px 25px rgba(0,0,0,.45);
-    touch-action:none;
-}
-
-.control:active{
-    transform:scale(.93);
-}
-
-#saltar{
-    width:100px;
-    font-size:20px;
-}
-
-#mensaje{
-    position:fixed;
-    left:50%;
-    bottom:108px;
-    transform:translateX(-50%);
-    z-index:25;
-    padding:10px 18px;
-    border-radius:15px;
-    background:rgba(0,0,0,.75);
-    font-weight:800;
-    opacity:0;
-    transition:.25s;
-    pointer-events:none;
-}
-
-#gameOver{
-    position:fixed;
-    inset:0;
-    z-index:50;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,.78);
-}
-
-.panel{
-    width:min(90vw,430px);
-    padding:30px;
-    border-radius:25px;
-    text-align:center;
-    background:linear-gradient(145deg,#17120e,#080706);
-    border:1px solid rgba(255,255,255,.18);
-    box-shadow:0 25px 80px rgba(0,0,0,.8);
-}
-
-.panel h1{
-    margin:0 0 10px;
-    font-size:43px;
-}
-
-.panel p{
-    color:#c9c9c9;
-    line-height:1.6;
-}
-
-.reiniciar{
-    margin-top:12px;
-    padding:14px 28px;
-    border:0;
-    border-radius:15px;
-    background:#f2a900;
-    color:#17100a;
-    font-size:18px;
-    font-weight:900;
-    cursor:pointer;
-}
-</style>
+    .btn-back {
+      background: linear-gradient(180deg, #ff4757, #c0392b);
+      box-shadow: 0 4px 0 #841d13;
+    }
+  </style>
 </head>
-
 <body>
 
-<div id="game"></div>
-
-<div id="hud">
-    <div class="stat diamond">💎 <span id="diamantes">0</span></div>
-    <div class="stat shield">🛡️ <span id="escudos">0</span></div>
-    <div class="stat time">⏱️ <span id="tiempo">0:00</span></div>
-</div>
-
-<div id="special">
-    ⛏️ PERSONAJE ESPECIAL DESBLOQUEADO
-</div>
-
-<div id="mensaje"></div>
-
-<div id="controles">
-
-    <div class="lado">
-        <button class="control" id="izquierda">←</button>
-        <button class="control" id="derecha">→</button>
-    </div>
-
-    <div class="lado">
-        <button class="control" id="saltar">SALTAR</button>
-    </div>
-
-</div>
-
-<div id="gameOver">
-    <div class="panel">
-        <h1>💥 HAS MUERTO</h1>
-        <p>
-            Las rocas han acabado con la partida.
-        </p>
-        <p>
-            Diamantes conseguidos:
-            <strong id="resultado"></strong>
-        </p>
-        <button class="reiniciar" onclick="location.reload()">
-            VOLVER A JUGAR
-        </button>
-    </div>
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.min.js"></script>
-
-<script>
-
-/* =========================================================
-   ESCENA
-========================================================= */
-
-const scene = new THREE.Scene();
-
-scene.background = new THREE.Color(0x8bb7d9);
-
-scene.fog = new THREE.Fog(
-    0x8bb7d9,
-    45,
-    190
-);
-
-
-/* =========================================================
-   CÁMARA
-========================================================= */
-
-const camera = new THREE.PerspectiveCamera(
-    58,
-    innerWidth/innerHeight,
-    .1,
-    400
-);
-
-camera.position.set(
-    0,
-    6.5,
-    10
-);
-
-
-/* =========================================================
-   RENDER
-========================================================= */
-
-const renderer = new THREE.WebGLRenderer({
-    antialias:true
-});
-
-renderer.setSize(
-    innerWidth,
-    innerHeight
-);
-
-renderer.setPixelRatio(
-    Math.min(devicePixelRatio,2)
-);
-
-renderer.shadowMap.enabled=true;
-
-renderer.shadowMap.type=
-THREE.PCFSoftShadowMap;
-
-document.getElementById("game")
-.appendChild(renderer.domElement);
-
-
-/* =========================================================
-   LUCES
-========================================================= */
-
-const cielo =
-new THREE.HemisphereLight(
-    0xdceeff,
-    0x5b3b25,
-    2.1
-);
-
-scene.add(cielo);
-
-const sol =
-new THREE.DirectionalLight(
-    0xfff0c2,
-    3
-);
-
-sol.position.set(
-    -35,
-    60,
-    35
-);
-
-sol.castShadow=true;
-
-sol.shadow.mapSize.width=2048;
-sol.shadow.mapSize.height=2048;
-
-scene.add(sol);
-
-
-/* =========================================================
-   TERRENO
-========================================================= */
-
-const suelo =
-new THREE.Mesh(
-    new THREE.PlaneGeometry(
-        500,
-        500
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x6f492d,
-        roughness:1
-    })
-);
-
-suelo.rotation.x=-Math.PI/2;
-suelo.position.y=-.45;
-suelo.receiveShadow=true;
-
-scene.add(suelo);
-
-
-/* =========================================================
-   CAMINO DE TIERRA
-========================================================= */
-
-const camino =
-new THREE.Mesh(
-    new THREE.PlaneGeometry(
-        15,
-        500
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x9a6338,
-        roughness:1
-    })
-);
-
-camino.rotation.x=-Math.PI/2;
-camino.position.y=-.43;
-camino.position.z=-150;
-
-camino.receiveShadow=true;
-
-scene.add(camino);
-
-
-/* =========================================================
-   ROcas DE LOS BORDES
-========================================================= */
-
-const piedrasBorde=[];
-
-function crearRoca(
-    x,
-    y,
-    z,
-    escala=1
-){
-
-    const grupo=
-    new THREE.Group();
-
-    const roca=
-    new THREE.Mesh(
-        new THREE.DodecahedronGeometry(
-            1,
-            1
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x57514a,
-            roughness:.95
-        })
-    );
-
-    roca.scale.set(
-        1.25*escala,
-        .8*escala,
-        1.05*escala
-    );
-
-    roca.rotation.set(
-        Math.random(),
-        Math.random(),
-        Math.random()
-    );
-
-    roca.castShadow=true;
-    roca.receiveShadow=true;
-
-    grupo.add(roca);
-
-    grupo.position.set(
-        x,
-        y,
-        z
-    );
-
-    scene.add(grupo);
-
-    return grupo;
-}
-
-
-for(
-    let z=-15;
-    z>-380;
-    z-=7
-){
-
-    if(Math.random()<.85){
-
-        piedrasBorde.push(
-            crearRoca(
-                -9-Math.random()*3,
-                .25,
-                z,
-                .6+Math.random()*1.3
-            )
-        );
-
+  <h1>💎 MONEY UP 2</h1>
+
+  <div class="hud">
+    <div>Gemas: <span id="score">0</span></div>
+    <div>Vidas: <span id="lives">❤️❤️❤️</span></div>
+    <div>Escudo: <span id="shield-status">❌</span></div>
+  </div>
+
+  <canvas id="gameCanvas" width="600" height="360"></canvas>
+
+  <div class="controls-panel">
+    <button class="btn" id="btn-left">◀ IZQ</button>
+    <button class="btn btn-jump" id="btn-jump">🚀 SALTAR</button>
+    <button class="btn" id="btn-right">DER ▶</button>
+  </div>
+
+  <div class="controls-panel">
+    <button class="btn" onclick="resetGame()">REINICIAR</button>
+    <a href="juegos.html" class="btn btn-back">VOLVER AL MENÚ</a>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const shieldEl = document.getElementById('shield-status');
+
+    let score = 0;
+    let lives = 3;
+    let hasShield = false;
+    let gameOver = false;
+
+    const gravity = 0.6;
+    const floorY = 290;
+
+    const player = {
+      x: 280,
+      y: floorY,
+      width: 32,
+      height: 32,
+      vx: 0,
+      vy: 0,
+      speed: 5,
+      jumpPower: -12,
+      isGrounded: true
+    };
+
+    let items = [];
+    let bgRocks = [];
+    const keys = { left: false, right: false };
+
+    // Generar rocas en 3D cayendo en el fondo cerca del corazón
+    function spawnBgRock() {
+      bgRocks.push({
+        x: canvas.width / 2 + (Math.random() * 160 - 80),
+        y: -20,
+        size: 8 + Math.random() * 10,
+        speed: 1 + Math.random() * 2,
+        rot: Math.random() * Math.PI
+      });
     }
+    setInterval(spawnBgRock, 400);
 
-    if(Math.random()<.85){
+    // Generar objetos del juego (Diamantes, Escudos, Rocas 3D)
+    function spawnItem() {
+      if (gameOver) return;
+      const rand = Math.random();
+      let type = 'diamond';
 
-        piedrasBorde.push(
-            crearRoca(
-                9+Math.random()*3,
-                .25,
-                z-Math.random()*3,
-                .6+Math.random()*1.3
-            )
-        );
+      if (rand < 0.6) {
+        type = 'diamond'; // 60% Diamante
+      } else if (rand < 0.85) {
+        type = 'rock';    // 25% Roca 3D
+      } else {
+        type = 'shield';  // 15% Escudo
+      }
 
+      items.push({
+        x: Math.random() * (canvas.width - 30),
+        y: -30,
+        size: 26,
+        speed: 2 + Math.random() * 2.5,
+        type: type,
+        rot: Math.random() * Math.PI
+      });
     }
-
-}
-
-
-/* =========================================================
-   PIEDRAS QUE MARCAN EL CAMINO
-========================================================= */
-
-const marcas=[];
-
-for(
-    let z=-10;
-    z>-390;
-    z-=5
-){
-
-    const lado =
-    Math.random()<.5
-    ? -1
-    : 1;
-
-    const marca=
-    crearRoca(
-        lado*6.6,
-        .15,
-        z,
-        .3+Math.random()*.25
-    );
-
-    marcas.push(marca);
-}
-
-
-/* =========================================================
-   VOLCÁN DEL FONDO
-========================================================= */
-
-const volcan=
-new THREE.Group();
-
-const montaña=
-new THREE.Mesh(
-    new THREE.ConeGeometry(
-        25,
-        34,
-        10
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x382820,
-        roughness:1
-    })
-);
-
-montaña.position.y=15;
-
-montaña.position.z=-220;
-
-montaña.castShadow=true;
-
-volcan.add(montaña);
-
-
-/* CRÁTER */
-
-const crater=
-new THREE.Mesh(
-    new THREE.TorusGeometry(
-        5.2,
-        1.4,
-        8,
-        18
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x251914,
-        roughness:1
-    })
-);
-
-crater.rotation.x=
-Math.PI/2;
-
-crater.position.set(
-    0,
-    31,
-    -220
-);
-
-volcan.add(crater);
-
-
-/* LAVA */
-
-const lava=
-new THREE.Mesh(
-    new THREE.CircleGeometry(
-        4.4,
-        20
-    ),
-    new THREE.MeshBasicMaterial({
-        color:0xff4b00
-    })
-);
-
-lava.rotation.x=
--Math.PI/2;
-
-lava.position.set(
-    0,
-    31.1,
-    -220
-);
-
-volcan.add(lava);
-
-scene.add(volcan);
-
-
-/* =========================================================
-   PERSONAJE
-========================================================= */
-
-const jugador=
-new THREE.Group();
-
-const cuerpo=
-new THREE.Mesh(
-    new THREE.BoxGeometry(
-        1.05,
-        1.35,
-        .72
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x2d78d4
-    })
-);
-
-cuerpo.position.y=1.35;
-cuerpo.castShadow=true;
-
-jugador.add(cuerpo);
-
-
-/* CABEZA */
-
-const cabeza=
-new THREE.Mesh(
-    new THREE.BoxGeometry(
-        .95,
-        .95,
-        .9
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0xf1b47d
-    })
-);
-
-cabeza.position.y=2.5;
-cabeza.castShadow=true;
-
-jugador.add(cabeza);
-
-
-/* PELO */
-
-const pelo=
-new THREE.Mesh(
-    new THREE.BoxGeometry(
-        1.02,
-        .32,
-        .94
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x24160f
-    })
-);
-
-pelo.position.y=2.96;
-
-jugador.add(pelo);
-
-
-/* OJOS */
-
-function ojo(x){
-
-    const o=
-    new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .13,
-            .13,
-            .05
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0x111111
-        })
-    );
-
-    o.position.set(
-        x,
-        2.55,
-        -.47
-    );
-
-    jugador.add(o);
-}
-
-ojo(-.2);
-ojo(.2);
-
-
-/* BRAZOS */
-
-const brazoIzq=
-new THREE.Mesh(
-    new THREE.BoxGeometry(
-        .32,
-        1.1,
-        .34
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x2d78d4
-    })
-);
-
-brazoIzq.position.set(
-    -.72,
-    1.45,
-    0
-);
-
-brazoIzq.castShadow=true;
-
-jugador.add(brazoIzq);
-
-
-const brazoDer=
-brazoIzq.clone();
-
-brazoDer.position.x=.72;
-
-jugador.add(brazoDer);
-
-
-/* PIERNAS */
-
-const piernaIzq=
-new THREE.Mesh(
-    new THREE.BoxGeometry(
-        .38,
-        1.05,
-        .42
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x27354a
-    })
-);
-
-piernaIzq.position.set(
-    -.27,
-    .45,
-    0
-);
-
-jugador.add(piernaIzq);
-
-
-const piernaDer=
-piernaIzq.clone();
-
-piernaDer.position.x=.27;
-
-jugador.add(piernaDer);
-
-
-/* PICO DEL PERSONAJE ESPECIAL */
-
-const pico=
-new THREE.Group();
-
-const mango=
-new THREE.Mesh(
-    new THREE.CylinderGeometry(
-        .06,
-        .06,
-        1.35,
-        10
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x7b4b24
-    })
-);
-
-mango.rotation.z=.75;
-mango.position.y=.35;
-
-pico.add(mango);
-
-const cabezaPico=
-new THREE.Mesh(
-    new THREE.BoxGeometry(
-        .95,
-        .13,
-        .13
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0xbfc7d1,
-        metalness:.7
-    })
-);
-
-cabezaPico.rotation.z=.75;
-
-cabezaPico.position.set(
-    .32,
-    .78,
-    0
-);
-
-pico.add(cabezaPico);
-
-pico.position.set(
-    .85,
-    1.3,
-    -.1
-);
-
-pico.visible=false;
-
-jugador.add(pico);
-
-
-/* PERSONAJE EN EL CAMINO */
-
-jugador.position.set(
-    0,
-    0,
-    5
-);
-
-jugador.scale.setScalar(.8);
-
-scene.add(jugador);
-
-
-/* =========================================================
-   DIAMANTES
-========================================================= */
-
-const diamantes=[];
-
-function crearDiamante(
-    x,
-    z
-){
-
-    const d=
-    new THREE.Mesh(
-        new THREE.OctahedronGeometry(
-            .48,
-            0
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x22eaff,
-            metalness:.65,
-            roughness:.1,
-            emissive:0x006c8c,
-            emissiveIntensity:.7
-        })
-    );
-
-    d.position.set(
-        x,
-        1.1,
-        z
-    );
-
-    d.castShadow=true;
-
-    scene.add(d);
-
-    diamantes.push(d);
-}
-
-
-/* MUCHOS DIAMANTES */
-
-for(
-    let z=-18;
-    z>-380;
-    z-=8
-){
-
-    crearDiamante(
-        [-3.8,0,3.8][
-            Math.floor(Math.random()*3)
-        ],
-        z
-    );
-
-    if(Math.random()<.35){
-
-        crearDiamante(
-            [-3.8,0,3.8][
-                Math.floor(Math.random()*3)
-            ],
-            z-2
-        );
-
-    }
-}
-
-
-/* =========================================================
-   ESCUDOS
-========================================================= */
-
-const escudos=[];
-
-function crearEscudo(
-    x,
-    z
-){
-
-    const grupo=
-    new THREE.Group();
-
-    const escudo=
-    new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .65,
-            .65,
-            .12,
-            8
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x277cff,
-            metalness:.5,
-            roughness:.2,
-            emissive:0x073a9a,
-            emissiveIntensity:.5
-        })
-    );
-
-    escudo.rotation.x=
-    Math.PI/2;
-
-    escudo.position.y=1.15;
-
-    grupo.add(escudo);
-
-    const centro=
-    new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .2,
-            .2,
-            .14,
-            8
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0xcce5ff,
-            metalness:.7
-        })
-    );
-
-    centro.rotation.x=
-    Math.PI/2;
-
-    centro.position.set(
-        0,
-        1.15,
-        -.08
-    );
-
-    grupo.add(centro);
-
-    grupo.position.set(
-        x,
-        0,
-        z
-    );
-
-    scene.add(grupo);
-
-    escudos.push(grupo);
-}
-
-
-/* Solo aparecen algunos */
-
-for(
-    let z=-70;
-    z>-360;
-    z-=55
-){
-
-    crearEscudo(
-        [-3.8,0,3.8][
-            Math.floor(Math.random()*3)
-        ],
-        z
-    );
-
-}
-
-
-/* =========================================================
-   ROCAS PELIGROSAS
-========================================================= */
-
-const rocas=[];
-
-function crearRocaPeligrosa(
-    x,
-    z
-){
-
-    const r=
-    crearRoca(
-        x,
-        .3,
-        z,
-        .9+Math.random()*.35
-    );
-
-    r.userData.velocidadX=0;
-    r.userData.mueve=false;
-    r.userData.volcanica=false;
-
-    rocas.push(r);
-
-    return r;
-}
-
-
-/* MUCHAS ROCAS */
-
-for(
-    let z=-28;
-    z>-380;
-    z-=9
-){
-
-    const cantidad=
-    Math.random()<.55
-    ? 1
-    : 2;
-
-    for(
-        let i=0;
-        i<cantidad;
-        i++
-    ){
-
-        crearRocaPeligrosa(
-            [-3.8,0,3.8][
-                Math.floor(Math.random()*3)
-            ],
-            z-i*2
-        );
-
-    }
-}
-
-
-/* =========================================================
-   BOLAS DE LAVA
-========================================================= */
-
-const bolasLava=[];
-
-function crearBolaLava(
-    x,
-    y,
-    z
-){
-
-    const bola=
-    new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .18,
-            10,
-            10
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0xff4a00
-        })
-    );
-
-    bola.position.set(
-        x,
-        y,
-        z
-    );
-
-    bola.userData.velocidad=
-    .08+Math.random()*.04;
-
-    scene.add(bola);
-
-    bolasLava.push(bola);
-}
-
-
-/* =========================================================
-   VARIABLES
-========================================================= */
-
-let diamantesConseguidos=0;
-
-let tieneEscudo=false;
-
-let escudoUsado=false;
-
-let especialDesbloqueado=false;
-
-let partidaTerminada=false;
-
-let izquierda=false;
-
-let derecha=false;
-
-let saltando=false;
-
-let velocidad=0.28;
-
-let tiempoInicio=performance.now();
-
-let tiempoAnterior=performance.now();
-
-let alturaSalto=0;
-
-let velocidadSalto=0;
-
-
-/* =========================================================
-   MENSAJES
-========================================================= */
-
-let mensajeTimeout;
-
-function mostrarMensaje(texto){
-
-    const m=
-    document.getElementById("mensaje");
-
-    m.textContent=texto;
-    m.style.opacity=1;
-
-    clearTimeout(mensajeTimeout);
-
-    mensajeTimeout=
-    setTimeout(()=>{
-        m.style.opacity=0;
-    },1800);
-}
-
-
-/* =========================================================
-   CONTROLES TÁCTILES
-========================================================= */
-
-function mantenerBoton(
-    boton,
-    activar,
-    desactivar
-){
-
-    boton.addEventListener(
-        "pointerdown",
-        e=>{
-            e.preventDefault();
-            activar();
-        }
-    );
-
-    boton.addEventListener(
-        "pointerup",
-        desactivar
-    );
-
-    boton.addEventListener(
-        "pointercancel",
-        desactivar
-    );
-
-    boton.addEventListener(
-        "pointerleave",
-        desactivar
-    );
-}
-
-
-mantenerBoton(
-    document.getElementById("izquierda"),
-    ()=>izquierda=true,
-    ()=>izquierda=false
-);
-
-mantenerBoton(
-    document.getElementById("derecha"),
-    ()=>derecha=true,
-    ()=>derecha=false
-);
-
-
-document.getElementById("saltar")
-.addEventListener(
-    "pointerdown",
-    e=>{
-        e.preventDefault();
-        saltar();
-    }
-);
-
-
-/* =========================================================
-   TECLADO
-========================================================= */
-
-addEventListener(
-    "keydown",
-    e=>{
-
-        if(
-            e.key==="ArrowLeft"
-        ){
-
-            izquierda=true;
-            e.preventDefault();
-
+    setInterval(spawnItem, 900);
+
+    function update() {
+      if (gameOver) return;
+
+      // Movimiento jugador
+      if (keys.left && player.x > 0) player.x -= player.speed;
+      if (keys.right && player.x + player.width < canvas.width) player.x += player.speed;
+
+      // Gravedad y Salto
+      player.vy += gravity;
+      player.y += player.vy;
+
+      if (player.y >= floorY) {
+        player.y = floorY;
+        player.vy = 0;
+        player.isGrounded = true;
+      }
+
+      // Caída de rocas de fondo
+      for (let i = bgRocks.length - 1; i >= 0; i--) {
+        let r = bgRocks[i];
+        r.y += r.speed;
+        r.rot += 0.02;
+        if (r.y > canvas.height) bgRocks.splice(i, 1);
+      }
+
+      // Caída de objetos del juego
+      for (let i = items.length - 1; i >= 0; i--) {
+        let it = items[i];
+        it.y += it.speed;
+        it.rot += 0.03;
+
+        // Colisión con el jugador
+        if (
+          player.x < it.x + it.size &&
+          player.x + player.width > it.x &&
+          player.y < it.y + it.size &&
+          player.y + player.height > it.y
+        ) {
+          if (it.type === 'diamond') {
+            score += 15;
+          } else if (it.type === 'shield') {
+            hasShield = true;
+          } else if (it.type === 'rock') {
+            if (hasShield) {
+              hasShield = false; // El escudo destruye el impacto
+            } else {
+              lives--;
+              if (lives <= 0) gameOver = true;
+            }
+          }
+          items.splice(i, 1);
+          continue;
         }
 
-        if(
-            e.key==="ArrowRight"
-        ){
+        if (it.y > canvas.height) items.splice(i, 1);
+      }
 
-            derecha=true;
-            e.preventDefault();
+      // Actualizar interfaz
+      scoreEl.textContent = score;
+      livesEl.textContent = '❤️'.repeat(Math.max(0, lives));
+      shieldEl.textContent = hasShield ? '🛡️ ACTIVO' : '❌';
+    }
 
+    // Dibujar una roca 3D con sombras/facetas
+    function draw3DRock(x, y, size, angle) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+
+      // Sombra
+      ctx.fillStyle = '#2d3748';
+      ctx.beginPath();
+      ctx.arc(2, 2, size / 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cara base
+      ctx.fillStyle = '#718096';
+      ctx.beginPath();
+      ctx.moveTo(-size/2, -size/4);
+      ctx.lineTo(0, -size/2);
+      ctx.lineTo(size/2, -size/3);
+      ctx.lineTo(size/2, size/3);
+      ctx.lineTo(0, size/2);
+      ctx.lineTo(-size/2, size/3);
+      ctx.closePath();
+      ctx.fill();
+
+      // Faceta brillante 3D
+      ctx.fillStyle = '#a0aec0';
+      ctx.beginPath();
+      ctx.moveTo(-size/2, -size/4);
+      ctx.lineTo(0, -size/2);
+      ctx.lineTo(0, 0);
+      ctx.lineTo(-size/2, size/3);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // --- FONDO Y CORAZÓN CENTRAL ---
+      ctx.fillStyle = 'rgba(255, 0, 100, 0.15)';
+      ctx.font = '70px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('❤️', canvas.width / 2, 160);
+
+      // Dibujar rocas en 3D cayendo alrededor del corazón
+      bgRocks.forEach(r => {
+        draw3DRock(r.x, r.y, r.size, r.rot);
+      });
+
+      // --- CARRETERA MANUAL ESTILO EMPEDRADO ---
+      ctx.fillStyle = '#3a2e2b'; // Tono tierra/artesanal
+      ctx.fillRect(0, floorY + 32, canvas.width, canvas.height - floorY);
+
+      // Dibujar adoquines manuales
+      ctx.strokeStyle = '#5a4843';
+      ctx.lineWidth = 2;
+      for (let x = 0; x < canvas.width; x += 30) {
+        for (let y = floorY + 32; y < canvas.height; y += 15) {
+          let offsetX = (Math.floor(y / 15) % 2 === 0) ? 0 : 15;
+          ctx.strokeRect(x + offsetX, y, 28, 13);
         }
+      }
 
-        if(
-            e.key==="ArrowUp" ||
-            e.key===" "
-        ){
+      // --- JUGADOR ---
+      ctx.fillStyle = '#35a8ff';
+      ctx.fillRect(player.x, player.y, player.width, player.height);
 
-            saltar();
-            e.preventDefault();
+      // Aura de Escudo
+      if (hasShield) {
+        ctx.strokeStyle = '#00e676';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(player.x + 16, player.y + 16, 24, 0, Math.PI * 2);
+        ctx.stroke();
+      }
 
+      // --- OBJETOS ---
+      items.forEach(it => {
+        if (it.type === 'diamond') {
+          ctx.fillStyle = '#00f0ff';
+          ctx.font = '24px Arial';
+          ctx.fillText('💎', it.x, it.y + 20);
+        } else if (it.type === 'shield') {
+          ctx.fillStyle = '#00e676';
+          ctx.font = '24px Arial';
+          ctx.fillText('🛡️', it.x, it.y + 20);
+        } else if (it.type === 'rock') {
+          draw3DRock(it.x + 12, it.y + 12, it.size, it.rot);
         }
+      });
 
-    }
-);
+      // --- GAME OVER ---
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        ctx.fillStyle = '#ff4757';
+        ctx.font = 'bold 32px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('¡GAME OVER!', canvas.width / 2, canvas.height / 2 - 10);
 
-addEventListener(
-    "keyup",
-    e=>{
-
-        if(e.key==="ArrowLeft")
-            izquierda=false;
-
-        if(e.key==="ArrowRight")
-            derecha=false;
-
-    }
-);
-
-
-/* =========================================================
-   SALTO
-========================================================= */
-
-function saltar(){
-
-    if(
-        !saltando &&
-        !partidaTerminada
-    ){
-
-        saltando=true;
-
-        velocidadSalto=.22;
-
+        ctx.fillStyle = '#fff';
+        ctx.font = '18px Arial';
+        ctx.fillText(`Gemas conseguidas: ${score} 💎`, canvas.width / 2, canvas.height / 2 + 25);
+      }
     }
 
-}
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
 
+    function jump() {
+      if (player.isGrounded && !gameOver) {
+        player.vy = player.jumpPower;
+        player.isGrounded = false;
+      }
+    }
 
-/* =========================================================
-   COLISIÓN
-========================================================= */
+    function resetGame() {
+      score = 0;
+      lives = 3;
+      hasShield = false;
+      gameOver = false;
+      items = [];
+      bgRocks = [];
+      player.x = 280;
+      player.y = floorY;
+      player.vy = 0;
+    }
 
-function colision(
-    a,
-    b,
-    distanciaX=1,
-    distanciaZ=1.5
-){
+    // Controles Teclado
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
+      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') jump();
+    });
 
-    return(
-        Math.abs(
-            a.position.x-
-            b.position.x
-        )<distanciaX
-        &&
-        Math.abs(
-            a.position.z-
-            b.position.z
-        )<distanciaZ
-    );
+    window.addEventListener('keyup', e => {
+      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
+      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
+    });
 
-}
+    // Controles Táctiles
+    const btnLeft = document.getElementById('btn-left');
+    const btnRight = document.getElementById('btn-right');
+    const btnJump = document.getElementById('btn-jump');
 
+    btnLeft.addEventListener('mousedown', () => keys.left = true);
+    btnLeft.addEventListener('mouseup', () => keys.left = false);
+    btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); keys.left = true; });
+    btnLeft.addEventListener('touchend', () => keys.left = false);
 
-/* =========================================================
-   MORIR
-========================================================= */
+    btnRight.addEventListener('mousedown', () => keys.right = true);
+    btnRight.addEventListener('mouseup', () => keys.right = false);
+    btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); keys.right = true; });
+    btnRight.addEventListener('touchend', () => keys.right = false);
 
-function morir(){
+    btnJump.addEventListener('click', jump);
+    btnJump.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
 
-    if(partidaTerminada)
-        return;
-
-    partidaTerminada=true;
-
-   
+    loop();
+  </script>
+</body>
+</html>
