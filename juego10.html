@@ -1,336 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pizarra Táctica - Pixel Games</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      color: white;
-      background: radial-gradient(circle at 20% 20%, rgba(80,120,255,.18), transparent 28%),
-                  linear-gradient(135deg, #030817, #07132d 50%, #02040d);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
-      overflow-x: hidden;
-      user-select: none;
-    }
-
-    h1 {
-      font-size: clamp(20px, 3.5vw, 32px);
-      letter-spacing: 2px;
-      text-shadow: 0 4px 0 #111, 0 0 15px rgba(100, 170, 255, .65);
-      margin-bottom: 8px;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      background: rgba(20, 35, 70, 0.9);
-      padding: 10px 15px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      margin-bottom: 10px;
-      z-index: 10;
-    }
-
-    .btn, select {
-      padding: 8px 14px;
-      border-radius: 8px;
-      background: linear-gradient(180deg, #35a8ff, #1266e8);
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 3px 0 #0844a0;
-      font-size: 14px;
-    }
-
-    .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #0844a0; }
-    .btn-draw { background: linear-gradient(180deg, #ff9f1a, #ff3838); box-shadow: 0 3px 0 #b32b00; }
-    .btn-clear { background: linear-gradient(180deg, #ff4757, #c0392b); box-shadow: 0 3px 0 #841d13; }
-    .btn-back { background: linear-gradient(180deg, #a0aec0, #4a5568); box-shadow: 0 3px 0 #2d3748; text-decoration: none; }
-
-    #board-container {
-      position: relative;
-      width: min(900px, 95vw);
-      height: min(580px, 62vh);
-      background: #1e7e34;
-      border: 4px solid #fff;
-      border-radius: 15px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-      overflow: hidden;
-      cursor: default;
-    }
-
-    /* Dibujo del Campo de Fútbol */
-    .pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.7); pointer-events: none; }
-    .center-line { top: 0; bottom: 0; left: 50%; width: 0; }
-    .center-circle { top: 50%; left: 50%; width: 100px; height: 100px; border-radius: 50%; transform: translate(-50%, -50%); }
-    .penalty-area-left { top: 20%; left: 0; width: 16%; height: 60%; }
-    .penalty-area-right { top: 20%; right: 0; width: 16%; height: 60%; }
-
-    canvas { position: absolute; inset: 0; pointer-events: none; }
-
-    /* Fichas Magnéticas */
-    .token {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 13px;
-      border: 2px solid white;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
-      cursor: grab;
-      touch-action: none;
-      z-index: 5;
-    }
-
-    .token:active { cursor: grabbing; transform: scale(1.15); z-index: 8; }
-    .team-blue { background: radial-gradient(circle at 30% 30%, #35a8ff, #004085); color: white; }
-    .team-red { background: radial-gradient(circle at 30% 30%, #ff4757, #721c24); color: white; }
-    
-    .ball {
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      background: #fff;
-      border-radius: 50%;
-      border: 2px solid #000;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-      cursor: grab;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      z-index: 6;
-      touch-action: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizarra magnética</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#20242a;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,sans-serif;overflow:hidden}
+.board{position:relative;width:min(94vw,1200px);height:auto;aspect-ratio:3/2;max-height:78vh;background:#168447;border:16px solid #8b5a2b;border-radius:12px;box-shadow:0 10px 30px #0008;touch-action:none}
+.field{position:absolute;inset:3%;border:4px solid white}
+.midline{position:absolute;left:50%;top:0;bottom:0;border-left:4px solid white}
+.circle{position:absolute;left:39%;top:36%;width:22%;aspect-ratio:1;border:4px solid white;border-radius:50%}
+.spot{position:absolute;left:50%;top:50%;width:12px;height:12px;background:white;border-radius:50%;transform:translate(-50%,-50%)}
+.area{position:absolute;top:32%;height:36%;width:14%;border:4px solid white}
+.area.left{left:0;border-left:0}.area.right{right:0;border-right:0}
+.small-area{position:absolute;top:41%;height:18%;width:5%;border:4px solid white}
+.small-area.left{left:0;border-left:0}.small-area.right{right:0;border-right:0}
+.penalty{position:absolute;width:12px;height:12px;background:white;border-radius:50%;top:50%;transform:translateY(-50%)}
+.penalty.left{left:9%}.penalty.right{right:9%}
+.goal{position:absolute;top:40%;height:20%;width:4%;border:5px solid white;background:#fff2}
+.goal.left{left:-4%;border-right:0}.goal.right{right:-4%;border-left:0}
+.player{position:absolute;width:clamp(20px,2.3vw,31px);height:clamp(20px,2.3vw,31px);border-radius:50%;border:2px solid white;transform:translate(-50%,-50%);box-shadow:0 2px 4px #0008;display:flex;align-items:center;justify-content:center;font-size:clamp(10px,1.1vw,15px);font-weight:bold;color:white;cursor:grab;user-select:none;touch-action:none}
+.red{background:#e53935}.blue{background:#1976d2}
+.yellow{background:#ffd600;border-color:#333;color:#222}
+#ball{background:white;border-color:#222;color:#222;font-size:16px;cursor:grab;width:clamp(24px,2.8vw,36px);height:clamp(24px,2.8vw,36px)}
+.outside{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:9px}
+.outside.top{top:-38px}.outside.bottom{bottom:-38px}
+.controls{display:flex;gap:16px;margin-top:16px}
+button{padding:12px 28px;border:0;border-radius:9px;font-weight:bold;font-size:18px;cursor:pointer}
+@media(max-width:600px){.board{border-width:9px;height:70vh}.controls{gap:10px}button{padding:10px 20px;font-size:16px}}
+</style>
 </head>
 <body>
-
-  <h1>⚽ PIZARRA MAGNÉTICA 11vs11</h1>
-
-  <div class="toolbar">
-    <label>Formación Azul: 
-      <select id="form-blue" onchange="applyFormations()">
-        <option value="4-3-3">4-3-3</option>
-        <option value="4-4-2">4-4-2</option>
-        <option value="3-5-2">3-5-2</option>
-      </select>
-    </label>
-
-    <label>Formación Roja: 
-      <select id="form-red" onchange="applyFormations()">
-        <option value="4-3-3">4-3-3</option>
-        <option value="4-4-2">4-4-2</option>
-        <option value="5-3-2">5-3-2</option>
-      </select>
-    </label>
-
-    <button class="btn btn-draw" id="btn-draw-mode" onclick="toggleDrawMode()">✏️ DIBUJAR: OFF</button>
-    <button class="btn btn-clear" onclick="clearCanvas()">🧹 BORRAR LÍNEAS</button>
-    <button class="btn" onclick="resetBoard()">🔄 REINICIAR</button>
-    <a href="juegos.html" class="btn btn-back">VOLVER</a>
+<div class="board" id="board">
+  <div class="field">
+    <div class="midline"></div>
+    <div class="circle"><div class="spot"></div></div>
+    <div class="area left"></div><div class="area right"></div>
+    <div class="small-area left"></div><div class="small-area right"></div>
+    <div class="penalty left"></div><div class="penalty right"></div>
+    <div class="goal left"></div><div class="goal right"></div>
   </div>
+  <div class="outside top" id="yellowTop"></div>
+  <div class="outside bottom" id="yellowBottom"></div>
+  <div class="player" id="ball" style="left:50%;top:50%">⚽</div>
+</div>
+<div class="controls"><button id="reset">Reiniciar</button><button id="back">Volver</button></div>
 
-  <div id="board-container">
-    <div class="pitch-line center-line"></div>
-    <div class="pitch-line center-circle"></div>
-    <div class="pitch-line penalty-area-left"></div>
-    <div class="pitch-line penalty-area-right"></div>
+<script>
+const board=document.getElementById('board');
+const initial=[];
+const red=[
+[8,50,1],[20,18,2],[20,38,3],[20,62,4],[20,82,5],
+[38,12,6],[38,32,8],[38,50,10],[38,68,7],[38,88,11],[50,50,9]];
+const blue=[
+[92,50,1],[80,18,2],[80,38,3],[80,62,4],[80,82,5],
+[62,12,6],[62,32,8],[62,50,10],[62,68,7],[62,88,11],[50,50,9]];
+function addTeam(items,cls){
+  items.forEach(([x,y,n])=>{
+    const p=document.createElement('div');
+    p.className='player '+cls;
+    p.textContent=n;
+    p.style.left=x+'%';p.style.top=y+'%';
+    p.dataset.x=x;p.dataset.y=y;
+    board.appendChild(p);
+    initial.push({el:p,x,y});
+    drag(p);
+  });
+}
+addTeam(red,'red');addTeam(blue,'blue');
 
-    <canvas id="drawCanvas"></canvas>
-  </div>
-
-  <script>
-    const board = document.getElementById('board-container');
-    const canvas = document.getElementById('drawCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let isDrawingMode = false;
-    let isDrawing = false;
-    let tokens = [];
-    let ball;
-
-    function resizeCanvas() {
-      canvas.width = board.clientWidth;
-      canvas.height = board.clientHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-
-    // Definición de tácticas en porcentajes (x, y)
-    const tactics = {
-      "4-3-3": [
-        [5, 50], [20, 20], [20, 40], [20, 60], [20, 80],
-        [38, 30], [38, 50], [38, 70], [48, 20], [48, 50], [48, 80]
-      ],
-      "4-4-2": [
-        [5, 50], [20, 20], [20, 40], [20, 60], [20, 80],
-        [38, 18], [38, 40], [38, 60], [38, 82], [48, 38], [48, 62]
-      ],
-      "3-5-2": [
-        [5, 50], [20, 25], [20, 50], [20, 75],
-        [36, 15], [36, 32], [36, 50], [36, 68], [36, 85], [48, 38], [48, 62]
-      ],
-      "5-3-2": [
-        [5, 50], [18, 15], [18, 32], [18, 50], [18, 68], [18, 85],
-        [36, 30], [36, 50], [36, 70], [48, 38], [48, 62]
-      ]
-    };
-
-    function createTokens() {
-      board.querySelectorAll('.token, .ball').forEach(el => el.remove());
-      tokens = [];
-
-      // Crear 11 Azules
-      for (let i = 1; i <= 11; i++) {
-        const t = document.createElement('div');
-        t.className = 'token team-blue';
-        t.textContent = i;
-        board.appendChild(t);
-        makeDraggable(t);
-        tokens.push({ el: t, team: 'blue', num: i });
-      }
-
-      // Crear 11 Rojos
-      for (let i = 1; i <= 11; i++) {
-        const t = document.createElement('div');
-        t.className = 'token team-red';
-        t.textContent = i;
-        board.appendChild(t);
-        makeDraggable(t);
-        tokens.push({ el: t, team: 'red', num: i });
-      }
-
-      // Balón
-      ball = document.createElement('div');
-      ball.className = 'ball';
-      ball.textContent = '⚽';
-      board.appendChild(ball);
-      makeDraggable(ball);
-
-      applyFormations();
-    }
-
-    function applyFormations() {
-      const formBlue = document.getElementById('form-blue').value;
-      const formRed = document.getElementById('form-red').value;
-
-      const bw = board.clientWidth;
-      const bh = board.clientHeight;
-
-      // Colocar Equipo Azul (Izquierda)
-      tactics[formBlue].forEach((pos, idx) => {
-        const t = tokens.find(item => item.team === 'blue' && item.num === idx + 1);
-        if (t) {
-          t.el.style.left = `${(pos[0] / 100) * bw - 16}px`;
-          t.el.style.top = `${(pos[1] / 100) * bh - 16}px`;
-        }
-      });
-
-      // Colocar Equipo Rojo (Derecha - Invertido)
-      tactics[formRed].forEach((pos, idx) => {
-        const t = tokens.find(item => item.team === 'red' && item.num === idx + 1);
-        if (t) {
-          t.el.style.left = `${bw - ((pos[0] / 100) * bw) - 16}px`;
-          t.el.style.top = `${(pos[1] / 100) * bh - 16}px`;
-        }
-      });
-
-      // Balón al Centro
-      ball.style.left = `${bw / 2 - 11}px`;
-      ball.style.top = `${bh / 2 - 11}px`;
-    }
-
-    // Arrastre Magnético (Fichas y Balón)
-    function makeDraggable(element) {
-      let active = false;
-      let currentX, currentY, initialX, initialY;
-
-      element.addEventListener('pointerdown', e => {
-        if (isDrawingMode) return;
-        active = true;
-        initialX = e.clientX - element.offsetLeft;
-        initialY = e.clientY - element.offsetTop;
-        element.setPointerCapture(e.pointerId);
-      });
-
-      element.addEventListener('pointermove', e => {
-        if (!active) return;
-        e.preventDefault();
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-
-        // Límites del campo
-        const maxX = board.clientWidth - element.clientWidth;
-        const maxY = board.clientHeight - element.clientHeight;
-
-        element.style.left = `${Math.max(0, Math.min(currentX, maxX))}px`;
-        element.style.top = `${Math.max(0, Math.min(currentY, maxY))}px`;
-      });
-
-      element.addEventListener('pointerup', e => {
-        active = false;
-        try { element.releasePointerCapture(e.pointerId); } catch(err){}
-      });
-    }
-
-    // Sistema de Dibujo sobre la Pizarra
-    function toggleDrawMode() {
-      isDrawingMode = !isDrawingMode;
-      const btn = document.getElementById('btn-draw-mode');
-      btn.textContent = isDrawingMode ? '✏️ DIBUJAR: ON' : '✏️ DIBUJAR: OFF';
-      btn.style.background = isDrawingMode ? 'linear-gradient(180deg, #00e676, #00a152)' : 'linear-gradient(180deg, #ff9f1a, #ff3838)';
-      board.style.cursor = isDrawingMode ? 'crosshair' : 'default';
-    }
-
-    board.addEventListener('pointerdown', e => {
-      if (!isDrawingMode || e.target !== board && e.target !== canvas) return;
-      isDrawing = true;
-      const rect = board.getBoundingClientRect();
-      ctx.beginPath();
-      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-    });
-
-    board.addEventListener('pointermove', e => {
-      if (!isDrawing || !isDrawingMode) return;
-      const rect = board.getBoundingClientRect();
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-      ctx.strokeStyle = '#ffd700';
-      ctx.lineWidth = 3;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-    });
-
-    board.addEventListener('pointerup', () => isDrawing = false);
-
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function resetBoard() {
-      clearCanvas();
-      applyFormations();
-    }
-
-    // Inicializar
-    setTimeout(() => {
-      resizeCanvas();
-      createTokens();
-    }, 100);
-  </script>
+for(let i=0;i<5;i++){
+  for(const id of ['yellowTop','yellowBottom']){
+    const p=document.createElement('div');
+    p.className='player yellow';
+    p.textContent=i+1;
+    p.style.position='relative';p.style.left='auto';p.style.top='auto';
+    document.getElementById(id).appendChild(p);
+  }
+}
+initial.push({el:ball,x:50,y:50});
+function drag(el){
+  let moving=false;
+  function move(e){
+    const r=board.getBoundingClientRect();
+    let x=(e.clientX-r.left)/r.width*100;
+    let y=(e.clientY-r.top)/r.height*100;
+    x=Math.max(2,Math.min(98,x));y=Math.max(2,Math.min(98,y));
+    el.style.left=x+'%';el.style.top=y+'%';
+  }
+  el.addEventListener('pointerdown',e=>{moving=true;el.setPointerCapture(e.pointerId);move(e)});
+  el.addEventListener('pointermove',e=>{if(moving)move(e)});
+  el.addEventListener('pointerup',()=>moving=false);
+  el.addEventListener('pointercancel',()=>moving=false);
+}
+drag(ball);
+document.getElementById('reset').onclick=()=>{
+  initial.forEach(item=>{item.el.style.left=item.x+'%';item.el.style.top=item.y+'%'});
+};
+document.getElementById('back').onclick=()=>{location.href='juegos.html'};
+</script>
 </body>
 </html>
