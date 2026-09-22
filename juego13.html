@@ -6,6 +6,7 @@
   <title>Pixel Chat - Pixel Games</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
       background: #050814;
       color: white;
@@ -23,122 +24,93 @@
       border: 1px solid rgba(0, 229, 255, 0.3);
       border-radius: 16px;
       width: 100%;
-      max-width: 450px;
+      max-width: 500px;
       height: 550px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
-      overflow: hidden;
-    }
-
-    .chat-header {
-      background: #0f172a;
-      padding: 15px;
-      border-bottom: 1px solid rgba(0, 229, 255, 0.2);
-      text-align: center;
-    }
-
-    .chat-header h1 {
-      font-size: 22px;
-      color: #00e5ff;
-      text-shadow: 0 0 10px #00e5ff;
-    }
-
-    .room-tag {
-      font-size: 12px;
-      color: #aaa;
-      margin-top: 4px;
-    }
-
-    .login-screen {
-      padding: 30px 20px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 15px;
-      justify-content: center;
-      height: 100%;
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
     }
 
-    input {
-      background: #080b12;
-      border: 1px solid rgba(0, 229, 255, 0.4);
-      color: #fff;
-      padding: 12px;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 16px;
-      outline: none;
+    h1 {
+      font-size: 24px;
+      color: #00e5ff;
+      text-shadow: 0 0 10px #00e5ff;
       text-align: center;
     }
 
-    input:focus { border-color: #00e5ff; box-shadow: 0 0 8px #00e5ff; }
-
-    .btn {
-      padding: 12px;
-      background: linear-gradient(180deg, #00e5ff, #0088cc);
-      color: #000;
-      font-weight: bold;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: filter 0.2s, transform 0.1s;
+    .user-setup {
+      display: flex;
+      gap: 10px;
     }
 
-    .btn:hover { filter: brightness(1.2); transform: scale(1.02); }
-
-    .chat-body {
+    #chat-box {
       flex: 1;
-      padding: 15px;
+      background: #080b12;
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .message {
-      max-width: 80%;
-      padding: 8px 12px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.4;
-      word-break: break-word;
-    }
-
-    .msg-mine {
-      align-self: flex-end;
-      background: #0088cc;
-      color: #fff;
-      border-bottom-right-radius: 2px;
-    }
-
-    .msg-other {
-      align-self: flex-start;
+    .msg-item {
       background: #1e293b;
-      color: #e2e8f0;
-      border-bottom-left-radius: 2px;
-      border: 1px solid rgba(255,255,255,0.1);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      max-width: 85%;
+      word-wrap: break-word;
     }
 
-    .msg-author {
-      font-size: 10px;
+    .msg-header {
       color: #00e5ff;
-      margin-bottom: 2px;
       font-weight: bold;
+      font-size: 11px;
+      margin-bottom: 3px;
     }
 
-    .chat-footer {
+    input {
+      background: #080b12;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      color: #fff;
       padding: 10px;
-      background: #0f172a;
-      border-top: 1px solid rgba(0, 229, 255, 0.2);
-      display: flex;
-      gap: 8px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
     }
 
-    .chat-footer input {
-      flex: 1;
-      text-align: left;
+    input:focus {
+      border-color: #00e5ff;
+      box-shadow: 0 0 8px #00e5ff;
     }
+
+    #username { width: 100%; }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
+    #message { flex: 1; }
+
+    .btn {
+      padding: 10px 16px;
+      background: linear-gradient(180deg, #00e5ff, #0088cc);
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+
+    .btn:hover { filter: brightness(1.2); }
 
     .btn-back {
       margin-top: 15px;
@@ -152,38 +124,31 @@
     }
   </style>
 
-  <!-- Firebase JavaScript SDK -->
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
   <div class="chat-card">
-    <div class="chat-header">
-      <h1>💬 PIXEL CHAT</h1>
-      <div class="room-tag" id="room-display">Ingresa tus datos para conectar</div>
+    <h1>PIXEL CHAT 💬</h1>
+
+    <div class="user-setup">
+      <input type="text" id="username" placeholder="Tu Nombre / Apodo" maxlength="15">
     </div>
 
-    <!-- Pantalla de Login -->
-    <div class="login-screen" id="login-view">
-      <input type="text" id="username" placeholder="Tu Nombre / Apodo" maxlength="12">
-      <input type="number" id="room-code" placeholder="Código de Sala (ej: 1325)">
-      <button class="btn" onclick="joinRoom()">ENTRAR AL CHAT</button>
-    </div>
+    <div id="chat-box"></div>
 
-    <!-- Pantalla de Chat -->
-    <div class="chat-body" id="chat-body" style="display: none;"></div>
-
-    <div class="chat-footer" id="chat-footer" style="display: none;">
-      <input type="text" id="msg-input" placeholder="Escribe un mensaje..." onkeypress="handleKey(event)">
-      <button class="btn" onclick="sendMessage()">➡️</button>
+    <div class="input-area">
+      <input type="text" id="message" placeholder="Escribe un mensaje..." maxlength="100" onkeypress="if(event.key==='Enter') sendMessage()">
+      <button class="btn" onclick="sendMessage()">ENVIAR</button>
     </div>
   </div>
 
   <a href="juegos.html" class="btn-back">VOLVER AL MENÚ</a>
 
   <script>
-    // Configuración de servidor público para pruebas
+    // Configuración de la base de datos en vivo de Pixel Games
     const firebaseConfig = {
       databaseURL: "https://pixelgames-chat-default-rtdb.europe-west1.firebasedatabase.app"
     };
@@ -193,68 +158,46 @@
       firebase.initializeApp(firebaseConfig);
       db = firebase.database();
     } catch(e) {
-      console.log("Iniciando conexión...");
-    }
-
-    let myName = "";
-    let roomCode = "";
-
-    function joinRoom() {
-      const nameInp = document.getElementById('username').value.trim();
-      const codeInp = document.getElementById('room-code').value.trim();
-
-      if (!nameInp || !codeInp) {
-        alert("¡Por favor pon tu nombre y un código de sala!");
-        return;
-      }
-
-      myName = nameInp;
-      roomCode = codeInp;
-
-      document.getElementById('login-view').style.display = 'none';
-      document.getElementById('chat-body').style.display = 'flex';
-      document.getElementById('chat-footer').style.display = 'flex';
-      document.getElementById('room-display').textContent = `SALA: ${roomCode} | USUARIO: ${myName}`;
-
-      // Escuchar mensajes en tiempo real
-      db.ref('chats/' + roomCode).on('child_added', (snapshot) => {
-        const data = snapshot.val();
-        displayMessage(data.user, data.text);
-      });
+      console.error("Error al conectar Firebase:", e);
     }
 
     function sendMessage() {
-      const input = document.getElementById('msg-input');
-      const text = input.value.trim();
+      const nameInput = document.getElementById('username');
+      const msgInput = document.getElementById('message');
+      
+      const name = nameInput.value.trim() || "Anónimo";
+      const text = msgInput.value.trim();
 
-      if (text !== "") {
-        db.ref('chats/' + roomCode).push({
-          user: myName,
-          text: text
+      if (!text) return;
+
+      if (db) {
+        db.ref('global_chat').push({
+          user: name,
+          text: text,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
-        input.value = "";
-      }
-    }
-
-    function handleKey(e) {
-      if (e.key === 'Enter') sendMessage();
-    }
-
-    function displayMessage(user, text) {
-      const body = document.getElementById('chat-body');
-      const msgDiv = document.createElement('div');
-      const isMine = user === myName;
-
-      msgDiv.className = `message ${isMine ? 'msg-mine' : 'msg-other'}`;
-
-      if (!isMine) {
-        msgDiv.innerHTML = `<div class="msg-author">${user}</div>${text}`;
+        msgInput.value = "";
       } else {
-        msgDiv.textContent = text;
+        alert("No se ha podido conectar al servidor del chat.");
       }
+    }
 
-      body.appendChild(msgDiv);
-      body.scrollTop = body.scrollHeight;
+    // Escuchar mensajes en tiempo real
+    if (db) {
+      db.ref('global_chat').limitToLast(50).on('child_added', (snapshot) => {
+        const data = snapshot.val();
+        const chatBox = document.getElementById('chat-box');
+
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'msg-item';
+        msgDiv.innerHTML = `
+          <div class="msg-header">${data.user} <span style="color:#aaa; font-size:9px;">[${data.time || ''}]</span></div>
+          <div>${data.text}</div>
+        `;
+
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
     }
   </script>
 </body>
