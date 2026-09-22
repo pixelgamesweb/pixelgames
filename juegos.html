@@ -4,18 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PIXEL GAMES</title>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      background: radial-gradient(circle at center, #1a1f35 0%, #080b12 100%);
+      background: radial-gradient(
+        circle at center,
+        #1a1f35 0%,
+        #080b12 100%
+      );
+
       color: white;
       font-family: 'Courier New', Courier, monospace;
+
       min-height: 100vh;
+
       display: flex;
       flex-direction: column;
       align-items: center;
+
       padding: 40px 0;
+
       user-select: none;
     }
 
@@ -27,7 +41,10 @@
     h1 {
       font-size: 42px;
       color: #00e5ff;
-      text-shadow: 0 0 15px #00e5ff;
+
+      text-shadow:
+        0 0 15px #00e5ff;
+
       letter-spacing: 3px;
       margin-bottom: 5px;
     }
@@ -41,31 +58,55 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+
+      grid-template-columns:
+        repeat(auto-fill, minmax(220px, 1fr));
+
       gap: 20px;
+
       width: 90%;
       max-width: 1200px;
     }
 
     .card {
       background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(0, 229, 255, 0.2);
+
+      border:
+        1px solid
+        rgba(0, 229, 255, 0.2);
+
       border-radius: 16px;
+
       padding: 25px 15px;
+
       display: flex;
       flex-direction: column;
+
       align-items: center;
       justify-content: center;
+
       text-align: center;
+
       min-height: 220px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+
+      box-shadow:
+        0 10px 25px
+        rgba(0,0,0,0.5);
+
+      transition:
+        transform 0.2s,
+        border-color 0.2s,
+        box-shadow 0.2s;
     }
 
     .card.available:hover {
       transform: translateY(-5px);
+
       border-color: #00e5ff;
-      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+
+      box-shadow:
+        0 0 20px
+        rgba(0, 229, 255, 0.3);
     }
 
     .icon {
@@ -76,20 +117,39 @@
     .name {
       font-size: 22px;
       font-weight: 800;
+
       margin-bottom: 15px;
+
       color: #ffffff;
     }
 
     .play {
       display: inline-block;
+
       padding: 10px 24px;
+
       border-radius: 13px;
-      background: linear-gradient(180deg, #35a8ff, #1266e8);
+
+      background:
+        linear-gradient(
+          180deg,
+          #35a8ff,
+          #1266e8
+        );
+
       color: white;
+
       text-decoration: none;
+
       font-weight: 800;
-      box-shadow: 0 5px 0 #0844a0, 0 8px 18px rgba(0,100,255,.25);
-      transition: transform 0.1s;
+
+      box-shadow:
+        0 5px 0 #0844a0,
+        0 8px 18px
+        rgba(0,100,255,.25);
+
+      transition:
+        transform 0.1s;
     }
 
     .play:hover {
@@ -98,13 +158,20 @@
 
     .locked {
       opacity: .68;
-      border-color: rgba(255,255,255,0.05);
+
+      border-color:
+        rgba(255,255,255,0.05);
     }
 
     .lock {
       font-size: 62px;
       margin-bottom: 13px;
-      filter: drop-shadow(0 10px 5px rgba(0,0,0,.6));
+
+      filter:
+        drop-shadow(
+          0 10px 5px
+          rgba(0,0,0,.6)
+        );
     }
 
     .locked .name {
@@ -114,17 +181,27 @@
     .badge {
       font-size: 12px;
       font-weight: 800;
+
       letter-spacing: 1px;
+
       color: #8191aa;
-      border: 1px solid rgba(255,255,255,.12);
+
+      border:
+        1px solid
+        rgba(255,255,255,.12);
+
       padding: 8px 13px;
+
       border-radius: 999px;
-      background: rgba(0,0,0,.2);
+
+      background:
+        rgba(0,0,0,.2);
     }
 
     @media(max-width:1000px) {
       .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -133,6 +210,7 @@
         grid-template-columns: 1fr;
         width: 92%;
       }
+
       .card {
         min-height: 210px;
       }
@@ -143,56 +221,227 @@
 <body>
 
   <header>
+
     <h1>PIXEL GAMES</h1>
-    <div class="subtitle">ELIGE TU JUEGO</div>
+
+    <div class="subtitle">
+      ELIGE TU JUEGO
+    </div>
+
   </header>
 
-  <main class="grid" id="games"></main>
+
+  <main
+    class="grid"
+    id="games">
+  </main>
+
 
   <script>
+
     const games = [
-      { id: 1, name: "money up", icon: "🪙", file: "juego1.html" },
-      { id: 2, name: "Spirit Wilds", icon: "🌲", file: "juego2.html" },
-      { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html" },
-      { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html" },
-      { id: 5, name: "ultra Laberintos", icon: "🧩", file: "juego5.html" },
-      { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html" },
-      { id: 7, name: "4 en raya", icon: "🔴", file: "juego7.html" },
-      { id: 8, name: "serpiente de colores", icon: "💎", file: "juego8.html" },
-      { id: 9, name: "money up 2", icon: "🍎", file: "juego9.html" },
-      { id: 10, name: "Pizarra magnética", icon: "⚽", file: "juego10.html" },
-      { id: 11, name: "Ajedrez en 3D", icon: "♟️", file: "juego11.html" },
-      { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html" },
-      { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html" },
-      { id: 14, name: "Valorar Web", icon: "⭐", file: "juego14.html" },
-      { id: 15, name: "Pixel Dash", icon: "⚡", file: "juego15.html" },
-      { id: 16, name: "Proyecto X", icon: "❓", file: "juego16.html" }
-    ];
 
-    const container = document.getElementById("games");
+      {
+        id: 1,
+        name: "money up",
+        icon: "🪙",
+        file: "juego1.html"
+      },
 
-    for (let i = 1; i <= 200; i++) {
-      const gameData = games.find(g => g.id === i);
-      const card = document.createElement("article");
+      {
+        id: 2,
+        name: "Spirit Wilds",
+        icon: "🌲",
+        file: "juego2.html"
+      },
 
-      if (gameData) {
-        card.className = "card available";
-        card.innerHTML = `
-          <div class="icon">${gameData.icon}</div>
-          <div class="name">${gameData.name}</div>
-          <a class="play" href="${gameData.file}">JUGAR</a>
-        `;
-      } else {
-        card.className = "card locked";
-        card.innerHTML = `
-          <div class="lock">🔒</div>
-          <div class="name">Juego ${i}</div>
-          <div class="badge">PRÓXIMAMENTE</div>
-        `;
+      {
+        id: 3,
+        name: "Football Legends",
+        icon: "⚽",
+        file: "juego3.html"
+      },
+
+      {
+        id: 4,
+        name: "Pixel AI",
+        icon: "🤖",
+        file: "juego4.html"
+      },
+
+      {
+        id: 5,
+        name: "ultra Laberintos",
+        icon: "🧩",
+        file: "juego5.html"
+      },
+
+      {
+        id: 6,
+        name: "Dreamer up",
+        icon: "🌙",
+        file: "juego6.html"
+      },
+
+      {
+        id: 7,
+        name: "4 en raya",
+        icon: "🔴",
+        file: "juego7.html"
+      },
+
+      {
+        id: 8,
+        name: "serpiente de colores",
+        icon: "💎",
+        file: "juego8.html"
+      },
+
+      {
+        id: 9,
+        name: "money up 2",
+        icon: "🍎",
+        file: "juego9.html"
+      },
+
+      {
+        id: 10,
+        name: "Pizarra magnética",
+        icon: "⚽",
+        file: "juego10.html"
+      },
+
+      {
+        id: 11,
+        name: "Ajedrez en 3D",
+        icon: "♟️",
+        file: "juego11.html"
+      },
+
+      {
+        id: 12,
+        name: "Galaxy Defender",
+        icon: "👾",
+        file: "juego12.html"
+      },
+
+      {
+        id: 13,
+        name: "Pixel Chat",
+        icon: "💬",
+        file: "juego13.html"
+      },
+
+      {
+        id: 14,
+        name: "Valorar Web",
+        icon: "⭐",
+        file: "juego14.html"
+      },
+
+      {
+        id: 15,
+        name: "Pixel Dash",
+        icon: "⚡",
+        file: "juego15.html"
+      },
+
+      {
+        id: 16,
+        name: "Proyecto X",
+        icon: "❓",
+        file: "juego16.html"
+      },
+
+      /* NUEVO JUEGO */
+
+      {
+        id: 17,
+        name: "Anillos en el Agua",
+        icon: "⭕",
+        file: "juego17.html"
       }
 
+    ];
+
+
+    const container =
+      document.getElementById("games");
+
+
+    for (
+      let i = 1;
+      i <= 200;
+      i++
+    ) {
+
+      const gameData =
+        games.find(
+          g => g.id === i
+        );
+
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      if (gameData) {
+
+        card.className =
+          "card available";
+
+
+        card.innerHTML = `
+
+          <div class="icon">
+            ${gameData.icon}
+          </div>
+
+          <div class="name">
+            ${gameData.name}
+          </div>
+
+          <a
+            class="play"
+            href="${gameData.file}">
+            JUGAR
+          </a>
+
+        `;
+
+      }
+
+      else {
+
+        card.className =
+          "card locked";
+
+
+        card.innerHTML = `
+
+          <div class="lock">
+            🔒
+          </div>
+
+          <div class="name">
+            Juego ${i}
+          </div>
+
+          <div class="badge">
+            PRÓXIMAMENTE
+          </div>
+
+        `;
+
+      }
+
+
       container.appendChild(card);
+
     }
+
   </script>
 
 </body>
