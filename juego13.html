@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel Chat - Pixel Games</title>
+  <title>Pixel Chat Global - Pixel Games</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -25,7 +25,7 @@
       border-radius: 16px;
       width: 100%;
       max-width: 500px;
-      height: 550px;
+      height: 580px;
       padding: 20px;
       display: flex;
       flex-direction: column;
@@ -34,10 +34,17 @@
     }
 
     h1 {
-      font-size: 24px;
+      font-size: 22px;
       color: #00e5ff;
       text-shadow: 0 0 10px #00e5ff;
       text-align: center;
+    }
+
+    .status-bar {
+      font-size: 11px;
+      color: #00ff88;
+      text-align: center;
+      font-weight: bold;
     }
 
     #chat-box {
@@ -79,10 +86,7 @@
       outline: none;
     }
 
-    input:focus {
-      border-color: #00e5ff;
-      box-shadow: 0 0 8px #00e5ff;
-    }
+    input:focus { border-color: #00e5ff; box-shadow: 0 0 8px #00e5ff; }
 
     #username { width: 100%; }
 
@@ -102,7 +106,6 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: filter 0.2s;
     }
 
     .btn:hover { filter: brightness(1.2); }
@@ -118,11 +121,15 @@
       font-size: 14px;
     }
   </style>
+
+  <!-- Cliente de Supabase Realtime -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
   <div class="chat-card">
-    <h1>PIXEL CHAT 💬</h1>
+    <h1>CHAT MUNDIAL 🌍</h1>
+    <div class="status-bar" id="status">● Conectado al servidor global</div>
 
     <div class="user-setup">
       <input type="text" id="username" placeholder="Tu Nombre / Apodo" maxlength="15">
@@ -139,16 +146,22 @@
   <a href="juegos.html" class="btn-back">VOLVER AL MENÚ</a>
 
   <script>
-    const channel = new BroadcastChannel('pixel_chat_channel');
+    const SUPABASE_URL = 'https://xyzcompany.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5emNvbXBhbnkiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY3MDAwMDAwMCwiZXhwIjoyMDAwMDAwMDAwfQ.exampleKey';
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     const chatBox = document.getElementById('chat-box');
+    const channel = supabaseClient.channel('global_roblox_chat');
 
-    // Cargar historial local guardado
-    const savedMsgs = JSON.parse(localStorage.getItem('pixel_chat_history') || '[]');
-    savedMsgs.forEach(data => addMessageToScreen(data));
-
-    channel.onmessage = (event) => {
-      addMessageToScreen(event.data);
-    };
+    channel
+      .on('broadcast', { event: 'shout' }, payload => {
+        addMessageToScreen(payload.payload);
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          document.getElementById('status').textContent = '● Conectado en vivo a la red';
+        }
+      });
 
     function sendMessage() {
       const nameInput = document.getElementById('username');
@@ -165,14 +178,13 @@
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
-      // Guardar y transmitir
+      channel.send({
+        type: 'broadcast',
+        event: 'shout',
+        payload: data
+      });
+
       addMessageToScreen(data);
-      channel.postMessage(data);
-
-      savedMsgs.push(data);
-      if (savedMsgs.length > 50) savedMsgs.shift();
-      localStorage.setItem('pixel_chat_history', JSON.stringify(savedMsgs));
-
       msgInput.value = "";
     }
 
