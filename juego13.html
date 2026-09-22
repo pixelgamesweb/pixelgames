@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel Chat Global - Roblox Style</title>
+  <title>Pixel Chat Global - Roblox 676767676767676767676767676</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -120,79 +120,14 @@
     }
   </style>
 
-  <!-- Librería P2P Global Libre -->
-  <script type="module">
-    import { joinRoom } from 'https://cdn.skypack.dev/trystero/torrent';
-
-    const config = { appId: 'pixel_games_roblox_global_chat' };
-    const room = joinRoom(config, 'global_room');
-    const [sendMsg, getMsg] = room.makeAction('message');
-
-    const chatBox = document.getElementById('chat-box');
-    const statusEl = document.getElementById('status');
-    let peersCount = 0;
-
-    // Conexión con otros jugadores
-    room.onPeerJoin(peerId => {
-      peersCount++;
-      statusEl.style.color = '#00ff88';
-      statusEl.textContent = `● Conectado al Chat Global (${peersCount + 1} en línea)`;
-    });
-
-    room.onPeerLeave(peerId => {
-      peersCount = Math.max(0, peersCount - 1);
-      if (peersCount === 0) {
-        statusEl.style.color = '#ffda00';
-        statusEl.textContent = '● Buscando más jugadores en el mundo...';
-      } else {
-        statusEl.textContent = `● Conectado al Chat Global (${peersCount + 1} en línea)`;
-      }
-    });
-
-    // Recibir mensajes de otros
-    getMsg((data) => {
-      addMessageToScreen(data);
-    });
-
-    window.sendMessage = function() {
-      const nameInput = document.getElementById('username');
-      const msgInput = document.getElementById('message');
-      
-      const name = nameInput.value.trim() || "Anónimo";
-      const text = msgInput.value.trim();
-
-      if (!text) return;
-
-      const data = {
-        user: name,
-        text: text,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      // Enviar a la red mundial
-      sendMsg(data);
-      addMessageToScreen(data);
-      msgInput.value = "";
-    };
-
-    function addMessageToScreen(data) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'msg-item';
-      msgDiv.innerHTML = `
-        <div class="msg-header">${data.user} <span style="color:#aaa; font-size:9px;">[${data.time || ''}]</span></div>
-        <div>${data.text}</div>
-      `;
-
-      chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
+  <!-- Librería MQTT ultra rápida -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
 
   <div class="chat-card">
     <h1>CHAT MUNDIAL 🌍</h1>
-    <div class="status-bar" id="status">● Conectando a la red global...</div>
+    <div class="status-bar" id="status">● Conectando servidor...</div>
 
     <div class="user-setup">
       <input type="text" id="username" placeholder="Tu Nombre / Apodo" maxlength="15">
@@ -208,5 +143,62 @@
 
   <a href="juegos.html" class="btn-back">VOLVER AL MENÚ</a>
 
+  <script>
+    const statusEl = document.getElementById('status');
+    const chatBox = document.getElementById('chat-box');
+    const TOPIC = 'pixelgames/chat/global_room';
+
+    // Conexión instantánea a servidor MQTT público WebSocket
+    const client = mqtt.connect('wss://broker.hivemq.com:8000/mqtt');
+
+    client.on('connect', () => {
+      statusEl.style.color = '#00ff88';
+      statusEl.textContent = '● Conectado en vivo al Chat Mundial';
+      client.subscribe(TOPIC);
+    });
+
+    client.on('message', (topic, message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        addMessageToScreen(data);
+      } catch(e) {}
+    });
+
+    client.on('error', () => {
+      statusEl.style.color = '#ff4757';
+      statusEl.textContent = '● Error de conexión';
+    });
+
+    function sendMessage() {
+      const nameInput = document.getElementById('username');
+      const msgInput = document.getElementById('message');
+      
+      const name = nameInput.value.trim() || "Anónimo";
+      const text = msgInput.value.trim();
+
+      if (!text) return;
+
+      const data = {
+        user: name,
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      client.publish(TOPIC, JSON.stringify(data));
+      msgInput.value = "";
+    }
+
+    function addMessageToScreen(data) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'msg-item';
+      msgDiv.innerHTML = `
+        <div class="msg-header">${data.user} <span style="color:#aaa; font-size:9px;">[${data.time || ''}]</span></div>
+        <div>${data.text}</div>
+      `;
+
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
 </body>
 </html>
