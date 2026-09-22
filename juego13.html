@@ -40,11 +40,6 @@
       text-align: center;
     }
 
-    .user-setup {
-      display: flex;
-      gap: 10px;
-    }
-
     #chat-box {
       flex: 1;
       background: #080b12;
@@ -123,10 +118,6 @@
       font-size: 14px;
     }
   </style>
-
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
@@ -148,18 +139,16 @@
   <a href="juegos.html" class="btn-back">VOLVER AL MENÚ</a>
 
   <script>
-    // Configuración de la base de datos en vivo de Pixel Games
-    const firebaseConfig = {
-      databaseURL: "https://pixelgames-chat-default-rtdb.europe-west1.firebasedatabase.app"
-    };
+    const channel = new BroadcastChannel('pixel_chat_channel');
+    const chatBox = document.getElementById('chat-box');
 
-    let db;
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-    } catch(e) {
-      console.error("Error al conectar Firebase:", e);
-    }
+    // Cargar historial local guardado
+    const savedMsgs = JSON.parse(localStorage.getItem('pixel_chat_history') || '[]');
+    savedMsgs.forEach(data => addMessageToScreen(data));
+
+    channel.onmessage = (event) => {
+      addMessageToScreen(event.data);
+    };
 
     function sendMessage() {
       const nameInput = document.getElementById('username');
@@ -170,34 +159,33 @@
 
       if (!text) return;
 
-      if (db) {
-        db.ref('global_chat').push({
-          user: name,
-          text: text,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        });
-        msgInput.value = "";
-      } else {
-        alert("No se ha podido conectar al servidor del chat.");
-      }
+      const data = {
+        user: name,
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      // Guardar y transmitir
+      addMessageToScreen(data);
+      channel.postMessage(data);
+
+      savedMsgs.push(data);
+      if (savedMsgs.length > 50) savedMsgs.shift();
+      localStorage.setItem('pixel_chat_history', JSON.stringify(savedMsgs));
+
+      msgInput.value = "";
     }
 
-    // Escuchar mensajes en tiempo real
-    if (db) {
-      db.ref('global_chat').limitToLast(50).on('child_added', (snapshot) => {
-        const data = snapshot.val();
-        const chatBox = document.getElementById('chat-box');
+    function addMessageToScreen(data) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'msg-item';
+      msgDiv.innerHTML = `
+        <div class="msg-header">${data.user} <span style="color:#aaa; font-size:9px;">[${data.time || ''}]</span></div>
+        <div>${data.text}</div>
+      `;
 
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'msg-item';
-        msgDiv.innerHTML = `
-          <div class="msg-header">${data.user} <span style="color:#aaa; font-size:9px;">[${data.time || ''}]</span></div>
-          <div>${data.text}</div>
-        `;
-
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      });
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
   </script>
 </body>
