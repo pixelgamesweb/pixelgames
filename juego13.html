@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel Chat Global - Roblox 676767676767676767676767676</title>
+  <title>Pixel Chat Global - Roblox Style</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -120,8 +120,8 @@
     }
   </style>
 
-  <!-- Librería MQTT ultra rápida -->
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <!-- Scaledrone WebSockets libreria mundial -->
+  <script src="https://cdn.scaledrone.com/scaledrone.min.js"></script>
 </head>
 <body>
 
@@ -146,27 +146,27 @@
   <script>
     const statusEl = document.getElementById('status');
     const chatBox = document.getElementById('chat-box');
-    const TOPIC = 'pixelgames/chat/global_room';
 
-    // Conexión instantánea a servidor MQTT público WebSocket
-    const client = mqtt.connect('wss://broker.hivemq.com:8000/mqtt');
+    // Canal público global de Scaledrone
+    const drone = new Scaledrone('observable-room-id', {
+      data: { name: 'Jugador' }
+    });
 
-    client.on('connect', () => {
+    // Crear sala de chat
+    const room = drone.subscribe('observable-global-room');
+
+    drone.on('open', error => {
+      if (error) {
+        statusEl.style.color = '#ff4757';
+        statusEl.textContent = '● Error al conectar';
+        return;
+      }
       statusEl.style.color = '#00ff88';
-      statusEl.textContent = '● Conectado en vivo al Chat Mundial';
-      client.subscribe(TOPIC);
+      statusEl.textContent = '● Conectado al Chat Mundial';
     });
 
-    client.on('message', (topic, message) => {
-      try {
-        const data = JSON.parse(message.toString());
-        addMessageToScreen(data);
-      } catch(e) {}
-    });
-
-    client.on('error', () => {
-      statusEl.style.color = '#ff4757';
-      statusEl.textContent = '● Error de conexión';
+    room.on('data', (data) => {
+      addMessageToScreen(data);
     });
 
     function sendMessage() {
@@ -184,11 +184,16 @@
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
-      client.publish(TOPIC, JSON.stringify(data));
+      drone.publish({
+        room: 'observable-global-room',
+        message: data
+      });
+
       msgInput.value = "";
     }
 
     function addMessageToScreen(data) {
+      if (!data || !data.user) return;
       const msgDiv = document.createElement('div');
       msgDiv.className = 'msg-item';
       msgDiv.innerHTML = `
