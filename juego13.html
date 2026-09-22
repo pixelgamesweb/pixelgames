@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel Chat Global - Pixel Games</title>
+  <title>Pixel Chat Global - Roblox Style</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -42,7 +42,7 @@
 
     .status-bar {
       font-size: 11px;
-      color: #00ff88;
+      color: #ffda00;
       text-align: center;
       font-weight: bold;
     }
@@ -108,8 +108,6 @@
       cursor: pointer;
     }
 
-    .btn:hover { filter: brightness(1.2); }
-
     .btn-back {
       margin-top: 15px;
       background: linear-gradient(180deg, #ff4757, #c0392b);
@@ -122,14 +120,79 @@
     }
   </style>
 
-  <!-- Cliente de Supabase Realtime -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Librería P2P Global Libre -->
+  <script type="module">
+    import { joinRoom } from 'https://cdn.skypack.dev/trystero/torrent';
+
+    const config = { appId: 'pixel_games_roblox_global_chat' };
+    const room = joinRoom(config, 'global_room');
+    const [sendMsg, getMsg] = room.makeAction('message');
+
+    const chatBox = document.getElementById('chat-box');
+    const statusEl = document.getElementById('status');
+    let peersCount = 0;
+
+    // Conexión con otros jugadores
+    room.onPeerJoin(peerId => {
+      peersCount++;
+      statusEl.style.color = '#00ff88';
+      statusEl.textContent = `● Conectado al Chat Global (${peersCount + 1} en línea)`;
+    });
+
+    room.onPeerLeave(peerId => {
+      peersCount = Math.max(0, peersCount - 1);
+      if (peersCount === 0) {
+        statusEl.style.color = '#ffda00';
+        statusEl.textContent = '● Buscando más jugadores en el mundo...';
+      } else {
+        statusEl.textContent = `● Conectado al Chat Global (${peersCount + 1} en línea)`;
+      }
+    });
+
+    // Recibir mensajes de otros
+    getMsg((data) => {
+      addMessageToScreen(data);
+    });
+
+    window.sendMessage = function() {
+      const nameInput = document.getElementById('username');
+      const msgInput = document.getElementById('message');
+      
+      const name = nameInput.value.trim() || "Anónimo";
+      const text = msgInput.value.trim();
+
+      if (!text) return;
+
+      const data = {
+        user: name,
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      // Enviar a la red mundial
+      sendMsg(data);
+      addMessageToScreen(data);
+      msgInput.value = "";
+    };
+
+    function addMessageToScreen(data) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'msg-item';
+      msgDiv.innerHTML = `
+        <div class="msg-header">${data.user} <span style="color:#aaa; font-size:9px;">[${data.time || ''}]</span></div>
+        <div>${data.text}</div>
+      `;
+
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
 </head>
 <body>
 
   <div class="chat-card">
     <h1>CHAT MUNDIAL 🌍</h1>
-    <div class="status-bar" id="status">● Conectado al servidor global</div>
+    <div class="status-bar" id="status">● Conectando a la red global...</div>
 
     <div class="user-setup">
       <input type="text" id="username" placeholder="Tu Nombre / Apodo" maxlength="15">
@@ -145,60 +208,5 @@
 
   <a href="juegos.html" class="btn-back">VOLVER AL MENÚ</a>
 
-  <script>
-    const SUPABASE_URL = 'https://xyzcompany.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5emNvbXBhbnkiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY3MDAwMDAwMCwiZXhwIjoyMDAwMDAwMDAwfQ.exampleKey';
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const chatBox = document.getElementById('chat-box');
-    const channel = supabaseClient.channel('global_roblox_chat');
-
-    channel
-      .on('broadcast', { event: 'shout' }, payload => {
-        addMessageToScreen(payload.payload);
-      })
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          document.getElementById('status').textContent = '● Conectado en vivo a la red';
-        }
-      });
-
-    function sendMessage() {
-      const nameInput = document.getElementById('username');
-      const msgInput = document.getElementById('message');
-      
-      const name = nameInput.value.trim() || "Anónimo";
-      const text = msgInput.value.trim();
-
-      if (!text) return;
-
-      const data = {
-        user: name,
-        text: text,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      channel.send({
-        type: 'broadcast',
-        event: 'shout',
-        payload: data
-      });
-
-      addMessageToScreen(data);
-      msgInput.value = "";
-    }
-
-    function addMessageToScreen(data) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'msg-item';
-      msgDiv.innerHTML = `
-        <div class="msg-header">${data.user} <span style="color:#aaa; font-size:9px;">[${data.time || ''}]</span></div>
-        <div>${data.text}</div>
-      `;
-
-      chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
 </body>
 </html>
