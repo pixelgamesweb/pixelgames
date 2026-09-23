@@ -13,18 +13,129 @@
             margin: 0;
             min-height: 100%;
             font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
         }
         
         body {
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            justify-content: space-between;
+        }
+
+        header {
+            width: 100%;
+            padding: 16px;
+            text-align: center;
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        #chat-box {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+        }
+
+        .user {
+            align-self: flex-end;
+            background-color: #004d40;
+            color: #e0f2f1;
+        }
+
+        .bot {
+            align-self: flex-start;
+            background-color: #262626;
+            color: #ffffff;
+        }
+
+        .input-area {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            padding: 12px;
+            background-color: #1e1e1e;
+            gap: 8px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 24px;
+            border: 1px solid #444;
+            background-color: #2b2b2b;
+            color: white;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            border-radius: 24px;
+            border: none;
+            background-color: #80286e;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+
+    <header>Pixel Games AI</header>
+
+    <div id="chat-box">
+        <div class="msg bot">¡Hola! Bienvenido a Pixel Games. ¿Qué quieres hacer hoy?</div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Escribe un mensaje..." onkeypress="handleKey(event)">
+        <button onclick="sendMsg()">Enviar</button>
+    </div>
+
+    <script>
+        function sendMsg() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMsg(text, 'user');
+            input.value = '';
+
+            setTimeout(() => {
+                addMsg("Mensaje recibido correctamente.", 'bot');
+            }, 500);
+        }
+
+        function addMsg(text, sender) {
+            const box = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.className = `msg ${sender}`;
+            div.textContent = text;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+            return div;
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter') sendMsg();
+        }
+    </script>
 
 </body>
 </html>
