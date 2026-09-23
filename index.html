@@ -7,24 +7,82 @@
     <style>
         * {
             box-sizing: border-box;
-        }
-        
-        html, body {
             margin: 0;
-            min-height: 100%;
-            font-family: Arial, sans-serif;
+            padding: 0;
         }
-        
+
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #ffffff;
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            overflow: hidden;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 50px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 40px;
+        }
+
+        .btn-jugar {
+            display: inline-block;
+            padding: 16px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(45deg, #ff007f, #7928ca);
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 5px 20px rgba(255, 0, 127, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-jugar:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 0, 127, 0.6);
+            background: linear-gradient(45deg, #7928ca, #ff007f);
+        }
+
+        .btn-jugar:active {
+            transform: translateY(1px);
         }
     </style>
 </head>
 <body>
+
+    <div class="container">
+        <h1>Pixel Games</h1>
+        <p>Bienvenido al portal de minijuegos</p>
+        <a href="juegos.html" class="btn-jugar">JUGAR</a>
+    </div>
 
 </body>
 </html>
