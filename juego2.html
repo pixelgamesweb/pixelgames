@@ -2,3205 +2,933 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
-  <title>Spirit 3000</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spirit Wilds: 4D Ultimate Arsenal - PIXEL GAMES</title>
+  <!-- PeerJS para multijugador P2P online sin servidor propio -->
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    html,
-    body {
       margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #02030a;
-      color: white;
-      font-family: Arial, sans-serif;
+      padding: 0;
     }
 
-    #game {
-      position: fixed;
-      inset: 0;
-    }
-
-    button {
-      border: 1px solid #ffffff25;
-      border-radius: 14px;
-      background: #050505;
-      color: #62aaff;
-      font-weight: bold;
-      padding: 14px 18px;
-      cursor: pointer;
-    }
-
-    button:active {
-      transform: scale(.97);
-    }
-
-    /* =========================
-       FONDO DE MENÚ
-    ========================= */
-
-    .screen {
-      position: fixed;
-      inset: 0;
-      z-index: 30;
-
+    body {
+      background: #080b12;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-
-      background:
-        radial-gradient(
-          circle at 15% 20%,
-          #713cff66,
-          transparent 30%
-        ),
-        radial-gradient(
-          circle at 85% 25%,
-          #168bff55,
-          transparent 30%
-        ),
-        radial-gradient(
-          circle at 50% 90%,
-          #c03cff44,
-          transparent 35%
-        ),
-        linear-gradient(
-          135deg,
-          #020208,
-          #16102e,
-          #03040a
-        );
+      overflow: hidden;
+      user-select: none;
     }
 
-    .panel {
-      width: min(92vw, 720px);
-      max-height: 90vh;
-      overflow-y: auto;
+    #app-container {
+      position: relative;
+      width: 950px;
+      height: 650px;
+      background: #111827;
+      border: 3px solid #00e5ff;
+      border-radius: 16px;
+      box-shadow: 0 0 35px rgba(0, 229, 255, 0.3);
+      overflow: hidden;
+    }
 
+    /* Pantallas del Menú */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
       padding: 30px;
-
-      border-radius: 28px;
-
-      background: #050509eb;
-
-      border:
-        1px solid #ffffff22;
-
-      box-shadow:
-        0 30px 100px #000;
+      z-index: 10;
     }
 
     h1 {
-      margin: 0;
-
-      text-align: center;
-
-      font-size:
-        clamp(48px, 10vw, 82px);
-
-      letter-spacing: -4px;
+      font-size: 40px;
+      color: #00e5ff;
+      text-shadow: 0 0 20px #00e5ff;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
     }
 
-    .subtitle {
-      max-width: 620px;
-
-      margin: 12px auto 26px;
-
-      text-align: center;
-
-      line-height: 1.6;
-
-      opacity: .75;
+    p.subtitle {
+      color: #94a3b8;
+      margin-bottom: 20px;
+      font-size: 15px;
     }
 
-    .main-button {
-      display: block;
-
-      width: 100%;
-
-      margin: 10px 0;
-
-      padding: 17px;
-
-      font-size: 18px;
-    }
-
-    .button-row {
+    .form-group {
       display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 340px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      background: #0f172a;
+      border: 2px solid #334155;
+      color: #00e5ff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+      font-weight: bold;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus {
+      border-color: #00e5ff;
+    }
+
+    .btn {
+      background: #00e5ff;
+      color: #0f172a;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #94a3b8;
+      border: 2px solid #334155;
+    }
+
+    .btn-secondary:hover {
+      border-color: #00e5ff;
+      color: #fff;
+    }
+
+    /* Arsenal / Armería Scrollable */
+    .weapons-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
+      width: 100%;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 10px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 10px;
+      border: 1px solid #334155;
+      margin-bottom: 15px;
     }
 
-    .button-row button {
-      flex: 1;
+    .weapon-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 8px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 11px;
     }
 
-    /* =========================
-       HUD
-    ========================= */
+    .weapon-card h4 {
+      color: #f59e0b;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
+    /* Canvas */
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #0b0f19;
+      cursor: crosshair;
+    }
+
+    /* HUD */
     #hud {
-      display: none;
-
-      position: fixed;
-
-      z-index: 10;
-
-      top: 12px;
-      left: 12px;
-      right: 12px;
-
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 15px 20px;
+      display: flex;
       justify-content: space-between;
       align-items: flex-start;
-
       pointer-events: none;
+      z-index: 5;
     }
 
-    #stats {
-      min-width: 300px;
-
-      padding: 11px;
-
-      border-radius: 15px;
-
-      background: #000b;
-
-      border:
-        1px solid #ffffff25;
-
-      font-size: 13px;
-
-      line-height: 1.6;
+    .hud-box {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      padding: 10px 15px;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
     }
 
-    #health-container {
-      height: 10px;
-
-      margin: 3px 0 5px;
-
+    .health-bar-container {
+      width: 200px;
+      height: 16px;
+      background: #1e293b;
+      border-radius: 8px;
       overflow: hidden;
-
-      border-radius: 10px;
-
-      background: #42151b;
+      margin-top: 5px;
+      border: 1px solid #334155;
     }
 
-    #health-bar {
+    .health-bar {
       width: 100%;
       height: 100%;
-
-      background: #42e37a;
-
-      transition:
-        width .2s;
+      background: #ef4444;
+      transition: width 0.1s;
     }
 
-    #top-buttons {
-      display: flex;
-      gap: 7px;
-
-      pointer-events: auto;
+    .weapon-hud {
+      text-align: right;
     }
 
-    #top-buttons button {
-      width: 46px;
-      height: 46px;
-
-      padding: 0;
-
+    .weapon-hud-name {
       font-size: 18px;
+      font-weight: bold;
+      color: #f59e0b;
     }
 
-    /* =========================
-       JOYSTICK
-    ========================= */
-
-    #controls {
-      display: none;
-
-      position: fixed;
-
-      z-index: 11;
-
-      left: 0;
-      right: 0;
-      bottom: 12px;
-
-      height: 160px;
-
-      pointer-events: none;
-    }
-
-    #joystick {
+    /* LEADERBOARD / MARCADOR DE KILLS */
+    #leaderboard {
       position: absolute;
-
-      left: 15px;
-      bottom: 0;
-
-      width: 145px;
-      height: 145px;
-
-      border-radius: 50%;
-
-      background: #000a;
-
-      border:
-        2px solid #ffffff22;
-
-      pointer-events: auto;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      padding: 8px 16px;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+      text-align: center;
+      font-size: 13px;
+      z-index: 5;
+      min-width: 220px;
     }
 
-    #joystick-knob {
+    #leaderboard h3 {
+      color: #f59e0b;
+      font-size: 12px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .leader-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      color: #cbd5e1;
+    }
+
+    .leader-row.me {
+      color: #00e5ff;
+      font-weight: bold;
+    }
+
+    #status-msg {
       position: absolute;
-
-      left: 43px;
-      top: 43px;
-
-      width: 58px;
-      height: 58px;
-
-      border-radius: 50%;
-
-      background: #111;
-
-      border:
-        2px solid #ffffff35;
-    }
-
-    #action-buttons {
-      position: absolute;
-
-      right: 14px;
-      bottom: 4px;
-
-      display: grid;
-
-      grid-template-columns:
-        repeat(2, 82px);
-
-      gap: 8px;
-
-      pointer-events: auto;
-    }
-
-    #action-buttons button {
-      height: 62px;
-
-      padding: 5px;
-
-      font-size: 10px;
-    }
-
-    /* =========================
-       MAPA
-    ========================= */
-
-    #map {
-      display: none;
-
-      position: fixed;
-
-      z-index: 15;
-
-      top: 65px;
-      right: 65px;
-
-      width: 210px;
-      height: 210px;
-
-      overflow: hidden;
-
-      border-radius: 16px;
-
-      background: #07100ddd;
-
-      border:
-        2px solid #ffffff30;
-    }
-
-    #map canvas {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* =========================
-       LISTAS
-    ========================= */
-
-    .item {
-      padding: 12px;
-
-      margin: 7px 0;
-
-      border-radius: 12px;
-
-      background: #11111a;
-
-      border:
-        1px solid #ffffff10;
-    }
-
-    .close {
-      float: right;
-
-      color: white;
-    }
-
-    @media (max-width: 600px) {
-
-      #stats {
-        min-width: 245px;
-        font-size: 11px;
-      }
-
-      .panel {
-        padding: 20px;
-      }
-
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #00e5ff;
+      font-weight: bold;
+      font-size: 14px;
     }
   </style>
 </head>
-
 <body>
 
-  <div id="game"></div>
+  <div id="app-container">
 
+    <!-- MENÚ PRINCIPAL -->
+    <div id="menu-screen" class="screen">
+      <h1>SPIRIT WILDS 4D</h1>
+      <p class="subtitle">BATTLE ROYALE ULTRA-RÁPIDO CON 50 ARMAS</p>
 
-  <!-- =========================
-       MENÚ PRINCIPAL
-  ========================= -->
-
-  <section
-    id="menu"
-    class="screen">
-
-    <div class="panel">
-
-      <h1>Spirit 3000</h1>
-
-      <p class="subtitle">
-        Explora un enorme mundo abierto 3D.
-        Descubre regiones, encuentra espíritus,
-        recoge Éter y consigue capturarlos.
-      </p>
-
-      <button
-        id="play"
-        class="main-button">
-        JUGAR
-      </button>
-
-      <div class="button-row">
-
-        <button id="character">
-          CAMBIAR PERSONAJE
-        </button>
-
-        <button id="information">
-          INFORMACIÓN
-        </button>
-
+      <div class="form-group">
+        <input type="text" id="player-name" placeholder="Tu Apodo / Nickname" maxlength="12" value="Jugador1">
+        <input type="text" id="room-code" placeholder="Código de Sala (ej: 1287)" maxlength="6" value="1287">
+        <button class="btn" onclick="connectToGame()">ENTRAR A LA BATALLA</button>
+        <button class="btn btn-secondary" onclick="showInfoScreen()">VER LAS 50 ARMAS</button>
+        <a href="juegos.html" class="btn btn-secondary">VOLVER AL MENÚ DE JUEGOS</a>
       </div>
 
-      <button
-        id="shop"
-        class="main-button">
-        TIENDA
-      </button>
-
+      <div id="status-msg"></div>
     </div>
 
-  </section>
+    <!-- ARMERÍA (50 ARMAS) -->
+    <div id="info-screen" class="screen" style="display: none;">
+      <h1>CATÁLOGO DE 50 ARMAS</h1>
+      <p class="subtitle">Cambia de arma en partida usando la rueda del ratón o las teclas [1] a [9]</p>
 
+      <div class="weapons-grid" id="weapons-grid"></div>
 
-  <!-- =========================
-       INFORMACIÓN
-  ========================= -->
-
-  <section
-    id="info"
-    class="screen"
-    style="display:none">
-
-    <div class="panel">
-
-      <button
-        id="close-info"
-        class="close">
-        CERRAR
-      </button>
-
-      <h2>Espíritus</h2>
-
-      <p>
-        Hay 50 espíritus diferentes.
-        Cada uno tiene un nivel y una
-        resistencia distinta.
-      </p>
-
-      <div id="spirit-list"></div>
-
+      <button class="btn" onclick="hideInfoScreen()">VOLVER AL MENÚ</button>
     </div>
 
-  </section>
-
-
-  <!-- =========================
-       TIENDA
-  ========================= -->
-
-  <section
-    id="shop-screen"
-    class="screen"
-    style="display:none">
-
-    <div class="panel">
-
-      <button
-        id="close-shop"
-        class="close">
-        CERRAR
-      </button>
-
-      <h2>Tienda</h2>
-
-      <div class="item">
-
-        <b>Skin Astral</b>
-
-        <br>
-
-        2,99 €
-
-        <button
-          class="buy"
-          data-product="skin_astral">
-
-          COMPRAR
-
-        </button>
-
+    <!-- HUD -->
+    <div id="hud" style="display: none;">
+      <div class="hud-box">
+        <div id="hud-name" style="font-weight: bold; color: #00e5ff;">Jugador</div>
+        <div class="health-bar-container">
+          <div id="health-bar" class="health-bar"></div>
+        </div>
       </div>
 
-
-      <div class="item">
-
-        <b>100 Étercápsulas</b>
-
-        <br>
-
-        0,99 €
-
-        <button
-          class="buy"
-          data-product="capsulas_100">
-
-          COMPRAR
-
-        </button>
-
+      <!-- MARCADOR DE KILLS -->
+      <div id="leaderboard">
+        <h3>🏆 MARCADOR DE KILLS</h3>
+        <div id="leader-list"></div>
       </div>
 
-
-      <div class="item">
-
-        <b>Pase Guardián</b>
-
-        <br>
-
-        2,99 €
-
-        <button
-          class="buy"
-          data-product="pase_guardian">
-
-          COMPRAR
-
-        </button>
-
+      <div class="hud-box weapon-hud">
+        <div style="font-size: 11px; color: #94a3b8;">ARMA EQUIPADA [Rueda / 1-9]</div>
+        <div id="active-weapon-display" class="weapon-hud-name">🎯 Tirachinas Clásico</div>
       </div>
-
     </div>
 
-  </section>
-
-
-  <!-- =========================
-       PAUSA
-  ========================= -->
-
-  <section
-    id="pause"
-    class="screen"
-    style="display:none">
-
-    <div class="panel">
-
-      <h2>PAUSA</h2>
-
-      <button
-        id="resume"
-        class="main-button">
-
-        CONTINUAR
-
-      </button>
-
-      <button
-        id="back"
-        class="main-button">
-
-        VOLVER
-
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       HUD
-  ========================= -->
-
-  <div id="hud">
-
-    <div id="stats">
-
-      ❤️ Vida:
-      <b id="health-text">
-        100%
-      </b>
-
-      <div id="health-container">
-        <div id="health-bar"></div>
-      </div>
-
-      🔮 Cápsulas:
-      <b id="capsules">
-        25
-      </b>
-
-      · ✨ Éter:
-      <b id="ether">
-        0
-      </b>
-
-      · 👻 Espíritus:
-      <b id="captured">
-        0
-      </b>
-
-      · ⭐ Nivel:
-      <b id="level">
-        1
-      </b>
-
-      <br>
-
-      🌍 Zona:
-      <b id="zone">
-        Pradera Central
-      </b>
-
-    </div>
-
-
-    <div id="top-buttons">
-
-      <button id="save">
-        💾
-      </button>
-
-      <button id="map-button">
-        ▦
-      </button>
-
-      <button id="pause-button">
-        Ⅱ
-      </button>
-
-    </div>
+    <!-- CANVAS -->
+    <canvas id="gameCanvas"></canvas>
 
   </div>
 
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 950;
+    canvas.height = 650;
 
-  <!-- =========================
-       MAPA
-  ========================= -->
+    // SISTEMA DE ÀUDIO SINTETITZAT
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  <div id="map">
+    function playShotSound(freq = 400, type = 'square') {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.12);
+    }
 
-    <canvas
-      id="map-canvas"
-      width="210"
-      height="210">
-    </canvas>
+    function playHitSound() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
 
-  </div>
+    function playPowerupSound() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+    }
 
+    let peer = null;
+    let connections = {};
+    let hostConn = null;
+    let isHost = false;
+    let myId = null;
+    let myName = "Jugador";
 
-  <!-- =========================
-       CONTROLES TABLET
-  ========================= -->
+    let players = {};
+    let bullets = [];
+    let particles = [];
+    let powerups = [];
+    const keys = {};
 
-  <div id="controls">
+    // GENERAR 50 ARMAS ÚNICAS
+    const WEAPONS = [];
+    const weaponTypes = ["🎯", "🏹", "🔫", "💥", "⚡", "🔮", "🔥", "❄️", "☄️", "☣️"];
+    const weaponPrefixes = ["Mini", "Súper", "Mega", "Ultra", "Tàctic", "Místic", "Anfibi", "Plasma", "Nuclear", "Llegendari"];
+    const weaponNouns = ["Tirachinas", "Pistola", "Arco", "Rifle", "Escopeta", "Llançaroquets", "Rayo", "Blaster", "Cañon", "Destructor"];
 
-    <div id="joystick">
-
-      <div id="joystick-knob"></div>
-
-    </div>
-
-
-    <div id="action-buttons">
-
-      <button id="throw">
-        LANZAR<br>
-        Q
-      </button>
-
-      <button id="capture">
-        ATRAPAR<br>
-        E
-      </button>
-
-      <button id="collect">
-        RECOGER<br>
-        ÉTER
-      </button>
-
-      <button id="camera">
-        CÁMARA<br>
-        C
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- =========================
-       MOTOR 3D
-  ========================= -->
-
-  <script type="module">
-
-    import * as THREE from
-      "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-
-
-    /* =========================
-       ESCENA
-    ========================= */
-
-    const scene =
-      new THREE.Scene();
-
-    scene.background =
-      new THREE.Color(
-        0x07101b
-      );
-
-    scene.fog =
-      new THREE.Fog(
-        0x07101b,
-        35,
-        300
-      );
-
-
-    /* =========================
-       CÁMARA
-    ========================= */
-
-    const camera =
-      new THREE.PerspectiveCamera(
-        65,
-        innerWidth / innerHeight,
-        .1,
-        1500
-      );
-
-    camera.position.set(
-      0,
-      5,
-      10
-    );
-
-
-    /* =========================
-       RENDERIZADOR
-    ========================= */
-
-    const renderer =
-      new THREE.WebGLRenderer({
-        antialias: true
+    for (let i = 1; i <= 50; i++) {
+      const typeIcon = weaponTypes[i % weaponTypes.length];
+      const prefix = weaponPrefixes[i % weaponPrefixes.length];
+      const noun = weaponNouns[i % weaponNouns.length];
+      WEAPONS.push({
+        id: i,
+        name: `${typeIcon} ${prefix} ${noun} #${i}`,
+        damage: 10 + (i * 2),
+        speed: 12 + (i % 8),
+        cooldown: Math.max(80, 500 - (i * 8)),
+        color: `hsl(${(i * 25) % 360}, 100%, 60%)`,
+        freq: 200 + (i * 15)
       });
+    }
 
-    renderer.setSize(
-      innerWidth,
-      innerHeight
-    );
+    let activeWeaponIndex = 0;
+    let lastShotTime = 0;
 
-    renderer.setPixelRatio(
-      Math.min(
-        devicePixelRatio,
-        2
-      )
-    );
+    // Renderizar Armería
+    const gridEl = document.getElementById("weapons-grid");
+    WEAPONS.forEach(w => {
+      const card = document.createElement("div");
+      card.className = "weapon-card";
+      card.innerHTML = `
+        <h4>${w.name}</h4>
+        <div>Daño: ${w.damage}</div>
+        <div>Cadencia: ${w.cooldown}ms</div>
+      `;
+      gridEl.appendChild(card);
+    });
 
-    renderer.shadowMap.enabled =
-      true;
+    function showInfoScreen() {
+      document.getElementById("menu-screen").style.display = "none";
+      document.getElementById("info-screen").style.display = "flex";
+    }
 
-    document
-      .getElementById("game")
-      .appendChild(
-        renderer.domElement
-      );
+    function hideInfoScreen() {
+      document.getElementById("info-screen").style.display = "none";
+      document.getElementById("menu-screen").style.display = "flex";
+    }
 
+    function setStatus(msg) {
+      document.getElementById("status-msg").textContent = msg;
+    }
 
-    /* =========================
-       LUCES
-    ========================= */
+    function connectToGame() {
+      const nameInput = document.getElementById("player-name").value.trim();
+      const codeInput = document.getElementById("room-code").value.trim();
 
-    const ambient =
-      new THREE.HemisphereLight(
-        0xb9d5ff,
-        0x152416,
-        1.5
-      );
-
-    scene.add(ambient);
-
-
-    const sun =
-      new THREE.DirectionalLight(
-        0xffedc4,
-        2.4
-      );
-
-    sun.position.set(
-      -80,
-      110,
-      50
-    );
-
-    sun.castShadow = true;
-
-    scene.add(sun);
-
-
-    /* =========================
-       TERRENO
-    ========================= */
-
-    const WORLD =
-      560;
-
-
-    const ground =
-      new THREE.Mesh(
-
-        new THREE.PlaneGeometry(
-          WORLD,
-          WORLD
-        ),
-
-        new THREE.MeshStandardMaterial({
-          color: 0x183625,
-          roughness: 1
-        })
-
-      );
-
-
-    ground.rotation.x =
-      -Math.PI / 2;
-
-    ground.receiveShadow =
-      true;
-
-    scene.add(ground);
-
-
-    /* =========================
-       ZONAS
-    ========================= */
-
-    const zones = [
-
-      {
-        name:
-          "Pradera Central",
-
-        x: 0,
-        z: 0,
-
-        radius: 110,
-
-        color:
-          0x355e2e
-      },
-
-      {
-        name:
-          "Bosque Sombrío",
-
-        x: -155,
-        z: -135,
-
-        radius: 115,
-
-        color:
-          0x123b25
-      },
-
-      {
-        name:
-          "Valle de Nieve",
-
-        x: 160,
-        z: -140,
-
-        radius: 108,
-
-        color:
-          0xb8d4dc
-      },
-
-      {
-        name:
-          "Desierto Dorado",
-
-        x: -160,
-        z: 160,
-
-        radius: 108,
-
-        color:
-          0x9b7047
-      },
-
-      {
-        name:
-          "Tierras Volcánicas",
-
-        x: 160,
-        z: 160,
-
-        radius: 108,
-
-        color:
-          0x451b1b
-      },
-
-      {
-        name:
-          "Pantano Azul",
-
-        x: 0,
-        z: 215,
-
-        radius: 78,
-
-        color:
-          0x173d45
-      },
-
-      {
-        name:
-          "Montañas",
-
-        x: 0,
-        z: -225,
-
-        radius: 95,
-
-        color:
-          0x394454
+      if (!nameInput || !codeInput) {
+        setStatus("¡Escribe tu nombre y el código de sala!");
+        return;
       }
 
-    ];
-
-
-    for (
-      const zone of zones
-    ) {
-
-      const area =
-        new THREE.Mesh(
-
-          new THREE.CircleGeometry(
-            zone.radius,
-            80
-          ),
-
-          new THREE.MeshStandardMaterial({
-            color:
-              zone.color,
-
-            roughness: 1
-          })
-
-        );
-
-
-      area.rotation.x =
-        -Math.PI / 2;
-
-
-      area.position.set(
-        zone.x,
-        .02,
-        zone.z
-      );
-
-
-      scene.add(area);
-
-    }
-
-
-    /* =========================
-       ÁRBOLES
-    ========================= */
-
-    function createTree(
-      x,
-      z,
-      scale
-    ) {
-
-      const tree =
-        new THREE.Group();
-
-
-      const trunk =
-        new THREE.Mesh(
-
-          new THREE.CylinderGeometry(
-            .28,
-            .52,
-            3.6,
-            10
-          ),
-
-          new THREE.MeshStandardMaterial({
-            color:
-              0x50321e
-          })
-
-        );
-
-
-      trunk.position.y =
-        1.8;
-
-
-      tree.add(trunk);
-
-
-      for (
-        let i = 0;
-        i < 4;
-        i++
-      ) {
-
-        const leaves =
-          new THREE.Mesh(
-
-            new THREE.ConeGeometry(
-              2.2 - i * .3,
-              3.2,
-              12
-            ),
-
-            new THREE.MeshStandardMaterial({
-              color:
-                i % 2
-                  ? 0x155c31
-                  : 0x0d4c2b
-            })
-
-          );
-
-
-        leaves.position.y =
-          3.3 + i * 1.2;
-
-
-        tree.add(leaves);
-
-      }
-
-
-      tree.position.set(
-        x,
-        0,
-        z
-      );
-
-
-      tree.scale.setScalar(
-        scale
-      );
-
-
-      scene.add(tree);
-
-    }
-
-
-    /* =========================
-       ROCAS
-    ========================= */
-
-    function createRock(
-      x,
-      z,
-      scale
-    ) {
-
-      const rock =
-        new THREE.Mesh(
-
-          new THREE.DodecahedronGeometry(
-            1.5 * scale
-          ),
-
-          new THREE.MeshStandardMaterial({
-            color:
-              0x62686d
-          })
-
-        );
-
-
-      rock.position.set(
-        x,
-        .7 * scale,
-        z
-      );
-
-
-      scene.add(rock);
-
-    }
-
-
-    /* =========================
-       ARBUSTOS
-    ========================= */
-
-    function createBush(
-      x,
-      z
-    ) {
-
-      const bush =
-        new THREE.Group();
-
-
-      for (
-        let i = 0;
-        i < 6;
-        i++
-      ) {
-
-        const leaf =
-          new THREE.Mesh(
-
-            new THREE.SphereGeometry(
-              .7,
-              10,
-              8
-            ),
-
-            new THREE.MeshStandardMaterial({
-              color:
-                0x0d6a36
-            })
-
-          );
-
-
-        leaf.position.set(
-
-          (Math.random() - .5) * 1.7,
-
-          .6 +
-          Math.random() * .6,
-
-          (Math.random() - .5) * 1.7
-
-        );
-
-
-        bush.add(leaf);
-
-      }
-
-
-      bush.position.set(
-        x,
-        0,
-        z
-      );
-
-
-      scene.add(bush);
-
-    }
-
-
-    /* =========================
-       GENERAR MUNDO
-    ========================= */
-
-    for (
-      let i = 0;
-      i < 360;
-      i++
-    ) {
-
-      const x =
-        (Math.random() - .5) * 530;
-
-      const z =
-        (Math.random() - .5) * 530;
-
-
-      if (
-        Math.hypot(x, z) < 18
-      ) {
-
-        continue;
-
-      }
-
-
-      createTree(
-        x,
-        z,
-        .55 + Math.random()
-      );
-
-
-      if (
-        i % 3 === 0
-      ) {
-
-        createRock(
-          x + 2,
-          z + 2,
-          .5 + Math.random()
-        );
-
-      }
-
-
-      if (
-        i % 4 === 0
-      ) {
-
-        createBush(
-          x - 2,
-          z + 3
-        );
-
-      }
-
-    }
-
-
-    /* =========================
-       50 ESPÍRITUS
-    ========================= */
-
-    const spiritNames = [
-
-      "Bruma",
-      "Frost",
-      "Volt",
-      "Umbra",
-      "Terra",
-      "Luma",
-      "Nébula",
-      "Rayo",
-      "Moss",
-      "Flare",
-
-      "Aqua",
-      "Cinder",
-      "Gale",
-      "Bloom",
-      "Rune",
-      "Echo",
-      "Nova",
-      "Glace",
-      "Ember",
-      "Mistral",
-
-      "Solaris",
-      "Lunar",
-      "Thorn",
-      "Pebble",
-      "Mist",
-      "Spark",
-      "Coral",
-      "Shade",
-      "Breeze",
-      "Flint",
-
-      "Willow",
-      "Comet",
-      "Dusk",
-      "Aurora",
-      "Vine",
-      "Storm",
-      "Quartz",
-      "Ash",
-      "River",
-      "Cloud",
-
-      "Pyro",
-      "Frostbite",
-      "Glow",
-      "Magma",
-      "Leaf",
-      "Star",
-      "Thunder",
-      "Crystal",
-      "Spiritus",
-      "Zen"
-
-    ];
-
-
-    const spiritColors = [
-
-      0x8effc4,
-      0x9eeaff,
-      0xfff34d,
-      0xb66cff,
-      0xff835d
-
-    ];
-
-
-    const spirits = [];
-
-
-    for (
-      let i = 0;
-      i < 50;
-      i++
-    ) {
-
-      const spirit =
-        new THREE.Group();
-
-
-      const color =
-        spiritColors[
-          i % spiritColors.length
-        ];
-
-
-      const glow =
-        new THREE.PointLight(
-          color,
-          1.7,
-          10
-        );
-
-
-      glow.position.y =
-        2;
-
-
-      spirit.add(glow);
-
-
-      const body =
-        new THREE.Mesh(
-
-          new THREE.IcosahedronGeometry(
-            .75,
-            2
-          ),
-
-          new THREE.MeshStandardMaterial({
-
-            color,
-
-            emissive:
-              color,
-
-            emissiveIntensity:
-              1.2,
-
-            transparent:
-              true,
-
-            opacity:
-              .84
-
-          })
-
-        );
-
-
-      body.position.y =
-        1.8;
-
-
-      spirit.add(body);
-
-
-      spirit.position.set(
-
-        (Math.random() - .5) * 510,
-
-        0,
-
-        (Math.random() - .5) * 510
-
-      );
-
-
-      scene.add(spirit);
-
-
-      spirits.push({
-
-        object:
-          spirit,
-
-        name:
-          spiritNames[i],
-
-        level:
-          1 + Math.floor(i / 10),
-
-        health:
-          100 +
-          Math.floor(i / 10) * 25,
-
-        active:
-          true,
-
-        phase:
-          Math.random() * 10,
-
-        direction:
-          new THREE.Vector3(
-            Math.random() - .5,
-            0,
-            Math.random() - .5
-          ).normalize()
-
-      });
-
-    }
-
-
-    /* =========================
-       RECURSOS
-    ========================= */
-
-    const etherItems = [];
-    const capsules = [];
-
-
-    function createResource(
-      type,
-      x,
-      z
-    ) {
-
-      const group =
-        new THREE.Group();
-
-
-      const color =
-        type === "ether"
-          ? 0x7f6cff
-          : 0xffd45a;
-
-
-      const crystal =
-        new THREE.Mesh(
-
-          new THREE.IcosahedronGeometry(
-            .36,
-            1
-          ),
-
-          new THREE.MeshStandardMaterial({
-
-            color,
-
-            emissive:
-              color,
-
-            emissiveIntensity:
-              1.5
-
-          })
-
-        );
-
-
-      crystal.position.y =
-        .8;
-
-
-      group.add(crystal);
-
-
-      group.position.set(
-        x,
-        0,
-        z
-      );
-
-
-      scene.add(group);
-
-
-      return group;
-
-    }
-
-
-    for (
-      let i = 0;
-      i < 150;
-      i++
-    ) {
-
-      etherItems.push({
-
-        object:
-          createResource(
-
-            "ether",
-
-            (Math.random() - .5) * 510,
-
-            (Math.random() - .5) * 510
-
-          ),
-
-        active:
-          true
-
-      });
-
-    }
-
-
-    for (
-      let i = 0;
-      i < 100;
-      i++
-    ) {
-
-      capsules.push({
-
-        object:
-          createResource(
-
-            "capsule",
-
-            (Math.random() - .5) * 510,
-
-            (Math.random() - .5) * 510
-
-          ),
-
-        active:
-          true
-
-      });
-
-    }
-
-
-    /* =========================
-       PERSONAJES
-    ========================= */
-
-    const characters = [
-
-      {
-        name:
-          "Explorador",
-
-        speed:
-          5.2,
-
-        color:
-          0x2e78d8
-      },
-
-      {
-        name:
-          "Guardabosques",
-
-        speed:
-          6.3,
-
-        color:
-          0x3b9b54
-      },
-
-      {
-        name:
-          "Nómada",
-
-        speed:
-          5.7,
-
-        color:
-          0xc28a3a
-      },
-
-      {
-        name:
-          "Astral",
-
-        speed:
-          5.1,
-
-        color:
-          0x7d54e8
-      }
-
-    ];
-
-
-    let selectedCharacter = 0;
-
-
-    function createPlayer() {
-
-      const player =
-        new THREE.Group();
-
-
-      const skin =
-        new THREE.MeshStandardMaterial({
-          color:
-            0xd79b74
+      myName = nameInput;
+      document.getElementById("hud-name").textContent = myName;
+      setStatus("Conectando con la red...");
+
+      const roomPrefix = "pixelgames-spirit-4d-ultra-";
+      const hostPeerId = roomPrefix + codeInput;
+
+      peer = new Peer();
+
+      peer.on('open', (id) => {
+        myId = id;
+        const conn = peer.connect(hostPeerId, { metadata: { name: myName } });
+
+        conn.on('open', () => {
+          isHost = false;
+          hostConn = conn;
+          setStatus("¡Conectado a la partida!");
+          startGameUI();
+          setupClientListeners(conn);
         });
 
+        setTimeout(() => {
+          if (!hostConn) {
+            conn.close();
+            peer.destroy();
+            peer = new Peer(hostPeerId);
 
-      const clothes =
-        new THREE.MeshStandardMaterial({
-          color:
-            characters[
-              selectedCharacter
-            ].color
-        });
+            peer.on('open', () => {
+              isHost = true;
+              setStatus("Sala creada (Host)");
+              players[myId] = createPlayer(myId, myName, true);
+              startGameUI();
+              setupHostListeners();
+              spawnInitialPowerups();
+            });
 
-
-      const pants =
-        new THREE.MeshStandardMaterial({
-          color:
-            0x202638
-        });
-
-
-      const head =
-        new THREE.Mesh(
-
-          new THREE.SphereGeometry(
-            .5,
-            20,
-            16
-          ),
-
-          skin
-
-        );
-
-
-      head.position.y =
-        2.45;
-
-
-      player.add(head);
-
-
-      const body =
-        new THREE.Mesh(
-
-          new THREE.BoxGeometry(
-            .78,
-            1.05,
-            .54
-          ),
-
-          clothes
-
-        );
-
-
-      body.position.y =
-        1.55;
-
-
-      player.add(body);
-
-
-      for (
-        const x of [-.24, .24]
-      ) {
-
-        const leg =
-          new THREE.Mesh(
-
-            new THREE.BoxGeometry(
-              .25,
-              .9,
-              .3
-            ),
-
-            pants
-
-          );
-
-
-        leg.position.set(
-          x,
-          .63,
-          0
-        );
-
-
-        player.add(leg);
-
-      }
-
-
-      return player;
-
+            peer.on('error', () => {
+              setStatus("Error al crear o unirse a la sala.");
+            });
+          }
+        }, 1200);
+      });
     }
 
-
-    const player =
-      createPlayer();
-
-
-    scene.add(player);
-
-
-    /* =========================
-       ESTADO
-    ========================= */
-
-    let health = 100;
-
-    let capsuleCount = 25;
-
-    let etherCount = 0;
-
-    let capturedCount = 0;
-
-    let playerLevel = 1;
-
-    let playing = false;
-
-    let paused = false;
-
-    let gameTime = 0;
-
-    let cameraMode = 0;
-
-
-    const keys = {
-
-      w: false,
-      a: false,
-      s: false,
-      d: false
-
-    };
-
-
-    /* =========================
-       ZONA ACTUAL
-    ========================= */
-
-    function currentZone(
-      x,
-      z
-    ) {
-
-      let closest =
-        zones[0];
-
-      let distance =
-        Infinity;
-
-
-      for (
-        const zone of zones
-      ) {
-
-        const d =
-          (x - zone.x) ** 2 +
-          (z - zone.z) ** 2;
-
-
-        if (
-          d < distance
-        ) {
-
-          distance = d;
-
-          closest = zone;
-
-        }
-
-      }
-
-
-      return closest.name;
-
-    }
-
-
-    /* =========================
-       HUD
-    ========================= */
-
-    function updateHUD() {
-
-      document
-        .getElementById(
-          "health-text"
-        )
-        .textContent =
-        Math.round(
-          health
-        ) + "%";
-
-
-      document
-        .getElementById(
-          "health-bar"
-        )
-        .style.width =
-        health + "%";
-
-
-      document
-        .getElementById(
-          "capsules"
-        )
-        .textContent =
-        capsuleCount;
-
-
-      document
-        .getElementById(
-          "ether"
-        )
-        .textContent =
-        etherCount;
-
-
-      document
-        .getElementById(
-          "captured"
-        )
-        .textContent =
-        capturedCount;
-
-
-      document
-        .getElementById(
-          "level"
-        )
-        .textContent =
-        playerLevel;
-
-
-      document
-        .getElementById(
-          "zone"
-        )
-        .textContent =
-        currentZone(
-          player.position.x,
-          player.position.z
-        );
-
-    }
-
-
-    /* =========================
-       RECOGER
-    ========================= */
-
-    function collectItems() {
-
-      for (
-        const item of etherItems
-      ) {
-
-        if (
-
-          item.active &&
-
-          player.position.distanceTo(
-            item.object.position
-          ) < 2.5
-
-        ) {
-
-          item.active =
-            false;
-
-          item.object.visible =
-            false;
-
-          etherCount += 5;
-
-        }
-
-      }
-
-
-      for (
-        const item of capsules
-      ) {
-
-        if (
-
-          item.active &&
-
-          player.position.distanceTo(
-            item.object.position
-          ) < 2.5
-
-        ) {
-
-          item.active =
-            false;
-
-          item.object.visible =
-            false;
-
-          capsuleCount += 2;
-
-        }
-
-      }
-
-    }
-
-
-    /* =========================
-       ESPÍRITU CERCANO
-    ========================= */
-
-    function nearestSpirit() {
-
-      let closest = null;
-
-      let distance =
-        Infinity;
-
-
-      for (
-        const spirit of spirits
-      ) {
-
-        if (
-          !spirit.active
-        )
-          continue;
-
-
-        const d =
-          player.position.distanceTo(
-            spirit.object.position
-          );
-
-
-        if (
-          d < distance
-        ) {
-
-          distance = d;
-
-          closest = spirit;
-
-        }
-
-      }
-
-
+    function createPlayer(id, name, isLocal) {
       return {
-        spirit:
-          closest,
-
-        distance:
-          distance
+        id: id,
+        name: name,
+        x: 100 + Math.random() * 700,
+        y: 100 + Math.random() * 450,
+        hp: 100,
+        kills: 0,
+        speedBoostUntil: 0,
+        angle: 0,
+        color: isLocal ? "#00e5ff" : "#f43f5e"
       };
-
     }
 
-
-    /* =========================
-       LANZAR
-    ========================= */
-
-    function throwSpirit() {
-
-      if (
-        capsuleCount <= 0
-      )
-        return;
-
-
-      const result =
-        nearestSpirit();
-
-
-      if (
-
-        !result.spirit ||
-
-        result.distance > 10
-
-      )
-        return;
-
-
-      capsuleCount--;
-
-
-      result.spirit.health =
-        Math.max(
-          0,
-          result.spirit.health - 40
-        );
-
+    function startGameUI() {
+      document.getElementById("menu-screen").style.display = "none";
+      document.getElementById("hud").style.display = "flex";
+      requestAnimationFrame(gameLoop);
     }
 
-
-    /* =========================
-       ATRAPAR
-    ========================= */
-
-    function captureSpirit() {
-
-      if (
-        capsuleCount <= 0
-      )
-        return;
-
-
-      const result =
-        nearestSpirit();
-
-
-      if (
-
-        !result.spirit ||
-
-        result.distance > 7
-
-      )
-        return;
-
-
-      capsuleCount--;
-
-
-      const chance =
-        .32 +
-
-        playerLevel * .055 +
-
-        (
-          result.spirit.health < 70
-            ? .22
-            : 0
-        );
-
-
-      if (
-        Math.random() < chance
-      ) {
-
-        result.spirit.active =
-          false;
-
-        result.spirit.object.visible =
-          false;
-
-        capturedCount++;
-
-
-        playerLevel =
-          1 +
-          Math.floor(
-            capturedCount / 10
-          );
-
-      }
-
-      else {
-
-        health =
-          Math.max(
-            0,
-            health -
-            (
-              5 +
-              result.spirit.level
-            )
-          );
-
-      }
-
-    }
-
-
-    /* =========================
-       TECLADO
-    ========================= */
-
-    window.addEventListener(
-      "keydown",
-      event => {
-
-        const key =
-          event.key.toLowerCase();
-
-
-        if (
-          key === "w" ||
-          key === "arrowup"
-        )
-          keys.w = true;
-
-
-        if (
-          key === "a" ||
-          key === "arrowleft"
-        )
-          keys.a = true;
-
-
-        if (
-          key === "s" ||
-          key === "arrowdown"
-        )
-          keys.s = true;
-
-
-        if (
-          key === "d" ||
-          key === "arrowright"
-        )
-          keys.d = true;
-
-
-        if (key === "q")
-          throwSpirit();
-
-
-        if (key === "e")
-          captureSpirit();
-
-
-        if (key === "c")
-          cameraMode =
-            (cameraMode + 1) % 3;
-
-      }
-    );
-
-
-    window.addEventListener(
-      "keyup",
-      event => {
-
-        const key =
-          event.key.toLowerCase();
-
-
-        if (
-          key === "w" ||
-          key === "arrowup"
-        )
-          keys.w = false;
-
-
-        if (
-          key === "a" ||
-          key === "arrowleft"
-        )
-          keys.a = false;
-
-
-        if (
-          key === "s" ||
-          key === "arrowdown"
-        )
-          keys.s = false;
-
-
-        if (
-          key === "d" ||
-          key === "arrowright"
-        )
-          keys.d = false;
-
-      }
-    );
-
-
-    /* =========================
-       BOTONES TABLET
-    ========================= */
-
-    document
-      .getElementById("throw")
-      .addEventListener(
-        "pointerdown",
-        throwSpirit
-      );
-
-
-    document
-      .getElementById("capture")
-      .addEventListener(
-        "pointerdown",
-        captureSpirit
-      );
-
-
-    document
-      .getElementById("collect")
-      .addEventListener(
-        "pointerdown",
-        collectItems
-      );
-
-
-    document
-      .getElementById("camera")
-      .addEventListener(
-        "pointerdown",
-        () => {
-
-          cameraMode =
-            (cameraMode + 1) % 3;
-
-        }
-      );
-
-
-    /* =========================
-       JOYSTICK
-    ========================= */
-
-    const joystick =
-      document.getElementById(
-        "joystick"
-      );
-
-
-    const knob =
-      document.getElementById(
-        "joystick-knob"
-      );
-
-
-    let pointerId = null;
-
-
-    joystick.addEventListener(
-      "pointerdown",
-      event => {
-
-        pointerId =
-          event.pointerId;
-
-        joystick.setPointerCapture(
-          pointerId
-        );
-
-        moveJoystick(
-          event
-        );
-
-      }
-    );
-
-
-    joystick.addEventListener(
-      "pointermove",
-      event => {
-
-        if (
-          event.pointerId ===
-          pointerId
-        ) {
-
-          moveJoystick(
-            event
-          );
-
+    function setupHostListeners() {
+      peer.on('connection', (conn) => {
+        if (Object.keys(players).length >= 5) {
+          conn.close();
+          return;
         }
 
+        conn.on('open', () => {
+          const newPlayerId = conn.peer;
+          connections[newPlayerId] = conn;
+          players[newPlayerId] = createPlayer(newPlayerId, conn.metadata.name || "Jugador", false);
+
+          conn.on('data', (data) => {
+            if (data.type === 'input') {
+              if (players[newPlayerId]) {
+                players[newPlayerId].x = data.x;
+                players[newPlayerId].y = data.y;
+                players[newPlayerId].angle = data.angle;
+              }
+            } else if (data.type === 'shoot') {
+              spawnBullet(data.x, data.y, data.angle, data.weaponIndex, newPlayerId);
+            }
+          });
+
+          conn.on('close', () => {
+            delete players[newPlayerId];
+            delete connections[newPlayerId];
+          });
+        });
+      });
+    }
+
+    function setupClientListeners(conn) {
+      conn.on('data', (data) => {
+        if (data.type === 'state') {
+          players = data.players;
+          bullets = data.bullets;
+          powerups = data.powerups || [];
+
+          if (data.hitEvent) {
+            playHitSound();
+            createParticles(data.hitEvent.x, data.hitEvent.y, "#ef4444", 10);
+          }
+
+          if (data.powerupEvent) {
+            playPowerupSound();
+            createParticles(data.powerupEvent.x, data.powerupEvent.y, data.powerupEvent.color, 12);
+          }
+
+          if (players[myId]) {
+            const myHp = Math.max(0, players[myId].hp);
+            document.getElementById("health-bar").style.width = myHp + "%";
+          }
+
+          updateLeaderboardUI();
+        }
+      });
+    }
+
+    function updateLeaderboardUI() {
+      const leaderList = document.getElementById("leader-list");
+      leaderList.innerHTML = "";
+
+      const sorted = Object.values(players).sort((a, b) => b.kills - a.kills);
+      sorted.forEach(p => {
+        const row = document.createElement("div");
+        row.className = `leader-row ${p.id === myId ? 'me' : ''}`;
+        row.innerHTML = `<span>${p.name}</span><span>${p.kills} Kills</span>`;
+        leaderList.appendChild(row);
+      });
+    }
+
+    // TECLADO Y MOVIMIENTO RÁPIDO
+    window.addEventListener('keydown', (e) => {
+      keys[e.key.toLowerCase()] = true;
+
+      if (e.key >= '1' && e.key <= '9') {
+        activeWeaponIndex = (parseInt(e.key) - 1) * 5;
+        updateWeaponHUD();
       }
-    );
+    });
 
+    window.addEventListener('keyup', (e) => {
+      keys[e.key.toLowerCase()] = false;
+    });
 
-    joystick.addEventListener(
-      "pointerup",
-      resetJoystick
-    );
-
-
-    joystick.addEventListener(
-      "pointercancel",
-      resetJoystick
-    );
-
-
-    function moveJoystick(
-      event
-    ) {
-
-      const rect =
-        joystick.getBoundingClientRect();
-
-
-      const dx =
-        event.clientX -
-        rect.left -
-        rect.width / 2;
-
-
-      const dy =
-        event.clientY -
-        rect.top -
-        rect.height / 2;
-
-
-      const length =
-        Math.min(
-          50,
-          Math.hypot(
-            dx,
-            dy
-          )
-        );
-
-
-      const angle =
-        Math.atan2(
-          dy,
-          dx
-        );
-
-
-      knob.style.left =
-        43 +
-        Math.cos(angle) *
-        length +
-        "px";
-
-
-      knob.style.top =
-        43 +
-        Math.sin(angle) *
-        length +
-        "px";
-
-
-      keys.a =
-        dx < -18;
-
-      keys.d =
-        dx > 18;
-
-      keys.w =
-        dy < -18;
-
-      keys.s =
-        dy > 18;
-
-    }
-
-
-    function resetJoystick() {
-
-      pointerId = null;
-
-      knob.style.left =
-        "43px";
-
-      knob.style.top =
-        "43px";
-
-
-      keys.a =
-        keys.d =
-        keys.w =
-        keys.s =
-        false;
-
-    }
-
-
-    /* =========================
-       MAPA
-    ========================= */
-
-    function drawMap() {
-
-      const canvas =
-        document.getElementById(
-          "map-canvas"
-        );
-
-
-      const ctx =
-        canvas.getContext(
-          "2d"
-        );
-
-
-      ctx.clearRect(
-        0,
-        0,
-        210,
-        210
-      );
-
-
-      ctx.fillStyle =
-        "#173b2a";
-
-
-      ctx.fillRect(
-        0,
-        0,
-        210,
-        210
-      );
-
-
-      for (
-        const zone of zones
-      ) {
-
-        ctx.fillStyle =
-          "#ffffff18";
-
-
-        ctx.beginPath();
-
-
-        ctx.arc(
-
-          (zone.x + 280) /
-          560 * 210,
-
-          (zone.z + 280) /
-          560 * 210,
-
-          zone.radius / 3,
-
-          0,
-          Math.PI * 2
-
-        );
-
-
-        ctx.fill();
-
+    window.addEventListener('wheel', (e) => {
+      if (e.deltaY > 0) {
+        activeWeaponIndex = (activeWeaponIndex + 1) % WEAPONS.length;
+      } else {
+        activeWeaponIndex = (activeWeaponIndex - 1 + WEAPONS.length) % WEAPONS.length;
       }
+      updateWeaponHUD();
+    });
 
-
-      ctx.fillStyle =
-        "#58a6ff";
-
-
-      ctx.beginPath();
-
-
-      ctx.arc(
-
-        (player.position.x + 280) /
-        560 * 210,
-
-        (player.position.z + 280) /
-        560 * 210,
-
-        5,
-
-        0,
-        Math.PI * 2
-
-      );
-
-
-      ctx.fill();
-
+    function updateWeaponHUD() {
+      const w = WEAPONS[activeWeaponIndex];
+      document.getElementById("active-weapon-display").textContent = w.name;
     }
 
+    let mouseX = 0, mouseY = 0;
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
 
-    /* =========================
-       GUARDAR
-    ========================= */
+    canvas.addEventListener('mousedown', (e) => {
+      if (e.button === 0 && players[myId] && players[myId].hp > 0) {
+        const now = Date.now();
+        const weapon = WEAPONS[activeWeaponIndex];
 
-    function saveGame() {
+        if (now - lastShotTime >= weapon.cooldown) {
+          lastShotTime = now;
+          const p = players[myId];
 
-      localStorage.setItem(
+          playShotSound(weapon.freq);
 
-        "spirit3000Save",
+          if (isHost) {
+            spawnBullet(p.x, p.y, p.angle, activeWeaponIndex, myId);
+          } else if (hostConn) {
+            hostConn.send({
+              type: 'shoot',
+              x: p.x,
+              y: p.y,
+              angle: p.angle,
+              weaponIndex: activeWeaponIndex
+            });
+          }
+        }
+      }
+    });
 
-        JSON.stringify({
-
-          x:
-            player.position.x,
-
-          z:
-            player.position.z,
-
-          health,
-
-          capsuleCount,
-
-          etherCount,
-
-          capturedCount,
-
-          playerLevel
-
-        })
-
-      );
-
+    function spawnBullet(x, y, angle, weaponIndex, ownerId) {
+      const w = WEAPONS[weaponIndex];
+      bullets.push({
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * w.speed,
+        vy: Math.sin(angle) * w.speed,
+        damage: w.damage,
+        color: w.color,
+        ownerId: ownerId,
+        life: 70
+      });
+      createParticles(x, y, w.color, 5);
     }
 
+    function spawnInitialPowerups() {
+      powerups = [
+        { id: 1, x: 200, y: 150, type: 'health', icon: '❤️', color: '#ef4444' },
+        { id: 2, x: 750, y: 500, type: 'speed', icon: '⚡', color: '#f59e0b' },
+        { id: 3, x: 475, y: 325, type: 'health', icon: '❤️', color: '#ef4444' }
+      ];
+    }
 
-    /* =========================
-       ACTUALIZACIÓN
-    ========================= */
+    function createParticles(x, y, color, count) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
+          size: 2 + Math.random() * 4,
+          color: color,
+          life: 20
+        });
+      }
+    }
+
+    // Bucle Principal
+    function gameLoop() {
+      update();
+      render4D();
+      requestAnimationFrame(gameLoop);
+    }
 
     function update() {
-
-      if (
-        !playing ||
-        paused
-      )
-        return;
-
-
-      const delta =
-        0.016;
-
-
-      const forward =
-        (keys.w ? 1 : 0) -
-        (keys.s ? 1 : 0);
-
-
-      const sideways =
-        (keys.d ? 1 : 0) -
-        (keys.a ? 1 : 0);
-
-
-      const speed =
-        characters[
-          selectedCharacter
-        ].speed;
-
-
-      player.position.z +=
-        forward *
-        speed *
-        delta;
-
-
-      player.position.x +=
-        sideways *
-        speed *
-        delta;
-
-
-      player.position.x =
-        Math.max(
-          -270,
-          Math.min(
-            270,
-            player.position.x
-          )
-        );
-
-
-      player.position.z =
-        Math.max(
-          -270,
-          Math.min(
-            270,
-            player.position.z
-          )
-        );
-
-
-      collectItems();
-
-
-      /* Espíritus */
-
-      for (
-        const spirit of spirits
-      ) {
-
-        if (
-          !spirit.active
-        )
-          continue;
-
-
-        spirit.phase +=
-          delta;
-
-
-        if (
-          Math.random() < .006
-        ) {
-
-          spirit.direction
-            .applyAxisAngle(
-
-              new THREE.Vector3(
-                0,
-                1,
-                0
-              ),
-
-              (Math.random() - .5) *
-              1.8
-
-            )
-            .normalize();
-
+      const p = players[myId];
+      if (p && p.hp > 0) {
+        let currentSpeed = 7.5;
+        if (Date.now() < (p.speedBoostUntil || 0)) {
+          currentSpeed = 11.5; // Booster velocitat
         }
 
+        if (keys['w'] || keys['arrowup']) p.y = Math.max(30, p.y - currentSpeed);
+        if (keys['s'] || keys['arrowdown']) p.y = Math.min(canvas.height - 30, p.y + currentSpeed);
+        if (keys['a'] || keys['arrowleft']) p.x = Math.max(30, p.x - currentSpeed);
+        if (keys['d'] || keys['arrowright']) p.x = Math.min(canvas.width - 30, p.x + currentSpeed);
 
-        spirit.object
-          .position
-          .addScaledVector(
+        p.angle = Math.atan2(mouseY - p.y, mouseX - p.x);
 
-            spirit.direction,
-
-            delta *
-            (
-              .7 +
-              spirit.level * .14
-            )
-
-          );
-
-
-        spirit.object.position.x =
-          Math.max(
-            -270,
-            Math.min(
-              270,
-              spirit.object.position.x
-            )
-          );
-
-
-        spirit.object.position.z =
-          Math.max(
-            -270,
-            Math.min(
-              270,
-              spirit.object.position.z
-            )
-          );
-
-
-        spirit.object.position.y =
-          .3 +
-          Math.sin(
-            spirit.phase * 2
-          ) * .25;
-
-
-        if (
-
-          player.position.distanceTo(
-            spirit.object.position
-          ) < 2.4
-
-        ) {
-
-          health =
-            Math.max(
-              0,
-              health -
-              delta *
-              (
-                1 +
-                spirit.level * .3
-              )
-            );
-
+        if (!isHost && hostConn) {
+          hostConn.send({
+            type: 'input',
+            x: p.x,
+            y: p.y,
+            angle: p.angle
+          });
         }
-
       }
 
-
-      /* Día y noche */
-
-      gameTime +=
-        delta;
-
-
-      const daylight =
-        (
-          Math.sin(
-            gameTime * .12
-          ) + 1
-        ) / 2;
-
-
-      sun.intensity =
-        .35 +
-        daylight * 2.2;
-
-
-      scene.background
-        .setHSL(
-
-          .62,
-
-          .44,
-
-          .025 +
-          daylight * .055
-
-        );
-
-
-      scene.fog.color.copy(
-        scene.background
-      );
-
-
-      if (
-        health <= 0
-      ) {
-
-        health = 100;
-
-        player.position.set(
-          0,
-          0,
-          0
-        );
-
+      // Actualitzar Partícules
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.life--;
+        if (pt.life <= 0) particles.splice(i, 1);
       }
 
-
-      updateHUD();
-
-      drawMap();
-
-
-      /* Cámara */
-
-      const target =
-        new THREE.Vector3(
-
-          player.position.x,
-
-          1.3,
-
-          player.position.z
-
-        );
-
-
-      let distance = 9;
-
-
-      if (
-        cameraMode === 1
-      )
-        distance = 16;
-
-
-      if (
-        cameraMode === 2
-      )
-        distance = 4;
-
-
-      const cameraHeight =
-        cameraMode === 2
-          ? 2.8
-          : 5;
-
-
-      camera.position.lerp(
-
-        target.clone().add(
-
-          new THREE.Vector3(
-            0,
-            cameraHeight,
-            distance
-          )
-
-        ),
-
-        .09
-
-      );
-
-
-      camera.lookAt(
-        target
-      );
-
-    }
-
-
-    /* =========================
-       BUCLE
-    ========================= */
-
-    function loop() {
-
-      requestAnimationFrame(
-        loop
-      );
-
-      update();
-
-      renderer.render(
-        scene,
-        camera
-      );
-
-    }
-
-
-    loop();
-
-
-    /* =========================
-       JUGAR
-    ========================= */
-
-    document
-      .getElementById("play")
-      .onclick = () => {
-
-        playing = true;
-
-        document
-          .getElementById(
-            "menu"
-          )
-          .style.display =
-          "none";
-
-
-        document
-          .getElementById(
-            "hud"
-          )
-          .style.display =
-          "flex";
-
-
-        document
-          .getElementById(
-            "controls"
-          )
-          .style.display =
-          "block";
-
-      };
-
-
-    /* =========================
-       PAUSA
-    ========================= */
-
-    document
-      .getElementById(
-        "pause-button"
-      )
-      .onclick = () => {
-
-        paused = true;
-
-        document
-          .getElementById(
-            "pause"
-          )
-          .style.display =
-          "flex";
-
-      };
-
-
-    document
-      .getElementById(
-        "resume"
-      )
-      .onclick = () => {
-
-        paused = false;
-
-        document
-          .getElementById(
-            "pause"
-          )
-          .style.display =
-          "none";
-
-      };
-
-
-    /* =========================
-       VOLVER
-    ========================= */
-
-    document
-      .getElementById(
-        "back"
-      )
-      .onclick = () => {
-
-        paused = false;
-
-        playing = false;
-
-
-        document
-          .getElementById(
-            "pause"
-          )
-          .style.display =
-          "none";
-
-
-        document
-          .getElementById(
-            "hud"
-          )
-          .style.display =
-          "none";
-
-
-        document
-          .getElementById(
-            "controls"
-          )
-          .style.display =
-          "none";
-
-
-        document
-          .getElementById(
-            "menu"
-          )
-          .style.display =
-          "flex";
-
-      };
-
-
-    /* =========================
-       GUARDAR
-    ========================= */
-
-    document
-      .getElementById(
-        "save"
-      )
-      .onclick =
-      saveGame;
-
-
-    /* =========================
-       MAPA
-    ========================= */
-
-    document
-      .getElementById(
-        "map-button"
-      )
-      .onclick = () => {
-
-        const map =
-          document.getElementById(
-            "map"
-          );
-
-
-        map.style.display =
-          map.style.display ===
-          "block"
-
-            ? "none"
-
-            : "block";
-
-
-        drawMap();
-
-      };
-
-
-    /* =========================
-       INFORMACIÓN
-    ========================= */
-
-    document
-      .getElementById(
-        "information"
-      )
-      .onclick = () => {
-
-        document
-          .getElementById(
-            "info"
-          )
-          .style.display =
-          "flex";
-
-      };
-
-
-    document
-      .getElementById(
-        "close-info"
-      )
-      .onclick = () => {
-
-        document
-          .getElementById(
-            "info"
-          )
-          .style.display =
-          "none";
-
-      };
-
-
-    /* =========================
-       LISTA DE ESPÍRITUS
-    ========================= */
-
-    const spiritList =
-      document.getElementById(
-        "spirit-list"
-      );
-
-
-    spirits.forEach(
-      (spirit, index) => {
-
-        const item =
-          document.createElement(
-            "div"
-          );
-
-
-        item.className =
-          "item";
-
-
-        item.innerHTML =
-          "<b>" +
-          (index + 1) +
-          ". " +
-          spirit.name +
-          "</b> — Nivel " +
-          spirit.level;
-
-
-        spiritList.appendChild(
-          item
-        );
-
-      }
-    );
-
-
-    /* =========================
-       TIENDA
-    ========================= */
-
-    document
-      .getElementById(
-        "shop"
-      )
-      .onclick = () => {
-
-        document
-          .getElementById(
-            "shop-screen"
-          )
-          .style.display =
-          "flex";
-
-      };
-
-
-    document
-      .getElementById(
-        "close-shop"
-      )
-      .onclick = () => {
-
-        document
-          .getElementById(
-            "shop-screen"
-          )
-          .style.display =
-          "none";
-
-      };
-
-
-    /* =========================
-       COMPRAS
-    ========================= */
-
-    document
-      .querySelectorAll(
-        ".buy"
-      )
-      .forEach(
-        button => {
-
-          button.onclick =
-            async () => {
-
-              const response =
-                await fetch(
-                  "/api/create-checkout-session",
-                  {
-                    method:
-                      "POST",
-
-                    headers: {
-                      "Content-Type":
-                        "application/json"
-                    },
-
-                    body:
-                      JSON.stringify({
-                        item:
-                          button.dataset.product
-                      })
-
+      if (isHost) {
+        let hitEvent = null;
+        let powerupEvent = null;
+
+        // Bales & Col·lisions
+        for (let i = bullets.length - 1; i >= 0; i--) {
+          let b = bullets[i];
+          b.x += b.vx;
+          b.y += b.vy;
+          b.life--;
+
+          for (let id in players) {
+            let target = players[id];
+            if (id !== b.ownerId && target.hp > 0) {
+              let dist = Math.hypot(target.x - b.x, target.y - b.y);
+              if (dist < 22) {
+                target.hp -= b.damage;
+                b.life = 0;
+                hitEvent = { x: b.x, y: b.y };
+                playHitSound();
+                createParticles(b.x, b.y, "#ef4444", 10);
+
+                // Comprovar si ha mort i sumar Kills
+                if (target.hp <= 0) {
+                  if (players[b.ownerId]) {
+                    players[b.ownerId].kills = (players[b.ownerId].kills || 0) + 1;
                   }
-                );
+                  setTimeout(() => {
+                    if (players[id]) {
+                      players[id].hp = 100;
+                      players[id].x = 100 + Math.random() * 750;
+                      players[id].y = 100 + Math.random() * 450;
+                    }
+                  }, 3000);
+                }
+                break;
+              }
+            }
+          }
 
+          if (b.life <= 0) bullets.splice(i, 1);
+        }
 
-              const data =
-                await response.json();
-
-
-              if (
-                data.url
-              ) {
-
-                window.location.href =
-                  data.url;
-
+        // Col·lisió amb Power-ups
+        for (let i = powerups.length - 1; i >= 0; i--) {
+          let pw = powerups[i];
+          for (let id in players) {
+            let player = players[id];
+            if (player.hp > 0 && Math.hypot(player.x - pw.x, player.y - pw.y) < 25) {
+              if (pw.type === 'health') {
+                player.hp = Math.min(100, player.hp + 30);
+              } else if (pw.type === 'speed') {
+                player.speedBoostUntil = Date.now() + 6000; // 6 segons de booster
               }
 
-            };
+              powerupEvent = { x: pw.x, y: pw.y, color: pw.color };
+              playPowerupSound();
+              createParticles(pw.x, pw.y, pw.color, 12);
 
+              powerups.splice(i, 1);
+
+              // Reaparèixer Powerup després d'uns segons
+              setTimeout(() => {
+                powerups.push({
+                  id: Date.now(),
+                  x: 80 + Math.random() * 790,
+                  y: 80 + Math.random() * 490,
+                  type: Math.random() > 0.5 ? 'health' : 'speed',
+                  icon: Math.random() > 0.5 ? '❤️' : '⚡',
+                  color: Math.random() > 0.5 ? '#ef4444' : '#f59e0b'
+                });
+              }, 8000);
+
+              break;
+            }
+          }
         }
-      );
 
+        const stateData = { 
+          type: 'state', 
+          players: players, 
+          bullets: bullets, 
+          powerups: powerups,
+          hitEvent: hitEvent,
+          powerupEvent: powerupEvent
+        };
 
-    /* =========================
-       CAMBIAR PERSONAJE
-    ========================= */
+        for (let connId in connections) {
+          connections[connId].send(stateData);
+        }
 
-    document
-      .getElementById(
-        "character"
-      )
-      .onclick = () => {
-
-        selectedCharacter =
-          (
-            selectedCharacter + 1
-          ) %
-          characters.length;
-
-
-        alert(
-          "Personaje seleccionado: " +
-          characters[
-            selectedCharacter
-          ].name
-        );
-
-      };
-
-
-    /* =========================
-       REDIMENSIONAR
-    ========================= */
-
-    window.addEventListener(
-      "resize",
-      () => {
-
-        camera.aspect =
-          innerWidth /
-          innerHeight;
-
-
-        camera.updateProjectionMatrix();
-
-
-        renderer.setSize(
-          innerWidth,
-          innerHeight
-        );
-
+        if (players[myId]) {
+          document.getElementById("health-bar").style.width = Math.max(0, players[myId].hp) + "%";
+        }
+        updateLeaderboardUI();
       }
-    );
+    }
 
+    // Renderitzat 4D
+    function render4D() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#0d1322";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "rgba(0, 229, 255, 0.08)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 50) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 50) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // Renderitzat Power-ups
+      powerups.forEach(pw => {
+        ctx.shadowColor = pw.color;
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
+        ctx.beginPath();
+        ctx.arc(pw.x, pw.y, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = pw.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.font = "16px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(pw.icon, pw.x, pw.y);
+        ctx.shadowBlur = 0;
+      });
+
+      // Ombres Jugadors
+      for (let id in players) {
+        let p = players[id];
+        if (p.hp <= 0) continue;
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.beginPath();
+        ctx.ellipse(p.x + 12, p.y + 16, 22, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Partícules
+      particles.forEach(pt => {
+        ctx.fillStyle = pt.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Bales
+      bullets.forEach(b => {
+        ctx.shadowColor = b.color;
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      // Jugadors
+      for (let id in players) {
+        let p = players[id];
+        if (p.hp <= 0) continue;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        ctx.beginPath();
+        ctx.arc(0, 4, 18, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = (Date.now() < (p.speedBoostUntil || 0)) ? "#f59e0b" : (id === myId ? "#00e5ff" : p.color);
+        ctx.shadowBlur = (Date.now() < (p.speedBoostUntil || 0)) ? 25 : (id === myId ? 18 : 6);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.rotate(p.angle);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(10, -4, 18, 8);
+
+        ctx.restore();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 12px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.fillText(p.name, p.x, p.y - 30);
+
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(p.x - 22, p.y - 25, 44, 6);
+        ctx.fillStyle = p.hp > 50 ? "#10b981" : "#ef4444";
+        ctx.fillRect(p.x - 22, p.y - 25, (p.hp / 100) * 44, 6);
+      }
+    }
+
+    updateWeaponHUD();
   </script>
 
 </body>
