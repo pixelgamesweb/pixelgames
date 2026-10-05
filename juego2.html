@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spirit Wilds: 4D Ultimate Arsenal - PIXEL GAMES</title>
-  <!-- PeerJS para multijugador P2P online sin servidor propio -->
+  <title>Spirit Wilds:BATLE - PIXEL GAMES</title>
+  <!-- PeerJS para multijugador P2P online -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   <style>
     * {
@@ -75,7 +75,7 @@
       margin-bottom: 20px;
     }
 
-    input {
+    input, select {
       background: #0f172a;
       border: 2px solid #334155;
       color: #00e5ff;
@@ -88,7 +88,12 @@
       transition: border 0.2s;
     }
 
-    input:focus {
+    select {
+      cursor: pointer;
+      text-align-last: center;
+    }
+
+    input:focus, select:focus {
       border-color: #00e5ff;
     }
 
@@ -268,11 +273,19 @@
     <!-- MENÚ PRINCIPAL -->
     <div id="menu-screen" class="screen">
       <h1>SPIRIT WILDS 4D</h1>
-      <p class="subtitle">BATTLE ROYALE ULTRA-RÁPIDO CON 50 ARMAS</p>
+      <p class="subtitle">VS IA / MULTIJUGADOR - MURS I ARMES PEL MAPA</p>
 
       <div class="form-group">
         <input type="text" id="player-name" placeholder="Tu Apodo / Nickname" maxlength="12" value="Jugador1">
         <input type="text" id="room-code" placeholder="Código de Sala (ej: 1287)" maxlength="6" value="1287">
+        
+        <!-- SELECTOR DE DIFICULTAT BOTS -->
+        <select id="bot-difficulty">
+          <option value="easy">🟢 Dificultat Bots: FÀCIL</option>
+          <option value="normal" selected>🟡 Dificultat Bots: NORMAL</option>
+          <option value="hard">🔴 Dificultat Bots: DIFÍCIL</option>
+        </select>
+
         <button class="btn" onclick="connectToGame()">ENTRAR A LA BATALLA</button>
         <button class="btn btn-secondary" onclick="showInfoScreen()">VER LAS 50 ARMAS</button>
         <a href="juegos.html" class="btn btn-secondary">VOLVER AL MENÚ DE JUEGOS</a>
@@ -284,7 +297,7 @@
     <!-- ARMERÍA (50 ARMAS) -->
     <div id="info-screen" class="screen" style="display: none;">
       <h1>CATÁLOGO DE 50 ARMAS</h1>
-      <p class="subtitle">Cambia de arma en partida usando la rueda del ratón o las teclas [1] a [9]</p>
+      <p class="subtitle">Troba les armes disperses pel mapa per poder utilitzar-les!</p>
 
       <div class="weapons-grid" id="weapons-grid"></div>
 
@@ -322,6 +335,14 @@
     const ctx = canvas.getContext("2d");
     canvas.width = 950;
     canvas.height = 650;
+
+    // CONFIGURACIÓ DE DIFICULTAT DELS BOTS
+    const BOT_SETTINGS = {
+      easy:   { speed: 2.2, cooldownAdd: 500, errorAngle: 0.35 },
+      normal: { speed: 3.5, cooldownAdd: 200, errorAngle: 0.15 },
+      hard:   { speed: 5.0, cooldownAdd: 0,   errorAngle: 0.02 }
+    };
+    let currentDifficulty = 'normal';
 
     // SISTEMA DE ÀUDIO SINTETITZAT
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -382,7 +403,19 @@
     let bullets = [];
     let particles = [];
     let powerups = [];
+    let weaponPickups = [];
     const keys = {};
+
+    // MURS / COBERTES D'OBSTACLES AL MAPA
+    const walls = [
+      { x: 180, y: 120, w: 120, h: 30 },
+      { x: 650, y: 120, w: 120, h: 30 },
+      { x: 180, y: 500, w: 120, h: 30 },
+      { x: 650, y: 500, w: 120, h: 30 },
+      { x: 425, y: 220, w: 100, h: 200 },
+      { x: 100, y: 300, w: 30, h: 100 },
+      { x: 820, y: 300, w: 30, h: 100 }
+    ];
 
     // GENERAR 50 ARMAS ÚNICAS
     const WEAPONS = [];
@@ -395,7 +428,7 @@
       const prefix = weaponPrefixes[i % weaponPrefixes.length];
       const noun = weaponNouns[i % weaponNouns.length];
       WEAPONS.push({
-        id: i,
+        id: i - 1,
         name: `${typeIcon} ${prefix} ${noun} #${i}`,
         damage: 10 + (i * 2),
         speed: 12 + (i % 8),
@@ -438,6 +471,7 @@
     function connectToGame() {
       const nameInput = document.getElementById("player-name").value.trim();
       const codeInput = document.getElementById("room-code").value.trim();
+      currentDifficulty = document.getElementById("bot-difficulty").value;
 
       if (!nameInput || !codeInput) {
         setStatus("¡Escribe tu nombre y el código de sala!");
@@ -475,9 +509,10 @@
               isHost = true;
               setStatus("Sala creada (Host)");
               players[myId] = createPlayer(myId, myName, true);
+              spawnBots(); // Crear Bots IA
               startGameUI();
               setupHostListeners();
-              spawnInitialPowerups();
+              spawnInitialPickups();
             });
 
             peer.on('error', () => {
@@ -488,18 +523,51 @@
       });
     }
 
-    function createPlayer(id, name, isLocal) {
+    function createPlayer(id, name, isLocal, isBot = false) {
+      let pos = getRandomSpawn();
       return {
         id: id,
         name: name,
-        x: 100 + Math.random() * 700,
-        y: 100 + Math.random() * 450,
+        x: pos.x,
+        y: pos.y,
         hp: 100,
         kills: 0,
+        unlockedWeapons: [0], // Sols el Tirachinas al principi
+        currentWeapon: 0,
         speedBoostUntil: 0,
         angle: 0,
-        color: isLocal ? "#00e5ff" : "#f43f5e"
+        color: isBot ? "#a855f7" : (isLocal ? "#00e5ff" : "#f43f5e"),
+        isBot: isBot,
+        botLastShot: 0,
+        botTarget: null
       };
+    }
+
+    function spawnBots() {
+      const botNames = [" Phantom", " Viper", " Cyber", " Shadow"];
+      botNames.forEach((bName, idx) => {
+        const botId = "bot-" + idx;
+        players[botId] = createPlayer(botId, "[BOT]" + bName, false, true);
+        players[botId].unlockedWeapons = [0, 1 + Math.floor(Math.random() * 20)];
+        players[botId].currentWeapon = players[botId].unlockedWeapons[1];
+      });
+    }
+
+    function getRandomSpawn() {
+      let valid = false;
+      let x, y;
+      while (!valid) {
+        x = 60 + Math.random() * (canvas.width - 120);
+        y = 60 + Math.random() * (canvas.height - 120);
+        valid = true;
+        for (let w of walls) {
+          if (x > w.x - 25 && x < w.x + w.w + 25 && y > w.y - 25 && y < w.y + w.h + 25) {
+            valid = false;
+            break;
+          }
+        }
+      }
+      return { x, y };
     }
 
     function startGameUI() {
@@ -510,11 +578,6 @@
 
     function setupHostListeners() {
       peer.on('connection', (conn) => {
-        if (Object.keys(players).length >= 5) {
-          conn.close();
-          return;
-        }
-
         conn.on('open', () => {
           const newPlayerId = conn.peer;
           connections[newPlayerId] = conn;
@@ -546,6 +609,7 @@
           players = data.players;
           bullets = data.bullets;
           powerups = data.powerups || [];
+          weaponPickups = data.weaponPickups || [];
 
           if (data.hitEvent) {
             playHitSound();
@@ -563,6 +627,7 @@
           }
 
           updateLeaderboardUI();
+          updateWeaponHUD();
         }
       });
     }
@@ -585,8 +650,15 @@
       keys[e.key.toLowerCase()] = true;
 
       if (e.key >= '1' && e.key <= '9') {
-        activeWeaponIndex = (parseInt(e.key) - 1) * 5;
-        updateWeaponHUD();
+        const p = players[myId];
+        if (p && p.unlockedWeapons) {
+          const idx = parseInt(e.key) - 1;
+          if (idx < p.unlockedWeapons.length) {
+            activeWeaponIndex = p.unlockedWeapons[idx];
+            p.currentWeapon = activeWeaponIndex;
+            updateWeaponHUD();
+          }
+        }
       }
     });
 
@@ -595,17 +667,29 @@
     });
 
     window.addEventListener('wheel', (e) => {
+      const p = players[myId];
+      if (!p || !p.unlockedWeapons || p.unlockedWeapons.length === 0) return;
+
+      let currentPos = p.unlockedWeapons.indexOf(activeWeaponIndex);
+      if (currentPos === -1) currentPos = 0;
+
       if (e.deltaY > 0) {
-        activeWeaponIndex = (activeWeaponIndex + 1) % WEAPONS.length;
+        currentPos = (currentPos + 1) % p.unlockedWeapons.length;
       } else {
-        activeWeaponIndex = (activeWeaponIndex - 1 + WEAPONS.length) % WEAPONS.length;
+        currentPos = (currentPos - 1 + p.unlockedWeapons.length) % p.unlockedWeapons.length;
       }
+
+      activeWeaponIndex = p.unlockedWeapons[currentPos];
+      p.currentWeapon = activeWeaponIndex;
       updateWeaponHUD();
     });
 
     function updateWeaponHUD() {
-      const w = WEAPONS[activeWeaponIndex];
-      document.getElementById("active-weapon-display").textContent = w.name;
+      const p = players[myId];
+      if (!p) return;
+      const w = WEAPONS[activeWeaponIndex || 0];
+      const countUnlocked = p.unlockedWeapons ? p.unlockedWeapons.length : 1;
+      document.getElementById("active-weapon-display").textContent = `${w.name} [Desbloqueadas: ${countUnlocked}/50]`;
     }
 
     let mouseX = 0, mouseY = 0;
@@ -642,7 +726,7 @@
     });
 
     function spawnBullet(x, y, angle, weaponIndex, ownerId) {
-      const w = WEAPONS[weaponIndex];
+      const w = WEAPONS[weaponIndex] || WEAPONS[0];
       bullets.push({
         x: x,
         y: y,
@@ -656,12 +740,28 @@
       createParticles(x, y, w.color, 5);
     }
 
-    function spawnInitialPowerups() {
+    function spawnInitialPickups() {
       powerups = [
-        { id: 1, x: 200, y: 150, type: 'health', icon: '❤️', color: '#ef4444' },
-        { id: 2, x: 750, y: 500, type: 'speed', icon: '⚡', color: '#f59e0b' },
-        { id: 3, x: 475, y: 325, type: 'health', icon: '❤️', color: '#ef4444' }
+        { id: 1, x: 200, y: 70, type: 'health', icon: '❤️', color: '#ef4444' },
+        { id: 2, x: 750, y: 580, type: 'speed', icon: '⚡', color: '#f59e0b' }
       ];
+
+      weaponPickups = [];
+      for (let i = 0; i < 6; i++) {
+        spawnWeaponPickup();
+      }
+    }
+
+    function spawnWeaponPickup() {
+      let pos = getRandomSpawn();
+      let randomWId = 1 + Math.floor(Math.random() * 49);
+      weaponPickups.push({
+        id: Date.now() + Math.random(),
+        x: pos.x,
+        y: pos.y,
+        weaponId: randomWId,
+        weapon: WEAPONS[randomWId]
+      });
     }
 
     function createParticles(x, y, color, count) {
@@ -678,6 +778,16 @@
       }
     }
 
+    function checkWallCollision(newX, newY, radius = 18) {
+      for (let w of walls) {
+        if (newX + radius > w.x && newX - radius < w.x + w.w &&
+            newY + radius > w.y && newY - radius < w.y + w.h) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     // Bucle Principal
     function gameLoop() {
       update();
@@ -690,13 +800,19 @@
       if (p && p.hp > 0) {
         let currentSpeed = 7.5;
         if (Date.now() < (p.speedBoostUntil || 0)) {
-          currentSpeed = 11.5; // Booster velocitat
+          currentSpeed = 11.5;
         }
 
-        if (keys['w'] || keys['arrowup']) p.y = Math.max(30, p.y - currentSpeed);
-        if (keys['s'] || keys['arrowdown']) p.y = Math.min(canvas.height - 30, p.y + currentSpeed);
-        if (keys['a'] || keys['arrowleft']) p.x = Math.max(30, p.x - currentSpeed);
-        if (keys['d'] || keys['arrowright']) p.x = Math.min(canvas.width - 30, p.x + currentSpeed);
+        let nextX = p.x;
+        let nextY = p.y;
+
+        if (keys['w'] || keys['arrowup']) nextY = Math.max(20, p.y - currentSpeed);
+        if (keys['s'] || keys['arrowdown']) nextY = Math.min(canvas.height - 20, p.y + currentSpeed);
+        if (keys['a'] || keys['arrowleft']) nextX = Math.max(20, p.x - currentSpeed);
+        if (keys['d'] || keys['arrowright']) nextX = Math.min(canvas.width - 20, p.x + currentSpeed);
+
+        if (!checkWallCollision(nextX, p.y)) p.x = nextX;
+        if (!checkWallCollision(p.x, nextY)) p.y = nextY;
 
         p.angle = Math.atan2(mouseY - p.y, mouseX - p.x);
 
@@ -722,6 +838,48 @@
       if (isHost) {
         let hitEvent = null;
         let powerupEvent = null;
+        const botDiff = BOT_SETTINGS[currentDifficulty] || BOT_SETTINGS.normal;
+
+        // IA DE ELS BOTS (Afectada per la dificultat)
+        for (let id in players) {
+          let bot = players[id];
+          if (bot.isBot && bot.hp > 0) {
+            let closestDist = 9999;
+            let target = null;
+            for (let tId in players) {
+              if (tId !== id && players[tId].hp > 0) {
+                let d = Math.hypot(players[tId].x - bot.x, players[tId].y - bot.y);
+                if (d < closestDist) {
+                  closestDist = d;
+                  target = players[tId];
+                }
+              }
+            }
+
+            if (target) {
+              // Calcular angle amb desviació segons la dificultat
+              let baseAngle = Math.atan2(target.y - bot.y, target.x - bot.x);
+              let error = (Math.random() - 0.5) * botDiff.errorAngle;
+              bot.angle = baseAngle + error;
+              
+              // Moviment segons la velocitat de la dificultat
+              if (closestDist > 120) {
+                let nx = bot.x + Math.cos(baseAngle) * botDiff.speed;
+                let ny = bot.y + Math.sin(baseAngle) * botDiff.speed;
+                if (!checkWallCollision(nx, bot.y)) bot.x = nx;
+                if (!checkWallCollision(bot.x, ny)) bot.y = ny;
+              }
+
+              // Disparar segons la cadència adaptada
+              const now = Date.now();
+              const w = WEAPONS[bot.currentWeapon || 0];
+              if (now - (bot.botLastShot || 0) >= w.cooldown + botDiff.cooldownAdd) {
+                bot.botLastShot = now;
+                spawnBullet(bot.x, bot.y, bot.angle, bot.currentWeapon, id);
+              }
+            }
+          }
+        }
 
         // Bales & Col·lisions
         for (let i = bullets.length - 1; i >= 0; i--) {
@@ -729,6 +887,12 @@
           b.x += b.vx;
           b.y += b.vy;
           b.life--;
+
+          if (checkWallCollision(b.x, b.y, 4)) {
+            b.life = 0;
+            createParticles(b.x, b.y, "#94a3b8", 4);
+            continue;
+          }
 
           for (let id in players) {
             let target = players[id];
@@ -741,16 +905,16 @@
                 playHitSound();
                 createParticles(b.x, b.y, "#ef4444", 10);
 
-                // Comprovar si ha mort i sumar Kills
                 if (target.hp <= 0) {
                   if (players[b.ownerId]) {
                     players[b.ownerId].kills = (players[b.ownerId].kills || 0) + 1;
                   }
                   setTimeout(() => {
                     if (players[id]) {
+                      let spawn = getRandomSpawn();
                       players[id].hp = 100;
-                      players[id].x = 100 + Math.random() * 750;
-                      players[id].y = 100 + Math.random() * 450;
+                      players[id].x = spawn.x;
+                      players[id].y = spawn.y;
                     }
                   }, 3000);
                 }
@@ -762,7 +926,7 @@
           if (b.life <= 0) bullets.splice(i, 1);
         }
 
-        // Col·lisió amb Power-ups
+        // Recollir Power-ups de vida/velocitat
         for (let i = powerups.length - 1; i >= 0; i--) {
           let pw = powerups[i];
           for (let id in players) {
@@ -771,7 +935,7 @@
               if (pw.type === 'health') {
                 player.hp = Math.min(100, player.hp + 30);
               } else if (pw.type === 'speed') {
-                player.speedBoostUntil = Date.now() + 6000; // 6 segons de booster
+                player.speedBoostUntil = Date.now() + 6000;
               }
 
               powerupEvent = { x: pw.x, y: pw.y, color: pw.color };
@@ -780,12 +944,12 @@
 
               powerups.splice(i, 1);
 
-              // Reaparèixer Powerup després d'uns segons
               setTimeout(() => {
+                let pPos = getRandomSpawn();
                 powerups.push({
                   id: Date.now(),
-                  x: 80 + Math.random() * 790,
-                  y: 80 + Math.random() * 490,
+                  x: pPos.x,
+                  y: pPos.y,
                   type: Math.random() > 0.5 ? 'health' : 'speed',
                   icon: Math.random() > 0.5 ? '❤️' : '⚡',
                   color: Math.random() > 0.5 ? '#ef4444' : '#f59e0b'
@@ -797,11 +961,39 @@
           }
         }
 
+        // Recollir ARMES pel camp
+        for (let i = weaponPickups.length - 1; i >= 0; i--) {
+          let wp = weaponPickups[i];
+          for (let id in players) {
+            let player = players[id];
+            if (player.hp > 0 && Math.hypot(player.x - wp.x, player.y - wp.y) < 25) {
+              if (!player.unlockedWeapons.includes(wp.weaponId)) {
+                player.unlockedWeapons.push(wp.weaponId);
+              }
+              player.currentWeapon = wp.weaponId;
+              if (id === myId) activeWeaponIndex = wp.weaponId;
+
+              powerupEvent = { x: wp.x, y: wp.y, color: wp.weapon.color };
+              playPowerupSound();
+              createParticles(wp.x, wp.y, wp.weapon.color, 15);
+
+              weaponPickups.splice(i, 1);
+
+              setTimeout(() => {
+                spawnWeaponPickup();
+              }, 5000);
+
+              break;
+            }
+          }
+        }
+
         const stateData = { 
           type: 'state', 
           players: players, 
           bullets: bullets, 
           powerups: powerups,
+          weaponPickups: weaponPickups,
           hitEvent: hitEvent,
           powerupEvent: powerupEvent
         };
@@ -824,6 +1016,7 @@
       ctx.fillStyle = "#0d1322";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Reixeta
       ctx.strokeStyle = "rgba(0, 229, 255, 0.08)";
       ctx.lineWidth = 1;
       for (let x = 0; x < canvas.width; x += 50) {
@@ -839,7 +1032,35 @@
         ctx.stroke();
       }
 
-      // Renderitzat Power-ups
+      // MURS / COBERTES
+      walls.forEach(w => {
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(w.x, w.y, w.w, w.h);
+        ctx.strokeStyle = "#3b82f6";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(w.x, w.y, w.w, w.h);
+      });
+
+      // ARMES PEL CAMP (Pickups)
+      weaponPickups.forEach(wp => {
+        ctx.shadowColor = wp.weapon.color;
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+        ctx.beginPath();
+        ctx.arc(wp.x, wp.y, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = wp.weapon.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.font = "14px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(wp.weapon.name.substring(0, 2), wp.x, wp.y);
+        ctx.shadowBlur = 0;
+      });
+
+      // POWER-UPS
       powerups.forEach(pw => {
         ctx.shadowColor = pw.color;
         ctx.shadowBlur = 10;
@@ -888,7 +1109,7 @@
         ctx.shadowBlur = 0;
       });
 
-      // Jugadors
+      // Jugadors & Bots
       for (let id in players) {
         let p = players[id];
         if (p.hp <= 0) continue;
@@ -916,7 +1137,7 @@
 
         ctx.restore();
 
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = p.isBot ? "#c084fc" : "#ffffff";
         ctx.font = "bold 12px Segoe UI";
         ctx.textAlign = "center";
         ctx.fillText(p.name, p.x, p.y - 30);
