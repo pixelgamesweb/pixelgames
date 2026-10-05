@@ -1,1156 +1,186 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spirit Wilds:BATLE - PIXEL GAMES</title>
-  <!-- PeerJS para multijugador P2P online -->
-  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <title>Joc 2 - Amb Selecció de Dificultat</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      background: #080b12;
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    #app-container {
-      position: relative;
-      width: 950px;
-      height: 650px;
-      background: #111827;
-      border: 3px solid #00e5ff;
-      border-radius: 16px;
-      box-shadow: 0 0 35px rgba(0, 229, 255, 0.3);
-      overflow: hidden;
-    }
-
-    /* Pantallas del Menú */
-    .screen {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-      padding: 30px;
-      z-index: 10;
-    }
-
-    h1 {
-      font-size: 40px;
-      color: #00e5ff;
-      text-shadow: 0 0 20px #00e5ff;
-      letter-spacing: 2px;
-      margin-bottom: 5px;
-    }
-
-    p.subtitle {
-      color: #94a3b8;
-      margin-bottom: 20px;
-      font-size: 15px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 340px;
-      margin-bottom: 20px;
-    }
-
-    input, select {
-      background: #0f172a;
-      border: 2px solid #334155;
-      color: #00e5ff;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 16px;
+      font-family: Arial, sans-serif;
       text-align: center;
-      font-weight: bold;
-      outline: none;
-      transition: border 0.2s;
+      background-color: #2c3e50;
+      color: white;
+      margin: 0;
+      padding: 20px;
     }
 
-    select {
-      cursor: pointer;
-      text-align-last: center;
-    }
-
-    input:focus, select:focus {
-      border-color: #00e5ff;
-    }
-
-    .btn {
-      background: #00e5ff;
-      color: #0f172a;
-      border: none;
-      padding: 12px 24px;
+    .panell-control {
+      margin-bottom: 20px;
+      background: #34495e;
+      padding: 15px;
       border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
       display: inline-block;
-      text-align: center;
     }
 
-    .btn:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+    select, button {
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      margin: 5px;
     }
 
-    .btn-secondary {
-      background: transparent;
-      color: #94a3b8;
-      border: 2px solid #334155;
+    button {
+      background-color: #27ae60;
+      color: white;
+      font-weight: bold;
     }
 
-    .btn-secondary:hover {
-      border-color: #00e5ff;
-      color: #fff;
+    button:hover {
+      background-color: #2ecc71;
     }
 
-    /* Arsenal / Armería Scrollable */
-    .weapons-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      width: 100%;
-      max-height: 380px;
-      overflow-y: auto;
-      padding: 10px;
-      background: rgba(15, 23, 42, 0.6);
+    .tauler {
+      margin: 20px auto;
+      padding: 20px;
+      background: #1e272c;
       border-radius: 10px;
-      border: 1px solid #334155;
-      margin-bottom: 15px;
+      max-width: 500px;
     }
 
-    .weapon-card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      padding: 8px;
-      border-radius: 6px;
-      text-align: center;
-      font-size: 11px;
-    }
-
-    .weapon-card h4 {
-      color: #f59e0b;
-      font-size: 12px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Canvas */
-    canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      background: #0b0f19;
-      cursor: crosshair;
-    }
-
-    /* HUD */
-    #hud {
-      position: absolute;
+    /* Estils per la pantalla de Game Over (Modal) */
+    .overlay-game-over {
+      display: none; /* Amagat per defecte */
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    .hud-box {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(0, 229, 255, 0.4);
-      padding: 10px 15px;
-      border-radius: 8px;
-      backdrop-filter: blur(4px);
-    }
-
-    .health-bar-container {
-      width: 200px;
-      height: 16px;
-      background: #1e293b;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-top: 5px;
-      border: 1px solid #334155;
-    }
-
-    .health-bar {
-      width: 100%;
       height: 100%;
-      background: #ef4444;
-      transition: width 0.1s;
+      background-color: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
     }
 
-    .weapon-hud {
-      text-align: right;
-    }
-
-    .weapon-hud-name {
-      font-size: 18px;
-      font-weight: bold;
-      color: #f59e0b;
-    }
-
-    /* LEADERBOARD / MARCADOR DE KILLS */
-    #leaderboard {
-      position: absolute;
-      top: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(245, 158, 11, 0.5);
-      padding: 8px 16px;
-      border-radius: 8px;
-      backdrop-filter: blur(4px);
+    .modal-game-over {
+      background: #c0392b;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
       text-align: center;
-      font-size: 13px;
-      z-index: 5;
-      min-width: 220px;
     }
 
-    #leaderboard h3 {
-      color: #f59e0b;
-      font-size: 12px;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .modal-game-over h1 {
+      font-size: 48px;
+      margin: 0 0 10px 0;
+      letter-spacing: 2px;
     }
 
-    .leader-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      color: #cbd5e1;
+    .boto-reiniciar {
+      background-color: #f39c12;
     }
 
-    .leader-row.me {
-      color: #00e5ff;
-      font-weight: bold;
-    }
-
-    #status-msg {
-      position: absolute;
-      bottom: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #00e5ff;
-      font-weight: bold;
-      font-size: 14px;
+    .boto-web {
+      background-color: #2980b9;
     }
   </style>
 </head>
 <body>
 
-  <div id="app-container">
+  <h1>Joc 2</h1>
 
-    <!-- MENÚ PRINCIPAL -->
-    <div id="menu-screen" class="screen">
-      <h1>SPIRIT WILDS 4D</h1>
-      <p class="subtitle">VS IA / MULTIJUGADOR - MURS I ARMES PEL MAPA</p>
+  <!-- Configuració i Selecció de Dificultat -->
+  <div class="panell-control">
+    <label for="dificultat-bot">Dificultat del Bot: </label>
+    <select id="dificultat-bot">
+      <option value="facil">Fàcil</option>
+      <option value="normal" selected>Normal</option>
+      <option value="dificil">Difícil</option>
+    </select>
+    <button onclick="reiniciarPartida()">Nova Partida</button>
+  </div>
 
-      <div class="form-group">
-        <input type="text" id="player-name" placeholder="Tu Apodo / Nickname" maxlength="12" value="Jugador1">
-        <input type="text" id="room-code" placeholder="Código de Sala (ej: 1287)" maxlength="6" value="1287">
-        
-        <!-- SELECTOR DE DIFICULTAT BOTS -->
-        <select id="bot-difficulty">
-          <option value="easy">🟢 Dificultat Bots: FÀCIL</option>
-          <option value="normal" selected>🟡 Dificultat Bots: NORMAL</option>
-          <option value="hard">🔴 Dificultat Bots: DIFÍCIL</option>
-        </select>
+  <!-- Àrea de Joc -->
+  <div class="tauler">
+    <p id="estat-joc">Fes clic per jugar una ronda.</p>
+    <button onclick="jugarRonda()">Jugar Carta / Fer Moviment</button>
+    <button onclick="simularDerrota()" style="background-color: #e74c3c;">Simular Morte/Derrota</button>
+  </div>
 
-        <button class="btn" onclick="connectToGame()">ENTRAR A LA BATALLA</button>
-        <button class="btn btn-secondary" onclick="showInfoScreen()">VER LAS 50 ARMAS</button>
-        <a href="juegos.html" class="btn btn-secondary">VOLVER AL MENÚ DE JUEGOS</a>
-      </div>
-
-      <div id="status-msg"></div>
+  <!-- Pantalla de Game Over -->
+  <div id="pantalla-game-over" class="overlay-game-over">
+    <div class="modal-game-over">
+      <h1>GAME OVER</h1>
+      <p>Has perdut la partida!</p>
+      <button class="boto-reiniciar" onclick="reiniciarPartida()">Tornar a jugar</button>
+      <button class="boto-web" onclick="tornarAWeb()">Tornar a la web</button>
     </div>
-
-    <!-- ARMERÍA (50 ARMAS) -->
-    <div id="info-screen" class="screen" style="display: none;">
-      <h1>CATÁLOGO DE 50 ARMAS</h1>
-      <p class="subtitle">Troba les armes disperses pel mapa per poder utilitzar-les!</p>
-
-      <div class="weapons-grid" id="weapons-grid"></div>
-
-      <button class="btn" onclick="hideInfoScreen()">VOLVER AL MENÚ</button>
-    </div>
-
-    <!-- HUD -->
-    <div id="hud" style="display: none;">
-      <div class="hud-box">
-        <div id="hud-name" style="font-weight: bold; color: #00e5ff;">Jugador</div>
-        <div class="health-bar-container">
-          <div id="health-bar" class="health-bar"></div>
-        </div>
-      </div>
-
-      <!-- MARCADOR DE KILLS -->
-      <div id="leaderboard">
-        <h3>🏆 MARCADOR DE KILLS</h3>
-        <div id="leader-list"></div>
-      </div>
-
-      <div class="hud-box weapon-hud">
-        <div style="font-size: 11px; color: #94a3b8;">ARMA EQUIPADA [Rueda / 1-9]</div>
-        <div id="active-weapon-display" class="weapon-hud-name">🎯 Tirachinas Clásico</div>
-      </div>
-    </div>
-
-    <!-- CANVAS -->
-    <canvas id="gameCanvas"></canvas>
-
   </div>
 
   <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = 950;
-    canvas.height = 650;
+    // Lògica de la IA del Bot amb nivell difícil adaptat (més assequible)
+    function obtenirMovimentBot(cartesValides, estatJoc) {
+      const dificultat = document.getElementById("dificultat-bot").value;
 
-    // CONFIGURACIÓ DE DIFICULTAT DELS BOTS
-    const BOT_SETTINGS = {
-      easy:   { speed: 2.2, cooldownAdd: 500, errorAngle: 0.35 },
-      normal: { speed: 3.5, cooldownAdd: 200, errorAngle: 0.15 },
-      hard:   { speed: 5.0, cooldownAdd: 0,   errorAngle: 0.02 }
-    };
-    let currentDifficulty = 'normal';
+      if (dificultat === "facil") {
+        // FÀCIL: Tria completament a l'atzar
+        const indexAleatori = Math.floor(Math.random() * cartesValides.length);
+        return cartesValides[indexAleatori];
 
-    // SISTEMA DE ÀUDIO SINTETITZAT
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } else if (dificultat === "normal") {
+        // NORMAL: Juga la primera carta disponible / estratègia bàsica
+        return cartesValides[0];
 
-    function playShotSound(freq = 400, type = 'square') {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.12);
-      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.12);
-    }
+      } else if (dificultat === "dificil") {
+        // DIFÍCIL MÉS FÀCIL: Tria bé, però té un 25% de probabilitats d'equivocar-se
+        const cometError = Math.random() < 0.25; 
 
-    function playHitSound() {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
-    }
-
-    function playPowerupSound() {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.2);
-      gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.2);
-    }
-
-    let peer = null;
-    let connections = {};
-    let hostConn = null;
-    let isHost = false;
-    let myId = null;
-    let myName = "Jugador";
-
-    let players = {};
-    let bullets = [];
-    let particles = [];
-    let powerups = [];
-    let weaponPickups = [];
-    const keys = {};
-
-    // MURS / COBERTES D'OBSTACLES AL MAPA
-    const walls = [
-      { x: 180, y: 120, w: 120, h: 30 },
-      { x: 650, y: 120, w: 120, h: 30 },
-      { x: 180, y: 500, w: 120, h: 30 },
-      { x: 650, y: 500, w: 120, h: 30 },
-      { x: 425, y: 220, w: 100, h: 200 },
-      { x: 100, y: 300, w: 30, h: 100 },
-      { x: 820, y: 300, w: 30, h: 100 }
-    ];
-
-    // GENERAR 50 ARMAS ÚNICAS
-    const WEAPONS = [];
-    const weaponTypes = ["🎯", "🏹", "🔫", "💥", "⚡", "🔮", "🔥", "❄️", "☄️", "☣️"];
-    const weaponPrefixes = ["Mini", "Súper", "Mega", "Ultra", "Tàctic", "Místic", "Anfibi", "Plasma", "Nuclear", "Llegendari"];
-    const weaponNouns = ["Tirachinas", "Pistola", "Arco", "Rifle", "Escopeta", "Llançaroquets", "Rayo", "Blaster", "Cañon", "Destructor"];
-
-    for (let i = 1; i <= 50; i++) {
-      const typeIcon = weaponTypes[i % weaponTypes.length];
-      const prefix = weaponPrefixes[i % weaponPrefixes.length];
-      const noun = weaponNouns[i % weaponNouns.length];
-      WEAPONS.push({
-        id: i - 1,
-        name: `${typeIcon} ${prefix} ${noun} #${i}`,
-        damage: 10 + (i * 2),
-        speed: 12 + (i % 8),
-        cooldown: Math.max(80, 500 - (i * 8)),
-        color: `hsl(${(i * 25) % 360}, 100%, 60%)`,
-        freq: 200 + (i * 15)
-      });
-    }
-
-    let activeWeaponIndex = 0;
-    let lastShotTime = 0;
-
-    // Renderizar Armería
-    const gridEl = document.getElementById("weapons-grid");
-    WEAPONS.forEach(w => {
-      const card = document.createElement("div");
-      card.className = "weapon-card";
-      card.innerHTML = `
-        <h4>${w.name}</h4>
-        <div>Daño: ${w.damage}</div>
-        <div>Cadencia: ${w.cooldown}ms</div>
-      `;
-      gridEl.appendChild(card);
-    });
-
-    function showInfoScreen() {
-      document.getElementById("menu-screen").style.display = "none";
-      document.getElementById("info-screen").style.display = "flex";
-    }
-
-    function hideInfoScreen() {
-      document.getElementById("info-screen").style.display = "none";
-      document.getElementById("menu-screen").style.display = "flex";
-    }
-
-    function setStatus(msg) {
-      document.getElementById("status-msg").textContent = msg;
-    }
-
-    function connectToGame() {
-      const nameInput = document.getElementById("player-name").value.trim();
-      const codeInput = document.getElementById("room-code").value.trim();
-      currentDifficulty = document.getElementById("bot-difficulty").value;
-
-      if (!nameInput || !codeInput) {
-        setStatus("¡Escribe tu nombre y el código de sala!");
-        return;
-      }
-
-      myName = nameInput;
-      document.getElementById("hud-name").textContent = myName;
-      setStatus("Conectando con la red...");
-
-      const roomPrefix = "pixelgames-spirit-4d-ultra-";
-      const hostPeerId = roomPrefix + codeInput;
-
-      peer = new Peer();
-
-      peer.on('open', (id) => {
-        myId = id;
-        const conn = peer.connect(hostPeerId, { metadata: { name: myName } });
-
-        conn.on('open', () => {
-          isHost = false;
-          hostConn = conn;
-          setStatus("¡Conectado a la partida!");
-          startGameUI();
-          setupClientListeners(conn);
-        });
-
-        setTimeout(() => {
-          if (!hostConn) {
-            conn.close();
-            peer.destroy();
-            peer = new Peer(hostPeerId);
-
-            peer.on('open', () => {
-              isHost = true;
-              setStatus("Sala creada (Host)");
-              players[myId] = createPlayer(myId, myName, true);
-              spawnBots(); // Crear Bots IA
-              startGameUI();
-              setupHostListeners();
-              spawnInitialPickups();
-            });
-
-            peer.on('error', () => {
-              setStatus("Error al crear o unirse a la sala.");
-            });
-          }
-        }, 1200);
-      });
-    }
-
-    function createPlayer(id, name, isLocal, isBot = false) {
-      let pos = getRandomSpawn();
-      return {
-        id: id,
-        name: name,
-        x: pos.x,
-        y: pos.y,
-        hp: 100,
-        kills: 0,
-        unlockedWeapons: [0], // Sols el Tirachinas al principi
-        currentWeapon: 0,
-        speedBoostUntil: 0,
-        angle: 0,
-        color: isBot ? "#a855f7" : (isLocal ? "#00e5ff" : "#f43f5e"),
-        isBot: isBot,
-        botLastShot: 0,
-        botTarget: null
-      };
-    }
-
-    function spawnBots() {
-      const botNames = [" Phantom", " Viper", " Cyber", " Shadow"];
-      botNames.forEach((bName, idx) => {
-        const botId = "bot-" + idx;
-        players[botId] = createPlayer(botId, "[BOT]" + bName, false, true);
-        players[botId].unlockedWeapons = [0, 1 + Math.floor(Math.random() * 20)];
-        players[botId].currentWeapon = players[botId].unlockedWeapons[1];
-      });
-    }
-
-    function getRandomSpawn() {
-      let valid = false;
-      let x, y;
-      while (!valid) {
-        x = 60 + Math.random() * (canvas.width - 120);
-        y = 60 + Math.random() * (canvas.height - 120);
-        valid = true;
-        for (let w of walls) {
-          if (x > w.x - 25 && x < w.x + w.w + 25 && y > w.y - 25 && y < w.y + w.h + 25) {
-            valid = false;
-            break;
-          }
+        if (cometError) {
+          // El bot comet un error humà i tria a l'atzar
+          const indexAleatori = Math.floor(Math.random() * cartesValides.length);
+          return cartesValides[indexAleatori];
+        } else {
+          // El bot juga de manera òptima
+          return triarMillorCarta(cartesValides, estatJoc);
         }
       }
-      return { x, y };
     }
 
-    function startGameUI() {
-      document.getElementById("menu-screen").style.display = "none";
-      document.getElementById("hud").style.display = "flex";
-      requestAnimationFrame(gameLoop);
+    // Algorisme per triar la millor carta en nivell difícil
+    function triarMillorCarta(cartes, estatJoc) {
+      return cartes.reduce((millor, actual) => {
+        return (actual.valor > millor.valor) ? actual : millor;
+      }, cartes[0]);
     }
 
-    function setupHostListeners() {
-      peer.on('connection', (conn) => {
-        conn.on('open', () => {
-          const newPlayerId = conn.peer;
-          connections[newPlayerId] = conn;
-          players[newPlayerId] = createPlayer(newPlayerId, conn.metadata.name || "Jugador", false);
-
-          conn.on('data', (data) => {
-            if (data.type === 'input') {
-              if (players[newPlayerId]) {
-                players[newPlayerId].x = data.x;
-                players[newPlayerId].y = data.y;
-                players[newPlayerId].angle = data.angle;
-              }
-            } else if (data.type === 'shoot') {
-              spawnBullet(data.x, data.y, data.angle, data.weaponIndex, newPlayerId);
-            }
-          });
-
-          conn.on('close', () => {
-            delete players[newPlayerId];
-            delete connections[newPlayerId];
-          });
-        });
-      });
+    // Funció per mostrar el Game Over quan el jugador mor
+    function mostrarGameOver() {
+      document.getElementById("pantalla-game-over").style.display = "flex";
     }
 
-    function setupClientListeners(conn) {
-      conn.on('data', (data) => {
-        if (data.type === 'state') {
-          players = data.players;
-          bullets = data.bullets;
-          powerups = data.powerups || [];
-          weaponPickups = data.weaponPickups || [];
-
-          if (data.hitEvent) {
-            playHitSound();
-            createParticles(data.hitEvent.x, data.hitEvent.y, "#ef4444", 10);
-          }
-
-          if (data.powerupEvent) {
-            playPowerupSound();
-            createParticles(data.powerupEvent.x, data.powerupEvent.y, data.powerupEvent.color, 12);
-          }
-
-          if (players[myId]) {
-            const myHp = Math.max(0, players[myId].hp);
-            document.getElementById("health-bar").style.width = myHp + "%";
-          }
-
-          updateLeaderboardUI();
-          updateWeaponHUD();
-        }
-      });
+    // Reinicia el joc i amaga la pantalla de Game Over
+    function reiniciarPartida() {
+      document.getElementById("pantalla-game-over").style.display = "none";
+      document.getElementById("estat-joc").innerText = "Partida reiniciada. Que comenci el joc!";
     }
 
-    function updateLeaderboardUI() {
-      const leaderList = document.getElementById("leader-list");
-      leaderList.innerHTML = "";
-
-      const sorted = Object.values(players).sort((a, b) => b.kills - a.kills);
-      sorted.forEach(p => {
-        const row = document.createElement("div");
-        row.className = `leader-row ${p.id === myId ? 'me' : ''}`;
-        row.innerHTML = `<span>${p.name}</span><span>${p.kills} Kills</span>`;
-        leaderList.appendChild(row);
-      });
+    // Redirecciona a la pàgina principal de la web
+    function tornarAWeb() {
+      window.location.href = "index.html"; // Canvia 'index.html' per la teva URL si és diferent
     }
 
-    // TECLADO Y MOVIMIENTO RÁPIDO
-    window.addEventListener('keydown', (e) => {
-      keys[e.key.toLowerCase()] = true;
-
-      if (e.key >= '1' && e.key <= '9') {
-        const p = players[myId];
-        if (p && p.unlockedWeapons) {
-          const idx = parseInt(e.key) - 1;
-          if (idx < p.unlockedWeapons.length) {
-            activeWeaponIndex = p.unlockedWeapons[idx];
-            p.currentWeapon = activeWeaponIndex;
-            updateWeaponHUD();
-          }
-        }
-      }
-    });
-
-    window.addEventListener('keyup', (e) => {
-      keys[e.key.toLowerCase()] = false;
-    });
-
-    window.addEventListener('wheel', (e) => {
-      const p = players[myId];
-      if (!p || !p.unlockedWeapons || p.unlockedWeapons.length === 0) return;
-
-      let currentPos = p.unlockedWeapons.indexOf(activeWeaponIndex);
-      if (currentPos === -1) currentPos = 0;
-
-      if (e.deltaY > 0) {
-        currentPos = (currentPos + 1) % p.unlockedWeapons.length;
-      } else {
-        currentPos = (currentPos - 1 + p.unlockedWeapons.length) % p.unlockedWeapons.length;
-      }
-
-      activeWeaponIndex = p.unlockedWeapons[currentPos];
-      p.currentWeapon = activeWeaponIndex;
-      updateWeaponHUD();
-    });
-
-    function updateWeaponHUD() {
-      const p = players[myId];
-      if (!p) return;
-      const w = WEAPONS[activeWeaponIndex || 0];
-      const countUnlocked = p.unlockedWeapons ? p.unlockedWeapons.length : 1;
-      document.getElementById("active-weapon-display").textContent = `${w.name} [Desbloqueadas: ${countUnlocked}/50]`;
+    // Exemples de simulació per provar el funcionament
+    function jugarRonda() {
+      const cartesExemple = [{ nom: "Carta 1", valor: 2 }, { nom: "Carta 2", valor: 8 }, { nom: "Carta 3", valor: 5 }];
+      const cartaJugada = obtenirMovimentBot(cartesExemple, {});
+      document.getElementById("estat-joc").innerText = "El bot ha jugat: " + cartaJugada.nom + " (Valor: " + cartaJugada.valor + ")";
     }
 
-    let mouseX = 0, mouseY = 0;
-    canvas.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
-    });
-
-    canvas.addEventListener('mousedown', (e) => {
-      if (e.button === 0 && players[myId] && players[myId].hp > 0) {
-        const now = Date.now();
-        const weapon = WEAPONS[activeWeaponIndex];
-
-        if (now - lastShotTime >= weapon.cooldown) {
-          lastShotTime = now;
-          const p = players[myId];
-
-          playShotSound(weapon.freq);
-
-          if (isHost) {
-            spawnBullet(p.x, p.y, p.angle, activeWeaponIndex, myId);
-          } else if (hostConn) {
-            hostConn.send({
-              type: 'shoot',
-              x: p.x,
-              y: p.y,
-              angle: p.angle,
-              weaponIndex: activeWeaponIndex
-            });
-          }
-        }
-      }
-    });
-
-    function spawnBullet(x, y, angle, weaponIndex, ownerId) {
-      const w = WEAPONS[weaponIndex] || WEAPONS[0];
-      bullets.push({
-        x: x,
-        y: y,
-        vx: Math.cos(angle) * w.speed,
-        vy: Math.sin(angle) * w.speed,
-        damage: w.damage,
-        color: w.color,
-        ownerId: ownerId,
-        life: 70
-      });
-      createParticles(x, y, w.color, 5);
+    function simularDerrota() {
+      mostrarGameOver();
     }
-
-    function spawnInitialPickups() {
-      powerups = [
-        { id: 1, x: 200, y: 70, type: 'health', icon: '❤️', color: '#ef4444' },
-        { id: 2, x: 750, y: 580, type: 'speed', icon: '⚡', color: '#f59e0b' }
-      ];
-
-      weaponPickups = [];
-      for (let i = 0; i < 6; i++) {
-        spawnWeaponPickup();
-      }
-    }
-
-    function spawnWeaponPickup() {
-      let pos = getRandomSpawn();
-      let randomWId = 1 + Math.floor(Math.random() * 49);
-      weaponPickups.push({
-        id: Date.now() + Math.random(),
-        x: pos.x,
-        y: pos.y,
-        weaponId: randomWId,
-        weapon: WEAPONS[randomWId]
-      });
-    }
-
-    function createParticles(x, y, color, count) {
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: x,
-          y: y,
-          vx: (Math.random() - 0.5) * 6,
-          vy: (Math.random() - 0.5) * 6,
-          size: 2 + Math.random() * 4,
-          color: color,
-          life: 20
-        });
-      }
-    }
-
-    function checkWallCollision(newX, newY, radius = 18) {
-      for (let w of walls) {
-        if (newX + radius > w.x && newX - radius < w.x + w.w &&
-            newY + radius > w.y && newY - radius < w.y + w.h) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    // Bucle Principal
-    function gameLoop() {
-      update();
-      render4D();
-      requestAnimationFrame(gameLoop);
-    }
-
-    function update() {
-      const p = players[myId];
-      if (p && p.hp > 0) {
-        let currentSpeed = 7.5;
-        if (Date.now() < (p.speedBoostUntil || 0)) {
-          currentSpeed = 11.5;
-        }
-
-        let nextX = p.x;
-        let nextY = p.y;
-
-        if (keys['w'] || keys['arrowup']) nextY = Math.max(20, p.y - currentSpeed);
-        if (keys['s'] || keys['arrowdown']) nextY = Math.min(canvas.height - 20, p.y + currentSpeed);
-        if (keys['a'] || keys['arrowleft']) nextX = Math.max(20, p.x - currentSpeed);
-        if (keys['d'] || keys['arrowright']) nextX = Math.min(canvas.width - 20, p.x + currentSpeed);
-
-        if (!checkWallCollision(nextX, p.y)) p.x = nextX;
-        if (!checkWallCollision(p.x, nextY)) p.y = nextY;
-
-        p.angle = Math.atan2(mouseY - p.y, mouseX - p.x);
-
-        if (!isHost && hostConn) {
-          hostConn.send({
-            type: 'input',
-            x: p.x,
-            y: p.y,
-            angle: p.angle
-          });
-        }
-      }
-
-      // Actualitzar Partícules
-      for (let i = particles.length - 1; i >= 0; i--) {
-        let pt = particles[i];
-        pt.x += pt.vx;
-        pt.y += pt.vy;
-        pt.life--;
-        if (pt.life <= 0) particles.splice(i, 1);
-      }
-
-      if (isHost) {
-        let hitEvent = null;
-        let powerupEvent = null;
-        const botDiff = BOT_SETTINGS[currentDifficulty] || BOT_SETTINGS.normal;
-
-        // IA DE ELS BOTS (Afectada per la dificultat)
-        for (let id in players) {
-          let bot = players[id];
-          if (bot.isBot && bot.hp > 0) {
-            let closestDist = 9999;
-            let target = null;
-            for (let tId in players) {
-              if (tId !== id && players[tId].hp > 0) {
-                let d = Math.hypot(players[tId].x - bot.x, players[tId].y - bot.y);
-                if (d < closestDist) {
-                  closestDist = d;
-                  target = players[tId];
-                }
-              }
-            }
-
-            if (target) {
-              // Calcular angle amb desviació segons la dificultat
-              let baseAngle = Math.atan2(target.y - bot.y, target.x - bot.x);
-              let error = (Math.random() - 0.5) * botDiff.errorAngle;
-              bot.angle = baseAngle + error;
-              
-              // Moviment segons la velocitat de la dificultat
-              if (closestDist > 120) {
-                let nx = bot.x + Math.cos(baseAngle) * botDiff.speed;
-                let ny = bot.y + Math.sin(baseAngle) * botDiff.speed;
-                if (!checkWallCollision(nx, bot.y)) bot.x = nx;
-                if (!checkWallCollision(bot.x, ny)) bot.y = ny;
-              }
-
-              // Disparar segons la cadència adaptada
-              const now = Date.now();
-              const w = WEAPONS[bot.currentWeapon || 0];
-              if (now - (bot.botLastShot || 0) >= w.cooldown + botDiff.cooldownAdd) {
-                bot.botLastShot = now;
-                spawnBullet(bot.x, bot.y, bot.angle, bot.currentWeapon, id);
-              }
-            }
-          }
-        }
-
-        // Bales & Col·lisions
-        for (let i = bullets.length - 1; i >= 0; i--) {
-          let b = bullets[i];
-          b.x += b.vx;
-          b.y += b.vy;
-          b.life--;
-
-          if (checkWallCollision(b.x, b.y, 4)) {
-            b.life = 0;
-            createParticles(b.x, b.y, "#94a3b8", 4);
-            continue;
-          }
-
-          for (let id in players) {
-            let target = players[id];
-            if (id !== b.ownerId && target.hp > 0) {
-              let dist = Math.hypot(target.x - b.x, target.y - b.y);
-              if (dist < 22) {
-                target.hp -= b.damage;
-                b.life = 0;
-                hitEvent = { x: b.x, y: b.y };
-                playHitSound();
-                createParticles(b.x, b.y, "#ef4444", 10);
-
-                if (target.hp <= 0) {
-                  if (players[b.ownerId]) {
-                    players[b.ownerId].kills = (players[b.ownerId].kills || 0) + 1;
-                  }
-                  setTimeout(() => {
-                    if (players[id]) {
-                      let spawn = getRandomSpawn();
-                      players[id].hp = 100;
-                      players[id].x = spawn.x;
-                      players[id].y = spawn.y;
-                    }
-                  }, 3000);
-                }
-                break;
-              }
-            }
-          }
-
-          if (b.life <= 0) bullets.splice(i, 1);
-        }
-
-        // Recollir Power-ups de vida/velocitat
-        for (let i = powerups.length - 1; i >= 0; i--) {
-          let pw = powerups[i];
-          for (let id in players) {
-            let player = players[id];
-            if (player.hp > 0 && Math.hypot(player.x - pw.x, player.y - pw.y) < 25) {
-              if (pw.type === 'health') {
-                player.hp = Math.min(100, player.hp + 30);
-              } else if (pw.type === 'speed') {
-                player.speedBoostUntil = Date.now() + 6000;
-              }
-
-              powerupEvent = { x: pw.x, y: pw.y, color: pw.color };
-              playPowerupSound();
-              createParticles(pw.x, pw.y, pw.color, 12);
-
-              powerups.splice(i, 1);
-
-              setTimeout(() => {
-                let pPos = getRandomSpawn();
-                powerups.push({
-                  id: Date.now(),
-                  x: pPos.x,
-                  y: pPos.y,
-                  type: Math.random() > 0.5 ? 'health' : 'speed',
-                  icon: Math.random() > 0.5 ? '❤️' : '⚡',
-                  color: Math.random() > 0.5 ? '#ef4444' : '#f59e0b'
-                });
-              }, 8000);
-
-              break;
-            }
-          }
-        }
-
-        // Recollir ARMES pel camp
-        for (let i = weaponPickups.length - 1; i >= 0; i--) {
-          let wp = weaponPickups[i];
-          for (let id in players) {
-            let player = players[id];
-            if (player.hp > 0 && Math.hypot(player.x - wp.x, player.y - wp.y) < 25) {
-              if (!player.unlockedWeapons.includes(wp.weaponId)) {
-                player.unlockedWeapons.push(wp.weaponId);
-              }
-              player.currentWeapon = wp.weaponId;
-              if (id === myId) activeWeaponIndex = wp.weaponId;
-
-              powerupEvent = { x: wp.x, y: wp.y, color: wp.weapon.color };
-              playPowerupSound();
-              createParticles(wp.x, wp.y, wp.weapon.color, 15);
-
-              weaponPickups.splice(i, 1);
-
-              setTimeout(() => {
-                spawnWeaponPickup();
-              }, 5000);
-
-              break;
-            }
-          }
-        }
-
-        const stateData = { 
-          type: 'state', 
-          players: players, 
-          bullets: bullets, 
-          powerups: powerups,
-          weaponPickups: weaponPickups,
-          hitEvent: hitEvent,
-          powerupEvent: powerupEvent
-        };
-
-        for (let connId in connections) {
-          connections[connId].send(stateData);
-        }
-
-        if (players[myId]) {
-          document.getElementById("health-bar").style.width = Math.max(0, players[myId].hp) + "%";
-        }
-        updateLeaderboardUI();
-      }
-    }
-
-    // Renderitzat 4D
-    function render4D() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = "#0d1322";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Reixeta
-      ctx.strokeStyle = "rgba(0, 229, 255, 0.08)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x < canvas.width; x += 50) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += 50) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
-
-      // MURS / COBERTES
-      walls.forEach(w => {
-        ctx.fillStyle = "#1e293b";
-        ctx.fillRect(w.x, w.y, w.w, w.h);
-        ctx.strokeStyle = "#3b82f6";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(w.x, w.y, w.w, w.h);
-      });
-
-      // ARMES PEL CAMP (Pickups)
-      weaponPickups.forEach(wp => {
-        ctx.shadowColor = wp.weapon.color;
-        ctx.shadowBlur = 12;
-        ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
-        ctx.beginPath();
-        ctx.arc(wp.x, wp.y, 18, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = wp.weapon.color;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.font = "14px Segoe UI";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(wp.weapon.name.substring(0, 2), wp.x, wp.y);
-        ctx.shadowBlur = 0;
-      });
-
-      // POWER-UPS
-      powerups.forEach(pw => {
-        ctx.shadowColor = pw.color;
-        ctx.shadowBlur = 10;
-        ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
-        ctx.beginPath();
-        ctx.arc(pw.x, pw.y, 16, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = pw.color;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.font = "16px Segoe UI";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(pw.icon, pw.x, pw.y);
-        ctx.shadowBlur = 0;
-      });
-
-      // Ombres Jugadors
-      for (let id in players) {
-        let p = players[id];
-        if (p.hp <= 0) continue;
-
-        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-        ctx.beginPath();
-        ctx.ellipse(p.x + 12, p.y + 16, 22, 12, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Partícules
-      particles.forEach(pt => {
-        ctx.fillStyle = pt.color;
-        ctx.beginPath();
-        ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Bales
-      bullets.forEach(b => {
-        ctx.shadowColor = b.color;
-        ctx.shadowBlur = 12;
-        ctx.fillStyle = b.color;
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      });
-
-      // Jugadors & Bots
-      for (let id in players) {
-        let p = players[id];
-        if (p.hp <= 0) continue;
-
-        ctx.save();
-        ctx.translate(p.x, p.y);
-
-        ctx.fillStyle = "rgba(0,0,0,0.3)";
-        ctx.beginPath();
-        ctx.arc(0, 4, 18, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = p.color;
-        ctx.shadowColor = (Date.now() < (p.speedBoostUntil || 0)) ? "#f59e0b" : (id === myId ? "#00e5ff" : p.color);
-        ctx.shadowBlur = (Date.now() < (p.speedBoostUntil || 0)) ? 25 : (id === myId ? 18 : 6);
-
-        ctx.beginPath();
-        ctx.arc(0, 0, 18, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        ctx.rotate(p.angle);
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(10, -4, 18, 8);
-
-        ctx.restore();
-
-        ctx.fillStyle = p.isBot ? "#c084fc" : "#ffffff";
-        ctx.font = "bold 12px Segoe UI";
-        ctx.textAlign = "center";
-        ctx.fillText(p.name, p.x, p.y - 30);
-
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(p.x - 22, p.y - 25, 44, 6);
-        ctx.fillStyle = p.hp > 50 ? "#10b981" : "#ef4444";
-        ctx.fillRect(p.x - 22, p.y - 25, (p.hp / 100) * 44, 6);
-      }
-    }
-
-    updateWeaponHUD();
   </script>
-
 </body>
 </html>
