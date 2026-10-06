@@ -1,186 +1,669 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BATTLE</title>
+  <title>Battle Arena 2D - Juego 2</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #2c3e50;
-      color: white;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .panell-control {
-      margin-bottom: 20px;
-      background: #34495e;
-      padding: 15px;
-      border-radius: 8px;
-      display: inline-block;
-    }
-
-    select, button {
-      padding: 8px 12px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: none;
-      cursor: pointer;
-      margin: 5px;
-    }
-
-    button {
-      background-color: #27ae60;
-      color: white;
-      font-weight: bold;
-    }
-
-    button:hover {
-      background-color: #2ecc71;
-    }
-
-    .tauler {
-      margin: 20px auto;
-      padding: 20px;
-      background: #1e272c;
-      border-radius: 10px;
-      max-width: 500px;
-    }
-
-    /* Estils per la pantalla de Game Over (Modal) */
-    .overlay-game-over {
-      display: none; /* Amagat per defecte */
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.85);
-      z-index: 1000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0b132b;
+      color: #ffffff;
+      overflow: hidden;
+      display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
+      height: 100vh;
     }
 
-    .modal-game-over {
-      background: #c0392b;
+    /* MENÚ PRINCIPAL */
+    #menu-principal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(11, 19, 43, 0.95);
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      border-radius: 15px;
+      border: 2px solid #5bc0be;
+      box-shadow: 0 0 25px rgba(91, 192, 190, 0.4);
       text-align: center;
+      z-index: 10;
+      min-width: 320px;
     }
 
-    .modal-game-over h1 {
-      font-size: 48px;
-      margin: 0 0 10px 0;
+    #menu-principal h1 {
+      color: #5bc0be;
+      margin-bottom: 20px;
       letter-spacing: 2px;
     }
 
-    .boto-reiniciar {
-      background-color: #f39c12;
+    .opcion-menu {
+      margin: 15px 0;
+      text-align: left;
     }
 
-    .boto-web {
-      background-color: #2980b9;
+    .opcion-menu label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #a0aab8;
     }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    select {
+      background-color: #1c2541;
+      color: #ffffff;
+      border: 1px solid #3a506b;
+    }
+
+    .btn-jugar {
+      background-color: #5bc0be;
+      color: #0b132b;
+      margin-top: 15px;
+    }
+
+    .btn-jugar:hover {
+      background-color: #6fffe9;
+      transform: scale(1.02);
+    }
+
+    .btn-info {
+      background-color: #3a506b;
+      color: #ffffff;
+      margin-top: 10px;
+    }
+
+    /* HUD / INTERFAZ EN JUEGO */
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 5;
+      display: none;
+    }
+
+    .barra-contenedor {
+      width: 220px;
+      height: 20px;
+      background: rgba(0,0,0,0.6);
+      border: 2px solid #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    #barra-vida {
+      width: 100%;
+      height: 100%;
+      background: #2ecc71;
+      transition: width 0.1s;
+    }
+
+    #info-arma {
+      background: rgba(0,0,0,0.6);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    /* CANVAS DEL JUEGO */
+    canvas {
+      display: block;
+      background-color: #0b132b;
+    }
+
+    /* PANTALLA GAME OVER */
+    #pantalla-game-over {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(11, 19, 43, 0.9);
+      z-index: 20;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #pantalla-game-over h1 {
+      font-size: 60px;
+      color: #e74c3c;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px rgba(231, 76, 60, 0.6);
+    }
+
+    .btn-revivir {
+      background-color: #e74c3c !important;
+      color: white !important;
+      width: 250px !important;
+      font-size: 18px !important;
+      margin-bottom: 10px;
+    }
+
+    .btn-revivir:hover {
+      background-color: #ff5252 !important;
+    }
+
+    .btn-web {
+      background-color: #3498db !important;
+      color: white !important;
+      width: 250px !important;
+    }
+
+    /* MODAL INFO */
+    #modal-info {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 30;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .contenido-modal {
+      background: #1c2541;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 450px;
+      text-align: left;
+      border: 1px solid #5bc0be;
+    }
+
+    .contenido-modal h2 { color: #5bc0be; margin-bottom: 10px; }
+    .contenido-modal ul { margin-left: 20px; margin-bottom: 15px; }
+    .contenido-modal li { margin-bottom: 5px; }
   </style>
 </head>
 <body>
 
-  <h1>Joc 2</h1>
+  <!-- MENÚ PRINCIPAL -->
+  <div id="menu-principal">
+    <h1>BATALLA 2D</h1>
+    
+    <div class="opcion-menu">
+      <label for="dificultad">Dificultad de los Bots:</label>
+      <select id="dificultad">
+        <option value="1">Nivel 1 (Fácil)</option>
+        <option value="2" selected>Nivel 2 (Normal)</option>
+        <option value="3">Nivel 3 (Difícil)</option>
+      </select>
+    </div>
 
-  <!-- Configuració i Selecció de Dificultat -->
-  <div class="panell-control">
-    <label for="dificultat-bot">Dificultat del Bot: </label>
-    <select id="dificultat-bot">
-      <option value="facil">Fàcil</option>
-      <option value="normal" selected>Normal</option>
-      <option value="dificil">Difícil</option>
-    </select>
-    <button onclick="reiniciarPartida()">Nova Partida</button>
+    <div class="opcion-menu">
+      <label for="modo-juego">Modo de Juego:</label>
+      <select id="modo-juego">
+        <option value="ia">Tú vs IA (Bots)</option>
+        <option value="online">Modo Online (5 Jugadores - Servidor JS)</option>
+      </select>
+    </div>
+
+    <button class="btn-jugar" onclick="iniciarJuego()">¡JUGAR!</button>
+    <button class="btn-info" onclick="toggleInfo(true)">Información (Info)</button>
   </div>
 
-  <!-- Àrea de Joc -->
-  <div class="tauler">
-    <p id="estat-joc">Fes clic per jugar una ronda.</p>
-    <button onclick="jugarRonda()">Jugar Carta / Fer Moviment</button>
-    <button onclick="simularDerrota()" style="background-color: #e74c3c;">Simular Morte/Derrota</button>
+  <!-- HUD EN JUEGO -->
+  <div id="hud">
+    <div class="barra-contenedor">
+      <div id="barra-vida"></div>
+    </div>
+    <div id="info-arma">Arma: Pistola Básica | Mun: ∞</div>
   </div>
 
-  <!-- Pantalla de Game Over -->
-  <div id="pantalla-game-over" class="overlay-game-over">
-    <div class="modal-game-over">
-      <h1>GAME OVER</h1>
-      <p>Has perdut la partida!</p>
-      <button class="boto-reiniciar" onclick="reiniciarPartida()">Tornar a jugar</button>
-      <button class="boto-web" onclick="tornarAWeb()">Tornar a la web</button>
+  <!-- PANTALLA GAME OVER -->
+  <div id="pantalla-game-over">
+    <h1>GAME OVER</h1>
+    <button class="btn-revivir" onclick="revivir()">REVIVIR</button>
+    <button class="btn-web" onclick="volverAWeb()">Tornar a la web</button>
+  </div>
+
+  <!-- MODAL DE INFORMACIÓN -->
+  <div id="modal-info">
+    <div class="contenido-modal">
+      <h2>Información del Juego</h2>
+      <ul>
+        <li><b>Controles:</b> Teclas <b>W, A, S, D</b> para moverte.</li>
+        <li><b>Apuntar y Disparar:</b> Mueve el ratón y haz clic izquierdo.</li>
+        <li><b>Armas:</b> Camina sobre las armas dispersas (500+) para equiparlas.</li>
+        <li><b>Cobertura:</b> Usa los muros grises para cubrirte de los disparos enemigos.</li>
+        <li><b>Online:</b> Modo multijugador preparado para conectar con tu servidor Node.js/WebSockets.</li>
+      </ul>
+      <button onclick="toggleInfo(false)">Cerrar</button>
     </div>
   </div>
 
+  <canvas id="gameCanvas"></canvas>
+
   <script>
-    // Lògica de la IA del Bot amb nivell difícil adaptat (més assequible)
-    function obtenirMovimentBot(cartesValides, estatJoc) {
-      const dificultat = document.getElementById("dificultat-bot").value;
+    // --- SINTETIZADOR DE AUDIO (Web Audio API) ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-      if (dificultat === "facil") {
-        // FÀCIL: Tria completament a l'atzar
-        const indexAleatori = Math.floor(Math.random() * cartesValides.length);
-        return cartesValides[indexAleatori];
+    function reproducirSonidoHit(esPositivo) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
 
-      } else if (dificultat === "normal") {
-        // NORMAL: Juga la primera carta disponible / estratègia bàsica
-        return cartesValides[0];
+      if (esPositivo) {
+        // Sonido positivo (Agudo / Acierto)
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+      } else {
+        // Sonido negativo (Grave / Daño recibido)
+        osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
+      }
 
-      } else if (dificultat === "dificil") {
-        // DIFÍCIL MÉS FÀCIL: Tria bé, però té un 25% de probabilitats d'equivocar-se
-        const cometError = Math.random() < 0.25; 
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
 
-        if (cometError) {
-          // El bot comet un error humà i tria a l'atzar
-          const indexAleatori = Math.floor(Math.random() * cartesValides.length);
-          return cartesValides[indexAleatori];
-        } else {
-          // El bot juga de manera òptima
-          return triarMillorCarta(cartesValides, estatJoc);
-        }
+    // --- CONFIGURACIÓN DEL CANVAS Y MAPA ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const ANCHO_MAPA = 3000;
+    const ALTO_MAPA = 3000;
+
+    // --- ESTADO DEL JUEGO ---
+    let enJuego = false;
+    let modoActual = 'ia';
+    let dificultadBot = 2;
+    let socketOnline = null; // Para conectar con servidor JS
+
+    const raton = { x: 0, y: 0, worldX: 0, worldY: 0, presionado: false };
+    const teclas = {};
+
+    // ENTIDADES
+    let jugador = { x: 1500, y: 1500, radio: 18, vida: 100, maxVida: 100, velocidad: 4, angulo: 0, arma: null };
+    let muros = [];
+    let armasSuelo = [];
+    let proyectiles = [];
+    let bots = [];
+
+    // TIPO DE ARMAS
+    const TIPOS_ARMAS = [
+      { nombre: 'Pistola', dano: 15, cadencia: 250, velBala: 12, color: '#f1c40f' },
+      { nombre: 'Subfusil', dano: 10, cadencia: 100, velBala: 14, color: '#e67e22' },
+      { nombre: 'Escopeta', dano: 8, cadencia: 700, velBala: 10, color: '#e74c3c', perdigones: 5 },
+      { nombre: 'Francotirador', dano: 60, cadencia: 1200, velBala: 22, color: '#9b59b6' }
+    ];
+
+    // --- INICIALIZACIÓN DE ELEMENTOS ---
+    function generarMuros() {
+      muros = [];
+      // Generar muros tácticos aleatorios por el mapa
+      for (let i = 0; i < 60; i++) {
+        muros.push({
+          x: Math.random() * (ANCHO_MAPA - 400) + 200,
+          y: Math.random() * (ALTO_MAPA - 400) + 200,
+          ancho: Math.random() < 0.5 ? 180 : 50,
+          alto: Math.random() < 0.5 ? 50 : 180
+        });
       }
     }
 
-    // Algorisme per triar la millor carta en nivell difícil
-    function triarMillorCarta(cartes, estatJoc) {
-      return cartes.reduce((millor, actual) => {
-        return (actual.valor > millor.valor) ? actual : millor;
-      }, cartes[0]);
+    function generarArmas() {
+      armasSuelo = [];
+      // Generar 500 armas distribuidas por el mapa
+      for (let i = 0; i < 500; i++) {
+        const tipo = TIPOS_ARMAS[Math.floor(Math.random() * TIPOS_ARMAS.length)];
+        armasSuelo.push({
+          x: Math.random() * (ANCHO_MAPA - 100) + 50,
+          y: Math.random() * (ALTO_MAPA - 100) + 50,
+          tipo: tipo
+        });
+      }
     }
 
-    // Funció per mostrar el Game Over quan el jugador mor
-    function mostrarGameOver() {
-      document.getElementById("pantalla-game-over").style.display = "flex";
+    function generarBots() {
+      bots = [];
+      const numBots = modoActual === 'ia' ? 4 : 0;
+      for (let i = 0; i < numBots; i++) {
+        bots.push({
+          id: i,
+          x: Math.random() * ANCHO_MAPA,
+          y: Math.random() * ALTO_MAPA,
+          radio: 18,
+          vida: 100,
+          velocidad: 2 + dificultadBot * 0.5,
+          arma: TIPOS_ARMAS[Math.floor(Math.random() * TIPOS_ARMAS.length)],
+          ultimoDisparo: 0
+        });
+      }
     }
 
-    // Reinicia el joc i amaga la pantalla de Game Over
-    function reiniciarPartida() {
-      document.getElementById("pantalla-game-over").style.display = "none";
-      document.getElementById("estat-joc").innerText = "Partida reiniciada. Que comenci el joc!";
+    // --- CONTROLES Y EVENTOS ---
+    window.addEventListener('keydown', e => teclas[e.key.toLowerCase()] = true);
+    window.addEventListener('keyup', e => teclas[e.key.toLowerCase()] = false);
+    window.addEventListener('mousemove', e => {
+      raton.x = e.clientX;
+      raton.y = e.clientY;
+    });
+    window.addEventListener('mousedown', () => raton.presionado = true);
+    window.addEventListener('mouseup', () => raton.presionado = false);
+
+    let ultimoDisparoJugador = 0;
+
+    // --- BUCLE PRINCIPAL DE JUEGO ---
+    function actualizar() {
+      if (!enJuego) return;
+
+      // Actualizar posición del ratón en coordenadas del mundo
+      const camaraX = jugador.x - canvas.width / 2;
+      const camaraY = jugador.y - canvas.height / 2;
+      raton.worldX = raton.x + camaraX;
+      raton.worldY = raton.y + camaraY;
+
+      // MOVIMIENTO JUGADOR
+      let dx = 0, dy = 0;
+      if (teclas['w'] || teclas['arrowup']) dy -= 1;
+      if (teclas['s'] || teclas['arrowdown']) dy += 1;
+      if (teclas['a'] || teclas['arrowleft']) dx -= 1;
+      if (teclas['d'] || teclas['arrowright']) dx += 1;
+
+      if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
+
+      let nuevoX = jugador.x + dx * jugador.velocidad;
+      let nuevoY = jugador.y + dy * jugador.velocidad;
+
+      // Colisión jugador con muros
+      if (!comprobarColisionMuro(nuevoX, jugador.y, jugador.radio)) jugador.x = Math.max(jugador.radio, Math.min(ANCHO_MAPA - jugador.radio, nuevoX));
+      if (!comprobarColisionMuro(jugador.x, nuevoY, jugador.radio)) jugador.y = Math.max(jugador.radio, Math.min(ALTO_MAPA - jugador.radio, nuevoY));
+
+      // Ángulo de mirada
+      jugador.angulo = Math.atan2(raton.worldY - jugador.y, raton.worldX - jugador.x);
+
+      // RECOGER ARMAS
+      armasSuelo.forEach((arma, i) => {
+        const dist = Math.hypot(jugador.x - arma.x, jugador.y - arma.y);
+        if (dist < jugador.radio + 15) {
+          jugador.arma = arma.tipo;
+          document.getElementById('info-arma').innerText = `Arma: ${arma.tipo.nombre} | Daño: ${arma.tipo.dano}`;
+          armasSuelo.splice(i, 1);
+        }
+      });
+
+      // DISPARO JUGADOR
+      if (raton.presionado && jugador.arma) {
+        const ahora = Date.now();
+        if (ahora - ultimoDisparoJugador >= jugador.arma.cadencia) {
+          disparar(jugador.x, jugador.y, jugador.angulo, jugador.arma, true);
+          ultimoDisparoJugador = ahora;
+        }
+      }
+
+      // ACTUALIZAR PROYECTILES
+      proyectiles.forEach((p, index) => {
+        p.x += Math.cos(p.angulo) * p.velocidad;
+        p.y += Math.sin(p.angulo) * p.velocidad;
+
+        // Colisión proyectil con muros
+        if (comprobarColisionMuro(p.x, p.y, 3)) {
+          proyectiles.splice(index, 1);
+          return;
+        }
+
+        // Colisión con enemigos (si lo disparó el jugador)
+        if (p.esJugador) {
+          bots.forEach(bot => {
+            if (Math.hypot(p.x - bot.x, p.y - bot.y) < bot.radio) {
+              bot.vida -= p.dano;
+              reproducirSonidoHit(true); // Sonido Positivo
+              proyectiles.splice(index, 1);
+              if (bot.vida <= 0) {
+                // Respawn bot
+                bot.x = Math.random() * ANCHO_MAPA;
+                bot.y = Math.random() * ALTO_MAPA;
+                bot.vida = 100;
+              }
+            }
+          });
+        } else {
+          // Colisión con el jugador (disparo del bot)
+          if (Math.hypot(p.x - jugador.x, p.y - jugador.y) < jugador.radio) {
+            jugador.vida -= p.dano;
+            reproducirSonidoHit(false); // Sonido Negativo
+            proyectiles.splice(index, 1);
+            actualizarBarraVida();
+
+            if (jugador.vida <= 0) {
+              finalizarJuego();
+            }
+          }
+        }
+      });
+
+      // LÓGICA DE BOTS (IA)
+      bots.forEach(bot => {
+        const distJugador = Math.hypot(jugador.x - bot.x, jugador.y - bot.y);
+        const anguloAJugador = Math.atan2(jugador.y - bot.y, jugador.x - bot.x);
+
+        // Persecución según dificultad
+        if (distJugador < 600) {
+          let bX = bot.x + Math.cos(anguloAJugador) * bot.velocidad;
+          let bY = bot.y + Math.sin(anguloAJugador) * bot.velocidad;
+
+          if (!comprobarColisionMuro(bX, bot.y, bot.radio)) bot.x = bX;
+          if (!comprobarColisionMuro(bot.x, bY, bot.radio)) bot.y = bY;
+
+          // Disparo del bot según dificultad
+          const ahora = Date.now();
+          const margenError = (4 - dificultadBot) * 0.2;
+          if (ahora - bot.ultimoDisparo > bot.arma.cadencia * (1.5 / dificultadBot)) {
+            const anguloDisparo = anguloAJugador + (Math.random() - 0.5) * margenError;
+            disparar(bot.x, bot.y, anguloDisparo, bot.arma, false);
+            bot.ultimoDisparo = ahora;
+          }
+        }
+      });
     }
 
-    // Redirecciona a la pàgina principal de la web
-    function tornarAWeb() {
-      window.location.href = "index.html"; // Canvia 'index.html' per la teva URL si és diferent
+    function disparar(x, y, angulo, arma, esJugador) {
+      if (arma.perdigones) {
+        for (let i = 0; i < arma.perdigones; i++) {
+          const dispersion = (Math.random() - 0.5) * 0.3;
+          proyectiles.push({ x, y, angulo: angulo + dispersion, velocidad: arma.velBala, dano: arma.dano, color: arma.color, esJugador });
+        }
+      } else {
+        proyectiles.push({ x, y, angulo, velocidad: arma.velBala, dano: arma.dano, color: arma.color, esJugador });
+      }
     }
 
-    // Exemples de simulació per provar el funcionament
-    function jugarRonda() {
-      const cartesExemple = [{ nom: "Carta 1", valor: 2 }, { nom: "Carta 2", valor: 8 }, { nom: "Carta 3", valor: 5 }];
-      const cartaJugada = obtenirMovimentBot(cartesExemple, {});
-      document.getElementById("estat-joc").innerText = "El bot ha jugat: " + cartaJugada.nom + " (Valor: " + cartaJugada.valor + ")";
+    function comprobarColisionMuro(x, y, radio) {
+      return muros.some(m => x + radio > m.x && x - radio < m.x + m.ancho && y + radio > m.y && y - radio < m.y + m.alto);
     }
 
-    function simularDerrota() {
-      mostrarGameOver();
+    function actualizarBarraVida() {
+      const pct = Math.max(0, (jugador.vida / jugador.maxVida) * 100);
+      const barra = document.getElementById('barra-vida');
+      barra.style.width = pct + '%';
+      barra.style.backgroundColor = pct > 50 ? '#2ecc71' : pct > 20 ? '#f39c12' : '#e74c3c';
     }
+
+    // --- RENDERIZADO VISUAL ---
+    function renderizar() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (!enJuego) return;
+
+      const camaraX = jugador.x - canvas.width / 2;
+      const camaraY = jugador.y - canvas.height / 2;
+
+      ctx.save();
+      ctx.translate(-camaraX, -camaraY);
+
+      // FONDO CON REJILLA AZUL OSCURO
+      ctx.fillStyle = '#0b132b';
+      ctx.fillRect(0, 0, ANCHO_MAPA, ALTO_MAPA);
+      ctx.strokeStyle = '#1c2541';
+      ctx.lineWidth = 2;
+      for (let x = 0; x < ANCHO_MAPA; x += 60) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ALTO_MAPA); ctx.stroke();
+      }
+      for (let y = 0; y < ALTO_MAPA; y += 60) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ANCHO_MAPA, y); ctx.stroke();
+      }
+
+      // DIBUJAR ARMAS EN EL SUELO
+      armasSuelo.forEach(arma => {
+        ctx.fillStyle = arma.tipo.color;
+        ctx.beginPath();
+        ctx.arc(arma.x, arma.y, 6, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // DIBUJAR MUROS
+      ctx.fillStyle = '#3a506b';
+      ctx.strokeStyle = '#5bc0be';
+      ctx.lineWidth = 3;
+      muros.forEach(m => {
+        ctx.fillRect(m.x, m.y, m.ancho, m.alto);
+        ctx.strokeRect(m.x, m.y, m.ancho, m.alto);
+      });
+
+      // DIBUJAR PROYECTILES
+      proyectiles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // DIBUJAR BOTS
+      bots.forEach(bot => {
+        ctx.fillStyle = '#e74c3c';
+        ctx.beginPath();
+        ctx.arc(bot.x, bot.y, bot.radio, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // DIBUJAR JUGADOR
+      ctx.save();
+      ctx.translate(jugador.x, jugador.y);
+      ctx.rotate(jugador.angulo);
+      ctx.fillStyle = '#5bc0be';
+      ctx.beginPath();
+      ctx.arc(0, 0, jugador.radio, 0, Math.PI * 2);
+      ctx.fill();
+      // Cañón del arma
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, -4, 25, 8);
+      ctx.restore();
+
+      ctx.restore();
+
+      // DIBUJAR MINIMAPA (Radar en la esquina)
+      dibujarMinimapa();
+    }
+
+    function dibujarMinimapa() {
+      const tam = 120;
+      const margin = 10;
+      const x = canvas.width - tam - margin;
+      const y = margin;
+
+      ctx.fillStyle = 'rgba(11, 19, 43, 0.8)';
+      ctx.fillRect(x, y, tam, tam);
+      ctx.strokeStyle = '#5bc0be';
+      ctx.strokeRect(x, y, tam, tam);
+
+      const esc = tam / ANCHO_MAPA;
+
+      // Muros en minimapa
+      ctx.fillStyle = '#3a506b';
+      muros.forEach(m => ctx.fillRect(x + m.x * esc, y + m.y * esc, m.ancho * esc, m.alto * esc));
+
+      // Jugador (Punto verde)
+      ctx.fillStyle = '#2ecc71';
+      ctx.fillRect(x + jugador.x * esc - 2, y + jugador.y * esc - 2, 4, 4);
+
+      // Bots (Puntos rojos)
+      ctx.fillStyle = '#e74c3c';
+      bots.forEach(b => ctx.fillRect(x + b.x * esc - 2, y + b.y * esc - 2, 4, 4));
+    }
+
+    function bucle() {
+      actualizar();
+      renderizar();
+      requestAnimationFrame(bucle);
+    }
+
+    // --- FLUJO Y MENÚS ---
+    function iniciarJuego() {
+      dificultadBot = parseInt(document.getElementById('dificultad').value);
+      modoActual = document.getElementById('modo-juego').value;
+
+      document.getElementById('menu-principal').style.display = 'none';
+      document.getElementById('hud').style.display = 'block';
+
+      if (modoActual === 'online') {
+        conectarServidorOnline();
+      }
+
+      generarMuros();
+      generarArmas();
+      generarBots();
+
+      // Configurar arma inicial por defecto
+      jugador.arma = TIPOS_ARMAS[0];
+      jugador.vida = 100;
+      actualizarBarraVida();
+
+      enJuego = true;
+    }
+
+    function conectarServidorOnline() {
+      // Plantilla para conectar a un servidor en Node.js (WebSockets)
+      console.log("Conectando al servidor online WebSocket (simulación)...");
+      /* 
+      socketOnline = new WebSocket('ws://tu-servidor-js.com:8080');
+      socketOnline.onmessage = (e) => { ... actualizar jugares online ... };
+      */
+    }
+
+    function finalizarJuego() {
+      enJuego = false;
+      document.getElementById('pantalla-game-over').style.display = 'flex';
+    }
+
+    function revivir() {
+      document.getElementById('pantalla-game-over').style.display = 'none';
+      jugador.x = Math.random() * (ANCHO_MAPA - 200) + 100;
+      jugador.y = Math.random() * (ALTO_MAPA - 200) + 100;
+      jugador.vida = 100;
+      actualizarBarraVida();
+      enJuego = true;
+    }
+
+    function volverAWeb() {
+      window.location.href = "index.html";
+    }
+
+    function toggleInfo(mostrar) {
+      document.getElementById('modal-info').style.display = mostrar ? 'flex' : 'none';
+    }
+
+    // Iniciar bucle gráfico
+    bucle();
   </script>
 </body>
 </html>
