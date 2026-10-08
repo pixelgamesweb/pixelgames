@@ -118,6 +118,62 @@
       font-size: 14px;
     }
 
+    /* INVENTARIO DE 7 CUADRADOS ABAJO */
+    #inventario-armas {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 10px;
+      z-index: 5;
+    }
+
+    .cuadrado-arma {
+      width: 60px;
+      height: 60px;
+      background: rgba(28, 37, 65, 0.85);
+      border: 2px solid #3a506b;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 10px;
+      color: #a0aab8;
+      text-align: center;
+      padding: 2px;
+      position: relative;
+    }
+
+    .cuadrado-arma:hover {
+      border-color: #5bc0be;
+    }
+
+    .cuadrado-arma.activo {
+      border-color: #2ecc71;
+      box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
+      background: rgba(28, 37, 65, 1);
+    }
+
+    .cuadrado-arma .numero {
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      font-size: 10px;
+      color: #5bc0be;
+      font-weight: bold;
+    }
+
+    .cuadrado-arma .icono {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      margin-bottom: 3px;
+    }
+
     /* CANVAS DEL JUEGO */
     canvas {
       display: block;
@@ -220,7 +276,18 @@
     <div class="barra-contenedor">
       <div id="barra-vida"></div>
     </div>
-    <div id="info-arma">Arma: Pistola Básica | Mun: ∞</div>
+    <div id="info-arma">Arma: Pistola | Daño: 15</div>
+  </div>
+
+  <!-- INVENTARIO DE 7 CUADRADOS DE ARMAS EN LA PARTE INFERIOR -->
+  <div id="inventario-armas">
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(0)"><span class="numero">1</span><div class="icono" id="ico-0"></div><span id="txt-0">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(1)"><span class="numero">2</span><div class="icono" id="ico-1"></div><span id="txt-1">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(2)"><span class="numero">3</span><div class="icono" id="ico-2"></div><span id="txt-2">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(3)"><span class="numero">4</span><div class="icono" id="ico-3"></div><span id="txt-3">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(4)"><span class="numero">5</span><div class="icono" id="ico-4"></div><span id="txt-4">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(5)"><span class="numero">6</span><div class="icono" id="ico-5"></div><span id="txt-5">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(6)"><span class="numero">7</span><div class="icono" id="ico-6"></div><span id="txt-6">Vacío</span></div>
   </div>
 
   <!-- PANTALLA GAME OVER -->
@@ -237,9 +304,9 @@
       <ul>
         <li><b>Controles:</b> Teclas <b>W, A, S, D</b> para moverte.</li>
         <li><b>Apuntar y Disparar:</b> Mueve el ratón y haz clic izquierdo.</li>
-        <li><b>Armas:</b> Camina sobre las armas dispersas (500+) para equiparlas.</li>
-        <li><b>Cobertura:</b> Usa los muros grises para cubrirte de los disparos enemigos.</li>
-        <li><b>Online:</b> Modo multijugador preparado para conectar con tu servidor Node.js/WebSockets.</li>
+        <li><b>Inventario de 7 Armas:</b> Pasa sobre las armas en el mapa para colocarlas en tus 7 cuadrados abajo.</li>
+        <li><b>Cambio de Arma:</b> Haz clic en cualquier cuadrado abajo o pulsa las teclas <b>1 a 7</b>.</li>
+        <li><b>Cobertura:</b> Usa los muros grises para cubrirte.</li>
       </ul>
       <button onclick="toggleInfo(false)">Cerrar</button>
     </div>
@@ -259,11 +326,9 @@
       gain.connect(audioCtx.destination);
 
       if (esPositivo) {
-        // Sonido positivo (Agudo / Acierto)
         osc.frequency.setValueAtTime(600, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
       } else {
-        // Sonido negativo (Grave / Daño recibido)
         osc.frequency.setValueAtTime(180, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
       }
@@ -283,34 +348,45 @@
     const ANCHO_MAPA = 3000;
     const ALTO_MAPA = 3000;
 
+    // --- LAS 7 ARMAS DEL JUEGO ---
+    const LAS_7_ARMAS = [
+      { id: 0, nombre: 'Pistola', dano: 15, cadencia: 250, velBala: 12, color: '#f1c40f' },
+      { id: 1, nombre: 'Subfusil', dano: 10, cadencia: 100, velBala: 14, color: '#e67e22' },
+      { id: 2, nombre: 'Escopeta', dano: 8, cadencia: 700, velBala: 10, color: '#e74c3c', perdigones: 5 },
+      { id: 3, nombre: 'Francotirador', dano: 60, cadencia: 1200, velBala: 22, color: '#9b59b6' },
+      { id: 4, nombre: 'Láser', dano: 20, cadencia: 180, velBala: 18, color: '#3498db' },
+      { id: 5, nombre: 'Misiles', dano: 45, cadencia: 900, velBala: 9, color: '#2ecc71' },
+      { id: 6, nombre: 'Pesada', dano: 35, cadencia: 400, velBala: 13, color: '#e67e22' }
+    ];
+
     // --- ESTADO DEL JUEGO ---
     let enJuego = false;
     let modoActual = 'ia';
     let dificultadBot = 2;
-    let socketOnline = null; // Para conectar con servidor JS
 
     const raton = { x: 0, y: 0, worldX: 0, worldY: 0, presionado: false };
     const teclas = {};
 
-    // ENTIDADES
-    let jugador = { x: 1500, y: 1500, radio: 18, vida: 100, maxVida: 100, velocidad: 4, angulo: 0, arma: null };
+    let jugador = { 
+      x: 1500, 
+      y: 1500, 
+      radio: 18, 
+      vida: 100, 
+      maxVida: 100, 
+      velocidad: 4, 
+      angulo: 0,
+      inventario: [null, null, null, null, null, null, null], // 7 huecos
+      indexArmaEquipada: 0
+    };
+
     let muros = [];
     let armasSuelo = [];
     let proyectiles = [];
     let bots = [];
 
-    // TIPO DE ARMAS
-    const TIPOS_ARMAS = [
-      { nombre: 'Pistola', dano: 15, cadencia: 250, velBala: 12, color: '#f1c40f' },
-      { nombre: 'Subfusil', dano: 10, cadencia: 100, velBala: 14, color: '#e67e22' },
-      { nombre: 'Escopeta', dano: 8, cadencia: 700, velBala: 10, color: '#e74c3c', perdigones: 5 },
-      { nombre: 'Francotirador', dano: 60, cadencia: 1200, velBala: 22, color: '#9b59b6' }
-    ];
-
-    // --- INICIALIZACIÓN DE ELEMENTOS ---
+    // --- INICIALIZACIÓN ---
     function generarMuros() {
       muros = [];
-      // Generar muros tácticos aleatorios por el mapa
       for (let i = 0; i < 60; i++) {
         muros.push({
           x: Math.random() * (ANCHO_MAPA - 400) + 200,
@@ -323,9 +399,9 @@
 
     function generarArmas() {
       armasSuelo = [];
-      // Generar 500 armas distribuidas por el mapa
-      for (let i = 0; i < 500; i++) {
-        const tipo = TIPOS_ARMAS[Math.floor(Math.random() * TIPOS_ARMAS.length)];
+      // Generar únicamente las 7 armas repetidas por el mapa
+      for (let i = 0; i < 70; i++) {
+        const tipo = LAS_7_ARMAS[i % 7];
         armasSuelo.push({
           x: Math.random() * (ANCHO_MAPA - 100) + 50,
           y: Math.random() * (ALTO_MAPA - 100) + 50,
@@ -345,14 +421,21 @@
           radio: 18,
           vida: 100,
           velocidad: 2 + dificultadBot * 0.5,
-          arma: TIPOS_ARMAS[Math.floor(Math.random() * TIPOS_ARMAS.length)],
+          arma: LAS_7_ARMAS[Math.floor(Math.random() * LAS_7_ARMAS.length)],
           ultimoDisparo: 0
         });
       }
     }
 
-    // --- CONTROLES Y EVENTOS ---
-    window.addEventListener('keydown', e => teclas[e.key.toLowerCase()] = true);
+    // --- CONTROLES DE TECLADO ---
+    window.addEventListener('keydown', e => {
+      teclas[e.key.toLowerCase()] = true;
+      // Selección de arma con teclas 1 al 7
+      if (e.key >= '1' && e.key <= '7') {
+        const idx = parseInt(e.key) - 1;
+        seleccionarArmaPorIndex(idx);
+      }
+    });
     window.addEventListener('keyup', e => teclas[e.key.toLowerCase()] = false);
     window.addEventListener('mousemove', e => {
       raton.x = e.clientX;
@@ -363,17 +446,73 @@
 
     let ultimoDisparoJugador = 0;
 
-    // --- BUCLE PRINCIPAL DE JUEGO ---
+    // --- INVENTARIO DE 7 ARMAS ---
+    function guardarEnInventario(arma) {
+      // 1. Si ya tenemos esta arma, la seleccionamos
+      const yaExisteIdx = jugador.inventario.findIndex(a => a && a.id === arma.id);
+      if (yaExisteIdx !== -1) {
+        seleccionarArmaPorIndex(yaExisteIdx);
+        return;
+      }
+
+      // 2. Si hay un hueco libre, la guardamos allí
+      const huecoLibre = jugador.inventario.findIndex(a => a === null);
+      if (huecoLibre !== -1) {
+        jugador.inventario[huecoLibre] = arma;
+        seleccionarArmaPorIndex(huecoLibre);
+      } else {
+        // 3. Si está lleno, reemplaza la del hueco activo
+        jugador.inventario[jugador.indexArmaEquipada] = arma;
+        actualizarUIInventario();
+      }
+    }
+
+    function seleccionarArmaPorIndex(index) {
+      if (jugador.inventario[index]) {
+        jugador.indexArmaEquipada = index;
+        actualizarUIInventario();
+      }
+    }
+
+    function actualizarUIInventario() {
+      const armaActual = jugador.inventario[jugador.indexArmaEquipada];
+
+      for (let i = 0; i < 7; i++) {
+        const cuadrado = document.getElementsByClassName('cuadrado-arma')[i];
+        const txt = document.getElementById(`txt-${i}`);
+        const ico = document.getElementById(`ico-${i}`);
+        const a = jugador.inventario[i];
+
+        if (a) {
+          txt.innerText = a.nombre;
+          ico.style.backgroundColor = a.color;
+        } else {
+          txt.innerText = "Vacío";
+          ico.style.backgroundColor = "transparent";
+        }
+
+        if (i === jugador.indexArmaEquipada) {
+          cuadrado.classList.add('activo');
+        } else {
+          cuadrado.classList.remove('activo');
+        }
+      }
+
+      if (armaActual) {
+        document.getElementById('info-arma').innerText = `Arma: ${armaActual.nombre} | Daño: ${armaActual.dano}`;
+      }
+    }
+
+    // --- BUCLE PRINCIPAL ---
     function actualizar() {
       if (!enJuego) return;
 
-      // Actualizar posición del ratón en coordenadas del mundo
       const camaraX = jugador.x - canvas.width / 2;
       const camaraY = jugador.y - canvas.height / 2;
       raton.worldX = raton.x + camaraX;
       raton.worldY = raton.y + camaraY;
 
-      // MOVIMIENTO JUGADOR
+      // Movimiento
       let dx = 0, dy = 0;
       if (teclas['w'] || teclas['arrowup']) dy -= 1;
       if (teclas['s'] || teclas['arrowdown']) dy += 1;
@@ -385,52 +524,47 @@
       let nuevoX = jugador.x + dx * jugador.velocidad;
       let nuevoY = jugador.y + dy * jugador.velocidad;
 
-      // Colisión jugador con muros
       if (!comprobarColisionMuro(nuevoX, jugador.y, jugador.radio)) jugador.x = Math.max(jugador.radio, Math.min(ANCHO_MAPA - jugador.radio, nuevoX));
       if (!comprobarColisionMuro(jugador.x, nuevoY, jugador.radio)) jugador.y = Math.max(jugador.radio, Math.min(ALTO_MAPA - jugador.radio, nuevoY));
 
-      // Ángulo de mirada
       jugador.angulo = Math.atan2(raton.worldY - jugador.y, raton.worldX - jugador.x);
 
-      // RECOGER ARMAS
+      // RECOGER ARMAS Y METERLAS EN UNO DE LOS 7 CUADRADOS
       armasSuelo.forEach((arma, i) => {
         const dist = Math.hypot(jugador.x - arma.x, jugador.y - arma.y);
         if (dist < jugador.radio + 15) {
-          jugador.arma = arma.tipo;
-          document.getElementById('info-arma').innerText = `Arma: ${arma.tipo.nombre} | Daño: ${arma.tipo.dano}`;
+          guardarEnInventario(arma.tipo);
           armasSuelo.splice(i, 1);
         }
       });
 
       // DISPARO JUGADOR
-      if (raton.presionado && jugador.arma) {
+      const armaEquipada = jugador.inventario[jugador.indexArmaEquipada];
+      if (raton.presionado && armaEquipada) {
         const ahora = Date.now();
-        if (ahora - ultimoDisparoJugador >= jugador.arma.cadencia) {
-          disparar(jugador.x, jugador.y, jugador.angulo, jugador.arma, true);
+        if (ahora - ultimoDisparoJugador >= armaEquipada.cadencia) {
+          disparar(jugador.x, jugador.y, jugador.angulo, armaEquipada, true);
           ultimoDisparoJugador = ahora;
         }
       }
 
-      // ACTUALIZAR PROYECTILES
+      // PROYECTILES
       proyectiles.forEach((p, index) => {
         p.x += Math.cos(p.angulo) * p.velocidad;
         p.y += Math.sin(p.angulo) * p.velocidad;
 
-        // Colisión proyectil con muros
         if (comprobarColisionMuro(p.x, p.y, 3)) {
           proyectiles.splice(index, 1);
           return;
         }
 
-        // Colisión con enemigos (si lo disparó el jugador)
         if (p.esJugador) {
           bots.forEach(bot => {
             if (Math.hypot(p.x - bot.x, p.y - bot.y) < bot.radio) {
               bot.vida -= p.dano;
-              reproducirSonidoHit(true); // Sonido Positivo
+              reproducirSonidoHit(true);
               proyectiles.splice(index, 1);
               if (bot.vida <= 0) {
-                // Respawn bot
                 bot.x = Math.random() * ANCHO_MAPA;
                 bot.y = Math.random() * ALTO_MAPA;
                 bot.vida = 100;
@@ -438,10 +572,9 @@
             }
           });
         } else {
-          // Colisión con el jugador (disparo del bot)
           if (Math.hypot(p.x - jugador.x, p.y - jugador.y) < jugador.radio) {
             jugador.vida -= p.dano;
-            reproducirSonidoHit(false); // Sonido Negativo
+            reproducirSonidoHit(false);
             proyectiles.splice(index, 1);
             actualizarBarraVida();
 
@@ -452,12 +585,11 @@
         }
       });
 
-      // LÓGICA DE BOTS (IA)
+      // LÓGICA DE BOTS
       bots.forEach(bot => {
         const distJugador = Math.hypot(jugador.x - bot.x, jugador.y - bot.y);
         const anguloAJugador = Math.atan2(jugador.y - bot.y, jugador.x - bot.x);
 
-        // Persecución según dificultad
         if (distJugador < 600) {
           let bX = bot.x + Math.cos(anguloAJugador) * bot.velocidad;
           let bY = bot.y + Math.sin(anguloAJugador) * bot.velocidad;
@@ -465,7 +597,6 @@
           if (!comprobarColisionMuro(bX, bot.y, bot.radio)) bot.x = bX;
           if (!comprobarColisionMuro(bot.x, bY, bot.radio)) bot.y = bY;
 
-          // Disparo del bot según dificultad
           const ahora = Date.now();
           const margenError = (4 - dificultadBot) * 0.2;
           if (ahora - bot.ultimoDisparo > bot.arma.cadencia * (1.5 / dificultadBot)) {
@@ -511,7 +642,7 @@
       ctx.save();
       ctx.translate(-camaraX, -camaraY);
 
-      // FONDO CON REJILLA AZUL OSCURO
+      // FONDO AZUL
       ctx.fillStyle = '#0b132b';
       ctx.fillRect(0, 0, ANCHO_MAPA, ALTO_MAPA);
       ctx.strokeStyle = '#1c2541';
@@ -523,7 +654,7 @@
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ANCHO_MAPA, y); ctx.stroke();
       }
 
-      // DIBUJAR ARMAS EN EL SUELO
+      // ARMAS EN EL SUELO
       armasSuelo.forEach(arma => {
         ctx.fillStyle = arma.tipo.color;
         ctx.beginPath();
@@ -531,7 +662,7 @@
         ctx.fill();
       });
 
-      // DIBUJAR MUROS
+      // MUROS
       ctx.fillStyle = '#3a506b';
       ctx.strokeStyle = '#5bc0be';
       ctx.lineWidth = 3;
@@ -540,7 +671,7 @@
         ctx.strokeRect(m.x, m.y, m.ancho, m.alto);
       });
 
-      // DIBUJAR PROYECTILES
+      // PROYECTILES
       proyectiles.forEach(p => {
         ctx.fillStyle = p.color;
         ctx.beginPath();
@@ -548,7 +679,7 @@
         ctx.fill();
       });
 
-      // DIBUJAR BOTS
+      // BOTS
       bots.forEach(bot => {
         ctx.fillStyle = '#e74c3c';
         ctx.beginPath();
@@ -556,7 +687,7 @@
         ctx.fill();
       });
 
-      // DIBUJAR JUGADOR
+      // JUGADOR
       ctx.save();
       ctx.translate(jugador.x, jugador.y);
       ctx.rotate(jugador.angulo);
@@ -564,41 +695,11 @@
       ctx.beginPath();
       ctx.arc(0, 0, jugador.radio, 0, Math.PI * 2);
       ctx.fill();
-      // Cañón del arma
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, -4, 25, 8);
       ctx.restore();
 
       ctx.restore();
-
-      // DIBUJAR MINIMAPA (Radar en la esquina)
-      dibujarMinimapa();
-    }
-
-    function dibujarMinimapa() {
-      const tam = 120;
-      const margin = 10;
-      const x = canvas.width - tam - margin;
-      const y = margin;
-
-      ctx.fillStyle = 'rgba(11, 19, 43, 0.8)';
-      ctx.fillRect(x, y, tam, tam);
-      ctx.strokeStyle = '#5bc0be';
-      ctx.strokeRect(x, y, tam, tam);
-
-      const esc = tam / ANCHO_MAPA;
-
-      // Muros en minimapa
-      ctx.fillStyle = '#3a506b';
-      muros.forEach(m => ctx.fillRect(x + m.x * esc, y + m.y * esc, m.ancho * esc, m.alto * esc));
-
-      // Jugador (Punto verde)
-      ctx.fillStyle = '#2ecc71';
-      ctx.fillRect(x + jugador.x * esc - 2, y + jugador.y * esc - 2, 4, 4);
-
-      // Bots (Puntos rojos)
-      ctx.fillStyle = '#e74c3c';
-      bots.forEach(b => ctx.fillRect(x + b.x * esc - 2, y + b.y * esc - 2, 4, 4));
     }
 
     function bucle() {
@@ -607,46 +708,38 @@
       requestAnimationFrame(bucle);
     }
 
-    // --- FLUJO Y MENÚS ---
+    // --- FLUJO ---
     function iniciarJuego() {
       dificultadBot = parseInt(document.getElementById('dificultad').value);
       modoActual = document.getElementById('modo-juego').value;
 
       document.getElementById('menu-principal').style.display = 'none';
       document.getElementById('hud').style.display = 'block';
-
-      if (modoActual === 'online') {
-        conectarServidorOnline();
-      }
+      document.getElementById('inventario-armas').style.display = 'flex';
 
       generarMuros();
       generarArmas();
       generarBots();
 
-      // Configurar arma inicial por defecto
-      jugador.arma = TIPOS_ARMAS[0];
+      // Iniciar con la Pistola básica en el primer cuadrado
+      jugador.inventario = [LAS_7_ARMAS[0], null, null, null, null, null, null];
+      jugador.indexArmaEquipada = 0;
       jugador.vida = 100;
       actualizarBarraVida();
+      actualizarUIInventario();
 
       enJuego = true;
-    }
-
-    function conectarServidorOnline() {
-      // Plantilla para conectar a un servidor en Node.js (WebSockets)
-      console.log("Conectando al servidor online WebSocket (simulación)...");
-      /* 
-      socketOnline = new WebSocket('ws://tu-servidor-js.com:8080');
-      socketOnline.onmessage = (e) => { ... actualizar jugares online ... };
-      */
     }
 
     function finalizarJuego() {
       enJuego = false;
       document.getElementById('pantalla-game-over').style.display = 'flex';
+      document.getElementById('inventario-armas').style.display = 'none';
     }
 
     function revivir() {
       document.getElementById('pantalla-game-over').style.display = 'none';
+      document.getElementById('inventario-armas').style.display = 'flex';
       jugador.x = Math.random() * (ANCHO_MAPA - 200) + 100;
       jugador.y = Math.random() * (ALTO_MAPA - 200) + 100;
       jugador.vida = 100;
@@ -662,7 +755,6 @@
       document.getElementById('modal-info').style.display = mostrar ? 'flex' : 'none';
     }
 
-    // Iniciar bucle gráfico
     bucle();
   </script>
 </body>
