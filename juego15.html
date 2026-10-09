@@ -3,273 +3,734 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel Dash - Pixel Games</title>
+  <title>Boss Slayer 2D</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
     body {
-      background: #050814;
-      color: white;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      background-color: #080711;
+      font-family: 'Rajdhani', sans-serif;
       overflow: hidden;
-    }
-
-    h1 {
-      color: #00e5ff;
-      text-shadow: 0 0 10px #00e5ff;
-      margin-bottom: 10px;
-      font-size: 28px;
-    }
-
-    #game-container {
-      position: relative;
-      width: 800px;
-      max-width: 95vw;
-      height: 300px;
-      background: #0d1322;
-      border: 2px solid #00e5ff;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-      overflow: hidden;
-    }
-
-    canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .ui-overlay {
-      position: absolute;
-      top: 10px;
-      left: 15px;
-      right: 15px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 18px;
-      font-weight: bold;
       color: #fff;
-      pointer-events: none;
     }
 
-    .game-over-screen {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(5, 8, 20, 0.85);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
+    .retro-font {
+      font-family: 'Press Start 2P', cursive;
     }
 
-    .btn {
-      padding: 12px 24px;
-      background: linear-gradient(180deg, #00e5ff, #0088cc);
-      color: #000;
-      font-weight: bold;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.1s;
+    .neon-border-red {
+      box-shadow: 0 0 15px rgba(255, 42, 109, 0.4), inset 0 0 15px rgba(255, 42, 109, 0.2);
     }
 
-    .btn:hover { transform: scale(1.05); }
+    .neon-border-cyan {
+      box-shadow: 0 0 15px rgba(5, 217, 232, 0.4), inset 0 0 15px rgba(5, 217, 232, 0.2);
+    }
 
-    .btn-back {
-      margin-top: 20px;
-      background: linear-gradient(180deg, #ff4757, #c0392b);
-      color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 14px;
+    /* Custom Scrollbar for Menu */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f1026;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2a2b5c;
+      border-radius: 4px;
     }
   </style>
 </head>
-<body>
+<body class="h-screen w-screen flex flex-col items-center justify-center relative bg-slate-950">
 
-  <h1>⚡ PIXEL DASH ⚡</h1>
+  <div id="game-container" class="relative w-full max-w-5xl h-[92vh] max-h-[760px] flex flex-col items-center justify-center p-2">
 
-  <div id="game-container">
-    <div class="ui-overlay">
-      <div id="score-text">Puntos: 0</div>
-      <div id="high-score-text">Récord: 0</div>
-    </div>
+    <!-- CANVAS DEL JUEGO -->
+    <div class="relative w-full h-full border-2 border-slate-700/80 rounded-xl overflow-hidden shadow-[0_0_40px_rgba(15,23,42,0.8)] bg-slate-950">
+      <canvas id="gameCanvas" class="w-full h-full block cursor-crosshair"></canvas>
 
-    <canvas id="gameCanvas"></canvas>
+      <!-- HUD SOBREPUESTO EN JUEGO -->
+      <div id="hud" class="hidden absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
+        <!-- BARRA DE VIDA DEL BOSS (ARRIBA) -->
+        <div class="w-full max-w-xl mx-auto flex flex-col items-center gap-1">
+          <div class="flex justify-between w-full text-xs md:text-sm font-bold tracking-wider retro-font text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]">
+            <span>LORD IGNIS - DRAGÓN OSCURO</span>
+            <span id="boss-hp-text">100%</span>
+          </div>
+          <div class="w-full h-5 bg-slate-900/90 border-2 border-red-500/60 rounded-full overflow-hidden p-0.5 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+            <div id="boss-hp-bar" class="h-full bg-gradient-to-r from-red-700 via-red-500 to-orange-500 rounded-full transition-all duration-100 w-full"></div>
+          </div>
+        </div>
 
-    <div class="game-over-screen" id="start-screen">
-      <h2 style="color: #00e5ff;">¿LISTO PARA SALTAR?</h2>
-      <p style="color: #aaa; font-size: 14px;">Presiona ESPACIO o TOCA la pantalla</p>
-      <button class="btn" onclick="startGame()">JUGAR</button>
+        <!-- BARRA DE JUGADOR Y PODER (ABAJO) -->
+        <div class="w-full flex justify-between items-end gap-4">
+          <!-- Vida Jugador -->
+          <div class="w-64 flex flex-col gap-1">
+            <div class="flex justify-between text-xs font-bold retro-font text-cyan-400 drop-shadow-[0_0_6px_rgba(6,182,212,0.8)]">
+              <span id="player-name-hud">JUGADOR</span>
+              <span id="player-hp-text">100 / 100</span>
+            </div>
+            <div class="w-full h-4 bg-slate-900/90 border-2 border-cyan-500/60 rounded-full overflow-hidden p-0.5">
+              <div id="player-hp-bar" class="h-full bg-gradient-to-r from-cyan-600 to-teal-400 rounded-full transition-all duration-100 w-full"></div>
+            </div>
+          </div>
+
+          <!-- Cooldown del Poder Especial -->
+          <div class="flex flex-col items-center gap-1">
+            <div class="text-[10px] retro-font text-amber-400">HABILIDAD [ESPACIO / E]</div>
+            <div id="ability-card" class="relative w-16 h-16 bg-slate-900/90 border-2 border-amber-400 rounded-lg flex items-center justify-center overflow-hidden shadow-[0_0_12px_rgba(251,191,36,0.3)]">
+              <div id="ability-cd-overlay" class="absolute inset-0 bg-slate-950/80 transition-all duration-75 h-0"></div>
+              <span id="ability-icon" class="text-2xl relative z-10">🔥</span>
+              <span id="ability-cd-text" class="absolute inset-0 flex items-center justify-center font-bold text-lg retro-font text-yellow-300 z-20"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANTALLA DE SELECCIÓN DE PERSONAJE (MENÚ PRINCIPAL) -->
+      <div id="menu-overlay" class="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-4 z-20">
+        <h1 class="text-3xl md:text-5xl font-black retro-font text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-amber-400 tracking-wider mb-2 drop-shadow-[0_0_20px_rgba(236,72,153,0.5)] text-center">
+          BOSS SLAYER 2D
+        </h1>
+        <p class="text-xs md:text-sm text-slate-400 mb-6 retro-font text-center">Selecciona tu héroe para la batalla final</p>
+
+        <!-- Tarjetas de Personajes -->
+        <div id="character-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 w-full max-w-4xl mb-6">
+          <!-- Se inyectarán mediante JavaScript -->
+        </div>
+
+        <button id="start-btn" onclick="iniciarCombate()" class="px-8 py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-sm md:text-base retro-font rounded-xl shadow-[0_0_25px_rgba(236,72,153,0.6)] transform hover:scale-105 active:scale-95 transition-all">
+          ¡ENTRAR AL COMBATE!
+        </button>
+      </div>
+
+      <!-- PANTALLA DE GAME OVER / VICTORIA -->
+      <div id="end-overlay" class="hidden absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-6 z-30">
+        <h2 id="end-title" class="text-3xl md:text-5xl font-black retro-font mb-4 text-center">DERROTA</h2>
+        <p id="end-subtitle" class="text-xs md:text-sm text-slate-300 mb-6 max-w-md text-center leading-relaxed">El Dragón Oscuro ha consumido tu energía...</p>
+
+        <div class="flex gap-4">
+          <button onclick="reiniciarCombate()" class="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs md:text-sm retro-font rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all transform hover:scale-105">
+            REINTENTAR
+          </button>
+          <button onclick="volverAlMenu()" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs md:text-sm retro-font rounded-xl border border-slate-600 transition-all transform hover:scale-105">
+            CAMBIAR HÉROE
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <a href="juegos.html" class="btn-back">VOLVER AL MENÚ</a>
-
   <script>
+    // --- SINTETIZADOR DE AUDIO FX RETRO ---
+    class WebAudioFX {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+      }
+
+      playShoot() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+
+      playBossFireball() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+      }
+
+      playSpecial() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(900, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+      }
+
+      playExplosion() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.25);
+      }
+    }
+    const audioFX = new WebAudioFX();
+
+    // --- DATOS DE LOS 5 PERSONAJES ---
+    const PERSONAJES = [
+      {
+        id: 0,
+        nombre: "Pyro Ninja",
+        color: "#ef4444",
+        icono: "🔥",
+        velocidad: 5.2,
+        danoBase: 12,
+        poderNombre: "Ráfaga de Fuego",
+        poderDesc: "Lanza 5 cuchillas de energía en abanico.",
+        cooldown: 3,
+        ejecutarEspecial: (jugador) => {
+          for (let angle = -0.4; angle <= 0.4; angle += 0.2) {
+            proyectilesJugador.push(new Proyectil(
+              jugador.x, jugador.y, 
+              Math.cos(jugador.angulo + angle) * 12, 
+              Math.sin(jugador.angulo + angle) * 12, 
+              jugador.danoBase * 1.5, "#f97316", 6
+            ));
+          }
+        }
+      },
+      {
+        id: 1,
+        nombre: "Cyber Paladín",
+        color: "#06b6d4",
+        icono: "🛡️",
+        velocidad: 4.2,
+        danoBase: 15,
+        poderNombre: "Barrera Escudo",
+        poderDesc: "Invulnerabilidad total por 2.5 segundos.",
+        cooldown: 6,
+        ejecutarEspecial: (jugador) => {
+          jugador.invulnerableHasta = Date.now() + 2500;
+        }
+      },
+      {
+        id: 2,
+        nombre: "Speed Ghost",
+        color: "#a855f7",
+        icono: "⚡",
+        velocidad: 7.0,
+        danoBase: 10,
+        poderNombre: "Super Dash",
+        poderDesc: "Impulso híper rápido invulnerable.",
+        cooldown: 4,
+        ejecutarEspecial: (jugador) => {
+          jugador.x += Math.cos(jugador.angulo) * 180;
+          jugador.y += Math.sin(jugador.angulo) * 180;
+          jugador.invulnerableHasta = Date.now() + 800;
+        }
+      },
+      {
+        id: 3,
+        nombre: "Venom Ranger",
+        color: "#84cc16",
+        icono: "☣️",
+        velocidad: 4.8,
+        danoBase: 14,
+        poderNombre: "Nova Tóxica",
+        poderDesc: "Explosión masiva a tu alrededor.",
+        cooldown: 5,
+        ejecutarEspecial: (jugador) => {
+          for (let i = 0; i < 16; i++) {
+            const ang = (Math.PI * 2 / 16) * i;
+            proyectilesJugador.push(new Proyectil(
+              jugador.x, jugador.y, 
+              Math.cos(ang) * 9, Math.sin(ang) * 9, 
+              jugador.danoBase * 1.8, "#84cc16", 7
+            ));
+          }
+        }
+      },
+      {
+        id: 4,
+        nombre: "Thunder Mage",
+        color: "#eab308",
+        icono: "⚡",
+        velocidad: 4.5,
+        danoBase: 18,
+        poderNombre: "Rayo Celestial",
+        poderDesc: "Impacta al Boss con un rayo devastador.",
+        cooldown: 7,
+        ejecutarEspecial: (jugador) => {
+          if (boss) {
+            boss.recibirDano(120);
+            crearParticulas(boss.x, boss.y, "#eab308", 30);
+          }
+        }
+      }
+    ];
+
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    canvas.width = 800;
-    canvas.height = 300;
-
-    let isPlaying = false;
-    let score = 0;
-    let highScore = localStorage.getItem('dash_highscore') || 0;
-    document.getElementById('high-score-text').textContent = `Récord: ${highScore}`;
-
-    let player = {
-      x: 80,
-      y: 220,
-      size: 30,
-      vy: 0,
-      gravity: 0.8,
-      jumpForce: -13,
-      jumpsLeft: 2,
-      grounded: false
-    };
-
-    let obstacles = [];
-    let frameCount = 0;
-    let gameSpeed = 6;
-
-    function startGame() {
-      document.getElementById('start-screen').style.display = 'none';
-      player.y = 220;
-      player.vy = 0;
-      player.jumpsLeft = 2;
-      obstacles = [];
-      score = 0;
-      gameSpeed = 6;
-      frameCount = 0;
-      isPlaying = true;
-      requestAnimationFrame(gameLoop);
+    function redimensionarCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
     }
+    window.addEventListener('resize', redimensionarCanvas);
+    redimensionarCanvas();
 
-    function jump() {
-      if (!isPlaying) return;
-      if (player.jumpsLeft > 0) {
-        player.vy = player.jumpForce;
-        player.jumpsLeft--;
-      }
-    }
+    // Variables de Estado
+    let seleccionIndice = 0;
+    let enJuego = false;
+    let teclas = {};
+    let raton = { x: 0, y: 0 };
+    let ultimoDisparoJugador = 0;
+    let ultimoEspecialJugador = 0;
 
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' || e.code === 'ArrowUp') {
-        e.preventDefault();
-        jump();
-      }
-    });
+    let jugador = null;
+    let boss = null;
+    let proyectilesJugador = [];
+    let proyectilesBoss = [];
+    let particulas = [];
 
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      jump();
-    });
+    // Generar Selector de Personajes
+    function construirMenuPersonajes() {
+      const grid = document.getElementById('character-grid');
+      grid.innerHTML = '';
 
-    function spawnObstacle() {
-      let height = Math.floor(Math.random() * 30) + 30;
-      let isFlying = Math.random() > 0.7;
+      PERSONAJES.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border-2 transition-all cursor-pointer flex flex-col items-center justify-between bg-slate-900/80 ${idx === seleccionIndice ? 'border-cyan-400 bg-cyan-950/40 shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-105' : 'border-slate-800 opacity-70 hover:opacity-100'}`;
+        card.onclick = () => { seleccionIndice = idx; construirMenuPersonajes(); };
 
-      obstacles.push({
-        x: canvas.width,
-        y: isFlying ? 150 : 250 - height,
-        w: 25,
-        h: height,
-        color: isFlying ? '#ff4757' : '#ffda00'
+        card.innerHTML = `
+          <div class="text-3xl mb-1">${p.icono}</div>
+          <div class="font-bold text-sm text-center" style="color: ${p.color}">${p.nombre}</div>
+          <div class="text-[10px] text-slate-400 my-2 text-center leading-tight">${p.poderDesc}</div>
+          <div class="w-full text-[9px] text-slate-300 space-y-1">
+            <div class="flex justify-between"><span>Vel:</span><span>${p.velocidad}</span></div>
+            <div class="flex justify-between"><span>Daño:</span><span>${p.danoBase}</span></div>
+            <div class="flex justify-between"><span>CD:</span><span>${p.cooldown}s</span></div>
+          </div>
+        `;
+        grid.appendChild(card);
       });
     }
+    construirMenuPersonajes();
 
-    function gameLoop() {
-      if (!isPlaying) return;
-
-      frameCount++;
-      if (frameCount % 90 === 0) {
-        spawnObstacle();
-        if (gameSpeed < 14) gameSpeed += 0.2;
+    class Jugador {
+      constructor(config) {
+        this.x = canvas.width / 2;
+        this.y = canvas.height - 100;
+        this.radio = 18;
+        this.vidaMax = 100;
+        this.vida = 100;
+        this.config = config;
+        this.velocidad = config.velocidad;
+        this.danoBase = config.danoBase;
+        this.angulo = 0;
+        this.invulnerableHasta = 0;
       }
 
-      // Física del jugador
-      player.vy += player.gravity;
-      player.y += player.vy;
+      dibujar() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
 
-      if (player.y >= 220) {
-        player.y = 220;
-        player.vy = 0;
-        player.grounded = true;
-        player.jumpsLeft = 2;
+        // Indicador Invulnerabilidad
+        if (Date.now() < this.invulnerableHasta) {
+          ctx.beginPath();
+          ctx.arc(0, 0, this.radio + 8, 0, Math.PI * 2);
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+
+        // Cuerpo
+        ctx.rotate(this.angulo);
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radio, 0, Math.PI * 2);
+        ctx.fillStyle = this.config.color;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Cañón de apuntado
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(this.radio + 10, 0);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        ctx.restore();
       }
 
-      // Limpiar pantalla
+      actualizar() {
+        let dx = 0, dy = 0;
+        if (teclas['w'] || teclas['W'] || teclas['ArrowUp']) dy -= 1;
+        if (teclas['s'] || teclas['S'] || teclas['ArrowDown']) dy += 1;
+        if (teclas['a'] || teclas['A'] || teclas['ArrowLeft']) dx -= 1;
+        if (teclas['d'] || teclas['D'] || teclas['ArrowRight']) dx += 1;
+
+        if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
+
+        this.x = Math.max(this.radio, Math.min(canvas.width - this.radio, this.x + dx * this.velocidad));
+        this.y = Math.max(this.radio + 150, Math.min(canvas.height - this.radio, this.y + dy * this.velocidad));
+
+        this.angulo = Math.atan2(raton.y - this.y, raton.x - this.x);
+      }
+    }
+
+    class Boss {
+      constructor() {
+        this.x = canvas.width / 2;
+        this.y = 120;
+        this.radio = 55;
+        this.vidaMax = 1200;
+        this.vida = 1200;
+        this.fase = 1;
+        this.ultimoAtaque = 0;
+        this.dirMovimiento = 1;
+      }
+
+      dibujar() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Auras según Fase
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radio + 12, 0, Math.PI * 2);
+        ctx.fillStyle = this.fase === 2 ? 'rgba(239, 68, 68, 0.25)' : 'rgba(168, 85, 247, 0.2)';
+        ctx.fill();
+
+        // Dragón Oscuro Body
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radio, 0, Math.PI * 2);
+        ctx.fillStyle = this.fase === 2 ? '#7f1d1d' : '#311042';
+        ctx.fill();
+        ctx.strokeStyle = this.fase === 2 ? '#ef4444' : '#a855f7';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Ojos Rojos Brillantes
+        ctx.fillStyle = '#ff0055';
+        ctx.beginPath();
+        ctx.arc(-18, -10, 8, 0, Math.PI * 2);
+        ctx.arc(18, -10, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      actualizar() {
+        // Movimiento Lateral
+        this.x += this.dirMovimiento * (this.fase === 2 ? 3.5 : 2.0);
+        if (this.x - this.radio < 40 || this.x + this.radio > canvas.width - 40) {
+          this.dirMovimiento *= -1;
+        }
+
+        // Cambio de Fase al 50% vida
+        if (this.vida <= this.vidaMax * 0.5 && this.fase === 1) {
+          this.fase = 2;
+          crearParticulas(this.x, this.y, '#ef4444', 40);
+        }
+
+        // Patrón de Ataques
+        const ahora = Date.now();
+        const cdAtaque = this.fase === 2 ? 900 : 1400;
+
+        if (ahora - this.ultimoAtaque > cdAtaque) {
+          this.dispararBolasDeFuego();
+          this.ultimoAtaque = ahora;
+        }
+      }
+
+      dispararBolasDeFuego() {
+        audioFX.playBossFireball();
+        const anguloAJugador = Math.atan2(jugador.y - this.y, jugador.x - this.x);
+
+        if (this.fase === 1) {
+          // Ataque en Abanico
+          for (let a = -0.4; a <= 0.4; a += 0.2) {
+            proyectilesBoss.push(new Proyectil(
+              this.x, this.y,
+              Math.cos(anguloAJugador + a) * 5.5,
+              Math.sin(anguloAJugador + a) * 5.5,
+              12, '#ef4444', 8
+            ));
+          }
+        } else {
+          // Fase 2: Anillo Circular de Fuego + Ráfaga Dirigida
+          for (let i = 0; i < 10; i++) {
+            const ang = (Math.PI * 2 / 10) * i;
+            proyectilesBoss.push(new Proyectil(
+              this.x, this.y,
+              Math.cos(ang) * 4.5,
+              Math.sin(ang) * 4.5,
+              10, '#f97316', 7
+            ));
+          }
+          proyectilesBoss.push(new Proyectil(this.x, this.y, Math.cos(anguloAJugador) * 8, Math.sin(anguloAJugador) * 8, 18, '#ff0055', 10));
+        }
+      }
+
+      recibirDano(cant) {
+        this.vida = Math.max(0, this.vida - cant);
+        document.getElementById('boss-hp-bar').style.width = `${(this.vida / this.vidaMax) * 100}%`;
+        document.getElementById('boss-hp-text').innerText = `${Math.ceil((this.vida / this.vidaMax) * 100)}%`;
+
+        if (this.vida <= 0) {
+          finalizarJuego(true);
+        }
+      }
+    }
+
+    class Proyectil {
+      constructor(x, y, vx, vy, dano, color, radio) {
+        this.x = x; this.y = y;
+        this.vx = vx; this.vy = vy;
+        this.dano = dano;
+        this.color = color;
+        this.radio = radio;
+      }
+
+      dibujar() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+
+      actualizar() {
+        this.x += this.vx;
+        this.y += this.vy;
+      }
+    }
+
+    class Particula {
+      constructor(x, y, color) {
+        this.x = x; this.y = y;
+        this.color = color;
+        this.vx = (Math.random() - 0.5) * 6;
+        this.vy = (Math.random() - 0.5) * 6;
+        this.vida = 1.0;
+      }
+      actualizar() {
+        this.x += this.vx; this.y += this.vy;
+        this.vida -= 0.04;
+      }
+      dibujar() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.vida);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, 4, 4);
+        ctx.restore();
+      }
+    }
+
+    function crearParticulas(x, y, color, cantidad = 15) {
+      for (let i = 0; i < cantidad; i++) {
+        particulas.push(new Particula(x, y, color));
+      }
+    }
+
+    window.addEventListener('keydown', e => {
+      teclas[e.key] = true;
+      if ((e.key === ' ' || e.key === 'e' || e.key === 'E') && enJuego) {
+        usarHabilidadEspecial();
+      }
+    });
+    window.addEventListener('keyup', e => teclas[e.key] = false);
+    canvas.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      raton.x = e.clientX - rect.left;
+      raton.y = e.clientY - rect.top;
+    });
+    canvas.addEventListener('mousedown', () => {
+      if (enJuego) dispararJugador();
+    });
+
+    function dispararJugador() {
+      const ahora = Date.now();
+      if (ahora - ultimoDisparoJugador > 180) {
+        audioFX.playShoot();
+        proyectilesJugador.push(new Proyectil(
+          jugador.x, jugador.y,
+          Math.cos(jugador.angulo) * 11,
+          Math.sin(jugador.angulo) * 11,
+          jugador.danoBase, jugador.config.color, 5
+        ));
+        ultimoDisparoJugador = ahora;
+      }
+    }
+
+    function usarHabilidadEspecial() {
+      const ahora = Date.now();
+      const cdMs = jugador.config.cooldown * 1000;
+      if (ahora - ultimoEspecialJugador >= cdMs) {
+        audioFX.playSpecial();
+        jugador.config.ejecutarEspecial(jugador);
+        ultimoEspecialJugador = ahora;
+      }
+    }
+
+    function actualizar() {
+      if (!enJuego) return;
+
+      jugador.actualizar();
+      boss.actualizar();
+
+      // Proyectiles Jugador vs Boss
+      proyectilesJugador.forEach((p, idx) => {
+        p.actualizar();
+        if (Math.hypot(p.x - boss.x, p.y - boss.y) < p.radio + boss.radio) {
+          boss.recibirDano(p.dano);
+          crearParticulas(p.x, p.y, p.color, 6);
+          proyectilesJugador.splice(idx, 1);
+        } else if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+          proyectilesJugador.splice(idx, 1);
+        }
+      });
+
+      // Proyectiles Boss vs Jugador
+      proyectilesBoss.forEach((p, idx) => {
+        p.actualizar();
+        if (Math.hypot(p.x - jugador.x, p.y - jugador.y) < p.radio + jugador.radio) {
+          if (Date.now() > jugador.invulnerableHasta) {
+            jugador.vida = Math.max(0, jugador.vida - p.dano);
+            audioFX.playExplosion();
+            crearParticulas(jugador.x, jugador.y, '#ef4444', 10);
+            
+            // Actualizar HUD Jugador
+            document.getElementById('player-hp-bar').style.width = `${(jugador.vida / jugador.vidaMax) * 100}%`;
+            document.getElementById('player-hp-text').innerText = `${jugador.vida} / ${jugador.vidaMax}`;
+
+            if (jugador.vida <= 0) finalizarJuego(false);
+          }
+          proyectilesBoss.splice(idx, 1);
+        } else if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+          proyectilesBoss.splice(idx, 1);
+        }
+      });
+
+      // Partículas
+      particulas.forEach((pt, i) => {
+        pt.actualizar();
+        if (pt.vida <= 0) particulas.splice(i, 1);
+      });
+
+      // HUD Cooldown Habilidad
+      const ahora = Date.now();
+      const cdTotal = jugador.config.cooldown * 1000;
+      const cdRestante = Math.max(0, cdTotal - (ahora - ultimoEspecialJugador));
+      const pctCD = (cdRestante / cdTotal) * 100;
+      
+      document.getElementById('ability-cd-overlay').style.height = `${pctCD}%`;
+      document.getElementById('ability-cd-text').innerText = cdRestante > 0 ? (cdRestante / 1000).toFixed(1) : '';
+    }
+
+    function renderizar() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Dibujar Suelo
-      ctx.strokeStyle = '#00e5ff';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(0, 250);
-      ctx.lineTo(canvas.width, 250);
-      ctx.stroke();
+      if (!enJuego) return;
 
-      // Dibujar Jugador (Neón Azul)
-      ctx.fillStyle = '#00e5ff';
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#00e5ff';
-      ctx.fillRect(player.x, player.y, player.size, player.size);
-
-      // Mover y Dibujar Obstáculos
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obs = obstacles[i];
-        obs.x -= gameSpeed;
-
-        ctx.fillStyle = obs.color;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = obs.color;
-        ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-
-        // Colisión
-        if (
-          player.x < obs.x + obs.w &&
-          player.x + player.size > obs.x &&
-          player.y < obs.y + obs.h &&
-          player.y + player.size > obs.y
-        ) {
-          gameOver();
-          return;
-        }
-
-        // Eliminar si sale de pantalla
-        if (obs.x + obs.w < 0) {
-          obstacles.splice(i, 1);
-          score += 10;
-          document.getElementById('score-text').textContent = `Puntos: ${score}`;
-        }
+      // Dibujar Escenario Neón
+      ctx.strokeStyle = '#1e1b4b';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
       }
 
-      ctx.shadowBlur = 0; // Reset sombra
-      requestAnimationFrame(gameLoop);
+      // Dibujar Entidades
+      boss.dibujar();
+      jugador.dibujar();
+      proyectilesJugador.forEach(p => p.dibujar());
+      proyectilesBoss.forEach(p => p.dibujar());
+      particulas.forEach(pt => pt.dibujar());
     }
 
-    function gameOver() {
-      isPlaying = false;
-      if (score > highScore) {
-        highScore = score;
-        localStorage.setItem('dash_highscore', highScore);
-        document.getElementById('high-score-text').textContent = `Récord: ${highScore}`;
+    function bucle() {
+      actualizar();
+      renderizar();
+      requestAnimationFrame(bucle);
+    }
+
+    function iniciarCombate() {
+      audioFX.init();
+      const charConfig = PERSONAJES[seleccionIndice];
+
+      jugador = new Jugador(charConfig);
+      boss = new Boss();
+      proyectilesJugador = [];
+      proyectilesBoss = [];
+      particulas = [];
+      ultimoEspecialJugador = 0;
+
+      // Setup HUD
+      document.getElementById('player-name-hud').innerText = charConfig.nombre.toUpperCase();
+      document.getElementById('player-name-hud').style.color = charConfig.color;
+      document.getElementById('ability-icon').innerText = charConfig.icono;
+      document.getElementById('player-hp-bar').style.width = '100%';
+      document.getElementById('boss-hp-bar').style.width = '100%';
+
+      document.getElementById('menu-overlay').classList.add('hidden');
+      document.getElementById('end-overlay').classList.add('hidden');
+      document.getElementById('hud').classList.remove('hidden');
+
+      enJuego = true;
+    }
+
+    function finalizarJuego(victoria) {
+      enJuego = false;
+      document.getElementById('hud').classList.add('hidden');
+      document.getElementById('end-overlay').classList.remove('hidden');
+
+      const titulo = document.getElementById('end-title');
+      const subtitulo = document.getElementById('end-subtitle');
+
+      if (victoria) {
+        titulo.innerText = "¡VICTORIA!";
+        titulo.className = "text-3xl md:text-5xl font-black retro-font mb-4 text-cyan-400 drop-shadow-[0_0_20px_rgba(6,182,212,0.8)]";
+        subtitulo.innerText = "¡Has derrotado al Dragón Oscuro y salvado el reino!";
+      } else {
+        titulo.innerText = "DERROTA";
+        titulo.className = "text-3xl md:text-5xl font-black retro-font mb-4 text-red-500 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)]";
+        subtitulo.innerText = "El Dragón Oscuro te ha superado. ¡Inténtalo de nuevo!";
       }
-
-      const screen = document.getElementById('start-screen');
-      screen.style.display = 'flex';
-      screen.querySelector('h2').textContent = '¡GAME OVER!';
-      screen.querySelector('p').textContent = `Puntuación: ${score} pts`;
     }
+
+    function reiniciarCombate() {
+      iniciarCombate();
+    }
+
+    function volverAlMenu() {
+      enJuego = false;
+      document.getElementById('end-overlay').classList.add('hidden');
+      document.getElementById('hud').classList.add('hidden');
+      document.getElementById('menu-overlay').classList.remove('hidden');
+    }
+
+    // Iniciar bucle principal
+    bucle();
   </script>
 </body>
 </html>
