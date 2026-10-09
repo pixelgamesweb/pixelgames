@@ -116,6 +116,16 @@
       padding: 8px 12px;
       border-radius: 6px;
       font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    #info-enemigos {
+      background: rgba(231, 76, 60, 0.4);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      border: 1px solid #e74c3c;
     }
 
     /* INVENTARIO DE 7 CUADRADOS ABAJO */
@@ -180,7 +190,7 @@
       background-color: #0b132b;
     }
 
-    /* PANTALLA GAME OVER */
+    /* PANTALLA GAME OVER / VICTORIA */
     #pantalla-game-over {
       display: none;
       position: fixed;
@@ -262,7 +272,7 @@
     <div class="opcion-menu">
       <label for="modo-juego">Modo de Juego:</label>
       <select id="modo-juego">
-        <option value="ia">Tú vs IA (Bots)</option>
+        <option value="ia">Tú vs IA (4 Bots)</option>
         <option value="online">Modo Online (5 Jugadores - Servidor JS)</option>
       </select>
     </div>
@@ -277,6 +287,7 @@
       <div id="barra-vida"></div>
     </div>
     <div id="info-arma">Arma: Pistola | Daño: 15</div>
+    <div id="info-enemigos">Enemigos restantes: 4</div>
   </div>
 
   <!-- INVENTARIO DE 7 CUADRADOS DE ARMAS EN LA PARTE INFERIOR -->
@@ -290,10 +301,10 @@
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(6)"><span class="numero">7</span><div class="icono" id="ico-6"></div><span id="txt-6">Vacío</span></div>
   </div>
 
-  <!-- PANTALLA GAME OVER -->
+  <!-- PANTALLA GAME OVER / VICTORIA -->
   <div id="pantalla-game-over">
-    <h1>GAME OVER</h1>
-    <button class="btn-revivir" onclick="revivir()">REVIVIR</button>
+    <h1 id="titulo-fin">GAME OVER</h1>
+    <button class="btn-revivir" id="btn-reintentar" onclick="revivir()">REINTENTAR</button>
     <button class="btn-web" onclick="volverAWeb()">Tornar a la web</button>
   </div>
 
@@ -302,11 +313,11 @@
     <div class="contenido-modal">
       <h2>Información del Juego</h2>
       <ul>
+        <li><b>Objetivo:</b> ¡Elimina a todos los enemigos para ganar!</li>
+        <li><b>Recompensa:</b> Cada enemigo eliminado te cura <b>+25 HP</b>.</li>
+        <li><b>Minimapa:</b> Consulta la esquina superior derecha para localizar enemigos y cobertura.</li>
         <li><b>Controles:</b> Teclas <b>W, A, S, D</b> para moverte.</li>
-        <li><b>Apuntar y Disparar:</b> Mueve el ratón y haz clic izquierdo.</li>
-        <li><b>Inventario de 7 Armas:</b> Pasa sobre las armas en el mapa para colocarlas en tus 7 cuadrados abajo.</li>
-        <li><b>Cambio de Arma:</b> Haz clic en cualquier cuadrado abajo o pulsa las teclas <b>1 a 7</b>.</li>
-        <li><b>Cobertura:</b> Usa los muros grises para cubrirte.</li>
+        <li><b>Disparo y Cambio:</b> Clic izquierdo para disparar, teclas <b>1-7</b> para cambiar de arma.</li>
       </ul>
       <button onclick="toggleInfo(false)">Cerrar</button>
     </div>
@@ -375,7 +386,7 @@
       maxVida: 100, 
       velocidad: 4, 
       angulo: 0,
-      inventario: [null, null, null, null, null, null, null], // 7 huecos
+      inventario: [null, null, null, null, null, null, null],
       indexArmaEquipada: 0
     };
 
@@ -399,7 +410,6 @@
 
     function generarArmas() {
       armasSuelo = [];
-      // Generar únicamente las 7 armas repetidas por el mapa
       for (let i = 0; i < 70; i++) {
         const tipo = LAS_7_ARMAS[i % 7];
         armasSuelo.push({
@@ -412,12 +422,12 @@
 
     function generarBots() {
       bots = [];
-      const numBots = modoActual === 'ia' ? 4 : 0;
+      const numBots = modoActual === 'ia' ? 4 : 5;
       for (let i = 0; i < numBots; i++) {
         bots.push({
           id: i,
-          x: Math.random() * ANCHO_MAPA,
-          y: Math.random() * ALTO_MAPA,
+          x: Math.random() * (ANCHO_MAPA - 200) + 100,
+          y: Math.random() * (ALTO_MAPA - 200) + 100,
           radio: 18,
           vida: 100,
           velocidad: 2 + dificultadBot * 0.5,
@@ -425,12 +435,16 @@
           ultimoDisparo: 0
         });
       }
+      actualizarContadorEnemigos();
+    }
+
+    function actualizarContadorEnemigos() {
+      document.getElementById('info-enemigos').innerText = `Enemigos restantes: ${bots.length}`;
     }
 
     // --- CONTROLES DE TECLADO ---
     window.addEventListener('keydown', e => {
       teclas[e.key.toLowerCase()] = true;
-      // Selección de arma con teclas 1 al 7
       if (e.key >= '1' && e.key <= '7') {
         const idx = parseInt(e.key) - 1;
         seleccionarArmaPorIndex(idx);
@@ -448,20 +462,17 @@
 
     // --- INVENTARIO DE 7 ARMAS ---
     function guardarEnInventario(arma) {
-      // 1. Si ya tenemos esta arma, la seleccionamos
       const yaExisteIdx = jugador.inventario.findIndex(a => a && a.id === arma.id);
       if (yaExisteIdx !== -1) {
         seleccionarArmaPorIndex(yaExisteIdx);
         return;
       }
 
-      // 2. Si hay un hueco libre, la guardamos allí
       const huecoLibre = jugador.inventario.findIndex(a => a === null);
       if (huecoLibre !== -1) {
         jugador.inventario[huecoLibre] = arma;
         seleccionarArmaPorIndex(huecoLibre);
       } else {
-        // 3. Si está lleno, reemplaza la del hueco activo
         jugador.inventario[jugador.indexArmaEquipada] = arma;
         actualizarUIInventario();
       }
@@ -529,7 +540,7 @@
 
       jugador.angulo = Math.atan2(raton.worldY - jugador.y, raton.worldX - jugador.x);
 
-      // RECOGER ARMAS Y METERLAS EN UNO DE LOS 7 CUADRADOS
+      // Recoger armas
       armasSuelo.forEach((arma, i) => {
         const dist = Math.hypot(jugador.x - arma.x, jugador.y - arma.y);
         if (dist < jugador.radio + 15) {
@@ -538,7 +549,7 @@
         }
       });
 
-      // DISPARO JUGADOR
+      // Disparo jugador
       const armaEquipada = jugador.inventario[jugador.indexArmaEquipada];
       if (raton.presionado && armaEquipada) {
         const ahora = Date.now();
@@ -548,7 +559,7 @@
         }
       }
 
-      // PROYECTILES
+      // Proyectiles
       proyectiles.forEach((p, index) => {
         p.x += Math.cos(p.angulo) * p.velocidad;
         p.y += Math.sin(p.angulo) * p.velocidad;
@@ -559,15 +570,23 @@
         }
 
         if (p.esJugador) {
-          bots.forEach(bot => {
+          bots.forEach((bot, botIndex) => {
             if (Math.hypot(p.x - bot.x, p.y - bot.y) < bot.radio) {
               bot.vida -= p.dano;
               reproducirSonidoHit(true);
               proyectiles.splice(index, 1);
+
               if (bot.vida <= 0) {
-                bot.x = Math.random() * ANCHO_MAPA;
-                bot.y = Math.random() * ALTO_MAPA;
-                bot.vida = 100;
+                // MATAR ENEMIGO (Sin respawn) + GANAR VIDA
+                bots.splice(botIndex, 1);
+                jugador.vida = Math.min(jugador.maxVida, jugador.vida + 25);
+                actualizarBarraVida();
+                actualizarContadorEnemigos();
+
+                // COMPROBAR VICTORIA
+                if (bots.length === 0) {
+                  finalizarJuego(true);
+                }
               }
             }
           });
@@ -579,13 +598,13 @@
             actualizarBarraVida();
 
             if (jugador.vida <= 0) {
-              finalizarJuego();
+              finalizarJuego(false);
             }
           }
         }
       });
 
-      // LÓGICA DE BOTS
+      // Lógica de bots
       bots.forEach(bot => {
         const distJugador = Math.hypot(jugador.x - bot.x, jugador.y - bot.y);
         const anguloAJugador = Math.atan2(jugador.y - bot.y, jugador.x - bot.x);
@@ -642,7 +661,7 @@
       ctx.save();
       ctx.translate(-camaraX, -camaraY);
 
-      // FONDO AZUL
+      // Fondo Azul con Rejilla
       ctx.fillStyle = '#0b132b';
       ctx.fillRect(0, 0, ANCHO_MAPA, ALTO_MAPA);
       ctx.strokeStyle = '#1c2541';
@@ -654,7 +673,7 @@
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ANCHO_MAPA, y); ctx.stroke();
       }
 
-      // ARMAS EN EL SUELO
+      // Armas en suelo
       armasSuelo.forEach(arma => {
         ctx.fillStyle = arma.tipo.color;
         ctx.beginPath();
@@ -662,7 +681,7 @@
         ctx.fill();
       });
 
-      // MUROS
+      // Muros
       ctx.fillStyle = '#3a506b';
       ctx.strokeStyle = '#5bc0be';
       ctx.lineWidth = 3;
@@ -671,7 +690,7 @@
         ctx.strokeRect(m.x, m.y, m.ancho, m.alto);
       });
 
-      // PROYECTILES
+      // Proyectiles
       proyectiles.forEach(p => {
         ctx.fillStyle = p.color;
         ctx.beginPath();
@@ -679,7 +698,7 @@
         ctx.fill();
       });
 
-      // BOTS
+      // Bots
       bots.forEach(bot => {
         ctx.fillStyle = '#e74c3c';
         ctx.beginPath();
@@ -687,7 +706,7 @@
         ctx.fill();
       });
 
-      // JUGADOR
+      // Jugador
       ctx.save();
       ctx.translate(jugador.x, jugador.y);
       ctx.rotate(jugador.angulo);
@@ -700,6 +719,42 @@
       ctx.restore();
 
       ctx.restore();
+
+      // DIBUJAR MINIMAPA ARRIBA A LA DERECHA
+      dibujarMinimapa();
+    }
+
+    function dibujarMinimapa() {
+      const tam = 140;
+      const margin = 15;
+      const x = canvas.width - tam - margin;
+      const y = margin;
+
+      ctx.fillStyle = 'rgba(11, 19, 43, 0.85)';
+      ctx.fillRect(x, y, tam, tam);
+      ctx.strokeStyle = '#5bc0be';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, tam, tam);
+
+      const esc = tam / ANCHO_MAPA;
+
+      // Muros en minimapa
+      ctx.fillStyle = '#3a506b';
+      muros.forEach(m => ctx.fillRect(x + m.x * esc, y + m.y * esc, m.ancho * esc, m.alto * esc));
+
+      // Jugador (Verde)
+      ctx.fillStyle = '#2ecc71';
+      ctx.beginPath();
+      ctx.arc(x + jugador.x * esc, y + jugador.y * esc, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Bots restantes (Rojo)
+      ctx.fillStyle = '#e74c3c';
+      bots.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(x + b.x * esc, y + b.y * esc, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
     }
 
     function bucle() {
@@ -721,7 +776,6 @@
       generarArmas();
       generarBots();
 
-      // Iniciar con la Pistola básica en el primer cuadrado
       jugador.inventario = [LAS_7_ARMAS[0], null, null, null, null, null, null];
       jugador.indexArmaEquipada = 0;
       jugador.vida = 100;
@@ -731,18 +785,35 @@
       enJuego = true;
     }
 
-    function finalizarJuego() {
+    function finalizarJuego(victoria) {
       enJuego = false;
-      document.getElementById('pantalla-game-over').style.display = 'flex';
+      const pantalla = document.getElementById('pantalla-game-over');
+      const titulo = document.getElementById('titulo-fin');
+      const btnReintentar = document.getElementById('btn-reintentar');
+
+      if (victoria) {
+        titulo.innerText = "¡HAS GANADO!";
+        titulo.style.color = "#2ecc71";
+        btnReintentar.innerText = "JUGAR DE NUEVO";
+      } else {
+        titulo.innerText = "GAME OVER";
+        titulo.style.color = "#e74c3c";
+        btnReintentar.innerText = "REINTENTAR";
+      }
+
+      pantalla.style.display = 'flex';
       document.getElementById('inventario-armas').style.display = 'none';
     }
 
     function revivir() {
       document.getElementById('pantalla-game-over').style.display = 'none';
       document.getElementById('inventario-armas').style.display = 'flex';
+      
       jugador.x = Math.random() * (ANCHO_MAPA - 200) + 100;
-      jugador.y = Math.random() * (ALTO_MAPA - 200) + 100;
+      jugador.y = Math.random() * (ANCHO_MAPA - 200) + 100;
       jugador.vida = 100;
+      
+      generarBots();
       actualizarBarraVida();
       enJuego = true;
     }
