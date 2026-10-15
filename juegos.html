@@ -3,346 +3,944 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIXEL GAMES - Menú de Juegos</title>
+  <title>Battle Arena 2D - Juego 2</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    
     body {
-      background: radial-gradient(circle at center, #1a1f35 0%, #080b12 100%);
-      color: white;
-      font-family: 'Courier New', Courier, monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 0;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    h1 {
-      font-size: 42px;
-      color: #00e5ff;
-      text-shadow: 0 0 15px #00e5ff;
-      letter-spacing: 3px;
-      margin-bottom: 5px;
-    }
-
-    .subtitle {
-      color: #8191aa;
-      font-size: 14px;
-      letter-spacing: 2px;
-      font-weight: bold;
-    }
-
-    .user-tag {
-      margin-top: 10px;
-      background: rgba(0, 229, 255, 0.1);
-      border: 1px solid #00e5ff;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 13px;
-      color: #00e5ff;
-      display: inline-block;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      width: 90%;
-      max-width: 1200px;
-    }
-
-    .card {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(0, 229, 255, 0.2);
-      border-radius: 16px;
-      padding: 25px 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 220px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .card.available:hover {
-      transform: translateY(-5px);
-      border-color: #00e5ff;
-      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-    }
-
-    .icon {
-      font-size: 52px;
-      margin-bottom: 10px;
-    }
-
-    .name {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 15px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0b132b;
       color: #ffffff;
-    }
-
-    .play {
-      display: inline-block;
-      padding: 10px 24px;
-      border-radius: 13px;
-      background: linear-gradient(180deg, #35a8ff, #1266e8);
-      color: white;
-      text-decoration: none;
-      font-weight: 800;
-      box-shadow: 0 5px 0 #0844a0, 0 8px 18px rgba(0,100,255,.25);
-      transition: transform 0.1s;
-      cursor: pointer;
-      border: none;
-    }
-
-    .play:hover {
-      transform: scale(1.05);
-    }
-
-    .locked {
-      opacity: .68;
-      border-color: rgba(255,255,255,0.05);
-    }
-
-    .lock {
-      font-size: 62px;
-      margin-bottom: 13px;
-      filter: drop-shadow(0 10px 5px rgba(0,0,0,.6));
-    }
-
-    .locked .name {
-      color: #aab6cc;
-    }
-
-    .badge {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #8191aa;
-      border: 1px solid rgba(255,255,255,.12);
-      padding: 8px 13px;
-      border-radius: 999px;
-      background: rgba(0,0,0,.2);
-    }
-
-    /* MODAL DE SELECCIÓN DE PARTIDA */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(8, 11, 18, 0.9);
-      z-index: 100;
+      overflow: hidden;
+      display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
     }
 
-    .modal-card {
-      background: #0f172a;
-      border: 2px solid #00e5ff;
-      border-radius: 20px;
+    /* MENÚ PRINCIPAL */
+    #menu-principal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(11, 19, 43, 0.95);
       padding: 30px;
-      width: 90%;
-      max-width: 420px;
+      border-radius: 15px;
+      border: 2px solid #5bc0be;
+      box-shadow: 0 0 25px rgba(91, 192, 190, 0.4);
       text-align: center;
-      box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+      z-index: 10;
+      min-width: 320px;
     }
 
-    .modal-card h2 {
-      color: #00e5ff;
-      font-size: 24px;
-      margin-bottom: 10px;
+    #menu-principal h1 {
+      color: #5bc0be;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
     }
 
-    .modal-btn {
+    .opcion-menu { margin: 15px 0; text-align: left; }
+    .opcion-menu label { display: block; margin-bottom: 5px; font-size: 14px; color: #a0aab8; }
+
+    select, button {
       width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border-radius: 12px;
+      padding: 12px;
+      border-radius: 8px;
       border: none;
       font-size: 16px;
       font-weight: bold;
-      font-family: inherit;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .btn-continuar {
-      background: #2ecc71;
-      color: #080b12;
-    }
-    .btn-continuar:hover { background: #58d68d; }
+    select { background-color: #1c2541; color: #ffffff; border: 1px solid #3a506b; }
+    .btn-jugar { background-color: #5bc0be; color: #0b132b; margin-top: 15px; }
+    .btn-jugar:hover { background-color: #6fffe9; transform: scale(1.02); }
+    .btn-info { background-color: #3a506b; color: #ffffff; margin-top: 10px; }
 
-    .btn-nueva {
-      background: #e67e22;
-      color: #ffffff;
-    }
-    .btn-nueva:hover { background: #eb984e; }
-
-    .btn-cancelar {
-      background: rgba(255,255,255,0.1);
-      color: #8191aa;
-      margin-top: 15px;
-    }
-
-    .alerta-error {
-      color: #e74c3c;
-      font-size: 13px;
-      margin-top: 10px;
+    /* HUD EN JUEGO */
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 5;
       display: none;
+    }
+
+    .btn-guardar {
+      background: #2ecc71;
+      color: #0b132b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
       font-weight: bold;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 10px;
+      display: inline-block;
+      width: auto;
+      box-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+    }
+    .btn-guardar:hover { background: #58d68d; }
+
+    .barra-contenedor {
+      width: 220px;
+      height: 20px;
+      background: rgba(0,0,0,0.6);
+      border: 2px solid #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 5px;
     }
 
-    @media(max-width:1000px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #barra-vida { width: 100%; height: 100%; background: #2ecc71; transition: width 0.1s; }
+
+    #info-arma, #info-corazones, #info-bunkers, #info-enemigos {
+      background: rgba(0,0,0,0.6);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 5px;
     }
 
-    @media(max-width:560px) {
-      .grid { grid-template-columns: 1fr; width: 92%; }
-      .card { min-height: 210px; }
+    #info-enemigos { background: rgba(231, 76, 60, 0.4); border: 1px solid #e74c3c; font-weight: bold; }
+
+    /* PROMPT INTERACCIÓN */
+    #prompt-interaccion {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.85);
+      border: 2px solid #5bc0be;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: none;
+      z-index: 6;
     }
+
+    /* INVENTARIO ARMAS */
+    #inventario-armas {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 10px;
+      z-index: 5;
+    }
+
+    .cuadrado-arma {
+      width: 60px;
+      height: 60px;
+      background: rgba(28, 37, 65, 0.85);
+      border: 2px solid #3a506b;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 10px;
+      color: #a0aab8;
+      text-align: center;
+      padding: 2px;
+      position: relative;
+    }
+
+    .cuadrado-arma:hover { border-color: #5bc0be; }
+    .cuadrado-arma.activo {
+      border-color: #2ecc71;
+      box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
+      background: rgba(28, 37, 65, 1);
+    }
+
+    .cuadrado-arma .numero { position: absolute; top: 2px; left: 4px; font-size: 10px; color: #5bc0be; font-weight: bold; }
+    .cuadrado-arma .icono { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 3px; }
+
+    canvas { display: block; background-color: #0b132b; }
+
+    /* GAME OVER / VICTORIA */
+    #pantalla-game-over {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(11, 19, 43, 0.95);
+      z-index: 20;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #pantalla-game-over h1 { font-size: 55px; color: #e74c3c; margin-bottom: 15px; text-shadow: 0 0 15px rgba(231, 76, 60, 0.6); }
+    #pantalla-game-over p { font-size: 18px; margin-bottom: 20px; color: #a0aab8; }
+
+    .btn-opcion { width: 250px !important; font-size: 16px !important; margin-bottom: 10px; }
+    .btn-revivir { background-color: #e74c3c !important; color: white !important; }
+    .btn-revivir:hover { background-color: #ff5252 !important; }
+    .btn-reiniciar { background-color: #e67e22 !important; color: white !important; }
+    .btn-web { background-color: #3498db !important; color: white !important; }
+
+    #modal-info {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 30;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .contenido-modal {
+      background: #1c2541;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 480px;
+      text-align: left;
+      border: 1px solid #5bc0be;
+    }
+
+    .contenido-modal h2 { color: #5bc0be; margin-bottom: 10px; }
+    .contenido-modal ul { margin-left: 20px; margin-bottom: 15px; }
+    .contenido-modal li { margin-bottom: 5px; }
   </style>
 </head>
-
 <body>
 
-  <header>
-    <h1>PIXEL GAMES</h1>
-    <div class="subtitle">ELIGE TU JUEGO</div>
-    <div class="user-tag" id="user-display">Usuario: Invitado</div>
-  </header>
+  <!-- MENÚ PRINCIPAL -->
+  <div id="menu-principal">
+    <h1>BATALLA 2D</h1>
+    <div class="opcion-menu">
+      <label for="dificultad">Dificultad de los Bots:</label>
+      <select id="dificultad">
+        <option value="1">Nivel 1 (Fácil)</option>
+        <option value="2" selected>Nivel 2 (Normal)</option>
+        <option value="3">Nivel 3 (Difícil)</option>
+      </select>
+    </div>
+    <div class="opcion-menu">
+      <label for="modo-juego">Modo de Juego:</label>
+      <select id="modo-juego">
+        <option value="ia" selected>25 Jugadores (Tú vs 24 Bots)</option>
+        <option value="online">Modo Online (Servidor JS WebSockets)</option>
+      </select>
+    </div>
+    <button class="btn-jugar" onclick="iniciarJuego()">¡JUGAR!</button>
+    <button class="btn-info" onclick="toggleInfo(true)">Información (Info)</button>
+  </div>
 
-  <main class="grid" id="games"></main>
+  <!-- HUD EN JUEGO -->
+  <div id="hud">
+    <button class="btn-guardar" id="btn-guardar-partida" onclick="guardarPartida()">💾 GUARDAR</button>
+    <div class="barra-contenedor">
+      <div id="barra-vida"></div>
+    </div>
+    <div id="info-arma">Arma: Pistola | Daño: 15</div>
+    <div id="info-corazones">Vidas Extra: ❤️ x0</div>
+    <div id="info-bunkers">Búnkeres Guardados: 🚪 x0 (Pulsa F)</div>
+    <div id="info-enemigos">Supervivientes: 25/25</div>
+  </div>
 
-  <!-- MODAL DE ELECCIÓN DE MODO DE JUEGO -->
-  <div class="modal-overlay" id="modal-partida">
-    <div class="modal-card">
-      <h2 id="modal-titulo-juego">NOMBRE JUEGO</h2>
-      <p style="color: #8191aa; font-size: 14px; margin-bottom: 20px;">¿Cómo deseas empezar tu partida?</p>
+  <div id="prompt-interaccion">Presiona [E] o [F] para interactuar</div>
 
-      <button class="modal-btn btn-continuar" onclick="continuarPartida()">▶️ CONTINUAR PARTIDA</button>
-      <button class="modal-btn btn-nueva" onclick="nuevaPartida()">➕ NUEVA PARTIDA</button>
-      
-      <div class="alerta-error" id="alerta-sin-partida">❌ No tienes ninguna partida anterior guardada.</div>
+  <!-- INVENTARIO -->
+  <div id="inventario-armas">
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(0)"><span class="numero">1</span><div class="icono" id="ico-0"></div><span id="txt-0">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(1)"><span class="numero">2</span><div class="icono" id="ico-1"></div><span id="txt-1">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(2)"><span class="numero">3</span><div class="icono" id="ico-2"></div><span id="txt-2">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(3)"><span class="numero">4</span><div class="icono" id="ico-3"></div><span id="txt-3">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(4)"><span class="numero">5</span><div class="icono" id="ico-4"></div><span id="txt-4">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(5)"><span class="numero">6</span><div class="icono" id="ico-5"></div><span id="txt-5">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(6)"><span class="numero">7</span><div class="icono" id="ico-6"></div><span id="txt-6">Vacío</span></div>
+  </div>
 
-      <button class="modal-btn btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+  <!-- PANTALLA GAME OVER -->
+  <div id="pantalla-game-over">
+    <h1 id="titulo-fin">GAME OVER</h1>
+    <p id="subtitulo-fin">Has sido eliminado.</p>
+    <button class="btn-opcion btn-revivir" id="btn-revivir" onclick="usarCorazonRevivir()">REVIVIR CON ❤️</button>
+    <button class="btn-opcion btn-reiniciar" id="btn-reiniciar" onclick="reiniciarPartida()">REINICIAR PARTIDA</button>
+    <button class="btn-opcion btn-web" onclick="volverAMenu()">Volver a los Juegos</button>
+  </div>
+
+  <!-- MODAL DE INFO -->
+  <div id="modal-info">
+    <div class="contenido-modal">
+      <h2>Información del Juego</h2>
+      <ul>
+        <li><b>Botón Guardar:</b> Guarda tu estado arriba a la izquierda.</li>
+        <li><b>Modo Online:</b> Juega en tiempo real conectándote a `pixel-ai-server.js`.</li>
+        <li><b>Mapa Gigante & Minimapa:</b> Revisa la esquina superior derecha.</li>
+        <li><b>Búnker [F]:</b> Coloca o recoge refugios portátiles.</li>
+        <li><b>Tecla [E]:</b> Entra o sal del búnker.</li>
+      </ul>
+      <button onclick="toggleInfo(false)">Cerrar</button>
     </div>
   </div>
 
-  <script>
-    const usuarioActivo = localStorage.getItem('pixelgames_session') || 'Invitado';
-    document.getElementById('user-display').innerText = `Usuario: ${usuarioActivo}`;
+  <canvas id="gameCanvas"></canvas>
 
-    const games = [
-      { id: 1, name: "money up", icon: "🪙", file: "juego1.html", permiteGuardar: false },
-      { id: 2, name: "batle", icon: "🌲", file: "juego2.html", permiteGuardar: true },
-      { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html", permiteGuardar: true },
-      { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html", permiteGuardar: true },
-      { id: 5, name: "ultra Laberintos", icon: "🧩", file: "juego5.html", permiteGuardar: true },
-      { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html", permiteGuardar: true },
-      { id: 7, name: "4 en raya", icon: "🔴", file: "juego7.html", permiteGuardar: true },
-      { id: 8, name: "serpiente de colores", icon: "💎", file: "juego8.html", permiteGuardar: true },
-      { id: 9, name: "money up 2", icon: "🍎", file: "juego9.html", permiteGuardar: false },
-      { id: 10, name: "Pizarra magnética", icon: "⚽", file: "juego10.html", permiteGuardar: true },
-      { id: 11, name: "Ajedrez en 3D", icon: "♟️", file: "juego11.html", permiteGuardar: true },
-      { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html", permiteGuardar: true },
-      { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html", permiteGuardar: false },
-      { id: 14, name: "Valorar Web", icon: "⭐", file: "juego14.html", permiteGuardar: false },
-      { id: 15, name: "boss slayer D2", icon: "⚡", file: "juego15.html", permiteGuardar: true },
-      { id: 16, name: "Proyecto X", icon: "❓", file: "juego16.html", permiteGuardar: true },
-      { id: 17, name: "puzle dezlizante", icon: "🧩", file: "juego17.html", permiteGuardar: true }
+  <script>
+    // --- SINTETIZADOR DE AUDIO ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function reproducirSonidoHit(esPositivo) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (esPositivo) {
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+      } else {
+        osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
+      }
+
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const ANCHO_MAPA = 10000;
+    const ALTO_MAPA = 10000;
+
+    const LAS_7_ARMAS = [
+      { id: 0, nombre: 'Pistola', dano: 15, cadencia: 250, velBala: 12, color: '#f1c40f' },
+      { id: 1, nombre: 'Subfusil', dano: 10, cadencia: 100, velBala: 14, color: '#e67e22' },
+      { id: 2, nombre: 'Escopeta', dano: 8, cadencia: 700, velBala: 10, color: '#e74c3c', perdigones: 5 },
+      { id: 3, nombre: 'Francotirador', dano: 60, cadencia: 1200, velBala: 22, color: '#9b59b6' },
+      { id: 4, nombre: 'Láser', dano: 20, cadencia: 180, velBala: 18, color: '#3498db' },
+      { id: 5, nombre: 'Misiles', dano: 45, cadencia: 900, velBala: 9, color: '#2ecc71' },
+      { id: 6, nombre: 'Pesada', dano: 35, cadencia: 400, velBala: 13, color: '#e67e22' }
     ];
 
-    const container = document.getElementById("games");
-    let juegoSeleccionado = null;
+    let enJuego = false;
+    let modoJuego = 'ia';
+    let dificultadBot = 2;
+    let socketOnline = null;
+    let jugadoresOnline = {};
 
-    for (let i = 1; i <= 1000; i++) {
-      const gameData = games.find(g => g.id === i);
-      const card = document.createElement("article");
+    const raton = { x: 0, y: 0, worldX: 0, worldY: 0, presionado: false };
+    const teclas = {};
 
-      if (gameData) {
-        card.className = "card available";
-        card.innerHTML = `
-          <div class="icon">${gameData.icon}</div>
-          <div class="name">${gameData.name}</div>
-          <button class="play" onclick="clickJuego(${gameData.id})">JUGAR</button>
-        `;
-      } else {
-        card.className = "card locked";
-        card.innerHTML = `
-          <div class="lock">🔒</div>
-          <div class="name">Juego ${i}</div>
-          <div class="badge">PRÓXIMAMENTE</div>
-        `;
-      }
+    let jugador = { 
+      id: 'jugador',
+      x: 5000, 
+      y: 5000, 
+      radio: 18, 
+      vida: 100, 
+      maxVida: 100, 
+      velocidad: 5, 
+      angulo: 0,
+      corazones: 0,
+      bunkersGuardados: 0,
+      enBunker: false,
+      inventario: [null, null, null, null, null, null, null],
+      indexArmaEquipada: 0
+    };
 
-      container.appendChild(card);
+    let muros = [];
+    let armasSuelo = [];
+    let proyectiles = [];
+    let bots = [];
+    let cofres = [];
+    let puertasBunker = [];
+    let corazonesSuelo = [];
+
+    let elementoCercano = null;
+
+    // --- GUARDAR Y CARGAR PROGRESO ---
+    function guardarPartida() {
+      const usuarioActivo = localStorage.getItem('pixelgames_session') || 'Invitado';
+      const btn = document.getElementById('btn-guardar-partida');
+      
+      btn.innerText = "Pensando...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+        if (!usuarios[usuarioActivo]) {
+          usuarios[usuarioActivo] = { password: '', progreso: {} };
+        }
+        if (!usuarios[usuarioActivo].progreso) {
+          usuarios[usuarioActivo].progreso = {};
+        }
+
+        usuarios[usuarioActivo].progreso['juego2.html'] = {
+          x: jugador.x,
+          y: jugador.y,
+          vida: jugador.vida,
+          corazones: jugador.corazones,
+          bunkers: jugador.bunkersGuardados,
+          inventario: jugador.inventario,
+          indexArma: jugador.indexArmaEquipada
+        };
+
+        localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
+
+        btn.innerText = "¡Guardado!";
+        setTimeout(() => {
+          btn.innerText = "💾 GUARDAR";
+          btn.disabled = false;
+        }, 1500);
+      }, 500);
     }
 
-    function clickJuego(id) {
-      const g = games.find(item => item.id === id);
-      if (!g) return;
+    function cargarPartidaGuardada() {
+      const usuarioActivo = localStorage.getItem('pixelgames_session') || 'Invitado';
+      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
 
-      juegoSeleccionado = g;
+      if (usuarios[usuarioActivo] && usuarios[usuarioActivo].progreso && usuarios[usuarioActivo].progreso['juego2.html']) {
+        const p = usuarios[usuarioActivo].progreso['juego2.html'];
+        jugador.x = p.x || 5000;
+        jugador.y = p.y || 5000;
+        jugador.vida = p.vida || 100;
+        jugador.corazones = p.corazones || 0;
+        jugador.bunkersGuardados = p.bunkers || 0;
+        jugador.inventario = p.inventario || [LAS_7_ARMAS[0], null, null, null, null, null, null];
+        jugador.indexArmaEquipada = p.indexArma || 0;
+        return true;
+      }
+      return false;
+    }
 
-      // Si el juego NO permite guardar (ej: Money Up), ir directo
-      if (!g.permiteGuardar) {
-        window.location.href = g.file;
+    // --- CONEXIÓN ONLINE WEBSOCKETS ---
+    function conectarServidorOnline() {
+      try {
+        socketOnline = new WebSocket('ws://' + window.location.hostname + ':8080');
+
+        socketOnline.onopen = () => {
+          console.log("Conectado al servidor WebSocket de Battle Arena 2D.");
+        };
+
+        socketOnline.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          if (data.tipo === 'estado_jugadores') {
+            jugadoresOnline = data.jugadores;
+          } else if (data.tipo === 'disparo_remoto') {
+            proyectiles.push(data.proyectil);
+          }
+        };
+      } catch (e) {
+        console.warn("Servidor JS offline. Jugando en modo local.");
+      }
+    }
+
+    function transmitirPosicionOnline() {
+      if (socketOnline && socketOnline.readyState === WebSocket.OPEN) {
+        socketOnline.send(JSON.stringify({
+          tipo: 'posicion',
+          id: jugador.id,
+          x: jugador.x,
+          y: jugador.y,
+          angulo: jugador.angulo,
+          vida: jugador.vida
+        }));
+      }
+    }
+
+    // --- INICIALIZACIÓN DE ENTIDADES ---
+    function generarMuros() {
+      muros = [];
+      for (let i = 0; i < 220; i++) {
+        muros.push({
+          x: Math.random() * (ANCHO_MAPA - 800) + 400,
+          y: Math.random() * (ALTO_MAPA - 800) + 400,
+          ancho: Math.random() < 0.5 ? 200 : 60,
+          alto: Math.random() < 0.5 ? 60 : 200
+        });
+      }
+    }
+
+    function generarArmas() {
+      armasSuelo = [];
+      for (let i = 0; i < 180; i++) {
+        armasSuelo.push({
+          x: Math.random() * (ANCHO_MAPA - 200) + 100,
+          y: Math.random() * (ALTO_MAPA - 200) + 100,
+          tipo: LAS_7_ARMAS[i % 7]
+        });
+      }
+    }
+
+    function generarCofresYCorazones() {
+      cofres = []; puertasBunker = []; corazonesSuelo = [];
+      for (let i = 0; i < 3; i++) {
+        cofres.push({ id: i, x: 2000 + i * 3000 + (Math.random() * 500), y: 2000 + Math.random() * 5000 });
+      }
+      for (let i = 0; i < 25; i++) {
+        corazonesSuelo.push({ x: Math.random() * (ANCHO_MAPA - 200) + 100, y: Math.random() * (ALTO_MAPA - 200) + 100 });
+      }
+    }
+
+    function generarBots() {
+      bots = [];
+      for (let i = 0; i < 24; i++) {
+        bots.push({
+          id: i,
+          x: Math.random() * (ANCHO_MAPA - 400) + 200,
+          y: Math.random() * (ALTO_MAPA - 400) + 200,
+          radio: 18, vida: 100, maxVida: 100,
+          velocidad: 2.5 + dificultadBot * 0.4,
+          arma: LAS_7_ARMAS[Math.floor(Math.random() * LAS_7_ARMAS.length)],
+          ultimoDisparo: 0
+        });
+      }
+      actualizarContadorJugadores();
+    }
+
+    function actualizarContadorJugadores() {
+      const vivos = bots.length + (jugador.vida > 0 ? 1 : 0);
+      document.getElementById('info-enemigos').innerText = `Supervivientes: ${vivos}/25`;
+    }
+
+    // --- TECLAS Y EVENTOS ---
+    window.addEventListener('keydown', e => {
+      const key = e.key.toLowerCase();
+      teclas[key] = true;
+      if (key >= '1' && key <= '7') seleccionarArmaPorIndex(parseInt(key) - 1);
+      if (key === 'e') ejecutarInteraccionE();
+      if (key === 'f') ejecutarAccionBunkerF();
+    });
+
+    window.addEventListener('keyup', e => teclas[e.key.toLowerCase()] = false);
+    window.addEventListener('mousemove', e => { raton.x = e.clientX; raton.y = e.clientY; });
+    window.addEventListener('mousedown', () => { raton.presionado = true; ejecutarInteraccionE(); });
+    window.addEventListener('mouseup', () => raton.presionado = false);
+
+    let ultimoDisparoJugador = 0;
+
+    function ejecutarInteraccionE() {
+      if (!enJuego) return;
+      if (elementoCercano && elementoCercano.tipo === 'cofre') {
+        jugador.bunkersGuardados++; jugador.corazones++;
+        actualizarUICorazones(); actualizarUIBunkers();
+        cofres = cofres.filter(c => c.id !== elementoCercano.obj.id);
+        reproducirSonidoHit(true);
+      } else if (elementoCercano && elementoCercano.tipo === 'puerta') {
+        const puerta = elementoCercano.obj;
+        jugador.enBunker = !jugador.enBunker;
+        if (!jugador.enBunker) { jugador.x = puerta.x + 35; jugador.y = puerta.y + 35; }
+        reproducirSonidoHit(true);
+      }
+    }
+
+    function ejecutarAccionBunkerF() {
+      if (!enJuego) return;
+      if (elementoCercano && elementoCercano.tipo === 'puerta') {
+        const puerta = elementoCercano.obj;
+        if (jugador.enBunker) jugador.enBunker = false;
+        puertasBunker = puertasBunker.filter(p => p.id !== puerta.id);
+        jugador.bunkersGuardados++;
+        actualizarUIBunkers();
+        reproducirSonidoHit(true);
         return;
       }
-
-      // Si permite guardar, mostrar modal con opciones
-      document.getElementById('modal-titulo-juego').innerText = g.name.toUpperCase();
-      document.getElementById('alerta-sin-partida').style.display = 'none';
-      document.getElementById('modal-partida').style.display = 'flex';
+      if (jugador.bunkersGuardados > 0 && !jugador.enBunker) {
+        puertasBunker.push({ id: Date.now() + Math.random(), x: jugador.x, y: jugador.y });
+        jugador.bunkersGuardados--;
+        actualizarUIBunkers();
+        reproducirSonidoHit(true);
+      }
     }
 
-    function cerrarModal() {
-      document.getElementById('modal-partida').style.display = 'none';
-      juegoSeleccionado = null;
-    }
-
-    function continuarPartida() {
-      if (!juegoSeleccionado) return;
-
-      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      const perfilUser = usuarios[usuarioActivo];
-
-      // Verificar si existen datos guardados de este juego
-      if (perfilUser && perfilUser.progreso && perfilUser.progreso[juegoSeleccionado.file]) {
-        // Guardar indicador de carga de estado
-        localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'load');
-        window.location.href = juegoSeleccionado.file;
+    function guardarEnInventario(arma) {
+      const yaExiste = jugador.inventario.findIndex(a => a && a.id === arma.id);
+      if (yaExiste !== -1) { seleccionarArmaPorIndex(yaExiste); return; }
+      const huecoLibre = jugador.inventario.findIndex(a => a === null);
+      if (huecoLibre !== -1) {
+        jugador.inventario[huecoLibre] = arma;
+        seleccionarArmaPorIndex(huecoLibre);
       } else {
-        document.getElementById('alerta-sin-partida').style.display = 'block';
+        jugador.inventario[jugador.indexArmaEquipada] = arma;
+        actualizarUIInventario();
       }
     }
 
-    function nuevaPartida() {
-      if (!juegoSeleccionado) return;
+    function seleccionarArmaPorIndex(index) {
+      if (jugador.inventario[index]) {
+        jugador.indexArmaEquipada = index;
+        actualizarUIInventario();
+      }
+    }
 
-      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+    function actualizarUIInventario() {
+      const armaActual = jugador.inventario[jugador.indexArmaEquipada];
+      for (let i = 0; i < 7; i++) {
+        const cuadrado = document.getElementsByClassName('cuadrado-arma')[i];
+        const txt = document.getElementById(`txt-${i}`);
+        const ico = document.getElementById(`ico-${i}`);
+        const a = jugador.inventario[i];
+        if (a) { txt.innerText = a.nombre; ico.style.backgroundColor = a.color; }
+        else { txt.innerText = "Vacío"; ico.style.backgroundColor = "transparent"; }
+        if (i === jugador.indexArmaEquipada) cuadrado.classList.add('activo');
+        else cuadrado.classList.remove('activo');
+      }
+      if (armaActual) document.getElementById('info-arma').innerText = `Arma: ${armaActual.nombre} | Daño: ${armaActual.dano}`;
+    }
 
-      // Borrar partida anterior guardada si existía
-      if (usuarios[usuarioActivo] && usuarios[usuarioActivo].progreso) {
-        delete usuarios[usuarioActivo].progreso[juegoSeleccionado.file];
-        localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
+    function actualizarUICorazones() { document.getElementById('info-corazones').innerText = `Vidas Extra: ❤️ x${jugador.corazones}`; }
+    function actualizarUIBunkers() { document.getElementById('info-bunkers').innerText = `Búnkeres Guardados: 🚪 x${jugador.bunkersGuardados} (Pulsa F)`; }
+
+    // --- BUCLE DE ACTUALIZACIÓN ---
+    function actualizar() {
+      if (!enJuego) return;
+
+      const camaraX = jugador.x - canvas.width / 2;
+      const camaraY = jugador.y - canvas.height / 2;
+      raton.worldX = raton.x + camaraX;
+      raton.worldY = raton.y + camaraY;
+
+      if (!jugador.enBunker) {
+        let dx = 0, dy = 0;
+        if (teclas['w'] || teclas['arrowup']) dy -= 1;
+        if (teclas['s'] || teclas['arrowdown']) dy += 1;
+        if (teclas['a'] || teclas['arrowleft']) dx -= 1;
+        if (teclas['d'] || teclas['arrowright']) dx += 1;
+        if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
+
+        let nuevoX = jugador.x + dx * jugador.velocidad;
+        let nuevoY = jugador.y + dy * jugador.velocidad;
+
+        if (!comprobarColisionMuro(nuevoX, jugador.y, jugador.radio)) jugador.x = Math.max(jugador.radio, Math.min(ANCHO_MAPA - jugador.radio, nuevoX));
+        if (!comprobarColisionMuro(jugador.x, nuevoY, jugador.radio)) jugador.y = Math.max(jugador.radio, Math.min(ALTO_MAPA - jugador.radio, nuevoY));
+
+        jugador.angulo = Math.atan2(raton.worldY - jugador.y, raton.worldX - jugador.x);
+        
+        if (modoJuego === 'online') transmitirPosicionOnline();
       }
 
-      // Marcar para iniciar limpia
-      localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'new');
-      window.location.href = juegoSeleccionado.file;
+      if (!jugador.enBunker) {
+        armasSuelo.forEach((arma, i) => {
+          if (Math.hypot(jugador.x - arma.x, jugador.y - arma.y) < jugador.radio + 15) {
+            guardarEnInventario(arma.tipo); armasSuelo.splice(i, 1);
+          }
+        });
+
+        corazonesSuelo.forEach((c, i) => {
+          if (Math.hypot(jugador.x - c.x, jugador.y - c.y) < jugador.radio + 15) {
+            jugador.corazones++; actualizarUICorazones(); reproducirSonidoHit(true); corazonesSuelo.splice(i, 1);
+          }
+        });
+      }
+
+      elementoCercano = null;
+      let distMin = 65;
+
+      cofres.forEach(c => {
+        const d = Math.hypot(jugador.x - c.x, jugador.y - c.y);
+        if (d < distMin) { distMin = d; elementoCercano = { tipo: 'cofre', obj: c }; }
+      });
+
+      puertasBunker.forEach(p => {
+        const d = Math.hypot(jugador.x - p.x, jugador.y - p.y);
+        if (d < distMin) { distMin = d; elementoCercano = { tipo: 'puerta', obj: p }; }
+      });
+
+      const promptUI = document.getElementById('prompt-interaccion');
+      if (elementoCercano) {
+        promptUI.style.display = 'block';
+        if (elementoCercano.tipo === 'cofre') promptUI.innerText = 'Presiona [E] para Abrir Cofre 📦';
+        else if (elementoCercano.tipo === 'puerta') promptUI.innerText = jugador.enBunker ? 'Presiona [E] Salir / [F] Recoger Búnker' : 'Presiona [E] Entrar / [F] Recoger Búnker 🚪';
+      } else if (jugador.bunkersGuardados > 0 && !jugador.enBunker) {
+        promptUI.style.display = 'block'; promptUI.innerText = 'Presiona [F] para Colocar un Búnker 🚪';
+      } else {
+        promptUI.style.display = 'none';
+      }
+
+      const armaEquipada = jugador.inventario[jugador.indexArmaEquipada];
+      if (raton.presionado && armaEquipada && !jugador.enBunker) {
+        const ahora = Date.now();
+        if (ahora - ultimoDisparoJugador >= armaEquipada.cadencia) {
+          disparar(jugador.x, jugador.y, jugador.angulo, armaEquipada, 'jugador');
+          ultimoDisparoJugador = ahora;
+        }
+      }
+
+      proyectiles.forEach((p, index) => {
+        p.x += Math.cos(p.angulo) * p.velocidad;
+        p.y += Math.sin(p.angulo) * p.velocidad;
+
+        if (comprobarColisionMuro(p.x, p.y, 3)) { proyectiles.splice(index, 1); return; }
+
+        if (p.origenId !== 'jugador' && !jugador.enBunker) {
+          if (Math.hypot(p.x - jugador.x, p.y - jugador.y) < jugador.radio) {
+            jugador.vida -= p.dano; reproducirSonidoHit(false); proyectiles.splice(index, 1); actualizarBarraVida();
+            if (jugador.vida <= 0) finalizarJuego(false);
+            return;
+          }
+        }
+
+        bots.forEach((bot, botIndex) => {
+          if (p.origenId !== bot.id && Math.hypot(p.x - bot.x, p.y - bot.y) < bot.radio) {
+            bot.vida -= p.dano;
+            if (p.origenId === 'jugador') reproducirSonidoHit(true);
+            proyectiles.splice(index, 1);
+
+            if (bot.vida <= 0) {
+              bots.splice(botIndex, 1);
+              if (p.origenId === 'jugador') { jugador.vida = Math.min(jugador.maxVida, jugador.vida + 25); actualizarBarraVida(); }
+              actualizarContadorJugadores();
+              if (bots.length === 0) finalizarJuego(true);
+            }
+          }
+        });
+      });
+
+      bots.forEach(bot => {
+        let objetivoCercano = null; let distMinima = 750;
+
+        if (!jugador.enBunker && jugador.vida > 0) {
+          const distJ = Math.hypot(jugador.x - bot.x, jugador.y - bot.y);
+          if (distJ < distMinima) { distMinima = distJ; objetivoCercano = jugador; }
+        }
+
+        bots.forEach(otroBot => {
+          if (otroBot.id !== bot.id) {
+            const distB = Math.hypot(otroBot.x - bot.x, otroBot.y - bot.y);
+            if (distB < distMinima) { distMinima = distB; objetivoCercano = otroBot; }
+          }
+        });
+
+        if (objetivoCercano) {
+          const anguloAObjetivo = Math.atan2(objetivoCercano.y - bot.y, objetivoCercano.x - bot.x);
+          let bX = bot.x + Math.cos(anguloAObjetivo) * bot.velocidad;
+          let bY = bot.y + Math.sin(anguloAObjetivo) * bot.velocidad;
+
+          if (!comprobarColisionMuro(bX, bot.y, bot.radio)) bot.x = bX;
+          if (!comprobarColisionMuro(bot.x, bY, bot.radio)) bot.y = bY;
+
+          const ahora = Date.now();
+          const margenError = (4 - dificultadBot) * 0.2;
+          if (ahora - bot.ultimoDisparo > bot.arma.cadencia * (1.6 / dificultadBot)) {
+            disparar(bot.x, bot.y, anguloAObjetivo + (Math.random() - 0.5) * margenError, bot.arma, bot.id);
+            bot.ultimoDisparo = ahora;
+          }
+        }
+      });
     }
+
+    function disparar(x, y, angulo, arma, origenId) {
+      if (arma.perdigones) {
+        for (let i = 0; i < arma.perdigones; i++) {
+          const dispersion = (Math.random() - 0.5) * 0.3;
+          proyectiles.push({ x, y, angulo: angulo + dispersion, velocidad: arma.velBala, dano: arma.dano, color: arma.color, origenId });
+        }
+      } else {
+        proyectiles.push({ x, y, angulo, velocidad: arma.velBala, dano: arma.dano, color: arma.color, origenId });
+      }
+    }
+
+    function comprobarColisionMuro(x, y, radio) {
+      return muros.some(m => x + radio > m.x && x - radio < m.x + m.ancho && y + radio > m.y && y - radio < m.y + m.alto);
+    }
+
+    function actualizarBarraVida() {
+      const pct = Math.max(0, (jugador.vida / jugador.maxVida) * 100);
+      const barra = document.getElementById('barra-vida');
+      barra.style.width = pct + '%';
+      barra.style.backgroundColor = pct > 50 ? '#2ecc71' : pct > 20 ? '#f39c12' : '#e74c3c';
+    }
+
+    // --- RENDERIZADO VISUAL ---
+    function renderizar() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!enJuego) return;
+
+      const camaraX = jugador.x - canvas.width / 2;
+      const camaraY = jugador.y - canvas.height / 2;
+
+      ctx.save();
+      ctx.translate(-camaraX, -camaraY);
+
+      ctx.fillStyle = '#0b132b';
+      ctx.fillRect(0, 0, ANCHO_MAPA, ALTO_MAPA);
+
+      ctx.strokeStyle = '#1c2541';
+      ctx.lineWidth = 2;
+      for (let x = 0; x < ANCHO_MAPA; x += 100) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ALTO_MAPA); ctx.stroke(); }
+      for (let y = 0; y < ALTO_MAPA; y += 100) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ANCHO_MAPA, y); ctx.stroke(); }
+
+      corazonesSuelo.forEach(c => { ctx.font = '20px Segoe UI Symbol'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('❤️', c.x, c.y); });
+      armasSuelo.forEach(arma => { ctx.fillStyle = arma.tipo.color; ctx.beginPath(); ctx.arc(arma.x, arma.y, 7, 0, Math.PI * 2); ctx.fill(); });
+      cofres.forEach(c => { ctx.font = '32px Segoe UI Symbol'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('📦', c.x, c.y); });
+      puertasBunker.forEach(p => { ctx.font = '32px Segoe UI Symbol'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🚪', p.x, p.y); });
+
+      ctx.fillStyle = '#3a506b'; ctx.strokeStyle = '#5bc0be'; ctx.lineWidth = 3;
+      muros.forEach(m => { ctx.fillRect(m.x, m.y, m.ancho, m.alto); ctx.strokeRect(m.x, m.y, m.ancho, m.alto); });
+
+      proyectiles.forEach(p => { ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill(); });
+      bots.forEach(bot => { ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(bot.x, bot.y, bot.radio, 0, Math.PI * 2); ctx.fill(); });
+
+      // Jugadores Online
+      if (modoJuego === 'online') {
+        Object.keys(jugadoresOnline).forEach(id => {
+          if (id !== jugador.id) {
+            const jO = jugadoresOnline[id];
+            ctx.fillStyle = '#3498db';
+            ctx.beginPath(); ctx.arc(jO.x, jO.y, 18, 0, Math.PI * 2); ctx.fill();
+          }
+        });
+      }
+
+      if (!jugador.enBunker) {
+        ctx.save();
+        ctx.translate(jugador.x, jugador.y);
+        ctx.rotate(jugador.angulo);
+        ctx.fillStyle = '#5bc0be';
+        ctx.beginPath(); ctx.arc(0, 0, jugador.radio, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, -4, 25, 8);
+        ctx.restore();
+      }
+
+      ctx.restore();
+
+      dibujarMinimapa();
+      if (jugador.enBunker) renderizarInteriorBunker();
+    }
+
+    function dibujarMinimapa() {
+      const tam = 160; const margin = 15;
+      const x = canvas.width - tam - margin; const y = margin;
+
+      ctx.fillStyle = 'rgba(11, 19, 43, 0.85)';
+      ctx.fillRect(x, y, tam, tam);
+      ctx.strokeStyle = '#5bc0be'; ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, tam, tam);
+
+      const esc = tam / ANCHO_MAPA;
+      ctx.fillStyle = '#3a506b';
+      muros.forEach(m => ctx.fillRect(x + m.x * esc, y + m.y * esc, Math.max(1, m.ancho * esc), Math.max(1, m.alto * esc)));
+      ctx.fillStyle = '#e74c3c';
+      bots.forEach(b => { ctx.beginPath(); ctx.arc(x + b.x * esc, y + b.y * esc, 2, 0, Math.PI * 2); ctx.fill(); });
+      ctx.fillStyle = '#2ecc71';
+      ctx.beginPath(); ctx.arc(x + jugador.x * esc, y + jugador.y * esc, 3.5, 0, Math.PI * 2); ctx.fill();
+    }
+
+    function renderizarInteriorBunker() {
+      const tamCuadrado = 50; const anchoBunker = 4 * tamCuadrado; const altoBunker = 4 * tamCuadrado;
+      const centroX = canvas.width / 2; const centroY = canvas.height / 2;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#1c2541'; ctx.strokeStyle = '#5bc0be'; ctx.lineWidth = 4;
+      ctx.fillRect(centroX - anchoBunker/2, centroY - altoBunker/2, anchoBunker, altoBunker);
+      ctx.strokeRect(centroX - anchoBunker/2, centroY - altoBunker/2, anchoBunker, altoBunker);
+
+      ctx.fillStyle = '#5bc0be'; ctx.beginPath(); ctx.arc(centroX, centroY, 15, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.font = '14px Segoe UI'; ctx.textAlign = 'center';
+      ctx.fillText('¡DENTRO DEL BÚNKER 4x4! (E para Salir / F para Recoger)', centroX, centroY - altoBunker/2 - 15);
+    }
+
+    function bucle() { actualizar(); renderizar(); requestAnimationFrame(bucle); }
+
+    function iniciarJuego() {
+      dificultadBot = parseInt(document.getElementById('dificultad').value);
+      modoJuego = document.getElementById('modo-juego').value;
+
+      document.getElementById('menu-principal').style.display = 'none';
+      document.getElementById('hud').style.display = 'block';
+      document.getElementById('inventario-armas').style.display = 'flex';
+
+      generarMuros();
+      generarArmas();
+      generarCofresYCorazones();
+      generarBots();
+
+      // Comprobar si se pidió cargar la partida guardada
+      const accionModo = localStorage.getItem('pixelgames_action_juego2.html');
+      let cargadoConExito = false;
+
+      if (accionModo === 'load') {
+        cargadoConExito = cargarPartidaGuardada();
+        localStorage.removeItem('pixelgames_action_juego2.html');
+      }
+
+      if (!cargadoConExito) {
+        jugador.inventario = [LAS_7_ARMAS[0], null, null, null, null, null, null];
+        jugador.indexArmaEquipada = 0;
+        jugador.vida = 100;
+        jugador.corazones = 0;
+        jugador.bunkersGuardados = 0;
+        jugador.enBunker = false;
+        jugador.x = 5000;
+        jugador.y = 5000;
+      }
+
+      actualizarBarraVida();
+      actualizarUICorazones();
+      actualizarUIBunkers();
+      actualizarUIInventario();
+
+      if (modoJuego === 'online') conectarServidorOnline();
+
+      enJuego = true;
+    }
+
+    function finalizarJuego(victoria) {
+      enJuego = false;
+      actualizarContadorJugadores();
+      const pantalla = document.getElementById('pantalla-game-over');
+      const titulo = document.getElementById('titulo-fin');
+      const subtitulo = document.getElementById('subtitulo-fin');
+      const btnRevivir = document.getElementById('btn-revivir');
+
+      if (victoria) {
+        titulo.innerText = "¡HAS GANADO!"; titulo.style.color = "#2ecc71";
+        subtitulo.innerText = "¡Eres el único superviviente de la Arena!";
+        btnRevivir.style.display = "none";
+      } else {
+        titulo.innerText = "GAME OVER"; titulo.style.color = "#e74c3c";
+        subtitulo.innerText = "Has sido eliminado en combate.";
+        if (jugador.corazones > 0) {
+          btnRevivir.style.display = "block";
+          btnRevivir.innerText = `REVIVIR CON ❤️ (Tienes ${jugador.corazones})`;
+        } else {
+          btnRevivir.style.display = "none";
+        }
+      }
+
+      pantalla.style.display = 'flex';
+      document.getElementById('inventario-armas').style.display = 'none';
+    }
+
+    function usarCorazonRevivir() {
+      if (jugador.corazones > 0) {
+        jugador.corazones--; jugador.vida = 100;
+        actualizarBarraVida(); actualizarUICorazones();
+        document.getElementById('pantalla-game-over').style.display = 'none';
+        document.getElementById('inventario-armas').style.display = 'flex';
+        enJuego = true;
+      }
+    }
+
+    function reiniciarPartida() {
+      document.getElementById('pantalla-game-over').style.display = 'none';
+      iniciarJuego();
+    }
+
+    function volverAMenu() {
+      window.location.href = "juegos.html";
+    }
+
+    function toggleInfo(mostrar) {
+      document.getElementById('modal-info').style.display = mostrar ? 'flex' : 'none';
+    }
+
+    bucle();
   </script>
-
 </body>
 </html>
