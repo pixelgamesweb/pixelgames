@@ -126,6 +126,35 @@
       font-size: 14px;
       font-weight: bold;
       border: 1px solid #e74c3c;
+      margin-bottom: 5px;
+    }
+
+    #info-corazones {
+      background: rgba(231, 76, 60, 0.2);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      border: 1px solid #ff4757;
+      color: #ff4757;
+    }
+
+    /* PROMPT DE INTERACCIÓN CON COFRES Y PUERTAS */
+    #prompt-interaccion {
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #f1c40f;
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: #f1c40f;
+      font-weight: bold;
+      font-size: 18px;
+      display: none;
+      z-index: 8;
+      pointer-events: none;
     }
 
     /* INVENTARIO DE 7 CUADRADOS ABAJO */
@@ -196,7 +225,7 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(11, 19, 43, 0.9);
+      background: rgba(11, 19, 43, 0.95);
       z-index: 20;
       flex-direction: column;
       justify-content: center;
@@ -204,28 +233,43 @@
     }
 
     #pantalla-game-over h1 {
-      font-size: 60px;
+      font-size: 55px;
       color: #e74c3c;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       text-shadow: 0 0 15px rgba(231, 76, 60, 0.6);
     }
 
+    #subtitulo-fin {
+      font-size: 18px;
+      color: #a0aab8;
+      margin-bottom: 20px;
+    }
+
     .btn-revivir {
-      background-color: #e74c3c !important;
+      background-color: #ff4757 !important;
       color: white !important;
-      width: 250px !important;
+      width: 260px !important;
       font-size: 18px !important;
       margin-bottom: 10px;
+      box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
     }
 
     .btn-revivir:hover {
-      background-color: #ff5252 !important;
+      background-color: #ff6b81 !important;
+    }
+
+    .btn-reiniciar {
+      background-color: #e74c3c !important;
+      color: white !important;
+      width: 260px !important;
+      font-size: 18px !important;
+      margin-bottom: 10px;
     }
 
     .btn-web {
       background-color: #3498db !important;
       color: white !important;
-      width: 250px !important;
+      width: 260px !important;
     }
 
     /* MODAL INFO */
@@ -244,7 +288,7 @@
       background: #1c2541;
       padding: 25px;
       border-radius: 12px;
-      max-width: 450px;
+      max-width: 480px;
       text-align: left;
       border: 1px solid #5bc0be;
     }
@@ -272,8 +316,8 @@
     <div class="opcion-menu">
       <label for="modo-juego">Modo de Juego:</label>
       <select id="modo-juego">
-        <option value="ia">Tú vs IA (4 Bots)</option>
-        <option value="online">Modo Online (5 Jugadores - Servidor JS)</option>
+        <option value="ia">Tú vs IA (6 Bots)</option>
+        <option value="online">Modo Sobreviviente (8 Bots)</option>
       </select>
     </div>
 
@@ -287,8 +331,12 @@
       <div id="barra-vida"></div>
     </div>
     <div id="info-arma">Arma: Pistola | Daño: 15</div>
-    <div id="info-enemigos">Enemigos restantes: 4</div>
+    <div id="info-enemigos">Enemigos restantes: 6</div>
+    <div id="info-corazones">Vidas Extra (❤️): 0</div>
   </div>
+
+  <!-- PROMPT INTERACCIÓN -->
+  <div id="prompt-interaccion">Presiona [E] para interactuar</div>
 
   <!-- INVENTARIO DE 7 CUADRADOS DE ARMAS EN LA PARTE INFERIOR -->
   <div id="inventario-armas">
@@ -297,15 +345,20 @@
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(2)"><span class="numero">3</span><div class="icono" id="ico-2"></div><span id="txt-2">Vacío</span></div>
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(3)"><span class="numero">4</span><div class="icono" id="ico-3"></div><span id="txt-3">Vacío</span></div>
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(4)"><span class="numero">5</span><div class="icono" id="ico-4"></div><span id="txt-4">Vacío</span></div>
-    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(5)"><span class="numero">6</span><div class="icono" id="ico-5"></div><span id="txt-5">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(5)"><span class="numero">6</span><div class="icono" id="ico-6"></div><span id="txt-5">Vacío</span></div>
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(6)"><span class="numero">7</span><div class="icono" id="ico-6"></div><span id="txt-6">Vacío</span></div>
   </div>
 
   <!-- PANTALLA GAME OVER / VICTORIA -->
   <div id="pantalla-game-over">
     <h1 id="titulo-fin">GAME OVER</h1>
-    <button class="btn-revivir" id="btn-reintentar" onclick="revivir()">REINTENTAR</button>
-    <button class="btn-web" onclick="volverAWeb()">Tornar a la web</button>
+    <p id="subtitulo-fin">Te has quedado sin vida.</p>
+
+    <!-- Botón condicional de revivir con corazón -->
+    <button class="btn-revivir" id="btn-revivir-corazon" onclick="revivirConCorazon()" style="display:none;">REVIVIR (❤️ Usar Vida Extra)</button>
+    
+    <button class="btn-reiniciar" id="btn-reintentar" onclick="reiniciarPartida()">REINICIAR PARTIDA</button>
+    <button class="btn-web" onclick="volverAWeb()">Volver a la Web</button>
   </div>
 
   <!-- MODAL DE INFORMACIÓN -->
@@ -313,11 +366,11 @@
     <div class="contenido-modal">
       <h2>Información del Juego</h2>
       <ul>
-        <li><b>Objetivo:</b> ¡Elimina a todos los enemigos para ganar!</li>
-        <li><b>Recompensa:</b> Cada enemigo eliminado te cura <b>+25 HP</b>.</li>
-        <li><b>Minimapa:</b> Consulta la esquina superior derecha para localizar enemigos y cobertura.</li>
-        <li><b>Controles:</b> Teclas <b>W, A, S, D</b> para moverte.</li>
-        <li><b>Disparo y Cambio:</b> Clic izquierdo para disparar, teclas <b>1-7</b> para cambiar de arma.</li>
+        <li><b>Mapa Gigante:</b> 10000x10000 píxeles para explorar.</li>
+        <li><b>Cofres (📦):</b> Hay 3 cofres en el mapa. Acércate y pulsa <b>E</b> para abrirlos. Al abrirlos, aparece una puerta pequeña (🚪) en su lugar y obtienes un Búnker.</li>
+        <li><b>Búnkeres (🚪):</b> Construye un refugio blindado de 4x4 cuadrados con una puerta de entrada para esconderte.</li>
+        <li><b>Vidas Extra (❤️):</b> Recoge los corazones por el mapa. Si mueres y tienes al menos 1 ❤️, ¡podrás revivir en el acto!</li>
+        <li><b>Controles:</b> <b>W, A, S, D</b> para moverte | <b>E</b> para interactuar | <b>1-7</b> para cambiar de arma.</li>
       </ul>
       <button onclick="toggleInfo(false)">Cerrar</button>
     </div>
@@ -326,28 +379,34 @@
   <canvas id="gameCanvas"></canvas>
 
   <script>
-    // --- SINTETIZADOR DE AUDIO (Web Audio API) ---
+    // --- SINTETIZADOR DE AUDIO ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function reproducirSonidoHit(esPositivo) {
+    function reproducirSonido(tipo) {
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.connect(gain);
       gain.connect(audioCtx.destination);
 
-      if (esPositivo) {
+      if (tipo === 'hit_pos') {
         osc.frequency.setValueAtTime(600, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
-      } else {
+      } else if (tipo === 'hit_neg') {
         osc.frequency.setValueAtTime(180, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
+      } else if (tipo === 'cofre') {
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.25);
+      } else if (tipo === 'corazon') {
+        osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1046, audioCtx.currentTime + 0.2);
       }
 
       gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
+      osc.stop(audioCtx.currentTime + 0.2);
     }
 
     // --- CONFIGURACIÓN DEL CANVAS Y MAPA ---
@@ -356,18 +415,20 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const ANCHO_MAPA = 3000;
-    const ALTO_MAPA = 3000;
+    // MAPA EXPANDIDO A 10000 x 10000
+    const ANCHO_MAPA = 10000;
+    const ALTO_MAPA = 10000;
+    const TAM_CUADRADO = 60; // Tamaño del grid en el mapa
 
-    // --- LAS 7 ARMAS DEL JUEGO ---
+    // --- ARMAS ---
     const LAS_7_ARMAS = [
-      { id: 0, nombre: 'Pistola', dano: 15, cadencia: 250, velBala: 12, color: '#f1c40f' },
-      { id: 1, nombre: 'Subfusil', dano: 10, cadencia: 100, velBala: 14, color: '#e67e22' },
-      { id: 2, nombre: 'Escopeta', dano: 8, cadencia: 700, velBala: 10, color: '#e74c3c', perdigones: 5 },
-      { id: 3, nombre: 'Francotirador', dano: 60, cadencia: 1200, velBala: 22, color: '#9b59b6' },
-      { id: 4, nombre: 'Láser', dano: 20, cadencia: 180, velBala: 18, color: '#3498db' },
-      { id: 5, nombre: 'Misiles', dano: 45, cadencia: 900, velBala: 9, color: '#2ecc71' },
-      { id: 6, nombre: 'Pesada', dano: 35, cadencia: 400, velBala: 13, color: '#e67e22' }
+      { id: 0, nombre: 'Pistola', dano: 15, cadencia: 250, velBala: 14, color: '#f1c40f' },
+      { id: 1, nombre: 'Subfusil', dano: 12, cadencia: 100, velBala: 15, color: '#e67e22' },
+      { id: 2, nombre: 'Escopeta', dano: 9, cadencia: 700, velBala: 11, color: '#e74c3c', perdigones: 5 },
+      { id: 3, nombre: 'Francotirador', dano: 65, cadencia: 1200, velBala: 24, color: '#9b59b6' },
+      { id: 4, nombre: 'Láser', dano: 22, cadencia: 180, velBala: 20, color: '#3498db' },
+      { id: 5, nombre: 'Búnker 🚪', dano: 0, cadencia: 1000, velBala: 0, color: '#8e44ad', esBunker: true },
+      { id: 6, nombre: 'Pesada', dano: 38, cadencia: 400, velBala: 14, color: '#e67e22' }
     ];
 
     // --- ESTADO DEL JUEGO ---
@@ -379,13 +440,14 @@
     const teclas = {};
 
     let jugador = { 
-      x: 1500, 
-      y: 1500, 
+      x: 5000, 
+      y: 5000, 
       radio: 18, 
       vida: 100, 
       maxVida: 100, 
-      velocidad: 4, 
+      velocidad: 5, 
       angulo: 0,
+      corazones: 0,
       inventario: [null, null, null, null, null, null, null],
       indexArmaEquipada: 0
     };
@@ -394,44 +456,72 @@
     let armasSuelo = [];
     let proyectiles = [];
     let bots = [];
+    let cofres = [];
+    let puertasPequenas = [];
+    let corazonesSuelo = [];
+    let elementoInteractivoCercano = null;
 
-    // --- INICIALIZACIÓN ---
+    // --- GENERACIÓN DE ELEMENTOS DEL MAPA ---
     function generarMuros() {
       muros = [];
-      for (let i = 0; i < 60; i++) {
+      for (let i = 0; i < 220; i++) {
         muros.push({
-          x: Math.random() * (ANCHO_MAPA - 400) + 200,
-          y: Math.random() * (ALTO_MAPA - 400) + 200,
-          ancho: Math.random() < 0.5 ? 180 : 50,
-          alto: Math.random() < 0.5 ? 50 : 180
+          x: Math.random() * (ANCHO_MAPA - 800) + 400,
+          y: Math.random() * (ALTO_MAPA - 800) + 400,
+          ancho: Math.random() < 0.5 ? 200 : 60,
+          alto: Math.random() < 0.5 ? 60 : 200
         });
       }
     }
 
     function generarArmas() {
       armasSuelo = [];
-      for (let i = 0; i < 70; i++) {
+      for (let i = 0; i < 150; i++) {
         const tipo = LAS_7_ARMAS[i % 7];
         armasSuelo.push({
-          x: Math.random() * (ANCHO_MAPA - 100) + 50,
-          y: Math.random() * (ALTO_MAPA - 100) + 50,
+          x: Math.random() * (ANCHO_MAPA - 400) + 200,
+          y: Math.random() * (ALTO_MAPA - 400) + 200,
           tipo: tipo
+        });
+      }
+    }
+
+    function generarCofres() {
+      cofres = [];
+      puertasPequenas = [];
+      for (let i = 0; i < 3; i++) {
+        cofres.push({
+          id: i,
+          x: Math.random() * (ANCHO_MAPA - 1000) + 500,
+          y: Math.random() * (ALTO_MAPA - 1000) + 500,
+          radio: 25
+        });
+      }
+    }
+
+    function generarCorazones() {
+      corazonesSuelo = [];
+      for (let i = 0; i < 20; i++) {
+        corazonesSuelo.push({
+          x: Math.random() * (ANCHO_MAPA - 800) + 400,
+          y: Math.random() * (ALTO_MAPA - 800) + 400,
+          radio: 15
         });
       }
     }
 
     function generarBots() {
       bots = [];
-      const numBots = modoActual === 'ia' ? 4 : 5;
+      const numBots = modoActual === 'ia' ? 6 : 8;
       for (let i = 0; i < numBots; i++) {
         bots.push({
           id: i,
-          x: Math.random() * (ANCHO_MAPA - 200) + 100,
-          y: Math.random() * (ALTO_MAPA - 200) + 100,
+          x: Math.random() * (ANCHO_MAPA - 1000) + 500,
+          y: Math.random() * (ALTO_MAPA - 1000) + 500,
           radio: 18,
           vida: 100,
-          velocidad: 2 + dificultadBot * 0.5,
-          arma: LAS_7_ARMAS[Math.floor(Math.random() * LAS_7_ARMAS.length)],
+          velocidad: 2.5 + dificultadBot * 0.5,
+          arma: LAS_7_ARMAS[Math.floor(Math.random() * (LAS_7_ARMAS.length - 1))],
           ultimoDisparo: 0
         });
       }
@@ -442,14 +532,24 @@
       document.getElementById('info-enemigos').innerText = `Enemigos restantes: ${bots.length}`;
     }
 
-    // --- CONTROLES DE TECLADO ---
+    function actualizarContadorCorazones() {
+      document.getElementById('info-corazones').innerText = `Vidas Extra (❤️): ${jugador.corazones}`;
+    }
+
+    // --- CONTROLES Y EVENTOS ---
     window.addEventListener('keydown', e => {
-      teclas[e.key.toLowerCase()] = true;
+      const k = e.key.toLowerCase();
+      teclas[k] = true;
+
       if (e.key >= '1' && e.key <= '7') {
-        const idx = parseInt(e.key) - 1;
-        seleccionarArmaPorIndex(idx);
+        seleccionarArmaPorIndex(parseInt(e.key) - 1);
+      }
+
+      if (k === 'e') {
+        interactuar();
       }
     });
+
     window.addEventListener('keyup', e => teclas[e.key.toLowerCase()] = false);
     window.addEventListener('mousemove', e => {
       raton.x = e.clientX;
@@ -459,6 +559,28 @@
     window.addEventListener('mouseup', () => raton.presionado = false);
 
     let ultimoDisparoJugador = 0;
+
+    // --- INTERACCIÓN CON COFRES ---
+    function interactuar() {
+      if (!elementoInteractivoCercano) return;
+
+      if (elementoInteractivoCercano.tipo === 'cofre') {
+        const cofreIdx = cofres.findIndex(c => c.id === elementoInteractivoCercano.obj.id);
+        if (cofreIdx !== -1) {
+          const cofre = cofres[cofreIdx];
+          
+          // Crear puerta pequeña en el mismo sitio
+          puertasPequenas.push({ x: cofre.x, y: cofre.y, radio: 20 });
+          
+          // Dar ítem de Búnker al jugador
+          guardarEnInventario(LAS_7_ARMAS[5]); // Índice de Búnker
+
+          // Eliminar cofre
+          cofres.splice(cofreIdx, 1);
+          reproducirSonido('cofre');
+        }
+      }
+    }
 
     // --- INVENTARIO DE 7 ARMAS ---
     function guardarEnInventario(arma) {
@@ -510,11 +632,46 @@
       }
 
       if (armaActual) {
-        document.getElementById('info-arma').innerText = `Arma: ${armaActual.nombre} | Daño: ${armaActual.dano}`;
+        document.getElementById('info-arma').innerText = `Arma: ${armaActual.nombre} | ${armaActual.esBunker ? 'Modo Despliegue Búnker' : 'Daño: ' + armaActual.dano}`;
       }
     }
 
-    // --- BUCLE PRINCIPAL ---
+    // --- CONSTRUCCIÓN DE BÚNKER (4x4 CUADRADOS CON PUERTA) ---
+    function construirBunker(centroX, centroY) {
+      const tamCuadrado = TAM_CUADRADO;
+      const anchoCuadrados = 4;
+      const altoCuadrados = 4;
+      const grosorMuro = 15;
+
+      const minX = centroX - (anchoCuadrados * tamCuadrado) / 2;
+      const minY = centroY - (altoCuadrados * tamCuadrado) / 2;
+      const anchoTotal = anchoCuadrados * tamCuadrado;
+      const altoTotal = altoCuadrados * tamCuadrado;
+
+      // Pared Norte
+      muros.push({ x: minX, y: minY, ancho: anchoTotal, alto: grosorMuro });
+      // Pared Sur
+      muros.push({ x: minX, y: minY + altoTotal - grosorMuro, ancho: anchoTotal, alto: grosorMuro });
+      // Pared Oeste
+      muros.push({ x: minX, y: minY, ancho: grosorMuro, alto: altoTotal });
+      // Pared Este con Entrada (puerta)
+      muros.push({ x: minX + anchoTotal - grosorMuro, y: minY, ancho: grosorMuro, alto: altoTotal / 3 });
+      muros.push({ x: minX + anchoTotal - grosorMuro, y: minY + (altoTotal * 2 / 3), ancho: grosorMuro, alto: altoTotal / 3 });
+
+      // Emoji de Puerta en la entrada del Búnker
+      puertasPequenas.push({
+        x: minX + anchoTotal - grosorMuro / 2,
+        y: minY + altoTotal / 2,
+        radio: 18
+      });
+
+      // Retirar el ítem de Búnker consumido
+      jugador.inventario[jugador.indexArmaEquipada] = null;
+      actualizarUIInventario();
+      reproducirSonido('cofre');
+    }
+
+    // --- BUCLE DE LÓGICA / ACTUALIZACIÓN ---
     function actualizar() {
       if (!enJuego) return;
 
@@ -523,7 +680,7 @@
       raton.worldX = raton.x + camaraX;
       raton.worldY = raton.y + camaraY;
 
-      // Movimiento
+      // Movimiento Jugador
       let dx = 0, dy = 0;
       if (teclas['w'] || teclas['arrowup']) dy -= 1;
       if (teclas['s'] || teclas['arrowdown']) dy += 1;
@@ -540,21 +697,50 @@
 
       jugador.angulo = Math.atan2(raton.worldY - jugador.y, raton.worldX - jugador.x);
 
-      // Recoger armas
+      // Recoger armas del suelo
       armasSuelo.forEach((arma, i) => {
-        const dist = Math.hypot(jugador.x - arma.x, jugador.y - arma.y);
-        if (dist < jugador.radio + 15) {
+        if (Math.hypot(jugador.x - arma.x, jugador.y - arma.y) < jugador.radio + 15) {
           guardarEnInventario(arma.tipo);
           armasSuelo.splice(i, 1);
         }
       });
 
-      // Disparo jugador
+      // Recoger Corazones (❤️ Vidas Extra)
+      corazonesSuelo.forEach((corazon, i) => {
+        if (Math.hypot(jugador.x - corazon.x, jugador.y - corazon.y) < jugador.radio + corazon.radio) {
+          jugador.corazones++;
+          corazonesSuelo.splice(i, 1);
+          actualizarContadorCorazones();
+          reproducirSonido('corazon');
+        }
+      });
+
+      // Detectar si estamos cerca de un Cofre interactivo
+      elementoInteractivoCercano = null;
+      cofres.forEach(cofre => {
+        if (Math.hypot(jugador.x - cofre.x, jugador.y - cofre.y) < jugador.radio + cofre.radio + 20) {
+          elementoInteractivoCercano = { tipo: 'cofre', obj: cofre };
+        }
+      });
+
+      const promptUI = document.getElementById('prompt-interaccion');
+      if (elementoInteractivoCercano) {
+        promptUI.innerText = "Presiona [E] para abrir Cofre 📦";
+        promptUI.style.display = 'block';
+      } else {
+        promptUI.style.display = 'none';
+      }
+
+      // Disparo o Despliegue de Búnker del Jugador
       const armaEquipada = jugador.inventario[jugador.indexArmaEquipada];
       if (raton.presionado && armaEquipada) {
         const ahora = Date.now();
         if (ahora - ultimoDisparoJugador >= armaEquipada.cadencia) {
-          disparar(jugador.x, jugador.y, jugador.angulo, armaEquipada, true);
+          if (armaEquipada.esBunker) {
+            construirBunker(raton.worldX, raton.worldY);
+          } else {
+            disparar(jugador.x, jugador.y, jugador.angulo, armaEquipada, true);
+          }
           ultimoDisparoJugador = ahora;
         }
       }
@@ -573,17 +759,15 @@
           bots.forEach((bot, botIndex) => {
             if (Math.hypot(p.x - bot.x, p.y - bot.y) < bot.radio) {
               bot.vida -= p.dano;
-              reproducirSonidoHit(true);
+              reproducirSonido('hit_pos');
               proyectiles.splice(index, 1);
 
               if (bot.vida <= 0) {
-                // MATAR ENEMIGO (Sin respawn) + GANAR VIDA
                 bots.splice(botIndex, 1);
                 jugador.vida = Math.min(jugador.maxVida, jugador.vida + 25);
                 actualizarBarraVida();
                 actualizarContadorEnemigos();
 
-                // COMPROBAR VICTORIA
                 if (bots.length === 0) {
                   finalizarJuego(true);
                 }
@@ -593,7 +777,7 @@
         } else {
           if (Math.hypot(p.x - jugador.x, p.y - jugador.y) < jugador.radio) {
             jugador.vida -= p.dano;
-            reproducirSonidoHit(false);
+            reproducirSonido('hit_neg');
             proyectiles.splice(index, 1);
             actualizarBarraVida();
 
@@ -604,12 +788,12 @@
         }
       });
 
-      // Lógica de bots
+      // Lógica Inteligente de Bots
       bots.forEach(bot => {
         const distJugador = Math.hypot(jugador.x - bot.x, jugador.y - bot.y);
         const anguloAJugador = Math.atan2(jugador.y - bot.y, jugador.x - bot.x);
 
-        if (distJugador < 600) {
+        if (distJugador < 800) {
           let bX = bot.x + Math.cos(anguloAJugador) * bot.velocidad;
           let bY = bot.y + Math.sin(anguloAJugador) * bot.velocidad;
 
@@ -661,27 +845,55 @@
       ctx.save();
       ctx.translate(-camaraX, -camaraY);
 
-      // Fondo Azul con Rejilla
+      // Fondo Fondo Azul con Rejilla de Cuadrados
       ctx.fillStyle = '#0b132b';
       ctx.fillRect(0, 0, ANCHO_MAPA, ALTO_MAPA);
       ctx.strokeStyle = '#1c2541';
       ctx.lineWidth = 2;
-      for (let x = 0; x < ANCHO_MAPA; x += 60) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ALTO_MAPA); ctx.stroke();
+
+      const startGridX = Math.max(0, Math.floor(camaraX / TAM_CUADRADO) * TAM_CUADRADO);
+      const endGridX = Math.min(ANCHO_MAPA, camaraX + canvas.width + TAM_CUADRADO);
+      const startGridY = Math.max(0, Math.floor(camaraY / TAM_CUADRADO) * TAM_CUADRADO);
+      const endGridY = Math.min(ALTO_MAPA, camaraY + canvas.height + TAM_CUADRADO);
+
+      for (let x = startGridX; x < endGridX; x += TAM_CUADRADO) {
+        ctx.beginPath(); ctx.moveTo(x, startGridY); ctx.lineTo(x, endGridY); ctx.stroke();
       }
-      for (let y = 0; y < ALTO_MAPA; y += 60) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ANCHO_MAPA, y); ctx.stroke();
+      for (let y = startGridY; y < endGridY; y += TAM_CUADRADO) {
+        ctx.beginPath(); ctx.moveTo(startGridX, y); ctx.lineTo(endGridX, y); ctx.stroke();
       }
 
-      // Armas en suelo
-      armasSuelo.forEach(arma => {
-        ctx.fillStyle = arma.tipo.color;
-        ctx.beginPath();
-        ctx.arc(arma.x, arma.y, 6, 0, Math.PI * 2);
-        ctx.fill();
+      // Renderizar Cofres (📦)
+      ctx.font = '32px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      cofres.forEach(cofre => {
+        ctx.fillText('📦', cofre.x, cofre.y);
       });
 
-      // Muros
+      // Renderizar Puertas Pequeñas (🚪)
+      puertasPequenas.forEach(puerta => {
+        ctx.fillText('🚪', puerta.x, puerta.y);
+      });
+
+      // Renderizar Corazones (❤️ Vidas Extra)
+      corazonesSuelo.forEach(corazon => {
+        ctx.fillText('❤️', corazon.x, corazon.y);
+      });
+
+      // Renderizar Armas en Suelo
+      armasSuelo.forEach(arma => {
+        if (arma.tipo.esBunker) {
+          ctx.fillText('🚪', arma.x, arma.y);
+        } else {
+          ctx.fillStyle = arma.tipo.color;
+          ctx.beginPath();
+          ctx.arc(arma.x, arma.y, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // Renderizar Muros de Cobertura / Búnker
       ctx.fillStyle = '#3a506b';
       ctx.strokeStyle = '#5bc0be';
       ctx.lineWidth = 3;
@@ -690,7 +902,7 @@
         ctx.strokeRect(m.x, m.y, m.ancho, m.alto);
       });
 
-      // Proyectiles
+      // Renderizar Proyectiles
       proyectiles.forEach(p => {
         ctx.fillStyle = p.color;
         ctx.beginPath();
@@ -698,7 +910,7 @@
         ctx.fill();
       });
 
-      // Bots
+      // Renderizar Bots
       bots.forEach(bot => {
         ctx.fillStyle = '#e74c3c';
         ctx.beginPath();
@@ -706,7 +918,7 @@
         ctx.fill();
       });
 
-      // Jugador
+      // Renderizar Jugador
       ctx.save();
       ctx.translate(jugador.x, jugador.y);
       ctx.rotate(jugador.angulo);
@@ -719,42 +931,6 @@
       ctx.restore();
 
       ctx.restore();
-
-      // DIBUJAR MINIMAPA ARRIBA A LA DERECHA
-      dibujarMinimapa();
-    }
-
-    function dibujarMinimapa() {
-      const tam = 140;
-      const margin = 15;
-      const x = canvas.width - tam - margin;
-      const y = margin;
-
-      ctx.fillStyle = 'rgba(11, 19, 43, 0.85)';
-      ctx.fillRect(x, y, tam, tam);
-      ctx.strokeStyle = '#5bc0be';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x, y, tam, tam);
-
-      const esc = tam / ANCHO_MAPA;
-
-      // Muros en minimapa
-      ctx.fillStyle = '#3a506b';
-      muros.forEach(m => ctx.fillRect(x + m.x * esc, y + m.y * esc, m.ancho * esc, m.alto * esc));
-
-      // Jugador (Verde)
-      ctx.fillStyle = '#2ecc71';
-      ctx.beginPath();
-      ctx.arc(x + jugador.x * esc, y + jugador.y * esc, 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Bots restantes (Rojo)
-      ctx.fillStyle = '#e74c3c';
-      bots.forEach(b => {
-        ctx.beginPath();
-        ctx.arc(x + b.x * esc, y + b.y * esc, 3, 0, Math.PI * 2);
-        ctx.fill();
-      });
     }
 
     function bucle() {
@@ -763,7 +939,7 @@
       requestAnimationFrame(bucle);
     }
 
-    // --- FLUJO ---
+    // --- FLUJO DE JUEGO ---
     function iniciarJuego() {
       dificultadBot = parseInt(document.getElementById('dificultad').value);
       modoActual = document.getElementById('modo-juego').value;
@@ -774,12 +950,18 @@
 
       generarMuros();
       generarArmas();
+      generarCofres();
+      generarCorazones();
       generarBots();
 
+      jugador.x = 5000;
+      jugador.y = 5000;
+      jugador.corazones = 0;
       jugador.inventario = [LAS_7_ARMAS[0], null, null, null, null, null, null];
       jugador.indexArmaEquipada = 0;
       jugador.vida = 100;
       actualizarBarraVida();
+      actualizarContadorCorazones();
       actualizarUIInventario();
 
       enJuego = true;
@@ -789,32 +971,62 @@
       enJuego = false;
       const pantalla = document.getElementById('pantalla-game-over');
       const titulo = document.getElementById('titulo-fin');
-      const btnReintentar = document.getElementById('btn-reintentar');
+      const subtitulo = document.getElementById('subtitulo-fin');
+      const btnRevivir = document.getElementById('btn-revivir-corazon');
+      const btnReiniciar = document.getElementById('btn-reintentar');
 
       if (victoria) {
         titulo.innerText = "¡HAS GANADO!";
         titulo.style.color = "#2ecc71";
-        btnReintentar.innerText = "JUGAR DE NUEVO";
+        subtitulo.innerText = "Has eliminado a todos los enemigos de la arena.";
+        btnRevivir.style.display = 'none';
+        btnReiniciar.innerText = "JUGAR DE NUEVO";
       } else {
         titulo.innerText = "GAME OVER";
         titulo.style.color = "#e74c3c";
-        btnReintentar.innerText = "REINTENTAR";
+        
+        if (jugador.corazones > 0) {
+          subtitulo.innerText = `¡Tienes ${jugador.corazones} Vida(s) Extra! ¿Quieres revivir?`;
+          btnRevivir.style.display = 'block';
+        } else {
+          subtitulo.innerText = "No te quedan corazones ni vida.";
+          btnRevivir.style.display = 'none';
+        }
+
+        btnReiniciar.innerText = "REINICIAR PARTIDA";
       }
 
       pantalla.style.display = 'flex';
       document.getElementById('inventario-armas').style.display = 'none';
     }
 
-    function revivir() {
+    function revivirConCorazon() {
+      if (jugador.corazones > 0) {
+        jugador.corazones--;
+        jugador.vida = 100;
+        actualizarBarraVida();
+        actualizarContadorCorazones();
+
+        document.getElementById('pantalla-game-over').style.display = 'none';
+        document.getElementById('inventario-armas').style.display = 'flex';
+        enJuego = true;
+      }
+    }
+
+    function reiniciarPartida() {
       document.getElementById('pantalla-game-over').style.display = 'none';
       document.getElementById('inventario-armas').style.display = 'flex';
       
-      jugador.x = Math.random() * (ANCHO_MAPA - 200) + 100;
-      jugador.y = Math.random() * (ANCHO_MAPA - 200) + 100;
+      jugador.x = Math.random() * (ANCHO_MAPA - 1000) + 500;
+      jugador.y = Math.random() * (ANCHO_MAPA - 1000) + 500;
       jugador.vida = 100;
+      jugador.corazones = 0;
       
+      generarCofres();
+      generarCorazones();
       generarBots();
       actualizarBarraVida();
+      actualizarContadorCorazones();
       enJuego = true;
     }
 
