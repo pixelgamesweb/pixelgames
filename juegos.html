@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIXEL GAMES</title>
+  <title>PIXEL GAMES - Menú de Juegos</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     
     body {
       background: radial-gradient(circle at center, #1a1f35 0%, #080b12 100%);
@@ -16,7 +16,6 @@
       flex-direction: column;
       align-items: center;
       padding: 40px 0;
-      user-select: none;
     }
 
     header {
@@ -37,6 +36,17 @@
       font-size: 14px;
       letter-spacing: 2px;
       font-weight: bold;
+    }
+
+    .user-tag {
+      margin-top: 10px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid #00e5ff;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #00e5ff;
+      display: inline-block;
     }
 
     .grid {
@@ -90,6 +100,8 @@
       font-weight: 800;
       box-shadow: 0 5px 0 #0844a0, 0 8px 18px rgba(0,100,255,.25);
       transition: transform 0.1s;
+      cursor: pointer;
+      border: none;
     }
 
     .play:hover {
@@ -122,20 +134,81 @@
       background: rgba(0,0,0,.2);
     }
 
+    /* MODAL DE SELECCIÓN DE PARTIDA */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(8, 11, 18, 0.9);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-card {
+      background: #0f172a;
+      border: 2px solid #00e5ff;
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+    }
+
+    .modal-card h2 {
+      color: #00e5ff;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-continuar {
+      background: #2ecc71;
+      color: #080b12;
+    }
+    .btn-continuar:hover { background: #58d68d; }
+
+    .btn-nueva {
+      background: #e67e22;
+      color: #ffffff;
+    }
+    .btn-nueva:hover { background: #eb984e; }
+
+    .btn-cancelar {
+      background: rgba(255,255,255,0.1);
+      color: #8191aa;
+      margin-top: 15px;
+    }
+
+    .alerta-error {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+      font-weight: bold;
+    }
+
     @media(max-width:1000px) {
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media(max-width:560px) {
-      .grid {
-        grid-template-columns: 1fr;
-        width: 92%;
-      }
-      .card {
-        min-height: 210px;
-      }
+      .grid { grid-template-columns: 1fr; width: 92%; }
+      .card { min-height: 210px; }
     }
   </style>
 </head>
@@ -145,32 +218,52 @@
   <header>
     <h1>PIXEL GAMES</h1>
     <div class="subtitle">ELIGE TU JUEGO</div>
+    <div class="user-tag" id="user-display">Usuario: Invitado</div>
   </header>
 
   <main class="grid" id="games"></main>
 
+  <!-- MODAL DE ELECCIÓN DE MODO DE JUEGO -->
+  <div class="modal-overlay" id="modal-partida">
+    <div class="modal-card">
+      <h2 id="modal-titulo-juego">NOMBRE JUEGO</h2>
+      <p style="color: #8191aa; font-size: 14px; margin-bottom: 20px;">¿Cómo deseas empezar tu partida?</p>
+
+      <button class="modal-btn btn-continuar" onclick="continuarPartida()">▶️ CONTINUAR PARTIDA</button>
+      <button class="modal-btn btn-nueva" onclick="nuevaPartida()">➕ NUEVA PARTIDA</button>
+      
+      <div class="alerta-error" id="alerta-sin-partida">❌ No tienes ninguna partida anterior guardada.</div>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+
   <script>
+    const usuarioActivo = localStorage.getItem('pixelgames_session') || 'Invitado';
+    document.getElementById('user-display').innerText = `Usuario: ${usuarioActivo}`;
+
     const games = [
-      { id: 1, name: "money up", icon: "🪙", file: "juego1.html" },
-      { id: 2, name: "batle", icon: "🌲", file: "juego2.html" },
-      { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html" },
-      { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html" },
-      { id: 5, name: "ultra Laberintos", icon: "🧩", file: "juego5.html" },
-      { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html" },
-      { id: 7, name: "4 en raya", icon: "🔴", file: "juego7.html" },
-      { id: 8, name: "serpiente de colores", icon: "💎", file: "juego8.html" },
-      { id: 9, name: "money up 2", icon: "🍎", file: "juego9.html" },
-      { id: 10, name: "Pizarra magnética", icon: "⚽", file: "juego10.html" },
-      { id: 11, name: "Ajedrez en 3D", icon: "♟️", file: "juego11.html" },
-      { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html" },
-      { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html" },
-      { id: 14, name: "Valorar Web", icon: "⭐", file: "juego14.html" },
-      { id: 15, name: "boss slayer D2", icon: "⚡", file: "juego15.html" },
-      { id: 16, name: "Proyecto X", icon: "❓", file: "juego16.html" },
-      { id: 17, name: "puzle dezlizante", icon: "🧩", file: "juego17.html" }
+      { id: 1, name: "money up", icon: "🪙", file: "juego1.html", permiteGuardar: false },
+      { id: 2, name: "batle", icon: "🌲", file: "juego2.html", permiteGuardar: true },
+      { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html", permiteGuardar: true },
+      { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html", permiteGuardar: true },
+      { id: 5, name: "ultra Laberintos", icon: "🧩", file: "juego5.html", permiteGuardar: true },
+      { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html", permiteGuardar: true },
+      { id: 7, name: "4 en raya", icon: "🔴", file: "juego7.html", permiteGuardar: true },
+      { id: 8, name: "serpiente de colores", icon: "💎", file: "juego8.html", permiteGuardar: true },
+      { id: 9, name: "money up 2", icon: "🍎", file: "juego9.html", permiteGuardar: false },
+      { id: 10, name: "Pizarra magnética", icon: "⚽", file: "juego10.html", permiteGuardar: true },
+      { id: 11, name: "Ajedrez en 3D", icon: "♟️", file: "juego11.html", permiteGuardar: true },
+      { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html", permiteGuardar: true },
+      { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html", permiteGuardar: false },
+      { id: 14, name: "Valorar Web", icon: "⭐", file: "juego14.html", permiteGuardar: false },
+      { id: 15, name: "boss slayer D2", icon: "⚡", file: "juego15.html", permiteGuardar: true },
+      { id: 16, name: "Proyecto X", icon: "❓", file: "juego16.html", permiteGuardar: true },
+      { id: 17, name: "puzle dezlizante", icon: "🧩", file: "juego17.html", permiteGuardar: true }
     ];
 
     const container = document.getElementById("games");
+    let juegoSeleccionado = null;
 
     for (let i = 1; i <= 1000; i++) {
       const gameData = games.find(g => g.id === i);
@@ -181,7 +274,7 @@
         card.innerHTML = `
           <div class="icon">${gameData.icon}</div>
           <div class="name">${gameData.name}</div>
-          <a class="play" href="${gameData.file}">JUGAR</a>
+          <button class="play" onclick="clickJuego(${gameData.id})">JUGAR</button>
         `;
       } else {
         card.className = "card locked";
@@ -193,6 +286,61 @@
       }
 
       container.appendChild(card);
+    }
+
+    function clickJuego(id) {
+      const g = games.find(item => item.id === id);
+      if (!g) return;
+
+      juegoSeleccionado = g;
+
+      // Si el juego NO permite guardar (ej: Money Up), ir directo
+      if (!g.permiteGuardar) {
+        window.location.href = g.file;
+        return;
+      }
+
+      // Si permite guardar, mostrar modal con opciones
+      document.getElementById('modal-titulo-juego').innerText = g.name.toUpperCase();
+      document.getElementById('alerta-sin-partida').style.display = 'none';
+      document.getElementById('modal-partida').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-partida').style.display = 'none';
+      juegoSeleccionado = null;
+    }
+
+    function continuarPartida() {
+      if (!juegoSeleccionado) return;
+
+      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const perfilUser = usuarios[usuarioActivo];
+
+      // Verificar si existen datos guardados de este juego
+      if (perfilUser && perfilUser.progreso && perfilUser.progreso[juegoSeleccionado.file]) {
+        // Guardar indicador de carga de estado
+        localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'load');
+        window.location.href = juegoSeleccionado.file;
+      } else {
+        document.getElementById('alerta-sin-partida').style.display = 'block';
+      }
+    }
+
+    function nuevaPartida() {
+      if (!juegoSeleccionado) return;
+
+      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+      // Borrar partida anterior guardada si existía
+      if (usuarios[usuarioActivo] && usuarios[usuarioActivo].progreso) {
+        delete usuarios[usuarioActivo].progreso[juegoSeleccionado.file];
+        localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
+      }
+
+      // Marcar para iniciar limpia
+      localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'new');
+      window.location.href = juegoSeleccionado.file;
     }
   </script>
 
