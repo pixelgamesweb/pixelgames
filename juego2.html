@@ -58,7 +58,7 @@
     .btn-jugar:hover { background-color: #6fffe9; transform: scale(1.02); }
     .btn-info { background-color: #3a506b; color: #ffffff; margin-top: 10px; }
 
-    /* HUD / INTERFAZ EN JUEGO */
+    /* HUD EN JUEGO */
     #hud {
       position: absolute;
       top: 10px;
@@ -66,6 +66,22 @@
       z-index: 5;
       display: none;
     }
+
+    .btn-guardar {
+      background: #2ecc71;
+      color: #0b132b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 10px;
+      display: inline-block;
+      width: auto;
+      box-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+    }
+    .btn-guardar:hover { background: #58d68d; }
 
     .barra-contenedor {
       width: 220px;
@@ -89,7 +105,7 @@
 
     #info-enemigos { background: rgba(231, 76, 60, 0.4); border: 1px solid #e74c3c; font-weight: bold; }
 
-    /* PROMPT DE INTERACCIÓN */
+    /* PROMPT INTERACCIÓN */
     #prompt-interaccion {
       position: absolute;
       top: 70%;
@@ -105,7 +121,7 @@
       z-index: 6;
     }
 
-    /* INVENTARIO DE 7 CUADRADOS ABAJO */
+    /* INVENTARIO ARMAS */
     #inventario-armas {
       position: absolute;
       bottom: 20px;
@@ -145,10 +161,9 @@
     .cuadrado-arma .numero { position: absolute; top: 2px; left: 4px; font-size: 10px; color: #5bc0be; font-weight: bold; }
     .cuadrado-arma .icono { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 3px; }
 
-    /* CANVAS DEL JUEGO */
     canvas { display: block; background-color: #0b132b; }
 
-    /* PANTALLA GAME OVER / VICTORIA */
+    /* GAME OVER / VICTORIA */
     #pantalla-game-over {
       display: none;
       position: fixed;
@@ -170,7 +185,6 @@
     .btn-reiniciar { background-color: #e67e22 !important; color: white !important; }
     .btn-web { background-color: #3498db !important; color: white !important; }
 
-    /* MODAL INFO */
     #modal-info {
       display: none;
       position: fixed;
@@ -212,7 +226,8 @@
     <div class="opcion-menu">
       <label for="modo-juego">Modo de Juego:</label>
       <select id="modo-juego">
-        <option value="ia">25 Jugadores (Tú vs 24 Bots con Infighting)</option>
+        <option value="ia" selected>25 Jugadores (Tú vs 24 Bots)</option>
+        <option value="online">Modo Online (Servidor JS WebSockets)</option>
       </select>
     </div>
     <button class="btn-jugar" onclick="iniciarJuego()">¡JUGAR!</button>
@@ -221,18 +236,19 @@
 
   <!-- HUD EN JUEGO -->
   <div id="hud">
+    <button class="btn-guardar" id="btn-guardar-partida" onclick="guardarPartida()">💾 GUARDAR</button>
     <div class="barra-contenedor">
       <div id="barra-vida"></div>
     </div>
     <div id="info-arma">Arma: Pistola | Daño: 15</div>
     <div id="info-corazones">Vidas Extra: ❤️ x0</div>
     <div id="info-bunkers">Búnkeres Guardados: 🚪 x0 (Pulsa F)</div>
-    <div id="info-enemigos">Supervivientes: 25/25 (24 bots)</div>
+    <div id="info-enemigos">Supervivientes: 25/25</div>
   </div>
 
   <div id="prompt-interaccion">Presiona [E] o [F] para interactuar</div>
 
-  <!-- INVENTARIO DE 7 CUADRADOS DE ARMAS -->
+  <!-- INVENTARIO -->
   <div id="inventario-armas">
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(0)"><span class="numero">1</span><div class="icono" id="ico-0"></div><span id="txt-0">Vacío</span></div>
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(1)"><span class="numero">2</span><div class="icono" id="ico-1"></div><span id="txt-1">Vacío</span></div>
@@ -243,27 +259,25 @@
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(6)"><span class="numero">7</span><div class="icono" id="ico-6"></div><span id="txt-6">Vacío</span></div>
   </div>
 
-  <!-- PANTALLA GAME OVER / VICTORIA -->
+  <!-- PANTALLA GAME OVER -->
   <div id="pantalla-game-over">
     <h1 id="titulo-fin">GAME OVER</h1>
     <p id="subtitulo-fin">Has sido eliminado.</p>
     <button class="btn-opcion btn-revivir" id="btn-revivir" onclick="usarCorazonRevivir()">REVIVIR CON ❤️</button>
     <button class="btn-opcion btn-reiniciar" id="btn-reiniciar" onclick="reiniciarPartida()">REINICIAR PARTIDA</button>
-    <button class="btn-opcion btn-web" onclick="volverAWeb()">Volver a la Web</button>
+    <button class="btn-opcion btn-web" onclick="volverAMenu()">Volver a los Juegos</button>
   </div>
 
-  <!-- MODAL DE INFORMACIÓN -->
+  <!-- MODAL DE INFO -->
   <div id="modal-info">
     <div class="contenido-modal">
       <h2>Información del Juego</h2>
       <ul>
-        <li><b>Mapa Gigante & Minimapa:</b> Consulta el minimapa arriba a la derecha.</li>
-        <li><b>25 Jugadores:</b> Tú contra 24 Bots que también luchan entre ellos.</li>
-        <li><b>Cofres (📦):</b> Te dan un búnker portátil y una vida extra.</li>
-        <li><b>Tecla [F] Búnker:</b> Pulsa <b>F</b> para colocar o recoger tu búnker (🚪).</li>
-        <li><b>Tecla [E] Entrar/Salir:</b> Entra o sal del búnker colocado para protegerte.</li>
-        <li><b>Corazones (❤️):</b> Recógelos para revivir al morir.</li>
-        <li><b>Controles:</b> W,A,S,D para moverte, 1-7 para cambiar de arma.</li>
+        <li><b>Botón Guardar:</b> Guarda tu estado arriba a la izquierda.</li>
+        <li><b>Modo Online:</b> Juega en tiempo real conectándote a `pixel-ai-server.js`.</li>
+        <li><b>Mapa Gigante & Minimapa:</b> Revisa la esquina superior derecha.</li>
+        <li><b>Búnker [F]:</b> Coloca o recoge refugios portátiles.</li>
+        <li><b>Tecla [E]:</b> Entra o sal del búnker.</li>
       </ul>
       <button onclick="toggleInfo(false)">Cerrar</button>
     </div>
@@ -315,7 +329,10 @@
     ];
 
     let enJuego = false;
+    let modoJuego = 'ia';
     let dificultadBot = 2;
+    let socketOnline = null;
+    let jugadoresOnline = {};
 
     const raton = { x: 0, y: 0, worldX: 0, worldY: 0, presionado: false };
     const teclas = {};
@@ -346,6 +363,97 @@
 
     let elementoCercano = null;
 
+    // --- GUARDAR Y CARGAR PROGRESO ---
+    function guardarPartida() {
+      const usuarioActivo = localStorage.getItem('pixelgames_session') || 'Invitado';
+      const btn = document.getElementById('btn-guardar-partida');
+      
+      btn.innerText = "Pensando...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+        if (!usuarios[usuarioActivo]) {
+          usuarios[usuarioActivo] = { password: '', progreso: {} };
+        }
+        if (!usuarios[usuarioActivo].progreso) {
+          usuarios[usuarioActivo].progreso = {};
+        }
+
+        usuarios[usuarioActivo].progreso['juego2.html'] = {
+          x: jugador.x,
+          y: jugador.y,
+          vida: jugador.vida,
+          corazones: jugador.corazones,
+          bunkers: jugador.bunkersGuardados,
+          inventario: jugador.inventario,
+          indexArma: jugador.indexArmaEquipada
+        };
+
+        localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
+
+        btn.innerText = "¡Guardado!";
+        setTimeout(() => {
+          btn.innerText = "💾 GUARDAR";
+          btn.disabled = false;
+        }, 1500);
+      }, 500);
+    }
+
+    function cargarPartidaGuardada() {
+      const usuarioActivo = localStorage.getItem('pixelgames_session') || 'Invitado';
+      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+      if (usuarios[usuarioActivo] && usuarios[usuarioActivo].progreso && usuarios[usuarioActivo].progreso['juego2.html']) {
+        const p = usuarios[usuarioActivo].progreso['juego2.html'];
+        jugador.x = p.x || 5000;
+        jugador.y = p.y || 5000;
+        jugador.vida = p.vida || 100;
+        jugador.corazones = p.corazones || 0;
+        jugador.bunkersGuardados = p.bunkers || 0;
+        jugador.inventario = p.inventario || [LAS_7_ARMAS[0], null, null, null, null, null, null];
+        jugador.indexArmaEquipada = p.indexArma || 0;
+        return true;
+      }
+      return false;
+    }
+
+    // --- CONEXIÓN ONLINE WEBSOCKETS ---
+    function conectarServidorOnline() {
+      try {
+        socketOnline = new WebSocket('ws://' + window.location.hostname + ':8080');
+
+        socketOnline.onopen = () => {
+          console.log("Conectado al servidor WebSocket de Battle Arena 2D.");
+        };
+
+        socketOnline.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          if (data.tipo === 'estado_jugadores') {
+            jugadoresOnline = data.jugadores;
+          } else if (data.tipo === 'disparo_remoto') {
+            proyectiles.push(data.proyectil);
+          }
+        };
+      } catch (e) {
+        console.warn("Servidor JS offline. Jugando en modo local.");
+      }
+    }
+
+    function transmitirPosicionOnline() {
+      if (socketOnline && socketOnline.readyState === WebSocket.OPEN) {
+        socketOnline.send(JSON.stringify({
+          tipo: 'posicion',
+          id: jugador.id,
+          x: jugador.x,
+          y: jugador.y,
+          angulo: jugador.angulo,
+          vida: jugador.vida
+        }));
+      }
+    }
+
+    // --- INICIALIZACIÓN DE ENTIDADES ---
     function generarMuros() {
       muros = [];
       for (let i = 0; i < 220; i++) {
@@ -361,33 +469,21 @@
     function generarArmas() {
       armasSuelo = [];
       for (let i = 0; i < 180; i++) {
-        const tipo = LAS_7_ARMAS[i % 7];
         armasSuelo.push({
           x: Math.random() * (ANCHO_MAPA - 200) + 100,
           y: Math.random() * (ALTO_MAPA - 200) + 100,
-          tipo: tipo
+          tipo: LAS_7_ARMAS[i % 7]
         });
       }
     }
 
     function generarCofresYCorazones() {
-      cofres = [];
-      puertasBunker = [];
-      corazonesSuelo = [];
-
+      cofres = []; puertasBunker = []; corazonesSuelo = [];
       for (let i = 0; i < 3; i++) {
-        cofres.push({
-          id: i,
-          x: 2000 + i * 3000 + (Math.random() * 500),
-          y: 2000 + Math.random() * 5000
-        });
+        cofres.push({ id: i, x: 2000 + i * 3000 + (Math.random() * 500), y: 2000 + Math.random() * 5000 });
       }
-
       for (let i = 0; i < 25; i++) {
-        corazonesSuelo.push({
-          x: Math.random() * (ANCHO_MAPA - 200) + 100,
-          y: Math.random() * (ALTO_MAPA - 200) + 100
-        });
+        corazonesSuelo.push({ x: Math.random() * (ANCHO_MAPA - 200) + 100, y: Math.random() * (ALTO_MAPA - 200) + 100 });
       }
     }
 
@@ -398,13 +494,10 @@
           id: i,
           x: Math.random() * (ANCHO_MAPA - 400) + 200,
           y: Math.random() * (ALTO_MAPA - 400) + 200,
-          radio: 18,
-          vida: 100,
-          maxVida: 100,
+          radio: 18, vida: 100, maxVida: 100,
           velocidad: 2.5 + dificultadBot * 0.4,
           arma: LAS_7_ARMAS[Math.floor(Math.random() * LAS_7_ARMAS.length)],
-          ultimoDisparo: 0,
-          objetivo: null
+          ultimoDisparo: 0
         });
       }
       actualizarContadorJugadores();
@@ -412,91 +505,53 @@
 
     function actualizarContadorJugadores() {
       const vivos = bots.length + (jugador.vida > 0 ? 1 : 0);
-      document.getElementById('info-enemigos').innerText = `Supervivientes: ${vivos}/25 (${bots.length} bots)`;
+      document.getElementById('info-enemigos').innerText = `Supervivientes: ${vivos}/25`;
     }
 
+    // --- TECLAS Y EVENTOS ---
     window.addEventListener('keydown', e => {
       const key = e.key.toLowerCase();
       teclas[key] = true;
-
-      if (key >= '1' && key <= '7') {
-        seleccionarArmaPorIndex(parseInt(key) - 1);
-      }
-
+      if (key >= '1' && key <= '7') seleccionarArmaPorIndex(parseInt(key) - 1);
       if (key === 'e') ejecutarInteraccionE();
       if (key === 'f') ejecutarAccionBunkerF();
     });
 
     window.addEventListener('keyup', e => teclas[e.key.toLowerCase()] = false);
-    window.addEventListener('mousemove', e => {
-      raton.x = e.clientX;
-      raton.y = e.clientY;
-    });
-    window.addEventListener('mousedown', () => {
-      raton.presionado = true;
-      ejecutarInteraccionE();
-    });
+    window.addEventListener('mousemove', e => { raton.x = e.clientX; raton.y = e.clientY; });
+    window.addEventListener('mousedown', () => { raton.presionado = true; ejecutarInteraccionE(); });
     window.addEventListener('mouseup', () => raton.presionado = false);
 
     let ultimoDisparoJugador = 0;
 
-    // INTERACCIÓN CON 'E' (ABRIR COFRE / ENTRAR O SALIR DEL BÚNKER)
     function ejecutarInteraccionE() {
       if (!enJuego) return;
-
       if (elementoCercano && elementoCercano.tipo === 'cofre') {
-        const cofre = elementoCercano.obj;
-        
-        // El cofre le da al jugador 1 Búnker portátil para su inventario
-        jugador.bunkersGuardados++;
-        jugador.corazones++;
-        actualizarUICorazones();
-        actualizarUIBunkers();
-
-        cofres = cofres.filter(c => c.id !== cofre.id);
+        jugador.bunkersGuardados++; jugador.corazones++;
+        actualizarUICorazones(); actualizarUIBunkers();
+        cofres = cofres.filter(c => c.id !== elementoCercano.obj.id);
         reproducirSonidoHit(true);
-
       } else if (elementoCercano && elementoCercano.tipo === 'puerta') {
         const puerta = elementoCercano.obj;
-
-        if (!jugador.enBunker) {
-          jugador.enBunker = true;
-          reproducirSonidoHit(true);
-        } else {
-          jugador.enBunker = false;
-          jugador.x = puerta.x + 35;
-          jugador.y = puerta.y + 35;
-          reproducirSonidoHit(true);
-        }
+        jugador.enBunker = !jugador.enBunker;
+        if (!jugador.enBunker) { jugador.x = puerta.x + 35; jugador.y = puerta.y + 35; }
+        reproducirSonidoHit(true);
       }
     }
 
-    // ACCIÓN CON 'F' (PONER / RECOGER BÚNKER)
     function ejecutarAccionBunkerF() {
       if (!enJuego) return;
-
-      // Si está cerca de una puerta de búnker en el suelo -> RECOGER BÚNKER
       if (elementoCercano && elementoCercano.tipo === 'puerta') {
         const puerta = elementoCercano.obj;
-        
-        if (jugador.enBunker) {
-          jugador.enBunker = false;
-        }
-
+        if (jugador.enBunker) jugador.enBunker = false;
         puertasBunker = puertasBunker.filter(p => p.id !== puerta.id);
         jugador.bunkersGuardados++;
         actualizarUIBunkers();
         reproducirSonidoHit(true);
         return;
       }
-
-      // Si tiene búnkeres guardados y no hay puerta al lado -> PONER BÚNKER
       if (jugador.bunkersGuardados > 0 && !jugador.enBunker) {
-        puertasBunker.push({
-          id: Date.now() + Math.random(),
-          x: jugador.x,
-          y: jugador.y
-        });
+        puertasBunker.push({ id: Date.now() + Math.random(), x: jugador.x, y: jugador.y });
         jugador.bunkersGuardados--;
         actualizarUIBunkers();
         reproducirSonidoHit(true);
@@ -505,11 +560,7 @@
 
     function guardarEnInventario(arma) {
       const yaExiste = jugador.inventario.findIndex(a => a && a.id === arma.id);
-      if (yaExiste !== -1) {
-        seleccionarArmaPorIndex(yaExiste);
-        return;
-      }
-
+      if (yaExiste !== -1) { seleccionarArmaPorIndex(yaExiste); return; }
       const huecoLibre = jugador.inventario.findIndex(a => a === null);
       if (huecoLibre !== -1) {
         jugador.inventario[huecoLibre] = arma;
@@ -529,41 +580,23 @@
 
     function actualizarUIInventario() {
       const armaActual = jugador.inventario[jugador.indexArmaEquipada];
-
       for (let i = 0; i < 7; i++) {
         const cuadrado = document.getElementsByClassName('cuadrado-arma')[i];
         const txt = document.getElementById(`txt-${i}`);
         const ico = document.getElementById(`ico-${i}`);
         const a = jugador.inventario[i];
-
-        if (a) {
-          txt.innerText = a.nombre;
-          ico.style.backgroundColor = a.color;
-        } else {
-          txt.innerText = "Vacío";
-          ico.style.backgroundColor = "transparent";
-        }
-
-        if (i === jugador.indexArmaEquipada) {
-          cuadrado.classList.add('activo');
-        } else {
-          cuadrado.classList.remove('activo');
-        }
+        if (a) { txt.innerText = a.nombre; ico.style.backgroundColor = a.color; }
+        else { txt.innerText = "Vacío"; ico.style.backgroundColor = "transparent"; }
+        if (i === jugador.indexArmaEquipada) cuadrado.classList.add('activo');
+        else cuadrado.classList.remove('activo');
       }
-
-      if (armaActual) {
-        document.getElementById('info-arma').innerText = `Arma: ${armaActual.nombre} | Daño: ${armaActual.dano}`;
-      }
+      if (armaActual) document.getElementById('info-arma').innerText = `Arma: ${armaActual.nombre} | Daño: ${armaActual.dano}`;
     }
 
-    function actualizarUICorazones() {
-      document.getElementById('info-corazones').innerText = `Vidas Extra: ❤️ x${jugador.corazones}`;
-    }
+    function actualizarUICorazones() { document.getElementById('info-corazones').innerText = `Vidas Extra: ❤️ x${jugador.corazones}`; }
+    function actualizarUIBunkers() { document.getElementById('info-bunkers').innerText = `Búnkeres Guardados: 🚪 x${jugador.bunkersGuardados} (Pulsa F)`; }
 
-    function actualizarUIBunkers() {
-      document.getElementById('info-bunkers').innerText = `Búnkeres Guardados: 🚪 x${jugador.bunkersGuardados} (Pulsa F)`;
-    }
-
+    // --- BUCLE DE ACTUALIZACIÓN ---
     function actualizar() {
       if (!enJuego) return;
 
@@ -572,14 +605,12 @@
       raton.worldX = raton.x + camaraX;
       raton.worldY = raton.y + camaraY;
 
-      // Movimiento
       if (!jugador.enBunker) {
         let dx = 0, dy = 0;
         if (teclas['w'] || teclas['arrowup']) dy -= 1;
         if (teclas['s'] || teclas['arrowdown']) dy += 1;
         if (teclas['a'] || teclas['arrowleft']) dx -= 1;
         if (teclas['d'] || teclas['arrowright']) dx += 1;
-
         if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
 
         let nuevoX = jugador.x + dx * jugador.velocidad;
@@ -589,63 +620,48 @@
         if (!comprobarColisionMuro(jugador.x, nuevoY, jugador.radio)) jugador.y = Math.max(jugador.radio, Math.min(ALTO_MAPA - jugador.radio, nuevoY));
 
         jugador.angulo = Math.atan2(raton.worldY - jugador.y, raton.worldX - jugador.x);
+        
+        if (modoJuego === 'online') transmitirPosicionOnline();
       }
 
-      // Recoger armas y corazones
       if (!jugador.enBunker) {
         armasSuelo.forEach((arma, i) => {
           if (Math.hypot(jugador.x - arma.x, jugador.y - arma.y) < jugador.radio + 15) {
-            guardarEnInventario(arma.tipo);
-            armasSuelo.splice(i, 1);
+            guardarEnInventario(arma.tipo); armasSuelo.splice(i, 1);
           }
         });
 
         corazonesSuelo.forEach((c, i) => {
           if (Math.hypot(jugador.x - c.x, jugador.y - c.y) < jugador.radio + 15) {
-            jugador.corazones++;
-            actualizarUICorazones();
-            reproducirSonidoHit(true);
-            corazonesSuelo.splice(i, 1);
+            jugador.corazones++; actualizarUICorazones(); reproducirSonidoHit(true); corazonesSuelo.splice(i, 1);
           }
         });
       }
 
-      // Detectar elementos cercanos
       elementoCercano = null;
       let distMin = 65;
 
       cofres.forEach(c => {
         const d = Math.hypot(jugador.x - c.x, jugador.y - c.y);
-        if (d < distMin) {
-          distMin = d;
-          elementoCercano = { tipo: 'cofre', obj: c };
-        }
+        if (d < distMin) { distMin = d; elementoCercano = { tipo: 'cofre', obj: c }; }
       });
 
       puertasBunker.forEach(p => {
         const d = Math.hypot(jugador.x - p.x, jugador.y - p.y);
-        if (d < distMin) {
-          distMin = d;
-          elementoCercano = { tipo: 'puerta', obj: p };
-        }
+        if (d < distMin) { distMin = d; elementoCercano = { tipo: 'puerta', obj: p }; }
       });
 
       const promptUI = document.getElementById('prompt-interaccion');
       if (elementoCercano) {
         promptUI.style.display = 'block';
-        if (elementoCercano.tipo === 'cofre') {
-          promptUI.innerText = 'Presiona [E] para Abrir Cofre 📦';
-        } else if (elementoCercano.tipo === 'puerta') {
-          promptUI.innerText = jugador.enBunker ? 'Presiona [E] para Salir / [F] Recoger Búnker' : 'Presiona [E] para Entrar / [F] Recoger Búnker 🚪';
-        }
+        if (elementoCercano.tipo === 'cofre') promptUI.innerText = 'Presiona [E] para Abrir Cofre 📦';
+        else if (elementoCercano.tipo === 'puerta') promptUI.innerText = jugador.enBunker ? 'Presiona [E] Salir / [F] Recoger Búnker' : 'Presiona [E] Entrar / [F] Recoger Búnker 🚪';
       } else if (jugador.bunkersGuardados > 0 && !jugador.enBunker) {
-        promptUI.style.display = 'block';
-        promptUI.innerText = 'Presiona [F] para Colocar un Búnker 🚪';
+        promptUI.style.display = 'block'; promptUI.innerText = 'Presiona [F] para Colocar un Búnker 🚪';
       } else {
         promptUI.style.display = 'none';
       }
 
-      // Disparo jugador
       const armaEquipada = jugador.inventario[jugador.indexArmaEquipada];
       if (raton.presionado && armaEquipada && !jugador.enBunker) {
         const ahora = Date.now();
@@ -655,32 +671,20 @@
         }
       }
 
-      // Actualizar Proyectiles
       proyectiles.forEach((p, index) => {
         p.x += Math.cos(p.angulo) * p.velocidad;
         p.y += Math.sin(p.angulo) * p.velocidad;
 
-        if (comprobarColisionMuro(p.x, p.y, 3)) {
-          proyectiles.splice(index, 1);
-          return;
-        }
+        if (comprobarColisionMuro(p.x, p.y, 3)) { proyectiles.splice(index, 1); return; }
 
-        // Impacto a jugador
         if (p.origenId !== 'jugador' && !jugador.enBunker) {
           if (Math.hypot(p.x - jugador.x, p.y - jugador.y) < jugador.radio) {
-            jugador.vida -= p.dano;
-            reproducirSonidoHit(false);
-            proyectiles.splice(index, 1);
-            actualizarBarraVida();
-
-            if (jugador.vida <= 0) {
-              finalizarJuego(false);
-            }
+            jugador.vida -= p.dano; reproducirSonidoHit(false); proyectiles.splice(index, 1); actualizarBarraVida();
+            if (jugador.vida <= 0) finalizarJuego(false);
             return;
           }
         }
 
-        // Impacto a bots
         bots.forEach((bot, botIndex) => {
           if (p.origenId !== bot.id && Math.hypot(p.x - bot.x, p.y - bot.y) < bot.radio) {
             bot.vida -= p.dano;
@@ -689,49 +693,31 @@
 
             if (bot.vida <= 0) {
               bots.splice(botIndex, 1);
-              if (p.origenId === 'jugador') {
-                jugador.vida = Math.min(jugador.maxVida, jugador.vida + 25);
-                actualizarBarraVida();
-              }
+              if (p.origenId === 'jugador') { jugador.vida = Math.min(jugador.maxVida, jugador.vida + 25); actualizarBarraVida(); }
               actualizarContadorJugadores();
-
-              if (bots.length === 0) {
-                finalizarJuego(true);
-              }
+              if (bots.length === 0) finalizarJuego(true);
             }
           }
         });
       });
 
-      // LÓGICA DE BOTS CON COMBATE ENTRE ELLOS (INFIGHTING)
       bots.forEach(bot => {
-        let objetivoCercano = null;
-        let distMinima = 750;
+        let objetivoCercano = null; let distMinima = 750;
 
-        // Buscar si el objetivo más cercano es el jugador
         if (!jugador.enBunker && jugador.vida > 0) {
           const distJ = Math.hypot(jugador.x - bot.x, jugador.y - bot.y);
-          if (distJ < distMinima) {
-            distMinima = distJ;
-            objetivoCercano = jugador;
-          }
+          if (distJ < distMinima) { distMinima = distJ; objetivoCercano = jugador; }
         }
 
-        // Buscar si hay otros BOTS más cerca para atacarse entre sí
         bots.forEach(otroBot => {
           if (otroBot.id !== bot.id) {
             const distB = Math.hypot(otroBot.x - bot.x, otroBot.y - bot.y);
-            if (distB < distMinima) {
-              distMinima = distB;
-              objetivoCercano = otroBot;
-            }
+            if (distB < distMinima) { distMinima = distB; objetivoCercano = otroBot; }
           }
         });
 
-        // Moverse y disparar al objetivo seleccionado
         if (objetivoCercano) {
           const anguloAObjetivo = Math.atan2(objetivoCercano.y - bot.y, objetivoCercano.x - bot.x);
-
           let bX = bot.x + Math.cos(anguloAObjetivo) * bot.velocidad;
           let bY = bot.y + Math.sin(anguloAObjetivo) * bot.velocidad;
 
@@ -741,8 +727,7 @@
           const ahora = Date.now();
           const margenError = (4 - dificultadBot) * 0.2;
           if (ahora - bot.ultimoDisparo > bot.arma.cadencia * (1.6 / dificultadBot)) {
-            const anguloDisparo = anguloAObjetivo + (Math.random() - 0.5) * margenError;
-            disparar(bot.x, bot.y, anguloDisparo, bot.arma, bot.id);
+            disparar(bot.x, bot.y, anguloAObjetivo + (Math.random() - 0.5) * margenError, bot.arma, bot.id);
             bot.ultimoDisparo = ahora;
           }
         }
@@ -774,7 +759,6 @@
     // --- RENDERIZADO VISUAL ---
     function renderizar() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       if (!enJuego) return;
 
       const camaraX = jugador.x - canvas.width / 2;
@@ -783,190 +767,89 @@
       ctx.save();
       ctx.translate(-camaraX, -camaraY);
 
-      // FONDO
       ctx.fillStyle = '#0b132b';
       ctx.fillRect(0, 0, ANCHO_MAPA, ALTO_MAPA);
 
-      // Rejilla
       ctx.strokeStyle = '#1c2541';
       ctx.lineWidth = 2;
-      for (let x = 0; x < ANCHO_MAPA; x += 100) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ALTO_MAPA); ctx.stroke();
+      for (let x = 0; x < ANCHO_MAPA; x += 100) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ALTO_MAPA); ctx.stroke(); }
+      for (let y = 0; y < ALTO_MAPA; y += 100) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ANCHO_MAPA, y); ctx.stroke(); }
+
+      corazonesSuelo.forEach(c => { ctx.font = '20px Segoe UI Symbol'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('❤️', c.x, c.y); });
+      armasSuelo.forEach(arma => { ctx.fillStyle = arma.tipo.color; ctx.beginPath(); ctx.arc(arma.x, arma.y, 7, 0, Math.PI * 2); ctx.fill(); });
+      cofres.forEach(c => { ctx.font = '32px Segoe UI Symbol'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('📦', c.x, c.y); });
+      puertasBunker.forEach(p => { ctx.font = '32px Segoe UI Symbol'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🚪', p.x, p.y); });
+
+      ctx.fillStyle = '#3a506b'; ctx.strokeStyle = '#5bc0be'; ctx.lineWidth = 3;
+      muros.forEach(m => { ctx.fillRect(m.x, m.y, m.ancho, m.alto); ctx.strokeRect(m.x, m.y, m.ancho, m.alto); });
+
+      proyectiles.forEach(p => { ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill(); });
+      bots.forEach(bot => { ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(bot.x, bot.y, bot.radio, 0, Math.PI * 2); ctx.fill(); });
+
+      // Jugadores Online
+      if (modoJuego === 'online') {
+        Object.keys(jugadoresOnline).forEach(id => {
+          if (id !== jugador.id) {
+            const jO = jugadoresOnline[id];
+            ctx.fillStyle = '#3498db';
+            ctx.beginPath(); ctx.arc(jO.x, jO.y, 18, 0, Math.PI * 2); ctx.fill();
+          }
+        });
       }
-      for (let y = 0; y < ALTO_MAPA; y += 100) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ANCHO_MAPA, y); ctx.stroke();
-      }
 
-      // Corazones
-      corazonesSuelo.forEach(c => {
-        ctx.font = '20px Segoe UI Symbol';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('❤️', c.x, c.y);
-      });
-
-      // Armas
-      armasSuelo.forEach(arma => {
-        ctx.fillStyle = arma.tipo.color;
-        ctx.beginPath();
-        ctx.arc(arma.x, arma.y, 7, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Cofres
-      cofres.forEach(c => {
-        ctx.font = '32px Segoe UI Symbol';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('📦', c.x, c.y);
-      });
-
-      // Puertas de Búnker
-      puertasBunker.forEach(p => {
-        ctx.font = '32px Segoe UI Symbol';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('🚪', p.x, p.y);
-      });
-
-      // Muros
-      ctx.fillStyle = '#3a506b';
-      ctx.strokeStyle = '#5bc0be';
-      ctx.lineWidth = 3;
-      muros.forEach(m => {
-        ctx.fillRect(m.x, m.y, m.ancho, m.alto);
-        ctx.strokeRect(m.x, m.y, m.ancho, m.alto);
-      });
-
-      // Proyectiles
-      proyectiles.forEach(p => {
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Bots
-      bots.forEach(bot => {
-        ctx.fillStyle = '#e74c3c';
-        ctx.beginPath();
-        ctx.arc(bot.x, bot.y, bot.radio, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Jugador
       if (!jugador.enBunker) {
         ctx.save();
         ctx.translate(jugador.x, jugador.y);
         ctx.rotate(jugador.angulo);
         ctx.fillStyle = '#5bc0be';
-        ctx.beginPath();
-        ctx.arc(0, 0, jugador.radio, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, -4, 25, 8);
+        ctx.beginPath(); ctx.arc(0, 0, jugador.radio, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, -4, 25, 8);
         ctx.restore();
       }
 
       ctx.restore();
 
-      // DIBUJAR MINIMAPA ARRIBA A LA DERECHA
       dibujarMinimapa();
-
-      // INTERIOR BÚNKER IF INSIDE
-      if (jugador.enBunker) {
-        renderizarInteriorBunker();
-      }
+      if (jugador.enBunker) renderizarInteriorBunker();
     }
 
-    // MINIMAPA EN LA ESQUINA SUPERIOR DERECHA
     function dibujarMinimapa() {
-      const tam = 160;
-      const margin = 15;
-      const x = canvas.width - tam - margin;
-      const y = margin;
+      const tam = 160; const margin = 15;
+      const x = canvas.width - tam - margin; const y = margin;
 
       ctx.fillStyle = 'rgba(11, 19, 43, 0.85)';
       ctx.fillRect(x, y, tam, tam);
-      ctx.strokeStyle = '#5bc0be';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#5bc0be'; ctx.lineWidth = 2;
       ctx.strokeRect(x, y, tam, tam);
 
       const esc = tam / ANCHO_MAPA;
-
-      // Muros
       ctx.fillStyle = '#3a506b';
       muros.forEach(m => ctx.fillRect(x + m.x * esc, y + m.y * esc, Math.max(1, m.ancho * esc), Math.max(1, m.alto * esc)));
-
-      // Puertas Búnker
-      ctx.fillStyle = '#f1c40f';
-      puertasBunker.forEach(p => ctx.fillRect(x + p.x * esc - 1, y + p.y * esc - 1, 3, 3));
-
-      // Bots (Puntos Rojos)
       ctx.fillStyle = '#e74c3c';
-      bots.forEach(b => {
-        ctx.beginPath();
-        ctx.arc(x + b.x * esc, y + b.y * esc, 2, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Jugador (Punto Verde)
+      bots.forEach(b => { ctx.beginPath(); ctx.arc(x + b.x * esc, y + b.y * esc, 2, 0, Math.PI * 2); ctx.fill(); });
       ctx.fillStyle = '#2ecc71';
-      ctx.beginPath();
-      ctx.arc(x + jugador.x * esc, y + jugador.y * esc, 3.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(x + jugador.x * esc, y + jugador.y * esc, 3.5, 0, Math.PI * 2); ctx.fill();
     }
 
     function renderizarInteriorBunker() {
-      const tamCuadrado = 50;
-      const anchoBunker = 4 * tamCuadrado;
-      const altoBunker = 4 * tamCuadrado;
+      const tamCuadrado = 50; const anchoBunker = 4 * tamCuadrado; const altoBunker = 4 * tamCuadrado;
+      const centroX = canvas.width / 2; const centroY = canvas.height / 2;
 
-      const centroX = canvas.width / 2;
-      const centroY = canvas.height / 2;
-
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#1c2541';
-      ctx.strokeStyle = '#5bc0be';
-      ctx.lineWidth = 4;
+      ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#1c2541'; ctx.strokeStyle = '#5bc0be'; ctx.lineWidth = 4;
       ctx.fillRect(centroX - anchoBunker/2, centroY - altoBunker/2, anchoBunker, altoBunker);
       ctx.strokeRect(centroX - anchoBunker/2, centroY - altoBunker/2, anchoBunker, altoBunker);
 
-      ctx.strokeStyle = '#3a506b';
-      ctx.lineWidth = 1;
-      for (let i = 1; i < 4; i++) {
-        ctx.beginPath();
-        ctx.moveTo(centroX - anchoBunker/2 + i * tamCuadrado, centroY - altoBunker/2);
-        ctx.lineTo(centroX - anchoBunker/2 + i * tamCuadrado, centroY + altoBunker/2);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(centroX - anchoBunker/2, centroY - altoBunker/2 + i * tamCuadrado);
-        ctx.lineTo(centroX + anchoBunker/2, centroY - altoBunker/2 + i * tamCuadrado);
-        ctx.stroke();
-      }
-
-      ctx.fillStyle = '#5bc0be';
-      ctx.beginPath();
-      ctx.arc(centroX, centroY, 15, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '14px Segoe UI';
-      ctx.textAlign = 'center';
+      ctx.fillStyle = '#5bc0be'; ctx.beginPath(); ctx.arc(centroX, centroY, 15, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.font = '14px Segoe UI'; ctx.textAlign = 'center';
       ctx.fillText('¡DENTRO DEL BÚNKER 4x4! (E para Salir / F para Recoger)', centroX, centroY - altoBunker/2 - 15);
     }
 
-    function bucle() {
-      actualizar();
-      renderizar();
-      requestAnimationFrame(bucle);
-    }
+    function bucle() { actualizar(); renderizar(); requestAnimationFrame(bucle); }
 
     function iniciarJuego() {
       dificultadBot = parseInt(document.getElementById('dificultad').value);
+      modoJuego = document.getElementById('modo-juego').value;
 
       document.getElementById('menu-principal').style.display = 'none';
       document.getElementById('hud').style.display = 'block';
@@ -977,17 +860,32 @@
       generarCofresYCorazones();
       generarBots();
 
-      jugador.inventario = [LAS_7_ARMAS[0], null, null, null, null, null, null];
-      jugador.indexArmaEquipada = 0;
-      jugador.vida = 100;
-      jugador.corazones = 0;
-      jugador.bunkersGuardados = 0;
-      jugador.enBunker = false;
+      // Comprobar si se pidió cargar la partida guardada
+      const accionModo = localStorage.getItem('pixelgames_action_juego2.html');
+      let cargadoConExito = false;
+
+      if (accionModo === 'load') {
+        cargadoConExito = cargarPartidaGuardada();
+        localStorage.removeItem('pixelgames_action_juego2.html');
+      }
+
+      if (!cargadoConExito) {
+        jugador.inventario = [LAS_7_ARMAS[0], null, null, null, null, null, null];
+        jugador.indexArmaEquipada = 0;
+        jugador.vida = 100;
+        jugador.corazones = 0;
+        jugador.bunkersGuardados = 0;
+        jugador.enBunker = false;
+        jugador.x = 5000;
+        jugador.y = 5000;
+      }
 
       actualizarBarraVida();
       actualizarUICorazones();
       actualizarUIBunkers();
       actualizarUIInventario();
+
+      if (modoJuego === 'online') conectarServidorOnline();
 
       enJuego = true;
     }
@@ -995,22 +893,18 @@
     function finalizarJuego(victoria) {
       enJuego = false;
       actualizarContadorJugadores();
-
       const pantalla = document.getElementById('pantalla-game-over');
       const titulo = document.getElementById('titulo-fin');
       const subtitulo = document.getElementById('subtitulo-fin');
       const btnRevivir = document.getElementById('btn-revivir');
 
       if (victoria) {
-        titulo.innerText = "¡HAS GANADO!";
-        titulo.style.color = "#2ecc71";
+        titulo.innerText = "¡HAS GANADO!"; titulo.style.color = "#2ecc71";
         subtitulo.innerText = "¡Eres el único superviviente de la Arena!";
         btnRevivir.style.display = "none";
       } else {
-        titulo.innerText = "GAME OVER";
-        titulo.style.color = "#e74c3c";
+        titulo.innerText = "GAME OVER"; titulo.style.color = "#e74c3c";
         subtitulo.innerText = "Has sido eliminado en combate.";
-
         if (jugador.corazones > 0) {
           btnRevivir.style.display = "block";
           btnRevivir.innerText = `REVIVIR CON ❤️ (Tienes ${jugador.corazones})`;
@@ -1025,11 +919,8 @@
 
     function usarCorazonRevivir() {
       if (jugador.corazones > 0) {
-        jugador.corazones--;
-        jugador.vida = 100;
-        actualizarBarraVida();
-        actualizarUICorazones();
-
+        jugador.corazones--; jugador.vida = 100;
+        actualizarBarraVida(); actualizarUICorazones();
         document.getElementById('pantalla-game-over').style.display = 'none';
         document.getElementById('inventario-armas').style.display = 'flex';
         enJuego = true;
@@ -1041,8 +932,8 @@
       iniciarJuego();
     }
 
-    function volverAWeb() {
-      window.location.href = "index.html";
+    function volverAMenu() {
+      window.location.href = "juegos.html";
     }
 
     function toggleInfo(mostrar) {
