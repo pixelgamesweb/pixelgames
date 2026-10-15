@@ -17,7 +17,6 @@
       height: 100vh;
     }
 
-    /* MENÚ PRINCIPAL */
     #menu-principal {
       position: absolute;
       top: 50%;
@@ -39,17 +38,8 @@
       letter-spacing: 2px;
     }
 
-    .opcion-menu {
-      margin: 15px 0;
-      text-align: left;
-    }
-
-    .opcion-menu label {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 14px;
-      color: #a0aab8;
-    }
+    .opcion-menu { margin: 15px 0; text-align: left; }
+    .opcion-menu label { display: block; margin-bottom: 5px; font-size: 14px; color: #a0aab8; }
 
     select, button {
       width: 100%;
@@ -62,30 +52,11 @@
       transition: all 0.2s;
     }
 
-    select {
-      background-color: #1c2541;
-      color: #ffffff;
-      border: 1px solid #3a506b;
-    }
+    select { background-color: #1c2541; color: #ffffff; border: 1px solid #3a506b; }
+    .btn-jugar { background-color: #5bc0be; color: #0b132b; margin-top: 15px; }
+    .btn-jugar:hover { background-color: #6fffe9; transform: scale(1.02); }
+    .btn-info { background-color: #3a506b; color: #ffffff; margin-top: 10px; }
 
-    .btn-jugar {
-      background-color: #5bc0be;
-      color: #0b132b;
-      margin-top: 15px;
-    }
-
-    .btn-jugar:hover {
-      background-color: #6fffe9;
-      transform: scale(1.02);
-    }
-
-    .btn-info {
-      background-color: #3a506b;
-      color: #ffffff;
-      margin-top: 10px;
-    }
-
-    /* HUD / INTERFAZ EN JUEGO */
     #hud {
       position: absolute;
       top: 10px;
@@ -104,12 +75,7 @@
       margin-bottom: 5px;
     }
 
-    #barra-vida {
-      width: 100%;
-      height: 100%;
-      background: #2ecc71;
-      transition: width 0.1s;
-    }
+    #barra-vida { width: 100%; height: 100%; background: #2ecc71; transition: width 0.1s; }
 
     #info-arma, #info-corazones, #info-enemigos {
       background: rgba(0,0,0,0.6);
@@ -119,13 +85,8 @@
       margin-bottom: 5px;
     }
 
-    #info-enemigos {
-      background: rgba(231, 76, 60, 0.4);
-      border: 1px solid #e74c3c;
-      font-weight: bold;
-    }
+    #info-enemigos { background: rgba(231, 76, 60, 0.4); border: 1px solid #e74c3c; font-weight: bold; }
 
-    /* PROMPT DE INTERACCIÓN CON COFRES / BÚNKER */
     #prompt-interaccion {
       position: absolute;
       top: 70%;
@@ -141,7 +102,6 @@
       z-index: 6;
     }
 
-    /* INVENTARIO DE 7 CUADRADOS ABAJO */
     #inventario-armas {
       position: absolute;
       bottom: 20px;
@@ -172,36 +132,17 @@
     }
 
     .cuadrado-arma:hover { border-color: #5bc0be; }
-
     .cuadrado-arma.activo {
       border-color: #2ecc71;
       box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
       background: rgba(28, 37, 65, 1);
     }
 
-    .cuadrado-arma .numero {
-      position: absolute;
-      top: 2px;
-      left: 4px;
-      font-size: 10px;
-      color: #5bc0be;
-      font-weight: bold;
-    }
+    .cuadrado-arma .numero { position: absolute; top: 2px; left: 4px; font-size: 10px; color: #5bc0be; font-weight: bold; }
+    .cuadrado-arma .icono { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 3px; }
 
-    .cuadrado-arma .icono {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      margin-bottom: 3px;
-    }
+    canvas { display: block; background-color: #0b132b; }
 
-    /* CANVAS DEL JUEGO */
-    canvas {
-      display: block;
-      background-color: #0b132b;
-    }
-
-    /* PANTALLA GAME OVER / VICTORIA */
     #pantalla-game-over {
       display: none;
       position: fixed;
@@ -214,43 +155,15 @@
       align-items: center;
     }
 
-    #pantalla-game-over h1 {
-      font-size: 55px;
-      color: #e74c3c;
-      margin-bottom: 15px;
-      text-shadow: 0 0 15px rgba(231, 76, 60, 0.6);
-    }
+    #pantalla-game-over h1 { font-size: 55px; color: #e74c3c; margin-bottom: 15px; text-shadow: 0 0 15px rgba(231, 76, 60, 0.6); }
+    #pantalla-game-over p { font-size: 18px; margin-bottom: 20px; color: #a0aab8; }
 
-    #pantalla-game-over p {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #a0aab8;
-    }
-
-    .btn-opcion {
-      width: 250px !important;
-      font-size: 16px !important;
-      margin-bottom: 10px;
-    }
-
-    .btn-revivir {
-      background-color: #e74c3c !important;
-      color: white !important;
-    }
-
+    .btn-opcion { width: 250px !important; font-size: 16px !important; margin-bottom: 10px; }
+    .btn-revivir { background-color: #e74c3c !important; color: white !important; }
     .btn-revivir:hover { background-color: #ff5252 !important; }
+    .btn-reiniciar { background-color: #e67e22 !important; color: white !important; }
+    .btn-web { background-color: #3498db !important; color: white !important; }
 
-    .btn-reiniciar {
-      background-color: #e67e22 !important;
-      color: white !important;
-    }
-
-    .btn-web {
-      background-color: #3498db !important;
-      color: white !important;
-    }
-
-    /* MODAL INFO */
     #modal-info {
       display: none;
       position: fixed;
@@ -278,10 +191,8 @@
 </head>
 <body>
 
-  <!-- MENÚ PRINCIPAL -->
   <div id="menu-principal">
     <h1>BATALLA 2D</h1>
-    
     <div class="opcion-menu">
       <label for="dificultad">Dificultad de los Bots:</label>
       <select id="dificultad">
@@ -290,19 +201,16 @@
         <option value="3">Nivel 3 (Difícil)</option>
       </select>
     </div>
-
     <div class="opcion-menu">
       <label for="modo-juego">Modo de Juego:</label>
       <select id="modo-juego">
         <option value="ia">25 Jugadores (Tú vs 24 Bots)</option>
       </select>
     </div>
-
     <button class="btn-jugar" onclick="iniciarJuego()">¡JUGAR!</button>
     <button class="btn-info" onclick="toggleInfo(true)">Información (Info)</button>
   </div>
 
-  <!-- HUD EN JUEGO -->
   <div id="hud">
     <div class="barra-contenedor">
       <div id="barra-vida"></div>
@@ -314,18 +222,16 @@
 
   <div id="prompt-interaccion">Presiona [E] o haz Clic para interactuar</div>
 
-  <!-- INVENTARIO DE 7 CUADRADOS DE ARMAS -->
   <div id="inventario-armas">
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(0)"><span class="numero">1</span><div class="icono" id="ico-0"></div><span id="txt-0">Vacío</span></div>
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(1)"><span class="numero">2</span><div class="icono" id="ico-1"></div><span id="txt-1">Vacío</span></div>
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(2)"><span class="numero">3</span><div class="icono" id="ico-2"></div><span id="txt-2">Vacío</span></div>
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(3)"><span class="numero">4</span><div class="icono" id="ico-3"></div><span id="txt-3">Vacío</span></div>
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(4)"><span class="numero">5</span><div class="icono" id="ico-4"></div><span id="txt-4">Vacío</span></div>
-    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(5)"><span class="numero">6</span><div class="icono" id="ico-5"></div><span id="txt-6">Vacío</span></div>
-    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(7)"><span class="numero">7</span><div class="icono" id="ico-6"></div><span id="txt-6">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(5)"><span class="numero">6</span><div class="icono" id="ico-5"></div><span id="txt-5">Vacío</span></div>
+    <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(6)"><span class="numero">7</span><div class="icono" id="ico-6"></div><span id="txt-6">Vacío</span></div>
   </div>
 
-  <!-- PANTALLA GAME OVER / VICTORIA -->
   <div id="pantalla-game-over">
     <h1 id="titulo-fin">GAME OVER</h1>
     <p id="subtitulo-fin">Has sido eliminado.</p>
@@ -334,7 +240,6 @@
     <button class="btn-opcion btn-web" onclick="volverAWeb()">Volver a la Web</button>
   </div>
 
-  <!-- MODAL DE INFORMACIÓN -->
   <div id="modal-info">
     <div class="contenido-modal">
       <h2>Información del Juego</h2>
@@ -353,7 +258,6 @@
   <canvas id="gameCanvas"></canvas>
 
   <script>
-    // --- SINTETIZADOR DE AUDIO ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function reproducirSonidoHit(esPositivo) {
@@ -377,7 +281,6 @@
       osc.stop(audioCtx.currentTime + 0.15);
     }
 
-    // --- CONFIGURACIÓN DE CANVAS Y MAPA GIGANTE ---
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -386,7 +289,6 @@
     const ANCHO_MAPA = 10000;
     const ALTO_MAPA = 10000;
 
-    // --- LAS 7 ARMAS ---
     const LAS_7_ARMAS = [
       { id: 0, nombre: 'Pistola', dano: 15, cadencia: 250, velBala: 12, color: '#f1c40f' },
       { id: 1, nombre: 'Subfusil', dano: 10, cadencia: 100, velBala: 14, color: '#e67e22' },
@@ -397,7 +299,6 @@
       { id: 6, nombre: 'Pesada', dano: 35, cadencia: 400, velBala: 13, color: '#e67e22' }
     ];
 
-    // --- ESTADO DEL JUEGO ---
     let enJuego = false;
     let dificultadBot = 2;
 
@@ -429,7 +330,6 @@
 
     let elementoCercano = null;
 
-    // --- INICIALIZACIÓN ---
     function generarMuros() {
       muros = [];
       for (let i = 0; i < 220; i++) {
@@ -459,7 +359,6 @@
       puertasBunker = [];
       corazonesSuelo = [];
 
-      // Exactamente 3 cofres por mapa
       for (let i = 0; i < 3; i++) {
         cofres.push({
           id: i,
@@ -469,7 +368,6 @@
         });
       }
 
-      // Corazones extra (❤️)
       for (let i = 0; i < 20; i++) {
         corazonesSuelo.push({
           x: Math.random() * (ANCHO_MAPA - 200) + 100,
@@ -480,7 +378,6 @@
 
     function generarBots() {
       bots = [];
-      // 24 bots para hacer 25 jugadores en total
       for (let i = 0; i < 24; i++) {
         bots.push({
           id: i,
@@ -501,7 +398,6 @@
       document.getElementById('info-enemigos').innerText = `Supervivientes: ${vivos}/25 (${bots.length} bots)`;
     }
 
-    // --- CONTROLES ---
     window.addEventListener('keydown', e => {
       const key = e.key.toLowerCase();
       teclas[key] = true;
@@ -528,7 +424,6 @@
 
     let ultimoDisparoJugador = 0;
 
-    // --- INTERACCIÓN DE COFRES Y PUERTAS ---
     function ejecutarInteraccion() {
       if (!elementoCercano || !enJuego) return;
 
@@ -536,17 +431,14 @@
         const cofre = elementoCercano.obj;
         cofre.abierto = true;
 
-        // El cofre desaparece y en su sitio aparece una puerta de búnker 4x4
         puertasBunker.push({
           id: cofre.id,
           x: cofre.x,
           y: cofre.y
         });
 
-        // Eliminar cofre
         cofres = cofres.filter(c => c.id !== cofre.id);
 
-        // Otorgar vida extra de regalo dentro del cofre
         jugador.corazones++;
         actualizarUICorazones();
         reproducirSonidoHit(true);
@@ -555,12 +447,10 @@
         const puerta = elementoCercano.obj;
 
         if (!jugador.enBunker) {
-          // Entrar al Búnker
           jugador.enBunker = true;
           jugador.bunkerActual = puerta;
           reproducirSonidoHit(true);
         } else {
-          // Salir del Búnker
           jugador.enBunker = false;
           jugador.x = puerta.x + 35;
           jugador.y = puerta.y + 35;
@@ -570,7 +460,6 @@
       }
     }
 
-    // --- INVENTARIO DE ARMAS ---
     function guardarEnInventario(arma) {
       const yaExiste = jugador.inventario.findIndex(a => a && a.id === arma.id);
       if (yaExiste !== -1) {
@@ -628,7 +517,6 @@
       document.getElementById('info-corazones').innerText = `Vidas Extra: ❤️ x${jugador.corazones}`;
     }
 
-    // --- BUCLE PRINCIPAL DE JUEGO ---
     function actualizar() {
       if (!enJuego) return;
 
@@ -637,7 +525,6 @@
       raton.worldX = raton.x + camaraX;
       raton.worldY = raton.y + camaraY;
 
-      // Movimiento de jugador si no está refugiado
       if (!jugador.enBunker) {
         let dx = 0, dy = 0;
         if (teclas['w'] || teclas['arrowup']) dy -= 1;
@@ -656,7 +543,6 @@
         jugador.angulo = Math.atan2(raton.worldY - jugador.y, raton.worldX - jugador.x);
       }
 
-      // Recoger armas
       if (!jugador.enBunker) {
         armasSuelo.forEach((arma, i) => {
           if (Math.hypot(jugador.x - arma.x, jugador.y - arma.y) < jugador.radio + 15) {
@@ -665,7 +551,6 @@
           }
         });
 
-        // Recoger corazones (❤️)
         corazonesSuelo.forEach((c, i) => {
           if (Math.hypot(jugador.x - c.x, jugador.y - c.y) < jugador.radio + 15) {
             jugador.corazones++;
@@ -676,7 +561,6 @@
         });
       }
 
-      // Comprobar elementos cercanos para interacción (E)
       elementoCercano = null;
       let distMin = 60;
 
@@ -708,7 +592,6 @@
         promptUI.style.display = 'none';
       }
 
-      // Disparo jugador
       const armaEquipada = jugador.inventario[jugador.indexArmaEquipada];
       if (raton.presionado && armaEquipada && !jugador.enBunker) {
         const ahora = Date.now();
@@ -718,7 +601,6 @@
         }
       }
 
-      // Proyectiles
       proyectiles.forEach((p, index) => {
         p.x += Math.cos(p.angulo) * p.velocidad;
         p.y += Math.sin(p.angulo) * p.velocidad;
@@ -748,7 +630,6 @@
             }
           });
         } else {
-          // Si el jugador está dentro del búnker, las balas no le impactan
           if (!jugador.enBunker && Math.hypot(p.x - jugador.x, p.y - jugador.y) < jugador.radio) {
             jugador.vida -= p.dano;
             reproducirSonidoHit(false);
@@ -762,7 +643,6 @@
         }
       });
 
-      // Lógica de Bots
       bots.forEach(bot => {
         const distJugador = Math.hypot(jugador.x - bot.x, jugador.y - bot.y);
         const anguloAJugador = Math.atan2(jugador.y - bot.y, jugador.x - bot.x);
@@ -807,7 +687,6 @@
       barra.style.backgroundColor = pct > 50 ? '#2ecc71' : pct > 20 ? '#f39c12' : '#e74c3c';
     }
 
-    // --- RENDERIZADO VISUAL ---
     function renderizar() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -819,11 +698,9 @@
       ctx.save();
       ctx.translate(-camaraX, -camaraY);
 
-      // FONDO DEL MAPA (10,000 x 10,000)
       ctx.fillStyle = '#0b132b';
       ctx.fillRect(0, 0, ANCHO_MAPA, ALTO_MAPA);
 
-      // Rejilla
       ctx.strokeStyle = '#1c2541';
       ctx.lineWidth = 2;
       for (let x = 0; x < ANCHO_MAPA; x += 100) {
@@ -833,7 +710,6 @@
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ANCHO_MAPA, y); ctx.stroke();
       }
 
-      // CORAZONES EXTRA (❤️)
       corazonesSuelo.forEach(c => {
         ctx.font = '20px Segoe UI Symbol';
         ctx.textAlign = 'center';
@@ -841,7 +717,6 @@
         ctx.fillText('❤️', c.x, c.y);
       });
 
-      // ARMAS EN EL SUELO
       armasSuelo.forEach(arma => {
         ctx.fillStyle = arma.tipo.color;
         ctx.beginPath();
@@ -849,7 +724,6 @@
         ctx.fill();
       });
 
-      // COFRES (📦)
       cofres.forEach(c => {
         ctx.font = '32px Segoe UI Symbol';
         ctx.textAlign = 'center';
@@ -857,7 +731,6 @@
         ctx.fillText('📦', c.x, c.y);
       });
 
-      // PUERTAS DE BÚNKER PEQUEÑAS (🚪)
       puertasBunker.forEach(p => {
         ctx.font = '28px Segoe UI Symbol';
         ctx.textAlign = 'center';
@@ -865,7 +738,6 @@
         ctx.fillText('🚪', p.x, p.y);
       });
 
-      // MUROS DEL MAPA
       ctx.fillStyle = '#3a506b';
       ctx.strokeStyle = '#5bc0be';
       ctx.lineWidth = 3;
@@ -874,7 +746,6 @@
         ctx.strokeRect(m.x, m.y, m.ancho, m.alto);
       });
 
-      // PROYECTILES
       proyectiles.forEach(p => {
         ctx.fillStyle = p.color;
         ctx.beginPath();
@@ -882,7 +753,6 @@
         ctx.fill();
       });
 
-      // BOTS
       bots.forEach(bot => {
         ctx.fillStyle = '#e74c3c';
         ctx.beginPath();
@@ -890,7 +760,6 @@
         ctx.fill();
       });
 
-      // JUGADOR (Si no está oculto dentro de un búnker)
       if (!jugador.enBunker) {
         ctx.save();
         ctx.translate(jugador.x, jugador.y);
@@ -906,14 +775,12 @@
 
       ctx.restore();
 
-      // RENDERIZAR INTERIOR DEL BÚNKER 4x4 SI EL JUGADOR ESTÁ DENTRO
       if (jugador.enBunker) {
         renderizarInteriorBunker();
       }
     }
 
     function renderizarInteriorBunker() {
-      // Dibujar overlay centrado representando la habitación de 4x4 cuadrículas
       const tamCuadrado = 50;
       const anchoBunker = 4 * tamCuadrado;
       const altoBunker = 4 * tamCuadrado;
@@ -930,7 +797,6 @@
       ctx.fillRect(centroX - anchoBunker/2, centroY - altoBunker/2, anchoBunker, altoBunker);
       ctx.strokeRect(centroX - anchoBunker/2, centroY - altoBunker/2, anchoBunker, altoBunker);
 
-      // Rejilla 4x4
       ctx.strokeStyle = '#3a506b';
       ctx.lineWidth = 1;
       for (let i = 1; i < 4; i++) {
@@ -945,7 +811,6 @@
         ctx.stroke();
       }
 
-      // Jugador a salvo dentro
       ctx.fillStyle = '#5bc0be';
       ctx.beginPath();
       ctx.arc(centroX, centroY, 15, 0, Math.PI * 2);
@@ -963,7 +828,6 @@
       requestAnimationFrame(bucle);
     }
 
-    // --- FLUJO DEL JUEGO ---
     function iniciarJuego() {
       dificultadBot = parseInt(document.getElementById('dificultad').value);
 
@@ -1008,7 +872,6 @@
         titulo.style.color = "#e74c3c";
         subtitulo.innerText = "Has sido eliminado en combate.";
 
-        // Mostrar u ocultar botón de revivir dependiendo de los corazones ❤️
         if (jugador.corazones > 0) {
           btnRevivir.style.display = "block";
           btnRevivir.innerText = `REVIVIR CON ❤️ (Tienes ${jugador.corazones})`;
