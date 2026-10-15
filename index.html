@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel Games - Portal Principal</title>
+  <title>Pixel Games - Iniciar Sesión</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -23,11 +23,11 @@
       border: 2px solid #5bc0be;
       box-shadow: 0 0 25px rgba(91, 192, 190, 0.3);
       width: 100%;
-      max-width: 450px;
+      max-width: 400px;
       text-align: center;
     }
 
-    h1 { color: #5bc0be; margin-bottom: 20px; font-size: 28px; }
+    h1 { color: #5bc0be; margin-bottom: 20px; font-size: 26px; }
     
     .campo { margin-bottom: 15px; text-align: left; }
     .campo label { display: block; font-size: 13px; color: #a0aab8; margin-bottom: 5px; }
@@ -50,33 +50,12 @@
       font-size: 16px;
       cursor: pointer;
       margin-top: 10px;
+      background: #5bc0be;
+      color: #0b132b;
       transition: all 0.2s;
     }
 
-    .btn-principal { background: #5bc0be; color: #0b132b; }
-    .btn-principal:hover { background: #6fffe9; }
-    .btn-secundario { background: #3a506b; color: #fff; }
-
-    #panel-juegos { display: none; }
-    .tarjeta-juego {
-      background: #0b132b;
-      border: 1px solid #3a506b;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 10px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .info-usuario {
-      background: rgba(46, 204, 113, 0.2);
-      border: 1px solid #2ecc71;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
+    button:hover { background: #6fffe9; }
 
     .alerta {
       color: #e74c3c;
@@ -88,62 +67,30 @@
 </head>
 <body>
 
-  <!-- PANTALLA DE LOGIN / REGISTRO -->
-  <div class="contenedor" id="panel-login">
+  <div class="contenedor">
     <h1>🎮 PIXEL GAMES</h1>
-    <p style="color:#a0aab8; font-size:14px; margin-bottom:20px;">Introduce tus datos para guardar tu progreso</p>
+    <p style="color:#a0aab8; font-size:14px; margin-bottom:20px;">Acceso de Usuario</p>
 
     <div class="campo">
-      <label>Nombre de Usuario:</label>
+      <label>Usuario:</label>
       <input type="text" id="usuario-input" placeholder="Ej: Player1">
     </div>
 
     <div class="campo">
       <label>Contraseña (1 Mayúscula, 1 Minúscula, 2 Números):</label>
       <input type="password" id="pass-input" placeholder="Ej: P1xel2026">
-      <div class="alerta" id="alerta-pass">La contraseña requiere: 1 mayúscula, 1 minúscula y 2 números.</div>
+      <div class="alerta" id="alerta-pass">Requiere: 1 mayúscula, 1 minúscula y 2 números.</div>
     </div>
 
-    <button class="btn-principal" onclick="iniciarSesion()">Entrar / Registrarse</button>
-  </div>
-
-  <!-- PANTALLA DE SELECCIÓN DE JUEGOS Y GUARDADO -->
-  <div class="contenedor" id="panel-juegos">
-    <h1>Pixel Games HUB</h1>
-    <div class="info-usuario">
-      ¡Hola, <b id="nombre-usuario-display"></b>! Sesión activa.
-    </div>
-
-    <div class="tarjeta-juego">
-      <div style="text-align:left;">
-        <h3 style="color:#5bc0be;">Battle Arena 2D</h3>
-        <span style="font-size:12px; color:#a0aab8;" id="status-battle">Sin datos guardados</span>
-      </div>
-      <button class="btn-secundario" style="width:auto; padding:8px 12px;" onclick="irAJuego('juego2.html')">Jugar</button>
-    </div>
-
-    <div class="tarjeta-juego">
-      <div style="text-align:left;">
-        <h3 style="color:#5bc0be;">Mega Laberintos</h3>
-        <span style="font-size:12px; color:#a0aab8;" id="status-laberinto">Nivel 1</span>
-      </div>
-      <button class="btn-secundario" style="width:auto; padding:8px 12px;" onclick="irAJuego('juego1.html')">Jugar</button>
-    </div>
-
-    <button class="btn-principal" onclick="guardarTodoElProgreso()" style="margin-top:20px; background:#2ecc71; color:#fff;">💾 GUARDAR PROGRESO GENERAL</button>
-    <button class="btn-secundario" onclick="cerrarSesion()" style="margin-top:10px;">Cerrar Sesión</button>
+    <button onclick="iniciarSesion()">Entrar a Juegos</button>
   </div>
 
   <script>
-    let usuarioActual = null;
-
-    // VALIDACIÓN DE CONTRASEÑA
     function validarContrasena(pass) {
       const tieneMayuscula = /[A-Z]/.test(pass);
       const tieneMinuscula = /[a-z]/.test(pass);
       const numeros = pass.match(/\d/g);
       const tieneDosNumeros = numeros && numeros.length >= 2;
-
       return tieneMayuscula && tieneMinuscula && tieneDosNumeros;
     }
 
@@ -164,76 +111,29 @@
 
       alerta.style.display = 'none';
 
-      // Comprobar si el usuario existe
-      const datosGuardados = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
 
-      if (datosGuardados[user]) {
-        // Verificar contraseña
-        if (datosGuardados[user].password !== pass) {
-          alert("Contraseña incorrecta para este usuario.");
+      if (usuarios[user]) {
+        if (usuarios[user].password !== pass) {
+          alert("Contraseña incorrecta.");
           return;
         }
       } else {
-        // Crear nuevo usuario
-        datosGuardados[user] = {
+        usuarios[user] = {
           password: pass,
-          progreso: {
-            battleArena: { nivel: 1, victorias: 0 },
-            laberintos: { nivel: 1, posCirculo: { x: 0, y: 0 } },
-            futbol: { victorias: 0 }
-          }
+          progreso: {}
         };
-        localStorage.setItem('pixelgames_users', JSON.stringify(datosGuardados));
+        localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
       }
 
-      usuarioActual = user;
       localStorage.setItem('pixelgames_session', user);
-      mostrarPanelJuegos();
+      window.location.href = 'juegos.html';
     }
 
-    function mostrarPanelJuegos() {
-      document.getElementById('panel-login').style.display = 'none';
-      document.getElementById('panel-juegos').style.display = 'block';
-      document.getElementById('nombre-usuario-display').innerText = usuarioActual;
-
-      // Cargar estados guardados
-      const datosGuardados = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      const datosUser = datosGuardados[usuarioActual];
-
-      if (datosUser && datosUser.progreso) {
-        document.getElementById('status-battle').innerText = `Victorias: ${datosUser.progreso.battleArena.victorias || 0}`;
-        document.getElementById('status-laberinto').innerText = `Nivel actual: ${datosUser.progreso.laberintos.nivel || 1}`;
-      }
-    }
-
-    function guardarTodoElProgreso() {
-      if (!usuarioActual) return;
-
-      const datosGuardados = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-
-      // Aquí puedes actualizar los datos del usuario activo
-      datosGuardados[usuarioActual].progreso.battleArena.victorias += 1; // Ejemplo de prueba
-      localStorage.setItem('pixelgames_users', JSON.stringify(datosGuardados));
-
-      alert("¡Perfecto! Todo tu progreso ha sido guardado exitosamente.");
-      mostrarPanelJuegos();
-    }
-
-    function cerrarSesion() {
-      localStorage.removeItem('pixelgames_session');
-      location.reload();
-    }
-
-    function irAJuego(archivo) {
-      window.location.href = archivo;
-    }
-
-    // Auto-iniciar sesión si ya estaba logueado
+    // Si ya inició sesión previamente, lo lleva directo
     window.onload = () => {
-      const sesionGuardada = localStorage.getItem('pixelgames_session');
-      if (sesionGuardada) {
-        usuarioActual = sesionGuardada;
-        mostrarPanelJuegos();
+      if (localStorage.getItem('pixelgames_session')) {
+        window.location.href = 'juegos.html';
       }
     };
   </script>
