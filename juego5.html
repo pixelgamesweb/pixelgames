@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Mega Laberintos</title>
+<title>ultra Laberintos</title>
 
 <style>
 *{box-sizing:border-box;user-select:none;-webkit-user-select:none}
@@ -72,6 +72,13 @@ button:active{transform:scale(.96)}
  backdrop-filter:blur(8px)
 }
 
+.btn-guardar {
+ background:#2ecc71;
+ color:#080b12;
+ font-weight:bold;
+ border:none;
+}
+
 #mapPanel{
  position:absolute;right:15px;top:65px;width:230px;height:230px;
  background:rgba(4,5,10,.95);border:2px solid rgba(255,255,255,.2);
@@ -83,14 +90,32 @@ button:active{transform:scale(.96)}
 .hud{
  position:absolute;left:15px;top:15px;z-index:20;
  background:rgba(4,7,15,.8);border:1px solid rgba(255,255,255,.12);
- border-radius:14px;padding:10px 14px;font-weight:bold
+ border-radius:14px;padding:10px 14px;font-weight:bold;
+ display:flex;flex-direction:column;gap:6px
+}
+
+.healthContainer {
+ width: 140px;
+ height: 12px;
+ background: rgba(0,0,0,0.6);
+ border: 1px solid rgba(255,255,255,0.4);
+ border-radius: 6px;
+ overflow: hidden;
+ margin-top: 3px;
+}
+
+#healthBar {
+ width: 100%;
+ height: 100%;
+ background: #2ecc71;
+ transition: width 0.15s;
 }
 
 #keyHud{
  display:none;
  margin-left:10px;
  color:#ffd84d;
- font-size:20px
+ font-size:18px
 }
 
 #controls{
@@ -105,8 +130,8 @@ button:active{transform:scale(.96)}
  background:rgba(5,8,17,.8);backdrop-filter:blur(8px)
 }
 
-#pauseMenu,#finish{
- position:absolute;inset:0;z-index:50;background:rgba(0,0,0,.72);
+#pauseMenu,#finish,#gameOverMenu{
+ position:absolute;inset:0;z-index:50;background:rgba(0,0,0,.8);
  display:none;align-items:center;justify-content:center;
  flex-direction:column;gap:15px;text-align:center;
  backdrop-filter:blur(5px)
@@ -115,7 +140,9 @@ button:active{transform:scale(.96)}
 .pauseTitle{font-size:52px;font-weight:900}
 
 .finish{z-index:60}
-.finish h2{font-size:45px;margin:0}
+.finish h2{font-size:45px;margin:0;color:#2ecc71}
+
+.gameOver h2{font-size:45px;margin:0;color:#e74c3c}
 
 @media(max-width:700px){
  .levelsGrid{grid-template-columns:repeat(3,1fr);gap:10px}
@@ -152,11 +179,15 @@ button:active{transform:scale(.96)}
  <canvas id="canvas"></canvas>
 
  <div class="hud">
-  NIVEL <span id="levelNumber">1</span>
-  <span id="keyHud">🔑</span>
+  <div>NIVEL <span id="levelNumber">1</span> <span id="keyHud">🔑</span></div>
+  <div style="font-size: 11px; color: #a0aab8;">SALUD: <span id="healthText">100</span>/100</div>
+  <div class="healthContainer">
+    <div id="healthBar"></div>
+  </div>
  </div>
 
  <div class="gameTop">
+  <button class="topButton btn-guardar" id="btnSaveGame" onclick="saveGameProgress()">💾 GUARDAR</button>
   <button class="topButton" onclick="toggleMap()">🗺️ MAPA</button>
   <button class="topButton" onclick="pauseGame()">⏸️</button>
  </div>
@@ -202,6 +233,13 @@ button:active{transform:scale(.96)}
   <button onclick="backToLevels()">NIVELES</button>
  </div>
 
+ <div id="gameOverMenu" class="gameOver">
+  <h2>¡HAS MUERTO!</h2>
+  <p style="color:#a0aab8;">Un monstruo te ha alcanzado.</p>
+  <button onclick="retryLevel()">🔄 REINTENTAR</button>
+  <button onclick="backToLevels()">NIVELES</button>
+ </div>
+
 </section>
 
 <script>
@@ -215,14 +253,16 @@ const mapCanvas=document.getElementById("mapCanvas");
 const mapCtx=mapCanvas.getContext("2d");
 
 let currentLevel=1;
-let unlocked=3;
+let unlocked=1;
 let maze=[];
 let mazeSize=9;
 
 let player={
  x:1.5,
  y:1.5,
- angle:0
+ angle:0,
+ hp:100,
+ maxHp:100
 };
 
 let key={
@@ -237,8 +277,11 @@ let door={
  open:false
 };
 
+let monsters=[];
+
 let gamePaused=false;
 let gameWon=false;
+let gameOver=false;
 
 const keys={
  forward:false,
@@ -247,6 +290,61 @@ const keys={
  right:false
 };
 
+
+/* =========================
+   SISTEMA DE GUARDADO
+========================= */
+
+function saveGameProgress(){
+ const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+ const btn = document.getElementById('btnSaveGame');
+
+ btn.innerText = "Pensando...";
+ btn.disabled = true;
+
+ setTimeout(()=>{
+   const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+   if (!users[activeUser]) {
+     users[activeUser] = { password: '', progreso: {} };
+   }
+   if (!users[activeUser].progreso) {
+     users[activeUser].progreso = {};
+   }
+
+   users[activeUser].progreso['juego5.html'] = {
+     unlockedLevel: unlocked,
+     currentLevel: currentLevel,
+     hp: player.hp,
+     x: player.x,
+     y: player.y,
+     keyCollected: key.collected,
+     keyX: key.x,
+     keyY: key.y,
+     mazeSize: mazeSize,
+     maze: maze
+   };
+
+   localStorage.setItem('pixelgames_users', JSON.stringify(users));
+
+   btn.innerText = "¡Guardado!";
+   setTimeout(()=>{
+     btn.innerText = "💾 GUARDAR";
+     btn.disabled = false;
+   }, 1500);
+ }, 400);
+}
+
+function loadSavedData(){
+ const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+ const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+ if (users[activeUser] && users[activeUser].progreso && users[activeUser].progreso['juego5.html']){
+   const p = users[activeUser].progreso['juego5.html'];
+   unlocked = p.unlockedLevel || 1;
+   return p;
+ }
+ return null;
+}
 
 /* =========================
    PANTALLAS
@@ -271,8 +369,10 @@ function showLevels(){
 
 function backToLevels(){
  gamePaused=false;
+ gameOver=false;
  document.getElementById("pauseMenu").style.display="none";
  document.getElementById("finish").style.display="none";
+ document.getElementById("gameOverMenu").style.display="none";
  hideScreens();
  levelsScreen.classList.add("active");
  createLevelButtons();
@@ -284,44 +384,35 @@ function backToLevels(){
 ========================= */
 
 function createLevelButtons(){
-
  const grid=document.getElementById("levelsGrid");
  grid.innerHTML="";
 
  for(let i=1;i<=100;i++){
-
   const b=document.createElement("button");
   b.className="level";
 
   if(i>unlocked){
-
    b.classList.add("locked");
-
    b.innerHTML=
    `<div class="lock">🔒</div>
     <div>Nivel ${i}</div>`;
-
   }else{
-
    b.innerHTML=
    `<div>⭐</div>
     <div>Nivel ${i}</div>
     <small>JUGAR</small>`;
-
    b.onclick=()=>startLevel(i);
   }
-
   grid.appendChild(b);
  }
 }
 
 
 /* =========================
-   GENERADOR
+   GENERADOR DE LABERINTO
 ========================= */
 
 function generateMaze(size){
-
  const grid=[];
 
  for(let y=0;y<size;y++){
@@ -332,39 +423,23 @@ function generateMaze(size){
  }
 
  function carve(x,y){
-
   grid[y][x]=0;
-
-  const directions=[
-   [2,0],[-2,0],[0,2],[0,-2]
-  ];
-
+  const directions=[[2,0],[-2,0],[0,2],[0,-2]];
   directions.sort(()=>Math.random()-.5);
 
   for(const [dx,dy] of directions){
-
    const nx=x+dx;
    const ny=y+dy;
 
-   if(
-    nx>0 &&
-    nx<size-1 &&
-    ny>0 &&
-    ny<size-1 &&
-    grid[ny][nx]===1
-   ){
-
+   if(nx>0 && nx<size-1 && ny>0 && ny<size-1 && grid[ny][nx]===1){
     grid[y+dy/2][x+dx/2]=0;
     carve(nx,ny);
-
    }
   }
  }
 
  carve(1,1);
-
  grid[size-2][size-2]=0;
-
  return grid;
 }
 
@@ -374,73 +449,86 @@ function generateMaze(size){
 ========================= */
 
 function randomFreeCell(){
-
  let x,y;
-
  do{
   x=1+Math.floor(Math.random()*(mazeSize-2));
   y=1+Math.floor(Math.random()*(mazeSize-2));
  }while(
   maze[y][x]!==0 ||
-  Math.hypot(x+.5-player.x,y+.5-player.y)<4 ||
+  Math.hypot(x+.5-player.x,y+.5-player.y)<3.5 ||
   (x>=mazeSize-3 && y>=mazeSize-3)
  );
-
  return {x:x+.5,y:y+.5};
 }
 
 
 /* =========================
-   INICIAR NIVEL
+   INICIAR / REINICIAR NIVEL
 ========================= */
 
-function startLevel(level){
-
+function startLevel(level, loadedData = null){
  currentLevel=level;
 
- /*
-    A partir de los niveles altos,
-    el laberinto crece.
- */
- mazeSize=Math.min(
-  9+Math.floor(level/5)*2,
-  31
- );
+ if (loadedData && loadedData.maze) {
+   mazeSize = loadedData.mazeSize;
+   maze = loadedData.maze;
+   player.x = loadedData.x;
+   player.y = loadedData.y;
+   player.hp = loadedData.hp;
+   key.x = loadedData.keyX;
+   key.y = loadedData.keyY;
+   key.collected = loadedData.keyCollected;
+ } else {
+   mazeSize=Math.min(9+Math.floor(level/5)*2, 31);
+   if(mazeSize%2===0) mazeSize++;
 
- if(mazeSize%2===0) mazeSize++;
+   maze=generateMaze(mazeSize);
 
- maze=generateMaze(mazeSize);
+   player.x=1.5;
+   player.y=1.5;
+   player.hp=100;
 
- player.x=1.5;
- player.y=1.5;
+   const k=randomFreeCell();
+   key.x=k.x;
+   key.y=k.y;
+   key.collected=false;
+ }
+
  player.angle=0;
 
- /*
-    PUERTA
- */
  door.x=mazeSize-1.5;
  door.y=mazeSize-1.5;
  door.open=false;
 
- /*
-    LLAVE.
-    Se coloca en una zona libre diferente
-    de la salida.
- */
- const k=randomFreeCell();
-
- key.x=k.x;
- key.y=k.y;
- key.collected=false;
+ // CREAR MONSTRUOS A PARTIR DEL NIVEL 5
+ monsters = [];
+ if (currentLevel >= 5) {
+   const cantMonstruos = Math.min(Math.floor((currentLevel - 4) / 2) + 1, 6);
+   for (let i = 0; i < cantMonstruos; i++) {
+     const pos = randomFreeCell();
+     monsters.push({
+       x: pos.x,
+       y: pos.y,
+       speed: 0.022 + (currentLevel * 0.001),
+       detectionRadius: 5.5,
+       chasing: false,
+       size: 0.35
+     });
+   }
+ }
 
  gamePaused=false;
  gameWon=false;
+ gameOver=false;
 
  document.getElementById("levelNumber").textContent=level;
- document.getElementById("keyHud").style.display="none";
+ document.getElementById("keyHud").style.display=key.collected ? "inline" : "none";
  document.getElementById("pauseMenu").style.display="none";
  document.getElementById("finish").style.display="none";
+ document.getElementById("gameOverMenu").style.display="none";
  document.getElementById("mapPanel").style.display="none";
+
+ updateHealthUI();
 
  hideScreens();
  gameScreen.classList.add("active");
@@ -449,16 +537,36 @@ function startLevel(level){
  updateMap();
 }
 
+function retryLevel(){
+ startLevel(currentLevel);
+}
+
+
+/* =========================
+   ACTUALIZAR SALUD EN HUD
+========================= */
+
+function updateHealthUI(){
+ const bar = document.getElementById("healthBar");
+ const text = document.getElementById("healthText");
+ const pct = Math.max(0, player.hp);
+
+ bar.style.width = pct + "%";
+ text.innerText = Math.round(pct);
+
+ if (pct > 50) bar.style.background = "#2ecc71";
+ else if (pct > 20) bar.style.background = "#f39c12";
+ else bar.style.background = "#e74c3c";
+}
+
 
 /* =========================
    CANVAS
 ========================= */
 
 function resizeCanvas(){
-
  canvas.width=window.innerWidth;
  canvas.height=window.innerHeight;
-
  mapCanvas.width=210;
  mapCanvas.height=210;
 }
@@ -471,70 +579,36 @@ window.addEventListener("resize",resizeCanvas);
 ========================= */
 
 window.addEventListener("keydown",e=>{
-
- if(e.key==="w"||e.key==="ArrowUp")
-  keys.forward=true;
-
- if(e.key==="s"||e.key==="ArrowDown")
-  keys.back=true;
-
- if(e.key==="a"||e.key==="ArrowLeft")
-  keys.left=true;
-
- if(e.key==="d"||e.key==="ArrowRight")
-  keys.right=true;
-
- if(e.key==="Escape")
-  pauseGame();
-
+ if(e.key==="w"||e.key==="ArrowUp") keys.forward=true;
+ if(e.key==="s"||e.key==="ArrowDown") keys.back=true;
+ if(e.key==="a"||e.key==="ArrowLeft") keys.left=true;
+ if(e.key==="d"||e.key==="ArrowRight") keys.right=true;
+ if(e.key==="Escape") pauseGame();
 });
 
 window.addEventListener("keyup",e=>{
-
- if(e.key==="w"||e.key==="ArrowUp")
-  keys.forward=false;
-
- if(e.key==="s"||e.key==="ArrowDown")
-  keys.back=false;
-
- if(e.key==="a"||e.key==="ArrowLeft")
-  keys.left=false;
-
- if(e.key==="d"||e.key==="ArrowRight")
-  keys.right=false;
+ if(e.key==="w"||e.key==="ArrowUp") keys.forward=false;
+ if(e.key==="s"||e.key==="ArrowDown") keys.back=false;
+ if(e.key==="a"||e.key==="ArrowLeft") keys.left=false;
+ if(e.key==="d"||e.key==="ArrowRight") keys.right=false;
 });
 
 
 /* =========================
-   COLISIÓN
+   COLISIÓN Y MOVIMIENTO
 ========================= */
 
 function isWall(x,y){
-
  const gx=Math.floor(x);
  const gy=Math.floor(y);
-
- if(
-  gy<0||
-  gy>=maze.length||
-  gx<0||
-  gx>=maze[0].length
- ) return true;
-
+ if(gy<0||gy>=maze.length||gx<0||gx>=maze[0].length) return true;
  return maze[gy][gx]===1;
 }
 
-
-/* =========================
-   MOVIMIENTO
-========================= */
-
 function movePlayer(){
-
- if(gamePaused||gameWon) return;
+ if(gamePaused||gameWon||gameOver) return;
 
  const speed=.045;
-
  let moveX=0;
  let moveY=0;
 
@@ -542,98 +616,91 @@ function movePlayer(){
   moveX+=Math.cos(player.angle)*speed;
   moveY+=Math.sin(player.angle)*speed;
  }
-
  if(keys.back){
   moveX-=Math.cos(player.angle)*speed;
   moveY-=Math.sin(player.angle)*speed;
  }
 
- if(keys.left)
-  player.angle-=.045;
+ if(keys.left) player.angle-=.045;
+ if(keys.right) player.angle+=.045;
 
- if(keys.right)
-  player.angle+=.045;
+ if(!isWall(player.x+moveX,player.y)) player.x+=moveX;
+ if(!isWall(player.x,player.y+moveY)) player.y+=moveY;
 
-
- /*
-    MOVIMIENTO CON COLISIÓN
- */
- if(!isWall(player.x+moveX,player.y))
-  player.x+=moveX;
-
- if(!isWall(player.x,player.y+moveY))
-  player.y+=moveY;
-
-
- /*
-    RECOGER LLAVE
- */
+ // RECOGER LLAVE
  if(!key.collected){
-
-  const distanceToKey=
-   Math.hypot(
-    player.x-key.x,
-    player.y-key.y
-   );
-
+  const distanceToKey=Math.hypot(player.x-key.x, player.y-key.y);
   if(distanceToKey<.55){
-
    key.collected=true;
-
    document.getElementById("keyHud").style.display="inline";
-
   }
  }
 
-
- /*
-    PUERTA
- */
- const distanceToDoor=
-  Math.hypot(
-   player.x-door.x,
-   player.y-door.y
-  );
-
+ // COLISIÓN CON PUERTA
+ const distanceToDoor=Math.hypot(player.x-door.x, player.y-door.y);
  if(distanceToDoor<.75){
-
   if(key.collected){
-
    door.open=true;
-
    completeLevel();
-
   }else{
-
-   /*
-      Evitamos que atraviese la puerta.
-   */
    if(distanceToDoor<.48){
-
     const dx=player.x-door.x;
     const dy=player.y-door.y;
     const d=Math.max(.01,Math.hypot(dx,dy));
-
     player.x=door.x+(dx/d)*.49;
     player.y=door.y+(dy/d)*.49;
    }
-
-   /*
-      Mensaje sin bloquear el juego
-      permanentemente.
-   */
    if(!door.messageShown){
-
     door.messageShown=true;
-
-    setTimeout(()=>{
-     door.messageShown=false;
-    },1800);
-
+    setTimeout(()=>{ door.messageShown=false; },1800);
     alert("🔒 No tienes la llave");
    }
   }
  }
+
+ // ACTUALIZAR MONSTRUOS
+ updateMonsters();
+}
+
+
+/* =========================
+   LÓGICA DE MONSTRUOS
+========================= */
+
+function updateMonsters(){
+ monsters.forEach(m => {
+  const dist = Math.hypot(player.x - m.x, player.y - m.y);
+
+  // Detección
+  if (dist < m.detectionRadius) {
+    m.chasing = true;
+  }
+
+  // Persecución
+  if (m.chasing) {
+    const angle = Math.atan2(player.y - m.y, player.x - m.x);
+    const mx = Math.cos(angle) * m.speed;
+    const my = Math.sin(angle) * m.speed;
+
+    if (!isWall(m.x + mx, m.y)) m.x += mx;
+    if (!isWall(m.x, m.y + my)) m.y += my;
+
+    // Daño al jugador al tocarlo
+    if (dist < 0.5) {
+      player.hp -= 0.6;
+      updateHealthUI();
+
+      if (player.hp <= 0) {
+        triggerGameOver();
+      }
+    }
+  }
+ });
+}
+
+function triggerGameOver(){
+ gameOver = true;
+ document.getElementById("gameOverMenu").style.display = "flex";
 }
 
 
@@ -644,27 +711,15 @@ function movePlayer(){
 const FOV=Math.PI/3;
 
 function castRay(angle){
-
  let distance=0;
  const step=.025;
 
  while(distance<30){
-
   distance+=step;
-
-  const x=
-   player.x+
-   Math.cos(angle)*distance;
-
-  const y=
-   player.y+
-   Math.sin(angle)*distance;
-
-  if(isWall(x,y))
-   return distance;
-
+  const x=player.x+Math.cos(angle)*distance;
+  const y=player.y+Math.sin(angle)*distance;
+  if(isWall(x,y)) return distance;
  }
-
  return 30;
 }
 
@@ -674,125 +729,123 @@ function castRay(angle){
 ========================= */
 
 function render3D(){
-
  const w=canvas.width;
  const h=canvas.height;
 
- /*
-    CIELO
- */
  const sky=ctx.createLinearGradient(0,0,0,h/2);
  sky.addColorStop(0,"#02030b");
  sky.addColorStop(1,"#111b38");
-
  ctx.fillStyle=sky;
  ctx.fillRect(0,0,w,h/2);
 
-
- /*
-    SUELO
- */
  const floor=ctx.createLinearGradient(0,h/2,0,h);
  floor.addColorStop(0,"#151515");
  floor.addColorStop(1,"#030303");
-
  ctx.fillStyle=floor;
  ctx.fillRect(0,h/2,w,h/2);
 
-
- /*
-    PAREDES
- */
  const rays=Math.min(w,900);
  const columnWidth=w/rays;
 
  for(let i=0;i<rays;i++){
-
-  const rayAngle=
-   player.angle-
-   FOV/2+
-   FOV*(i/rays);
-
+  const rayAngle=player.angle-FOV/2+FOV*(i/rays);
   let distance=castRay(rayAngle);
-
   distance*=Math.cos(rayAngle-player.angle);
 
-  const wallHeight=
-   Math.min(h*1.5,h/(distance*.75));
-
+  const wallHeight=Math.min(h*1.5,h/(distance*.75));
   const top=h/2-wallHeight/2;
+  const brightness=Math.max(25,210-distance*14);
 
-  const brightness=
-   Math.max(25,210-distance*14);
-
-  ctx.fillStyle=
-   `rgb(${brightness*.35},
-        ${brightness*.55},
-        ${brightness})`;
-
-  ctx.fillRect(
-   i*columnWidth,
-   top,
-   columnWidth+1,
-   wallHeight
-  );
+  ctx.fillStyle=`rgb(${brightness*.35},${brightness*.55},${brightness})`;
+  ctx.fillRect(i*columnWidth, top, columnWidth+1, wallHeight);
  }
 
-
- /*
-    OBJETOS
- */
  drawKey3D();
  drawDoor3D();
+ drawMonsters3D();
 
-
- /*
-    CRUZ
- */
+ // MIRA / CRUZ
  ctx.strokeStyle="rgba(255,255,255,.65)";
  ctx.lineWidth=2;
-
  ctx.beginPath();
- ctx.moveTo(w/2-8,h/2);
- ctx.lineTo(w/2+8,h/2);
- ctx.moveTo(w/2,h/2-8);
- ctx.lineTo(w/2,h/2+8);
+ ctx.moveTo(w/2-8,h/2); ctx.lineTo(w/2+8,h/2);
+ ctx.moveTo(w/2,h/2-8); ctx.lineTo(w/2,h/2+8);
  ctx.stroke();
 }
 
 
 /* =========================
-   PROYECCIÓN DE OBJETOS
+   PROYECCIÓN 3D
 ========================= */
 
 function projectObject(x,y){
-
  const dx=x-player.x;
  const dy=y-player.y;
-
  const distance=Math.hypot(dx,dy);
 
- let angle=
-  Math.atan2(dy,dx)-player.angle;
+ let angle=Math.atan2(dy,dx)-player.angle;
+ while(angle>Math.PI) angle-=Math.PI*2;
+ while(angle<-Math.PI) angle+=Math.PI*2;
 
- while(angle>Math.PI)
-  angle-=Math.PI*2;
+ if(Math.abs(angle)>FOV/2) return null;
 
- while(angle<-Math.PI)
-  angle+=Math.PI*2;
+ const screenX=canvas.width/2+(angle/(FOV/2))*(canvas.width/2);
+ return { x:screenX, distance:distance };
+}
 
- if(Math.abs(angle)>FOV/2)
-  return null;
 
- const screenX=
-  canvas.width/2+
-  (angle/(FOV/2))*
-  (canvas.width/2);
+/* =========================
+   MONSTRUOS 3D
+========================= */
 
- return {
-  x:screenX,
-  distance:distance
- };
+function drawMonsters3D(){
+ monsters.forEach(m => {
+  const p = projectObject(m.x, m.y);
+  if(!p || p.distance > 20) return;
+
+  const size = Math.max(15, 180 / p.distance);
+  const centerY = canvas.height / 2 + (size * 0.1);
+
+  ctx.save();
+  ctx.translate(p.x, centerY);
+
+  // Sombra / Resplandor
+  ctx.shadowBlur = m.chasing ? 25 : 10;
+  ctx.shadowColor = m.chasing ? "#e74c3c" : "#9b59b6";
+
+  // Esfera 3D del Monstruo
+  const grad = ctx.createRadialGradient(-size*0.2, -size*0.2, size*0.05, 0, 0, size);
+  if (m.chasing) {
+    grad.addColorStop(0, "#ff7675");
+    grad.addColorStop(0.7, "#d63031");
+    grad.addColorStop(1, "#2d3436");
+  } else {
+    grad.addColorStop(0, "#a29bfe");
+    grad.addColorStop(0.7, "#6c5ce7");
+    grad.addColorStop(1, "#2d3436");
+  }
+
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(0, 0, size, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Ojos del Monstruo
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.arc(-size*0.3, -size*0.1, size*0.22, 0, Math.PI * 2);
+  ctx.arc(size*0.3, -size*0.1, size*0.22, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = m.chasing ? "#e74c3c" : "#000000";
+  ctx.beginPath();
+  ctx.arc(-size*0.3, -size*0.1, size*0.1, 0, Math.PI * 2);
+  ctx.arc(size*0.3, -size*0.1, size*0.1, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+ });
 }
 
 
@@ -801,65 +854,24 @@ function projectObject(x,y){
 ========================= */
 
 function drawKey3D(){
-
  if(key.collected) return;
-
  const p=projectObject(key.x,key.y);
-
  if(!p||p.distance>.55+18) return;
 
  const size=Math.max(8,85/p.distance);
 
  ctx.save();
-
  ctx.translate(p.x,canvas.height/2);
-
  ctx.shadowBlur=18;
  ctx.shadowColor="#ffd84d";
  ctx.strokeStyle="#ffd84d";
  ctx.fillStyle="#ffd84d";
  ctx.lineWidth=Math.max(2,size*.12);
 
- /*
-    Cabeza
- */
- ctx.beginPath();
- ctx.arc(
-  0,
-  -size*.18,
-  size*.25,
-  0,
-  Math.PI*2
- );
- ctx.stroke();
-
- /*
-    Palo
- */
- ctx.fillRect(
-  -size*.04,
-  -size*.02,
-  size*.08,
-  size*.58
- );
-
- /*
-    Dientes
- */
- ctx.fillRect(
-  0,
-  size*.35,
-  size*.22,
-  size*.08
- );
-
- ctx.fillRect(
-  0,
-  size*.48,
-  size*.18,
-  size*.08
- );
-
+ ctx.beginPath(); ctx.arc(0, -size*.18, size*.25, 0, Math.PI*2); ctx.stroke();
+ ctx.fillRect(-size*.04, -size*.02, size*.08, size*.58);
+ ctx.fillRect(0, size*.35, size*.22, size*.08);
+ ctx.fillRect(0, size*.48, size*.18, size*.08);
  ctx.restore();
 }
 
@@ -869,116 +881,46 @@ function drawKey3D(){
 ========================= */
 
 function drawDoor3D(){
-
  const p=projectObject(door.x,door.y);
-
  if(!p||p.distance>25) return;
 
  const size=Math.max(20,260/p.distance);
-
  const doorW=size*.72;
  const doorH=size*1.25;
-
  const bottom=canvas.height/2+size*.72;
  const top=bottom-doorH;
 
  ctx.save();
-
- /*
-    Marco
- */
  ctx.fillStyle="#3b2111";
+ ctx.fillRect(p.x-doorW/2-size*.08, top-size*.08, doorW+size*.16, doorH+size*.08);
 
- ctx.fillRect(
-  p.x-doorW/2-size*.08,
-  top-size*.08,
-  doorW+size*.16,
-  doorH+size*.08
- );
-
- /*
-    Puerta
- */
  if(door.open){
-
   ctx.fillStyle="#21130c";
-
  }else{
-
-  const wood=ctx.createLinearGradient(
-   p.x-doorW/2,0,
-   p.x+doorW/2,0
-  );
-
-  wood.addColorStop(0,"#4b2814");
-  wood.addColorStop(.5,"#8a5428");
-  wood.addColorStop(1,"#3e2110");
-
+  const wood=ctx.createLinearGradient(p.x-doorW/2,0,p.x+doorW/2,0);
+  wood.addColorStop(0,"#4b2814"); wood.addColorStop(.5,"#8a5428"); wood.addColorStop(1,"#3e2110");
   ctx.fillStyle=wood;
  }
+ ctx.fillRect(p.x-doorW/2, top, doorW, doorH);
 
- ctx.fillRect(
-  p.x-doorW/2,
-  top,
-  doorW,
-  doorH
- );
-
-
- /*
-    Tablones
- */
  ctx.strokeStyle="#291508";
  ctx.lineWidth=Math.max(1,size*.025);
-
  for(let i=1;i<4;i++){
-
   const yy=top+(doorH/4)*i;
-
-  ctx.beginPath();
-  ctx.moveTo(p.x-doorW/2,yy);
-  ctx.lineTo(p.x+doorW/2,yy);
-  ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(p.x-doorW/2,yy); ctx.lineTo(p.x+doorW/2,yy); ctx.stroke();
  }
 
-
- /*
-    Tirador
- */
  if(!door.open){
-
   ctx.fillStyle="#e0b84f";
-
   ctx.beginPath();
-
-  ctx.arc(
-   p.x+doorW*.22,
-   top+doorH*.52,
-   Math.max(2,size*.035),
-   0,
-   Math.PI*2
-  );
-
+  ctx.arc(p.x+doorW*.22, top+doorH*.52, Math.max(2,size*.035), 0, Math.PI*2);
   ctx.fill();
  }
 
-
- /*
-    Texto sobre puerta
- */
  if(p.distance<6){
-
-  ctx.textAlign="center";
-  ctx.font="bold 16px Arial";
-  ctx.fillStyle="#fff";
-
-  ctx.fillText(
-   key.collected ? "🚪 SALIDA" : "🔒 NECESITAS LA LLAVE",
-   p.x,
-   top-12
-  );
+  ctx.textAlign="center"; ctx.font="bold 16px Arial"; ctx.fillStyle="#fff";
+  ctx.fillText(key.collected ? "🚪 SALIDA" : "🔒 NECESITAS LA LLAVE", p.x, top-12);
  }
-
  ctx.restore();
 }
 
@@ -988,20 +930,12 @@ function drawDoor3D(){
 ========================= */
 
 function toggleMap(){
-
  const panel=document.getElementById("mapPanel");
-
- if(panel.style.display==="block")
-  panel.style.display="none";
- else{
-  panel.style.display="block";
-  updateMap();
- }
+ if(panel.style.display==="block") panel.style.display="none";
+ else{ panel.style.display="block"; updateMap(); }
 }
 
-
 function updateMap(){
-
  if(!maze.length) return;
 
  const size=210;
@@ -1011,167 +945,101 @@ function updateMap(){
  mapCtx.fillRect(0,0,size,size);
 
  for(let y=0;y<mazeSize;y++){
-
   for(let x=0;x<mazeSize;x++){
-
-   if(maze[y][x]===1)
-    mapCtx.fillStyle="#6b7280";
-   else
-    mapCtx.fillStyle="#151922";
-
-   mapCtx.fillRect(
-    x*cell,
-    y*cell,
-    cell+.5,
-    cell+.5
-   );
+   if(maze[y][x]===1) mapCtx.fillStyle="#6b7280";
+   else mapCtx.fillStyle="#151922";
+   mapCtx.fillRect(x*cell, y*cell, cell+.5, cell+.5);
   }
  }
 
-
- /*
-    LLAVE EN MAPA
- */
+ // LLAVE
  if(!key.collected){
-
   mapCtx.fillStyle="#ffd84d";
-
   mapCtx.beginPath();
-
-  mapCtx.arc(
-   key.x*cell,
-   key.y*cell,
-   Math.max(3,cell*.18),
-   0,
-   Math.PI*2
-  );
-
+  mapCtx.arc(key.x*cell, key.y*cell, Math.max(3,cell*.18), 0, Math.PI*2);
   mapCtx.fill();
  }
 
-
- /*
-    PUERTA
- */
+ // PUERTA
  mapCtx.fillStyle=key.collected?"#62aaff":"#9b5429";
+ mapCtx.fillRect((mazeSize-2)*cell, (mazeSize-2)*cell, cell, cell);
 
- mapCtx.fillRect(
-  (mazeSize-2)*cell,
-  (mazeSize-2)*cell,
-  cell,
-  cell
- );
+ // MONSTRUOS EN MAPA
+ mapCtx.fillStyle="#e74c3c";
+ monsters.forEach(m => {
+  mapCtx.beginPath();
+  mapCtx.arc(m.x*cell, m.y*cell, Math.max(2.5, cell*.2), 0, Math.PI*2);
+  mapCtx.fill();
+ });
 
-
- /*
-    JUGADOR
- */
+ // JUGADOR
  const px=player.x*cell;
  const py=player.y*cell;
 
  mapCtx.fillStyle="#ff3b7a";
-
  mapCtx.beginPath();
-
- mapCtx.arc(
-  px,
-  py,
-  Math.max(4,cell*.25),
-  0,
-  Math.PI*2
- );
-
+ mapCtx.arc(px, py, Math.max(4,cell*.25), 0, Math.PI*2);
  mapCtx.fill();
-
 
  mapCtx.strokeStyle="#fff";
  mapCtx.lineWidth=2;
-
  mapCtx.beginPath();
-
  mapCtx.moveTo(px,py);
-
- mapCtx.lineTo(
-  px+Math.cos(player.angle)*cell,
-  py+Math.sin(player.angle)*cell
- );
-
+ mapCtx.lineTo(px+Math.cos(player.angle)*cell, py+Math.sin(player.angle)*cell);
  mapCtx.stroke();
 }
 
 
 /* =========================
-   PAUSA
+   PAUSA / BUCLE
 ========================= */
 
 function pauseGame(){
-
- if(gameWon) return;
-
+ if(gameWon||gameOver) return;
  gamePaused=true;
-
  document.getElementById("pauseMenu").style.display="flex";
 }
 
 function continueGame(){
-
  gamePaused=false;
-
  document.getElementById("pauseMenu").style.display="none";
 }
 
-
-/* =========================
-   COMPLETAR
-========================= */
-
 function completeLevel(){
-
  if(gameWon) return;
-
  gameWon=true;
 
- if(currentLevel===unlocked && unlocked<100)
-  unlocked++;
+ if(currentLevel===unlocked && unlocked<100) unlocked++;
 
- document.getElementById("finishText").textContent=
-  "🔑 Has encontrado la llave y has abierto la puerta.";
-
+ document.getElementById("finishText").textContent= "🔑 Has encontrado la llave y has abierto la puerta.";
  document.getElementById("finish").style.display="flex";
 }
 
-
-/* =========================
-   SIGUIENTE
-========================= */
-
 function nextLevel(){
-
  const next=currentLevel+1;
-
- if(next<=100)
-  startLevel(next);
- else
-  backToLevels();
+ if(next<=100) startLevel(next);
+ else backToLevels();
 }
 
-
-/* =========================
-   BUCLE
-========================= */
-
 function gameLoop(){
-
  movePlayer();
  render3D();
  updateMap();
-
  requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+// INICIALIZACIÓN AUTOMÁTICA
+const savedData = loadSavedData();
+const action = localStorage.getItem('pixelgames_action_juego5.html');
 
-createLevelButtons();
+if (action === 'load' && savedData) {
+ localStorage.removeItem('pixelgames_action_juego5.html');
+ startLevel(savedData.currentLevel, savedData);
+} else {
+ createLevelButtons();
+}
+
+gameLoop();
 
 </script>
 
