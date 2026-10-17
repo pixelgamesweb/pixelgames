@@ -38,15 +38,43 @@
       font-weight: bold;
     }
 
+    /* BARRA DE USUARIO Y CAMBIO DE SESIÓN */
+    .user-bar {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
     .user-tag {
-      margin-top: 10px;
       background: rgba(0, 229, 255, 0.1);
       border: 1px solid #00e5ff;
-      padding: 5px 15px;
+      padding: 6px 16px;
       border-radius: 20px;
       font-size: 13px;
       color: #00e5ff;
-      display: inline-block;
+      font-weight: bold;
+    }
+
+    .btn-cambiar-usuario {
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid #e74c3c;
+      color: #ff6b6b;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .btn-cambiar-usuario:hover {
+      background: #e74c3c;
+      color: #ffffff;
+      transform: scale(1.05);
     }
 
     .grid {
@@ -218,7 +246,10 @@
   <header>
     <h1>PIXEL GAMES</h1>
     <div class="subtitle">ELIGE TU JUEGO</div>
-    <div class="user-tag" id="user-display">Usuario: Invitado</div>
+    <div class="user-bar">
+      <div class="user-tag" id="user-display">👤 Usuario: Invitado</div>
+      <button class="btn-cambiar-usuario" onclick="cambiarUsuario()">🔄 CAMBIAR USUARIO</button>
+    </div>
   </header>
 
   <main class="grid" id="games"></main>
@@ -239,9 +270,25 @@
   </div>
 
   <script>
-    const usuarioActivo = localStorage.getItem('pixelgames_session') || 'Invitado';
-    document.getElementById('user-display').innerText = `Usuario: ${usuarioActivo}`;
+    // 1. VERIFICAR O CARGAR SESIÓN DE USUARIO
+    const usuarioActivo = localStorage.getItem('pixelgames_session');
+    
+    // Si no hay ningún usuario activo guardado, vuelve a pedir el login en index.html
+    if (!usuarioActivo) {
+      window.location.href = 'index.html';
+    } else {
+      document.getElementById('user-display').innerText = `👤 Usuario: ${usuarioActivo}`;
+    }
 
+    // FUNCIÓN PARA CAMBIAR DE USUARIO
+    function cambiarUsuario() {
+      if (confirm(`¿Quieres cerrar la sesión de "${usuarioActivo}" y cambiar de usuario?`)) {
+        localStorage.removeItem('pixelgames_session');
+        window.location.href = 'index.html';
+      }
+    }
+
+    // LISTA DE JUEGOS
     const games = [
       { id: 1, name: "money up", icon: "🪙", file: "juego1.html", permiteGuardar: false },
       { id: 2, name: "batle", icon: "🌲", file: "juego2.html", permiteGuardar: true },
@@ -294,13 +341,13 @@
 
       juegoSeleccionado = g;
 
-      // Si el juego NO permite guardar (ej: Money Up), ir directo
+      // Si el juego NO permite guardar (ej: Money Up), ir directo a partida nueva
       if (!g.permiteGuardar) {
         window.location.href = g.file;
         return;
       }
 
-      // Si permite guardar, mostrar modal con opciones
+      // Mostrar modal con opciones de guardado
       document.getElementById('modal-titulo-juego').innerText = g.name.toUpperCase();
       document.getElementById('alerta-sin-partida').style.display = 'none';
       document.getElementById('modal-partida').style.display = 'flex';
@@ -317,9 +364,8 @@
       const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
       const perfilUser = usuarios[usuarioActivo];
 
-      // Verificar si existen datos guardados de este juego
+      // Verificar si existen datos guardados de este juego para este usuario en concreto
       if (perfilUser && perfilUser.progreso && perfilUser.progreso[juegoSeleccionado.file]) {
-        // Guardar indicador de carga de estado
         localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'load');
         window.location.href = juegoSeleccionado.file;
       } else {
@@ -332,13 +378,12 @@
 
       const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
 
-      // Borrar partida anterior guardada si existía
+      // Si existía partida previa, se elimina para crear la nueva desde cero
       if (usuarios[usuarioActivo] && usuarios[usuarioActivo].progreso) {
         delete usuarios[usuarioActivo].progreso[juegoSeleccionado.file];
         localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
       }
 
-      // Marcar para iniciar limpia
       localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'new');
       window.location.href = juegoSeleccionado.file;
     }
