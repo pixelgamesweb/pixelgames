@@ -266,6 +266,22 @@
     .btn-buy:hover { background: #ffea70; }
     .btn-owned { background: #2ed573; color: #000; cursor: default; }
 
+    .btn-view-spirit {
+      background: linear-gradient(180deg, #a55eea, #8854d0);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      box-shadow: 0 0 10px rgba(165, 94, 234, 0.4);
+      transition: transform 0.1s;
+    }
+
+    .btn-view-spirit:hover { transform: scale(1.05); filter: brightness(1.2); }
+
     .modal-btn {
       width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: none;
       font-size: 15px; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s;
@@ -326,6 +342,16 @@
       min-height: 24px;
       margin-top: 5px;
     }
+
+    /* MODAL DE PREVISUALIZACIÓN DEL ESPÍRITU */
+    #spirit-viewer-canvas {
+      background: #02050f;
+      border-radius: 16px;
+      border: 2px solid #a55eea;
+      box-shadow: 0 0 20px rgba(165, 94, 234, 0.4);
+      margin: 15px auto;
+      display: block;
+    }
   </style>
 </head>
 
@@ -376,6 +402,18 @@
     </div>
   </div>
 
+  <!-- MODAL VER ESPÍRITU -->
+  <div class="modal-overlay" id="modal-ver-espiritu" style="z-index: 150;">
+    <div class="modal-card" style="max-width: 400px;">
+      <h2 id="spirit-view-title" style="color: #a55eea;">NOMBRE ESPÍRITU</h2>
+      <div id="spirit-view-rarity" style="font-weight: bold; font-size: 14px; margin-bottom: 10px;">RARIDAD</div>
+
+      <canvas id="spirit-viewer-canvas" width="220" height="220"></canvas>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarVisorEspiritu()">Cerrar Visor</button>
+    </div>
+  </div>
+
   <!-- MODAL PIXELRULETA -->
   <div class="modal-overlay" id="modal-ruleta">
     <div class="modal-card" style="max-width: 440px;">
@@ -406,16 +444,16 @@
 
     const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
     if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 100, espiritusComprados: [] };
+      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 10000, espiritusComprados: [] };
     }
-    if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 100;
+    if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 10000;
     if (!usuarios[usuarioActivo].espiritusComprados) usuarios[usuarioActivo].espiritusComprados = [];
 
     localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
 
     function actualizarMonedasUI() {
       const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
-      document.getElementById('coins-display').innerText = `🪙 ${u.coins} Pixelmonedas`;
+      document.getElementById('coins-display').innerText = `🪙 ${u.coins.toLocaleString('es-ES')} Pixelmonedas`;
     }
 
     actualizarMonedasUI();
@@ -520,14 +558,14 @@
       window.location.href = juegoSeleccionado.file;
     }
 
-    /* GENERADOR DE LOS 150 ESPÍRITUS */
+    /* GENERADOR DE ESPÍRITUS CON RANGO 4.000 A 1.000.000 */
     const raridades = [
-      { nombre: 'comun', label: 'Común', precio: 100 },
-      { nombre: 'raro', label: 'Raro', precio: 250 },
-      { nombre: 'epico', label: 'Épico', precio: 500 },
-      { nombre: 'legendario', label: 'Legendario', precio: 1000 },
-      { nombre: 'mitico', label: 'Mítico', precio: 2500 },
-      { nombre: 'especial', label: 'Especial', precio: 5000 }
+      { nombre: 'comun', label: 'Común', precio: 4000, colorHex: '#a4b0be' },
+      { nombre: 'raro', label: 'Raro', precio: 12000, colorHex: '#1e90ff' },
+      { nombre: 'epico', label: 'Épico', precio: 35000, colorHex: '#a55eea' },
+      { nombre: 'legendario', label: 'Legendario', precio: 100000, colorHex: '#ffa502' },
+      { nombre: 'mitico', label: 'Mítico', precio: 350000, colorHex: '#ff4757' },
+      { nombre: 'especial', label: 'Especial', precio: 1000000, colorHex: '#2ed573' }
     ];
 
     const nombresNube = ["Tramposo", "Campeón Slime", "Sombra Carmesí", "Espectro Neón", "Fuego Fatuo", "Alma Helada", "Aura Dorada", "Centinela Pixel", "Rayo Azul", "Titán Galáctico", "Duende Rojo", "Orbe Oscuro", "Guardián Ancestral", "Espíritu Fénix", "Sombra Lunar", "Rayo Solar", "Caminante Estelar", "Señor Slime", "Espíritu Dragón", "Nube Mágica"];
@@ -550,7 +588,8 @@
         nombre: `${baseNombre} #${i}`,
         raridadKey: rObj.nombre,
         raridadLabel: rObj.label,
-        precio: rObj.precio
+        precio: rObj.precio,
+        colorHex: rObj.colorHex
       });
     }
 
@@ -593,7 +632,7 @@
             </div>
             ${poseido 
               ? `<button class="btn-buy btn-owned">DESBLOQUEADO</button>` 
-              : `<button class="btn-buy" onclick="comprarEspiritu(${esp.id}, ${esp.precio})">🪙 ${esp.precio}</button>`}
+              : `<button class="btn-buy" onclick="comprarEspiritu(${esp.id}, ${esp.precio})">🪙 ${esp.precio.toLocaleString('es-ES')}</button>`}
           `;
           listContainer.appendChild(itemDiv);
         });
@@ -616,7 +655,7 @@
               <div class="spirit-name">${esp.nombre}</div>
               <div class="rarity-${esp.raridadKey}" style="font-size:12px; font-weight:bold;">${esp.raridadLabel}</div>
             </div>
-            <button class="btn-buy btn-owned">✅ EN TU PODER</button>
+            <button class="btn-view-spirit" onclick="verImagenEspiritu(${esp.id})">🔍 VER ESPÍRITU</button>
           `;
           listContainer.appendChild(itemDiv);
         });
@@ -640,28 +679,88 @@
       renderListaEspiritus();
     }
 
-    /* 🎡 LÓGICA DE LA PIXELRULETA DE 20 APARTADOS */
+    /* VISOR DE IMAGEN DEL ESPÍRITU */
+    function verImagenEspiritu(id) {
+      const esp = catalogoEspiritus.find(e => e.id === id);
+      if (!esp) return;
+
+      document.getElementById('spirit-view-title').innerText = esp.nombre.toUpperCase();
+      document.getElementById('spirit-view-title').style.color = esp.colorHex;
+
+      const rarityEl = document.getElementById('spirit-view-rarity');
+      rarityEl.innerText = `Raridad: ${esp.raridadLabel}`;
+      rarityEl.className = `rarity-${esp.raridadKey}`;
+
+      dibujarArtePixelEspiritu(esp);
+      document.getElementById('modal-ver-espiritu').style.display = 'flex';
+    }
+
+    function cerrarVisorEspiritu() {
+      document.getElementById('modal-ver-espiritu').style.display = 'none';
+    }
+
+    function dibujarArtePixelEspiritu(esp) {
+      const canvas = document.getElementById('spirit-viewer-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Fondo del aura
+      const grad = ctx.createRadialGradient(110, 110, 10, 110, 110, 100);
+      grad.addColorStop(0, esp.colorHex);
+      grad.addColorStop(1, '#02050f');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 220, 220);
+
+      // Renderizado del Espíritu
+      ctx.fillStyle = esp.colorHex;
+      ctx.shadowColor = esp.colorHex;
+      ctx.shadowBlur = 12;
+
+      // Cabeza / Cuerpo flotante
+      ctx.fillRect(70, 50, 80, 80);
+      ctx.fillRect(60, 60, 100, 60);
+
+      // Cola Fantasmagórica
+      ctx.fillRect(80, 130, 60, 20);
+      ctx.fillRect(90, 150, 40, 20);
+      ctx.fillRect(100, 170, 20, 15);
+
+      // Ojos brillantes Pixel Art
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowBlur = 0;
+      ctx.fillRect(80, 75, 18, 18);
+      ctx.fillRect(122, 75, 18, 18);
+
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(86, 80, 8, 8);
+      ctx.fillRect(128, 80, 8, 8);
+
+      // Boca
+      ctx.fillRect(98, 105, 24, 6);
+    }
+
+    /* 🎡 PIXELRULETA CON PREMIOS REBALANCEADOS */
     const opcionesRuleta = [
-      { text: "+50 🪙", type: "coins", val: 50, color: "#1e90ff" },
+      { text: "+1.000 🪙", type: "coins", val: 1000, color: "#1e90ff" },
       { text: "Espíritu Común 👻", type: "spirit", val: "comun", color: "#a4b0be" },
-      { text: "+100 🪙", type: "coins", val: 100, color: "#2ed573" },
+      { text: "+2.500 🪙", type: "coins", val: 2500, color: "#2ed573" },
       { text: "¡Ouch! 0 🪙", type: "none", val: 0, color: "#57606f" },
-      { text: "+200 🪙", type: "coins", val: 200, color: "#1e90ff" },
+      { text: "+5.000 🪙", type: "coins", val: 5000, color: "#1e90ff" },
       { text: "Espíritu Raro 💎", type: "spirit", val: "raro", color: "#70a1ff" },
-      { text: "+300 🪙", type: "coins", val: 300, color: "#2ed573" },
-      { text: "Bomba -100 🪙", type: "coins", val: -100, color: "#ff4757" },
-      { text: "+500 🪙", type: "coins", val: 500, color: "#ffa502" },
+      { text: "+10.000 🪙", type: "coins", val: 10000, color: "#2ed573" },
+      { text: "Bomba -2.000 🪙", type: "coins", val: -2000, color: "#ff4757" },
+      { text: "+15.000 🪙", type: "coins", val: 15000, color: "#ffa502" },
       { text: "Espíritu Épico 🔮", type: "spirit", val: "epico", color: "#a55eea" },
-      { text: "+150 🪙", type: "coins", val: 150, color: "#1e90ff" },
-      { text: "Casino -200 🪙", type: "coins", val: -200, color: "#ff4757" },
-      { text: "+1.000 🪙", type: "coins", val: 1000, color: "#eccc68" },
+      { text: "+3.000 🪙", type: "coins", val: 3000, color: "#1e90ff" },
+      { text: "Casino -5.000 🪙", type: "coins", val: -5000, color: "#ff4757" },
+      { text: "+25.000 🪙", type: "coins", val: 25000, color: "#eccc68" },
       { text: "Espíritu Legendario 👑", type: "spirit", val: "legendario", color: "#ff7f50" },
-      { text: "+250 🪙", type: "coins", val: 250, color: "#2ed573" },
+      { text: "+8.000 🪙", type: "coins", val: 8000, color: "#2ed573" },
       { text: "Giro Extra 🎡", type: "extra", val: 0, color: "#ff6b81" },
       { text: "Espíritu Mítico 🔥", type: "spirit", val: "mitico", color: "#ff4757" },
-      { text: "+75 🪙", type: "coins", val: 75, color: "#1e90ff" },
-      { text: "Gran Bote +2.500 🪙", type: "coins", val: 2500, color: "#ffd700" },
-      { text: "Cofre Sorpresa 🎁", type: "coins", val: 400, color: "#74b9ff" }
+      { text: "+2.000 🪙", type: "coins", val: 2000, color: "#1e90ff" },
+      { text: "Gran Bote +50.000 🪙", type: "coins", val: 50000, color: "#ffd700" },
+      { text: "Cofre Sorpresa 🎁", type: "coins", val: 12000, color: "#74b9ff" }
     ];
 
     let currentAngle = 0;
@@ -786,8 +885,8 @@
           u.espiritusComprados.push(regalado.id);
           resEl.innerText = `🎁 ¡Premio Especial! Has obtenido el espíritu "${regalado.nombre}"`;
         } else {
-          u.coins += 300;
-          resEl.innerText = `🎁 ¡Espíritu repetido! Te damos +300 Pixelmonedas en su lugar.`;
+          u.coins += 5000;
+          resEl.innerText = `🎁 ¡Espíritu repetido! Te damos +5.000 Pixelmonedas en su lugar.`;
         }
       } else if (premio.type === 'extra') {
         resEl.innerText = `🎉 ¡TIENES UN GIRO EXTRA! Vuelve a girar.`;
