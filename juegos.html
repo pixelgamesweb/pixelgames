@@ -433,7 +433,7 @@
   </div>
 
   <script>
-    // 1. GESTIÓN DE SESIÓN
+    // 1. GESTIÓN DE SESIÓN Y BONO DE BIENVENIDA ÚNICO
     const usuarioActivo = localStorage.getItem('pixelgames_session');
     
     if (!usuarioActivo) {
@@ -444,11 +444,25 @@
 
     const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
     if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 0, espiritusComprados: [], ruletaUsada: false };
+      usuarios[usuarioActivo] = { 
+        password: '', 
+        progreso: {}, 
+        coins: 0, 
+        espiritusComprados: [], 
+        ruletaUsada: false, 
+        bienvenidaRecibida: false 
+      };
     }
+
     if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 0;
     if (!usuarios[usuarioActivo].espiritusComprados) usuarios[usuarioActivo].espiritusComprados = [];
-    if (usuarios[usuarioActivo].ruletaUsada === undefined) usuarios[usuarioActivo].ruletaUsada = false;
+
+    // BONO DE BIENVENIDA: Entrega 5.000 Pixelmonedas ÚNICAMENTE en la primera entrada
+    if (!usuarios[usuarioActivo].bienvenidaRecibida) {
+      usuarios[usuarioActivo].coins += 5000;
+      usuarios[usuarioActivo].bienvenidaRecibida = true;
+      alert(`🎁 ¡Bienvenido a PIXEL GAMES, ${usuarioActivo}!\n\nSe te han acreditado 5.000 Pixelmonedas de regalo por iniciar sesión por primera vez.`);
+    }
 
     localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
 
@@ -843,7 +857,6 @@
       const u = allUsers[usuarioActivo];
       const esPrimerGiro = !u.ruletaUsada;
 
-      // Si NO es el primer giro, cobrar 1.000 Pixelmonedas
       if (!esPrimerGiro) {
         if (u.coins < 1000) {
           document.getElementById('roulette-result').innerText = '❌ No tienes suficientes Pixelmonedas (necesitas 1.000).';
@@ -865,14 +878,12 @@
 
       let targetIndex;
       if (esPrimerGiro) {
-        // Selecciona una de las casillas clasificadas como 'buenas' (100% garantizado)
         const indicesBuenos = opcionesRuleta.map((op, idx) => op.bueno ? idx : null).filter(val => val !== null);
         targetIndex = indicesBuenos[Math.floor(Math.random() * indicesBuenos.length)];
       } else {
         targetIndex = Math.floor(Math.random() * numSlices);
       }
 
-      // Cálculo del ángulo exacto para detener la ruleta en targetIndex
       const extraRotations = 5 + Math.floor(Math.random() * 3);
       const angleForTarget = (1.5 * Math.PI) - (targetIndex * sliceAngle) - (sliceAngle / 2);
       
@@ -920,7 +931,6 @@
       const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
       const u = allUsers[usuarioActivo];
 
-      // Marcar primer giro como usado
       if (esPrimerGiro) {
         u.ruletaUsada = true;
         document.getElementById('roulette-subtitle').innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
