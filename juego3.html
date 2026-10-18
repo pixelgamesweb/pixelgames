@@ -15,9 +15,12 @@ button{border:1px solid #ffffff25;border-radius:14px;background:#050505;color:#6
 h1{text-align:center;font-size:clamp(42px,9vw,75px);margin:0}
 .main{width:100%;margin:8px 0;padding:17px;font-size:18px}
 .description{text-align:center;line-height:1.6;opacity:.75}
-#hud{display:none;position:fixed;z-index:10;top:12px;left:12px;right:12px;justify-content:space-between;pointer-events:none}
+#hud{display:none;position:fixed;z-index:10;top:12px;left:12px;right:12px;justify-content:space-between;pointer-events:none;align-items:center}
 #score{padding:12px 20px;border-radius:14px;background:#000b;border:1px solid #ffffff25;color:white;font-size:18px}
-#pauseButton{pointer-events:auto;width:48px;height:48px;padding:0}
+#pauseButton,#saveButton{pointer-events:auto;padding:10px 16px;font-size:14px;font-weight:bold;border-radius:12px}
+#saveButton{background:#2ecc71;color:#050505;border:none}
+#saveButton:disabled{opacity:0.75;cursor:wait}
+#pauseButton{width:48px;height:48px;padding:0}
 #controls{display:none;position:fixed;z-index:12;left:0;right:0;bottom:12px;height:155px;pointer-events:none}
 #joystick{position:absolute;left:15px;bottom:0;width:140px;height:140px;border-radius:50%;background:#000a;border:2px solid #ffffff25;pointer-events:auto;touch-action:none}
 #knob{position:absolute;left:41px;top:41px;width:58px;height:58px;border-radius:50%;background:#111}
@@ -60,7 +63,11 @@ h1{text-align:center;font-size:clamp(42px,9vw,75px);margin:0}
 <button id="back" class="main">SALIR</button>
 </div></div>
 
-<div id="hud"><div id="score">J1 0 — 0 J2</div><button id="pauseButton">Ⅱ</button></div>
+<div id="hud">
+  <button id="saveButton">💾 GUARDAR</button>
+  <div id="score">J1 0 — 0 J2</div>
+  <button id="pauseButton">Ⅱ</button>
+</div>
 <div id="countdown"></div><div id="goal">¡GOL!</div>
 
 <div id="controls">
@@ -119,6 +126,47 @@ let peer=null,conn=null,score1=0,score2=0,time=0,owner=null,sprinting=false;
 const keys={w:false,a:false,s:false,d:false};
 const remote={w:false,a:false,s:false,d:false,sprint:false};
 
+// --- SISTEMA DE GUARDADO ---
+function saveGame(){
+ const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+ const btn = document.getElementById('saveButton');
+ 
+ btn.innerText = "Pensando...";
+ btn.disabled = true;
+
+ setTimeout(() => {
+   const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+   if (!users[activeUser]) {
+     users[activeUser] = { password: '', progreso: {} };
+   }
+   if (!users[activeUser].progreso) {
+     users[activeUser].progreso = {};
+   }
+
+   users[activeUser].progreso['juego3.html'] = state();
+
+   localStorage.setItem('pixelgames_users', JSON.stringify(users));
+
+   btn.innerText = "¡Guardado!";
+   setTimeout(() => {
+     btn.innerText = "💾 GUARDAR";
+     btn.disabled = false;
+   }, 1500);
+ }, 400);
+}
+
+function loadSavedData(){
+ const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+ const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+ if (users[activeUser] && users[activeUser].progreso && users[activeUser].progreso['juego3.html']){
+   return users[activeUser].progreso['juego3.html'];
+ }
+ return null;
+}
+
+document.getElementById("saveButton").onclick = saveGame;
+
 function clamp(p){p.x=THREE.MathUtils.clamp(p.x,-W/2+1,W/2-1);p.z=THREE.MathUtils.clamp(p.z,-L/2+1,L/2-1)}
 function move(p,i,s,d){
  let z=(i.w?1:0)-(i.s?1:0),x=(i.d?1:0)-(i.a?1:0);
@@ -167,8 +215,8 @@ function start(){
 }
 function state(){return {e:{x:enemy.position.x,z:enemy.position.z},m:{x:me.position.x,z:me.position.z},b:{x:ball.position.x,y:ball.position.y,z:ball.position.z,vx:bv.x,vy:bv.y,vz:bv.z,o:owner===me?1:owner===enemy?2:0},s1:score1,s2:score2,t:time}}
 function apply(s){
- enemy.position.set(s.m.x,0,s.m.z);me.position.set(s.e.x,0,s.e.z);
- ball.position.set(s.b.x,s.b.y,s.b.z);bv.set(s.b.vx,s.b.vy,s.b.vz);owner=s.b.o===1?enemy:s.b.o===2?me:null;score1=s.s1;score2=s.s2;time=s.t
+ enemy.position.set(s.e.x,0,s.e.z);me.position.set(s.m.x,0,s.m.z);
+ ball.position.set(s.b.x,s.b.y,s.b.z);bv.set(s.b.vx,s.b.vy,s.b.vz);owner=s.b.o===1?me:s.b.o===2?enemy:null;score1=s.s1;score2=s.s2;time=s.t
 }
 function codeId(c){return "pixelgames-futbol3-1v1-"+c}
 function createRoom(){
@@ -204,7 +252,19 @@ document.getElementById("shoot").onpointerdown=shoot;
 document.getElementById("sprint").onpointerdown=()=>sprinting=true;
 document.getElementById("sprint").onpointerup=()=>sprinting=false;
 
-document.getElementById("play").onclick=()=>{online=false;start()};
+document.getElementById("play").onclick=()=>{
+  online=false;
+  const savedData = loadSavedData();
+  const action = localStorage.getItem('pixelgames_action_juego3.html');
+
+  if (action === 'load' && savedData) {
+    localStorage.removeItem('pixelgames_action_juego3.html');
+    apply(savedData);
+  } else {
+    reset();
+  }
+  start();
+};
 document.getElementById("online").onclick=()=>{document.getElementById("menu").style.display="none";document.getElementById("onlineMenu").style.display="flex"};
 document.getElementById("create").onclick=createRoom;
 document.getElementById("join").onclick=()=>{document.getElementById("inputCode").style.display="block";document.getElementById("confirm").style.display="block";document.getElementById("inputCode").focus()};
@@ -212,7 +272,18 @@ document.getElementById("confirm").onclick=joinRoom;
 document.getElementById("close").onclick=()=>{if(peer)peer.destroy();document.getElementById("onlineMenu").style.display="none";document.getElementById("menu").style.display="flex"};
 document.getElementById("pauseButton").onclick=()=>{paused=true;document.getElementById("pause").style.display="flex"};
 document.getElementById("resume").onclick=()=>{paused=false;document.getElementById("pause").style.display="none"};
-document.getElementById("back").onclick=()=>location.reload();
+document.getElementById("back").onclick=()=>window.location.href="juegos.html";
+
+// AUTO-CARGA SI SE INICIÓ DESDE EL MENÚ DE CONTINUAR PARTIDA
+const savedData = loadSavedData();
+const action = localStorage.getItem('pixelgames_action_juego3.html');
+
+if (action === 'load' && savedData) {
+  localStorage.removeItem('pixelgames_action_juego3.html');
+  online = false;
+  apply(savedData);
+  start();
+}
 
 let last=performance.now(),net=0;
 function loop(now){
