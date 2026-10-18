@@ -444,10 +444,13 @@
 
     const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
     if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 10000, espiritusComprados: [] };
+      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 0, espiritusComprados: [] };
     }
-    if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 10000;
+    if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 0;
     if (!usuarios[usuarioActivo].espiritusComprados) usuarios[usuarioActivo].espiritusComprados = [];
+
+    // BONO DE ENTRADA: Otorga 1.000.000 de Pixelmonedas cada vez que entra
+    usuarios[usuarioActivo].coins += 1000000;
 
     localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
 
