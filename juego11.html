@@ -57,6 +57,8 @@
       transition: transform 0.1s, filter 0.2s;
     }
     .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+    .btn-save { background: linear-gradient(180deg, #2ecc71, #27ae60); color: #050505; }
+    .btn-save:disabled { opacity: 0.75; cursor: wait; }
     .btn-back { background: linear-gradient(180deg, #ff4757, #c0392b); }
 
     /* Modal Victoria */
@@ -129,6 +131,7 @@
   </div>
 
   <div class="controls">
+    <button class="btn btn-save" id="btnSaveGame" onclick="saveGameProgress()">💾 GUARDAR</button>
     <button class="btn" onclick="resetGame()">REINICIAR</button>
     <a href="juegos.html" class="btn btn-back">VOLVER AL MENÚ</a>
   </div>
@@ -200,6 +203,56 @@
       opacity: 0.9 
     });
 
+    /* SISTEMA DE GUARDADO Y CARGA DE PARTIDA */
+    function saveGameProgress() {
+      const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+      const btn = document.getElementById('btnSaveGame');
+
+      btn.innerText = "Pensando...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+        if (!users[activeUser]) {
+          users[activeUser] = { password: '', progreso: {} };
+        }
+        if (!users[activeUser].progreso) {
+          users[activeUser].progreso = {};
+        }
+
+        const pieceData = pieces.map(p => ({
+          type: p.userData.type,
+          color: p.userData.color,
+          row: p.userData.row,
+          col: p.userData.col
+        }));
+
+        users[activeUser].progreso['juego11.html'] = {
+          turn: turn,
+          timeLeft: timeLeft,
+          pieces: pieceData
+        };
+
+        localStorage.setItem('pixelgames_users', JSON.stringify(users));
+
+        btn.innerText = "¡Guardado!";
+        setTimeout(() => {
+          btn.innerText = "💾 GUARDAR";
+          btn.disabled = false;
+        }, 1500);
+      }, 400);
+    }
+
+    function loadSavedData() {
+      const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+      const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+      if (users[activeUser] && users[activeUser].progreso && users[activeUser].progreso['juego11.html']) {
+        return users[activeUser].progreso['juego11.html'];
+      }
+      return null;
+    }
+
     function init() {
       const container = document.getElementById('canvas-container');
 
@@ -229,8 +282,18 @@
       scene.add(dirLight);
 
       buildBoard();
-      setupPieces();
-      startTimer();
+
+      // AUTO-CARGA DE PARTIDA SI SE SELECCIONÓ EN EL MENÚ
+      const savedData = loadSavedData();
+      const action = localStorage.getItem('pixelgames_action_juego11.html');
+
+      if (action === 'load' && savedData) {
+        localStorage.removeItem('pixelgames_action_juego11.html');
+        restoreSavedBoard(savedData);
+      } else {
+        setupPieces();
+        startTimer();
+      }
 
       window.addEventListener('resize', onWindowResize);
       window.addEventListener('pointerdown', onPointerDown);
@@ -238,9 +301,30 @@
       animate();
     }
 
-    function startTimer() {
+    function restoreSavedBoard(savedData) {
+      pieces.forEach(p => scene.remove(p));
+      pieces = [];
+
+      turn = savedData.turn || 'white';
+      timeLeft = savedData.timeLeft !== undefined ? savedData.timeLeft : 30;
+
+      document.getElementById('turn-display').textContent = turn === 'white' ? 'BLANCAS' : 'NEGRAS';
+      document.getElementById('turn-display').style.color = turn === 'white' ? '#00e5ff' : '#ff4757';
+
+      if (savedData.pieces && Array.isArray(savedData.pieces)) {
+        savedData.pieces.forEach(p => {
+          spawnPiece(p.type, p.color, p.row, p.col);
+        });
+      } else {
+        setupPieces();
+      }
+
+      startTimer(timeLeft);
+    }
+
+    function startTimer(customTime = 30) {
       clearInterval(timerInterval);
-      timeLeft = 30;
+      timeLeft = customTime;
       document.getElementById('timer-display').textContent = timeLeft;
 
       timerInterval = setInterval(() => {
@@ -248,7 +332,6 @@
         document.getElementById('timer-display').textContent = timeLeft;
 
         if (timeLeft <= 0) {
-          // Se acaba el tiempo: pasa el turno
           finishTurn();
         }
       }, 1000);
@@ -551,7 +634,7 @@
       document.getElementById('turn-display').textContent = turn === 'white' ? 'BLANCAS' : 'NEGRAS';
       document.getElementById('turn-display').style.color = turn === 'white' ? '#00e5ff' : '#ff4757';
       
-      startTimer();
+      startTimer(30);
     }
 
     function onWindowResize() {
@@ -578,7 +661,7 @@
       document.getElementById('turn-display').textContent = 'BLANCAS';
       document.getElementById('turn-display').style.color = '#00e5ff';
       setupPieces();
-      startTimer();
+      startTimer(30);
     }
 
     init();
