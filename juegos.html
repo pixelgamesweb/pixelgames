@@ -418,7 +418,7 @@
   <div class="modal-overlay" id="modal-ruleta">
     <div class="modal-card" style="max-width: 440px;">
       <h2 style="color: #ff007f;">🎡 PIXELRULETA</h2>
-      <p style="color: #8191aa; font-size: 12px;">¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!</p>
+      <p style="color: #8191aa; font-size: 12px;" id="roulette-subtitle">¡Prueba tu suerte en la Pixelruleta!</p>
 
       <div class="roulette-wrapper">
         <div class="roulette-pointer"></div>
@@ -427,7 +427,7 @@
 
       <div id="roulette-result"></div>
 
-      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA! (🪙 1.000)</button>
+      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA!</button>
       <button class="modal-btn btn-cancelar" onclick="cerrarRuleta()">Volver</button>
     </div>
   </div>
@@ -444,10 +444,11 @@
 
     const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
     if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 0, espiritusComprados: [] };
+      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 0, espiritusComprados: [], ruletaUsada: false };
     }
     if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 0;
     if (!usuarios[usuarioActivo].espiritusComprados) usuarios[usuarioActivo].espiritusComprados = [];
+    if (usuarios[usuarioActivo].ruletaUsada === undefined) usuarios[usuarioActivo].ruletaUsada = false;
 
     localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
 
@@ -739,34 +740,46 @@
       ctx.fillRect(98, 105, 24, 6);
     }
 
-    /* 🎡 PIXELRULETA CON COSTO DE 1.000 PIXELMONEDAS POR GIRO */
+    /* 🎡 PIXELRULETA CON PRIMER GIRO GRATIS Y PREMIO BUENO 100% GARANTIZADO */
     const opcionesRuleta = [
-      { text: "+1.000 🪙", type: "coins", val: 1000, color: "#1e90ff" },
-      { text: "Espíritu Común 👻", type: "spirit", val: "comun", color: "#a4b0be" },
-      { text: "+2.500 🪙", type: "coins", val: 2500, color: "#2ed573" },
-      { text: "¡Ouch! 0 🪙", type: "none", val: 0, color: "#57606f" },
-      { text: "+5.000 🪙", type: "coins", val: 5000, color: "#1e90ff" },
-      { text: "Espíritu Raro 💎", type: "spirit", val: "raro", color: "#70a1ff" },
-      { text: "+10.000 🪙", type: "coins", val: 10000, color: "#2ed573" },
-      { text: "Bomba -2.000 🪙", type: "coins", val: -2000, color: "#ff4757" },
-      { text: "+15.000 🪙", type: "coins", val: 15000, color: "#ffa502" },
-      { text: "Espíritu Épico 🔮", type: "spirit", val: "epico", color: "#a55eea" },
-      { text: "+3.000 🪙", type: "coins", val: 3000, color: "#1e90ff" },
-      { text: "Casino -5.000 🪙", type: "coins", val: -5000, color: "#ff4757" },
-      { text: "+25.000 🪙", type: "coins", val: 25000, color: "#eccc68" },
-      { text: "Espíritu Legendario 👑", type: "spirit", val: "legendario", color: "#ff7f50" },
-      { text: "+8.000 🪙", type: "coins", val: 8000, color: "#2ed573" },
-      { text: "Giro Extra 🎡", type: "extra", val: 0, color: "#ff6b81" },
-      { text: "Espíritu Mítico 🔥", type: "spirit", val: "mitico", color: "#ff4757" },
-      { text: "+2.000 🪙", type: "coins", val: 2000, color: "#1e90ff" },
-      { text: "Gran Bote +50.000 🪙", type: "coins", val: 50000, color: "#ffd700" },
-      { text: "Cofre Sorpresa 🎁", type: "coins", val: 12000, color: "#74b9ff" }
+      { text: "+1.000 🪙", type: "coins", val: 1000, color: "#1e90ff", bueno: false },
+      { text: "Espíritu Común 👻", type: "spirit", val: "comun", color: "#a4b0be", bueno: false },
+      { text: "+2.500 🪙", type: "coins", val: 2500, color: "#2ed573", bueno: false },
+      { text: "¡Ouch! 0 🪙", type: "none", val: 0, color: "#57606f", bueno: false },
+      { text: "+5.000 🪙", type: "coins", val: 5000, color: "#1e90ff", bueno: false },
+      { text: "Espíritu Raro 💎", type: "spirit", val: "raro", color: "#70a1ff", bueno: false },
+      { text: "+10.000 🪙", type: "coins", val: 10000, color: "#2ed573", bueno: false },
+      { text: "Bomba -2.000 🪙", type: "coins", val: -2000, color: "#ff4757", bueno: false },
+      { text: "+15.000 🪙", type: "coins", val: 15000, color: "#ffa502", bueno: true },
+      { text: "Espíritu Épico 🔮", type: "spirit", val: "epico", color: "#a55eea", bueno: false },
+      { text: "+3.000 🪙", type: "coins", val: 3000, color: "#1e90ff", bueno: false },
+      { text: "Casino -5.000 🪙", type: "coins", val: -5000, color: "#ff4757", bueno: false },
+      { text: "+25.000 🪙", type: "coins", val: 25000, color: "#eccc68", bueno: true },
+      { text: "Espíritu Legendario 👑", type: "spirit", val: "legendario", color: "#ff7f50", bueno: true },
+      { text: "+8.000 🪙", type: "coins", val: 8000, color: "#2ed573", bueno: false },
+      { text: "Giro Extra 🎡", type: "extra", val: 0, color: "#ff6b81", bueno: false },
+      { text: "Espíritu Mítico 🔥", type: "spirit", val: "mitico", color: "#ff4757", bueno: true },
+      { text: "+2.000 🪙", type: "coins", val: 2000, color: "#1e90ff", bueno: false },
+      { text: "Gran Bote +50.000 🪙", type: "coins", val: 50000, color: "#ffd700", bueno: true },
+      { text: "Cofre Sorpresa 🎁", type: "coins", val: 12000, color: "#74b9ff", bueno: false }
     ];
 
     let currentAngle = 0;
     let isSpinning = false;
 
     function abrirRuleta() {
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      const spinBtn = document.getElementById('btn-spin-action');
+      const subtitulo = document.getElementById('roulette-subtitle');
+
+      if (u && !u.ruletaUsada) {
+        subtitulo.innerHTML = '🎁 ¡Tu <strong>primer giro es GRATIS</strong> y tiene premio bueno asegurado!';
+        spinBtn.innerText = '¡PRIMER GIRO GRATIS! 🎁';
+      } else {
+        subtitulo.innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
+        spinBtn.innerText = '¡GIRAR RULETA! (🪙 1.000)';
+      }
+
       document.getElementById('modal-ruleta').style.display = 'flex';
       document.getElementById('roulette-result').innerText = '';
       dibujarRuleta();
@@ -828,17 +841,18 @@
 
       const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
       const u = allUsers[usuarioActivo];
+      const esPrimerGiro = !u.ruletaUsada;
 
-      // Verificar si tiene al menos 1.000 Pixelmonedas
-      if (u.coins < 1000) {
-        document.getElementById('roulette-result').innerText = '❌ No tienes suficientes Pixelmonedas (necesitas 1.000).';
-        return;
+      // Si NO es el primer giro, cobrar 1.000 Pixelmonedas
+      if (!esPrimerGiro) {
+        if (u.coins < 1000) {
+          document.getElementById('roulette-result').innerText = '❌ No tienes suficientes Pixelmonedas (necesitas 1.000).';
+          return;
+        }
+        u.coins -= 1000;
+        localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+        actualizarMonedasUI();
       }
-
-      // Cobrar 1.000 Pixelmonedas por el giro
-      u.coins -= 1000;
-      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
-      actualizarMonedasUI();
 
       isSpinning = true;
 
@@ -846,10 +860,28 @@
       spinBtn.disabled = true;
       document.getElementById('roulette-result').innerText = '🌀 Girando... ¡Mucha suerte!';
 
-      const extraRotations = 5 + Math.random() * 4;
-      const randomFinalAngle = Math.random() * 2 * Math.PI;
-      const totalRotation = extraRotations * 2 * Math.PI + randomFinalAngle;
+      const numSlices = opcionesRuleta.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      let targetIndex;
+      if (esPrimerGiro) {
+        // Selecciona una de las casillas clasificadas como 'buenas' (100% garantizado)
+        const indicesBuenos = opcionesRuleta.map((op, idx) => op.bueno ? idx : null).filter(val => val !== null);
+        targetIndex = indicesBuenos[Math.floor(Math.random() * indicesBuenos.length)];
+      } else {
+        targetIndex = Math.floor(Math.random() * numSlices);
+      }
+
+      // Cálculo del ángulo exacto para detener la ruleta en targetIndex
+      const extraRotations = 5 + Math.floor(Math.random() * 3);
+      const angleForTarget = (1.5 * Math.PI) - (targetIndex * sliceAngle) - (sliceAngle / 2);
       
+      let finalAngle = (currentAngle % (2 * Math.PI)) + angleForTarget;
+      while (finalAngle < currentAngle + extraRotations * 2 * Math.PI) {
+        finalAngle += 2 * Math.PI;
+      }
+
+      const totalRotation = finalAngle - currentAngle;
       const duration = 4000;
       const start = performance.now();
       const initialAngle = currentAngle;
@@ -867,14 +899,14 @@
         } else {
           isSpinning = false;
           spinBtn.disabled = false;
-          evaluarResultadoRuleta();
+          evaluarResultadoRuleta(esPrimerGiro);
         }
       }
 
       requestAnimationFrame(animateSpin);
     }
 
-    function evaluarResultadoRuleta() {
+    function evaluarResultadoRuleta(esPrimerGiro) {
       const numSlices = opcionesRuleta.length;
       const sliceAngle = (2 * Math.PI) / numSlices;
 
@@ -887,6 +919,13 @@
       const resEl = document.getElementById('roulette-result');
       const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
       const u = allUsers[usuarioActivo];
+
+      // Marcar primer giro como usado
+      if (esPrimerGiro) {
+        u.ruletaUsada = true;
+        document.getElementById('roulette-subtitle').innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
+        document.getElementById('btn-spin-action').innerText = '¡GIRAR RULETA! (🪙 1.000)';
+      }
 
       if (premio.type === 'coins') {
         u.coins = Math.max(0, u.coins + premio.val);
