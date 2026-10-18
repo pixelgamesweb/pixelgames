@@ -16,7 +16,14 @@
       flex-direction: column;
       align-items: center;
       padding: 40px 0;
+      transition: background 0.4s ease;
     }
+
+    /* ESTILOS DE FONDOS COMPRADOS EN LA TIENDA */
+    body.bg-rosa { background: radial-gradient(circle at center, #4a1532 0%, #0f050b 100%) !important; }
+    body.bg-lila { background: radial-gradient(circle at center, #2e1548 0%, #090312 100%) !important; }
+    body.bg-verde { background: radial-gradient(circle at center, #0a3a1a 0%, #020f06 100%) !important; }
+    body.bg-fuego { background: radial-gradient(circle at center, #4a2205 0%, #120701 100%) !important; }
 
     header {
       text-align: center;
@@ -38,7 +45,7 @@
       font-weight: bold;
     }
 
-    /* BARRA DE USUARIO Y CAMBIO DE SESIÓN */
+    /* BARRA DE USUARIO, TIENDA Y MONEDAS */
     .user-bar {
       margin-top: 15px;
       display: flex;
@@ -56,6 +63,36 @@
       font-size: 13px;
       color: #00e5ff;
       font-weight: bold;
+    }
+
+    .coins-tag {
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid #ffd700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #ffd700;
+      font-weight: bold;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    }
+
+    .btn-tienda {
+      background: linear-gradient(180deg, #f39c12, #d35400);
+      border: none;
+      color: #ffffff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 0 10px rgba(243, 156, 18, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-tienda:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
     }
 
     .btn-cambiar-usuario {
@@ -106,17 +143,8 @@
       box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
     }
 
-    .icon {
-      font-size: 52px;
-      margin-bottom: 10px;
-    }
-
-    .name {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 15px;
-      color: #ffffff;
-    }
+    .icon { font-size: 52px; margin-bottom: 10px; }
+    .name { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: #ffffff; }
 
     .play {
       display: inline-block;
@@ -132,37 +160,16 @@
       border: none;
     }
 
-    .play:hover {
-      transform: scale(1.05);
-    }
-
-    .locked {
-      opacity: .68;
-      border-color: rgba(255,255,255,0.05);
-    }
-
-    .lock {
-      font-size: 62px;
-      margin-bottom: 13px;
-      filter: drop-shadow(0 10px 5px rgba(0,0,0,.6));
-    }
-
-    .locked .name {
-      color: #aab6cc;
-    }
-
+    .play:hover { transform: scale(1.05); }
+    .locked { opacity: .68; border-color: rgba(255,255,255,0.05); }
+    .lock { font-size: 62px; margin-bottom: 13px; filter: drop-shadow(0 10px 5px rgba(0,0,0,.6)); }
+    .locked .name { color: #aab6cc; }
     .badge {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #8191aa;
-      border: 1px solid rgba(255,255,255,.12);
-      padding: 8px 13px;
-      border-radius: 999px;
-      background: rgba(0,0,0,.2);
+      font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #8191aa;
+      border: 1px solid rgba(255,255,255,.12); padding: 8px 13px; border-radius: 999px; background: rgba(0,0,0,.2);
     }
 
-    /* MODAL DE SELECCIÓN DE PARTIDA */
+    /* MODALES GENERIQUIS */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -180,64 +187,67 @@
       border-radius: 20px;
       padding: 30px;
       width: 90%;
-      max-width: 420px;
+      max-width: 480px;
       text-align: center;
       box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
     }
 
-    .modal-card h2 {
-      color: #00e5ff;
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
+    .modal-card h2 { color: #00e5ff; font-size: 24px; margin-bottom: 10px; }
 
     .modal-btn {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
-      font-weight: bold;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
+      width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: none;
+      font-size: 16px; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s;
     }
 
-    .btn-continuar {
-      background: #2ecc71;
-      color: #080b12;
-    }
+    .btn-continuar { background: #2ecc71; color: #080b12; }
     .btn-continuar:hover { background: #58d68d; }
-
-    .btn-nueva {
-      background: #e67e22;
-      color: #ffffff;
-    }
+    .btn-nueva { background: #e67e22; color: #ffffff; }
     .btn-nueva:hover { background: #eb984e; }
+    .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; margin-top: 15px; }
 
-    .btn-cancelar {
-      background: rgba(255,255,255,0.1);
-      color: #8191aa;
-      margin-top: 15px;
+    .alerta-error { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; font-weight: bold; }
+
+    /* TIENDA DE FONDOS */
+    .shop-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0;
+      max-height: 280px;
+      overflow-y: auto;
     }
 
-    .alerta-error {
-      color: #e74c3c;
-      font-size: 13px;
-      margin-top: 10px;
-      display: none;
+    .shop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .shop-item-info { text-align: left; }
+    .shop-item-name { font-weight: bold; font-size: 15px; }
+    .shop-item-cost { color: #ffd700; font-size: 13px; }
+
+    .btn-buy {
+      background: #ffd700;
+      color: #000;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
       font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
     }
 
-    @media(max-width:1000px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
+    .btn-buy:hover { background: #ffea70; }
+    .btn-equip { background: #00e5ff; color: #000; }
+    .btn-equipped { background: #2ecc71; color: #000; cursor: default; }
 
-    @media(max-width:560px) {
-      .grid { grid-template-columns: 1fr; width: 92%; }
-      .card { min-height: 210px; }
-    }
+    @media(max-width:1000px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media(max-width:560px) { .grid { grid-template-columns: 1fr; width: 92%; } .card { min-height: 210px; } }
   </style>
 </head>
 
@@ -248,6 +258,8 @@
     <div class="subtitle">ELIGE TU JUEGO</div>
     <div class="user-bar">
       <div class="user-tag" id="user-display">👤 Usuario: Invitado</div>
+      <div class="coins-tag" id="coins-display">🪙 100 Pixelmonedas</div>
+      <button class="btn-tienda" onclick="abrirTienda()">🛒 TIENDA DE FONDOS</button>
       <button class="btn-cambiar-usuario" onclick="cambiarUsuario()">🔄 CAMBIAR USUARIO</button>
     </div>
   </header>
@@ -269,18 +281,55 @@
     </div>
   </div>
 
+  <!-- MODAL DE LA TIENDA DE FONDOS -->
+  <div class="modal-overlay" id="modal-tienda">
+    <div class="modal-card">
+      <h2 style="color: #ffd700;">🛒 TIENDA DE FONDOS</h2>
+      <p style="color: #8191aa; font-size: 13px;">Personaliza el estilo de Pixel Games con tus Pixelmonedas</p>
+
+      <div class="shop-items" id="shop-items-container"></div>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarTienda()">Cerrar Tienda</button>
+    </div>
+  </div>
+
   <script>
-    // 1. VERIFICAR O CARGAR SESIÓN DE USUARIO
+    // 1. VERIFICAR O CARGAR SESIÓN Y PIXELMONEDAS DE USUARIO
     const usuarioActivo = localStorage.getItem('pixelgames_session');
     
-    // Si no hay ningún usuario activo guardado, vuelve a pedir el login en index.html
     if (!usuarioActivo) {
       window.location.href = 'index.html';
     } else {
       document.getElementById('user-display').innerText = `👤 Usuario: ${usuarioActivo}`;
     }
 
-    // FUNCIÓN PARA CAMBIAR DE USUARIO
+    const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+    if (!usuarios[usuarioActivo]) {
+      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 100, fondosComprados: ['normal'], fondoEquipado: 'normal' };
+    }
+    if (usuarios[usuarioActivo].coins === undefined) {
+      usuarios[usuarioActivo].coins = 100; // Regalo inicial
+    }
+    if (!usuarios[usuarioActivo].fondosComprados) {
+      usuarios[usuarioActivo].fondosComprados = ['normal'];
+    }
+    if (!usuarios[usuarioActivo].fondoEquipado) {
+      usuarios[usuarioActivo].fondoEquipado = 'normal';
+    }
+    localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
+
+    function actualizarMonedasUI() {
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      document.getElementById('coins-display').innerText = `🪙 ${u.coins} Pixelmonedas`;
+      aplicarFondoEquipado(u.fondoEquipado);
+    }
+
+    function aplicarFondoEquipado(fondo) {
+      document.body.className = fondo === 'normal' ? '' : `bg-${fondo}`;
+    }
+
+    actualizarMonedasUI();
+
     function cambiarUsuario() {
       if (confirm(`¿Quieres cerrar la sesión de "${usuarioActivo}" y cambiar de usuario?`)) {
         localStorage.removeItem('pixelgames_session');
@@ -290,7 +339,7 @@
 
     // LISTA DE JUEGOS
     const games = [
-      { id: 1, name: "money up", icon: "🪙", file: "juego1.html", permiteGuardar: false },
+      { id: 1, name: "money up", icon: "🪙", file: "juego1.html", permiteGuardar: true },
       { id: 2, name: "batle", icon: "🌲", file: "juego2.html", permiteGuardar: true },
       { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html", permiteGuardar: true },
       { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html", permiteGuardar: true },
@@ -341,13 +390,11 @@
 
       juegoSeleccionado = g;
 
-      // Si el juego NO permite guardar (ej: 7, 8, 9, 10, 15, 16, 17, etc.), ir directo
       if (!g.permiteGuardar) {
         window.location.href = g.file;
         return;
       }
 
-      // Mostrar modal con opciones de guardado para los juegos compatibles
       document.getElementById('modal-titulo-juego').innerText = g.name.toUpperCase();
       document.getElementById('alerta-sin-partida').style.display = 'none';
       document.getElementById('modal-partida').style.display = 'flex';
@@ -360,12 +407,9 @@
 
     function continuarPartida() {
       if (!juegoSeleccionado) return;
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
 
-      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      const perfilUser = usuarios[usuarioActivo];
-
-      // Verificar si existen datos guardados de este juego para este usuario en concreto
-      if (perfilUser && perfilUser.progreso && perfilUser.progreso[juegoSeleccionado.file]) {
+      if (u && u.progreso && u.progreso[juegoSeleccionado.file]) {
         localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'load');
         window.location.href = juegoSeleccionado.file;
       } else {
@@ -375,17 +419,94 @@
 
     function nuevaPartida() {
       if (!juegoSeleccionado) return;
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
 
-      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-
-      // Si existía partida previa, se elimina para crear la nueva desde cero
-      if (usuarios[usuarioActivo] && usuarios[usuarioActivo].progreso) {
-        delete usuarios[usuarioActivo].progreso[juegoSeleccionado.file];
-        localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
+      if (allUsers[usuarioActivo] && allUsers[usuarioActivo].progreso) {
+        delete allUsers[usuarioActivo].progreso[juegoSeleccionado.file];
+        localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
       }
 
       localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'new');
       window.location.href = juegoSeleccionado.file;
+    }
+
+    /* TIENDA DE FONDOS */
+    const listaFondosTienda = [
+      { id: 'normal', name: 'Noche Cósmica (Predeterminado)', cost: 0 },
+      { id: 'rosa', name: 'Neón Rosa 💖', cost: 50 },
+      { id: 'lila', name: 'Galaxia Lila 💜', cost: 75 },
+      { id: 'verde', name: 'Verde Matrix 💚', cost: 100 },
+      { id: 'fuego', name: 'Oro & Fuego 🔥', cost: 150 }
+    ];
+
+    function abrirTienda() {
+      renderTienda();
+      document.getElementById('modal-tienda').style.display = 'flex';
+    }
+
+    function cerrarTienda() {
+      document.getElementById('modal-tienda').style.display = 'none';
+    }
+
+    function renderTienda() {
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      const shopContainer = document.getElementById('shop-items-container');
+      shopContainer.innerHTML = '';
+
+      listaFondosTienda.forEach(f => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'shop-item';
+
+        const poseido = u.fondosComprados.includes(f.id);
+        const equipado = u.fondoEquipado === f.id;
+
+        let botonHTML = '';
+        if (equipado) {
+          botonHTML = `<button class="btn-buy btn-equipped">EQUIPADO</button>`;
+        } else if (poseido) {
+          botonHTML = `<button class="btn-buy btn-equip" onclick="equiparFondo('${f.id}')">EQUIPAR</button>`;
+        } else {
+          botonHTML = `<button class="btn-buy" onclick="comprarFondo('${f.id}', ${f.cost})">COMPRAR</button>`;
+        }
+
+        itemDiv.innerHTML = `
+          <div class="shop-item-info">
+            <div class="shop-item-name">${f.name}</div>
+            <div class="shop-item-cost">${f.cost === 0 ? 'Gratis' : `🪙 ${f.cost} Pixelmonedas`}</div>
+          </div>
+          ${botonHTML}
+        `;
+
+        shopContainer.appendChild(itemDiv);
+      });
+    }
+
+    function comprarFondo(fondoId, costo) {
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[usuarioActivo];
+
+      if (u.coins < costo) {
+        alert('❌ No tienes suficientes Pixelmonedas.');
+        return;
+      }
+
+      u.coins -= costo;
+      u.fondosComprados.push(fondoId);
+      u.fondoEquipado = fondoId;
+
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      actualizarMonedasUI();
+      renderTienda();
+      alert('🎉 ¡Fondo comprado y equipado con éxito!');
+    }
+
+    function equiparFondo(fondoId) {
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      allUsers[usuarioActivo].fondoEquipado = fondoId;
+
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      actualizarMonedasUI();
+      renderTienda();
     }
   </script>
 
