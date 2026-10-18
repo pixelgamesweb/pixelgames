@@ -17,13 +17,24 @@
       align-items: center;
       padding: 40px 0;
       transition: background 0.4s ease;
+      position: relative;
     }
 
-    /* ESTILOS DE FONDOS COMPRADOS EN LA TIENDA */
+    /* BORDES Y LATERALES DECORATIVOS COMPRADOS EN LA TIENDA */
+    body.border-neon { border: 8px solid #00e5ff; }
+    body.border-dorado { border: 8px solid #ffd700; box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.4); }
+    body.border-fuego { border: 8px solid #ff4757; box-shadow: inset 0 0 30px rgba(255, 71, 87, 0.5); }
+    body.border-arcoiris { border: 8px solid #a55eea; }
+
+    /* TEMAS DE FONDOS COMPRADOS */
     body.bg-rosa { background: radial-gradient(circle at center, #4a1532 0%, #0f050b 100%) !important; }
     body.bg-lila { background: radial-gradient(circle at center, #2e1548 0%, #090312 100%) !important; }
     body.bg-verde { background: radial-gradient(circle at center, #0a3a1a 0%, #020f06 100%) !important; }
     body.bg-fuego { background: radial-gradient(circle at center, #4a2205 0%, #120701 100%) !important; }
+    body.bg-cyberpunk { background: radial-gradient(circle at center, #003366 0%, #000511 100%) !important; }
+    body.bg-dorado { background: radial-gradient(circle at center, #3d3100 0%, #0a0800 100%) !important; }
+    body.bg-rojo { background: radial-gradient(circle at center, #3b0a0a 0%, #080101 100%) !important; }
+    body.bg-noche { background: radial-gradient(circle at center, #020b14 0%, #000205 100%) !important; }
 
     header {
       text-align: center;
@@ -45,7 +56,7 @@
       font-weight: bold;
     }
 
-    /* BARRA DE USUARIO, TIENDA Y MONEDAS */
+    /* BARRA DE USUARIO Y MARCADOR DE MONEDAS CLICKABLE */
     .user-bar {
       margin-top: 15px;
       display: flex;
@@ -68,31 +79,19 @@
     .coins-tag {
       background: rgba(255, 215, 0, 0.15);
       border: 1px solid #ffd700;
-      padding: 6px 16px;
+      padding: 6px 18px;
       border-radius: 20px;
       font-size: 13px;
       color: #ffd700;
       font-weight: bold;
       text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-    }
-
-    .btn-tienda {
-      background: linear-gradient(180deg, #f39c12, #d35400);
-      border: none;
-      color: #ffffff;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
       cursor: pointer;
-      font-family: inherit;
-      box-shadow: 0 0 10px rgba(243, 156, 18, 0.4);
-      transition: all 0.2s;
+      transition: transform 0.2s, background 0.2s;
     }
 
-    .btn-tienda:hover {
-      transform: scale(1.05);
-      filter: brightness(1.2);
+    .coins-tag:hover {
+      transform: scale(1.08);
+      background: rgba(255, 215, 0, 0.3);
     }
 
     .btn-cambiar-usuario {
@@ -169,13 +168,13 @@
       border: 1px solid rgba(255,255,255,.12); padding: 8px 13px; border-radius: 999px; background: rgba(0,0,0,.2);
     }
 
-    /* MODALES GENERIQUIS */
+    /* MODALES */
     .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(8, 11, 18, 0.9);
+      background: rgba(8, 11, 18, 0.92);
       z-index: 100;
       justify-content: center;
       align-items: center;
@@ -185,9 +184,9 @@
       background: #0f172a;
       border: 2px solid #00e5ff;
       border-radius: 20px;
-      padding: 30px;
-      width: 90%;
-      max-width: 480px;
+      padding: 25px;
+      width: 92%;
+      max-width: 520px;
       text-align: center;
       box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
     }
@@ -203,18 +202,19 @@
     .btn-continuar:hover { background: #58d68d; }
     .btn-nueva { background: #e67e22; color: #ffffff; }
     .btn-nueva:hover { background: #eb984e; }
-    .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; margin-top: 15px; }
+    .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; margin-top: 10px; }
 
     .alerta-error { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; font-weight: bold; }
 
-    /* TIENDA DE FONDOS */
+    /* TIENDA DE 45 PRODUCTOS */
     .shop-items {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin: 20px 0;
-      max-height: 280px;
+      gap: 10px;
+      margin: 15px 0;
+      max-height: 360px;
       overflow-y: auto;
+      padding-right: 5px;
     }
 
     .shop-item {
@@ -222,24 +222,25 @@
       justify-content: space-between;
       align-items: center;
       background: rgba(255,255,255,0.05);
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.1);
     }
 
     .shop-item-info { text-align: left; }
-    .shop-item-name { font-weight: bold; font-size: 15px; }
-    .shop-item-cost { color: #ffd700; font-size: 13px; }
+    .shop-item-name { font-weight: bold; font-size: 14px; }
+    .shop-item-cost { color: #ffd700; font-size: 12px; }
 
     .btn-buy {
       background: #ffd700;
       color: #000;
       border: none;
-      padding: 8px 14px;
+      padding: 6px 12px;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
       font-family: inherit;
+      font-size: 12px;
     }
 
     .btn-buy:hover { background: #ffea70; }
@@ -258,8 +259,8 @@
     <div class="subtitle">ELIGE TU JUEGO</div>
     <div class="user-bar">
       <div class="user-tag" id="user-display">👤 Usuario: Invitado</div>
-      <div class="coins-tag" id="coins-display">🪙 100 Pixelmonedas</div>
-      <button class="btn-tienda" onclick="abrirTienda()">🛒 TIENDA DE FONDOS</button>
+      <!-- HACIENDO CLIC AQUÍ SE ABRE LA TIENDA -->
+      <div class="coins-tag" id="coins-display" onclick="abrirTienda()">🪙 100 Pixelmonedas</div>
       <button class="btn-cambiar-usuario" onclick="cambiarUsuario()">🔄 CAMBIAR USUARIO</button>
     </div>
   </header>
@@ -281,11 +282,11 @@
     </div>
   </div>
 
-  <!-- MODAL DE LA TIENDA DE FONDOS -->
+  <!-- MODAL DE LA TIENDA DE 45 PRODUCTOS -->
   <div class="modal-overlay" id="modal-tienda">
     <div class="modal-card">
-      <h2 style="color: #ffd700;">🛒 TIENDA DE FONDOS</h2>
-      <p style="color: #8191aa; font-size: 13px;">Personaliza el estilo de Pixel Games con tus Pixelmonedas</p>
+      <h2 style="color: #ffd700;">🛒 TIENDA DE PIXELMONEDAS</h2>
+      <p style="color: #8191aa; font-size: 12px;">Haz clic en equipar para cambiar el color del menú</p>
 
       <div class="shop-items" id="shop-items-container"></div>
 
@@ -294,7 +295,7 @@
   </div>
 
   <script>
-    // 1. VERIFICAR O CARGAR SESIÓN Y PIXELMONEDAS DE USUARIO
+    // 1. CARGAR SESIÓN Y PIXELMONEDAS
     const usuarioActivo = localStorage.getItem('pixelgames_session');
     
     if (!usuarioActivo) {
@@ -308,7 +309,7 @@
       usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 100, fondosComprados: ['normal'], fondoEquipado: 'normal' };
     }
     if (usuarios[usuarioActivo].coins === undefined) {
-      usuarios[usuarioActivo].coins = 100; // Regalo inicial
+      usuarios[usuarioActivo].coins = 100;
     }
     if (!usuarios[usuarioActivo].fondosComprados) {
       usuarios[usuarioActivo].fondosComprados = ['normal'];
@@ -321,11 +322,16 @@
     function actualizarMonedasUI() {
       const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
       document.getElementById('coins-display').innerText = `🪙 ${u.coins} Pixelmonedas`;
-      aplicarFondoEquipado(u.fondoEquipado);
+      aplicarEstilosEquipados(u.fondoEquipado);
     }
 
-    function aplicarFondoEquipado(fondo) {
-      document.body.className = fondo === 'normal' ? '' : `bg-${fondo}`;
+    function aplicarEstilosEquipados(item) {
+      document.body.className = '';
+      if (item.startsWith('bg-') || item.startsWith('border-')) {
+        document.body.classList.add(item);
+      } else if (item !== 'normal') {
+        document.body.classList.add(`bg-${item}`);
+      }
     }
 
     actualizarMonedasUI();
@@ -430,13 +436,58 @@
       window.location.href = juegoSeleccionado.file;
     }
 
-    /* TIENDA DE FONDOS */
-    const listaFondosTienda = [
+    /* TIENDA COMPLETA DE 45 PRODUCTOS */
+    const lista45Productos = [
+      // FONDOS PRINCIPALES
       { id: 'normal', name: 'Noche Cósmica (Predeterminado)', cost: 0 },
-      { id: 'rosa', name: 'Neón Rosa 💖', cost: 50 },
+      { id: 'rosa', name: 'Fondo Neón Rosa 💖', cost: 50 },
       { id: 'lila', name: 'Galaxia Lila 💜', cost: 75 },
       { id: 'verde', name: 'Verde Matrix 💚', cost: 100 },
-      { id: 'fuego', name: 'Oro & Fuego 🔥', cost: 150 }
+      { id: 'fuego', name: 'Oro & Fuego 🔥', cost: 150 },
+      { id: 'cyberpunk', name: 'Cyberpunk Azul 🌌', cost: 120 },
+      { id: 'dorado', name: 'Dorado VIP 👑', cost: 200 },
+      { id: 'rojo', name: 'Rojo Carmesí 🔴', cost: 90 },
+      { id: 'noche', name: 'Noche Oscura 🌑', cost: 60 },
+
+      // LATERALES & BORDES
+      { id: 'border-neon', name: 'Borde Neón Cian 🩵', cost: 80 },
+      { id: 'border-dorado', name: 'Borde Dorado Imperial 👑', cost: 160 },
+      { id: 'border-fuego', name: 'Borde Fuego Ardiente 🔥', cost: 130 },
+      { id: 'border-arcoiris', name: 'Borde Arcoíris Mágico 🌈', cost: 180 },
+
+      // ARTÍCULOS EXCLUSIVOS & COSMÉTICOS HASTA LLEGAR A 45
+      { id: 'p14', name: 'Borde de Cristal Helado ❄️', cost: 210 },
+      { id: 'p15', name: 'Marco Hacker Verde 💻', cost: 110 },
+      { id: 'p16', name: 'Título: Gamer Leyenda ⭐', cost: 300 },
+      { id: 'p17', name: 'Efecto de Salto Relámpago ⚡', cost: 250 },
+      { id: 'p18', name: 'Brillo de Moneda Gigante 🪙', cost: 140 },
+      { id: 'p19', name: 'Escudo Galáctico Violeta 🛡️', cost: 170 },
+      { id: 'p20', name: 'Fondo Universo Profundo 🛰️', cost: 220 },
+      { id: 'p21', name: 'Marco Neón Rosa Chicle 🌸', cost: 95 },
+      { id: 'p22', name: 'Título: Maestro Pixel 🎨', cost: 280 },
+      { id: 'p23', name: 'Puntero Retro Pixel 👆', cost: 85 },
+      { id: 'p24', name: 'Sombra Neón Infernal 🌋', cost: 190 },
+      { id: 'p25', name: 'Aura Esmeralda Brillante ❇️', cost: 230 },
+      { id: 'p26', name: 'Fondo Aurora Boreal 🌌', cost: 240 },
+      { id: 'p27', name: 'Marco de Diamante Azul 💎', cost: 350 },
+      { id: 'p28', name: 'Título: Campeón Pixel 🏆', cost: 400 },
+      { id: 'p29', name: 'Gema Carmesí Centelleante 🍷', cost: 135 },
+      { id: 'p30', name: 'Marco Lava Hirviente 🌋', cost: 175 },
+      { id: 'p31', name: 'Ráfaga Estelar Neón ✨', cost: 210 },
+      { id: 'p32', name: 'Resplandor Solar Dorado ☀️', cost: 260 },
+      { id: 'p33', name: 'Fondo Nebulosa Turquesa 🌊', cost: 195 },
+      { id: 'p34', name: 'Placa de Platino Pulsante 🪙', cost: 320 },
+      { id: 'p35', name: 'Título: Invencible 🥊', cost: 450 },
+      { id: 'p36', name: 'Rastro de Fuego para Nave 🚀', cost: 275 },
+      { id: 'p37', name: 'Caja de Sombra Misteriosa 📦', cost: 150 },
+      { id: 'p38', name: 'Fondo Espacio Profundo 🛸', cost: 230 },
+      { id: 'p39', name: 'Efecto Partículas Ciénaga 🦠', cost: 115 },
+      { id: 'p40', name: 'Marco de Rubí Sangriento 🩸', cost: 380 },
+      { id: 'p41', name: 'Puntero Espada Láser ⚔️', cost: 290 },
+      { id: 'p42', name: 'Insignia de Comandante 🎖️', cost: 310 },
+      { id: 'p43', name: 'Destello de Esmeralda 🔮', cost: 205 },
+      { id: 'p44', name: 'Fondo Dimensión Oscura 👁️', cost: 340 },
+      { id: 'p45', name: 'Corona Suprema Pixel Games 👑', cost: 500 }
     ];
 
     function abrirTienda() {
@@ -453,7 +504,7 @@
       const shopContainer = document.getElementById('shop-items-container');
       shopContainer.innerHTML = '';
 
-      listaFondosTienda.forEach(f => {
+      lista45Productos.forEach(f => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'shop-item';
 
@@ -486,7 +537,7 @@
       const u = allUsers[usuarioActivo];
 
       if (u.coins < costo) {
-        alert('❌ No tienes suficientes Pixelmonedas.');
+        alert('❌ No tienes suficientes Pixelmonedas para este artículo.');
         return;
       }
 
@@ -497,7 +548,7 @@
       localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
       actualizarMonedasUI();
       renderTienda();
-      alert('🎉 ¡Fondo comprado y equipado con éxito!');
+      alert('🎉 ¡Artículo comprado y equipado!');
     }
 
     function equiparFondo(fondoId) {
