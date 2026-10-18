@@ -141,6 +141,15 @@ body::after{
     background:#3b4070;
 }
 
+.btn-guardar-chat {
+    background:#2ecc71;
+    color:#080b12;
+}
+
+.btn-guardar-chat:hover {
+    background:#58d68d;
+}
+
 .messages{
     flex:1;
     overflow-y:auto;
@@ -298,7 +307,7 @@ body::after{
     </button>
 
     <button class="main-button" onclick="openSaved()">
-        💾 GUARDADOS
+        💾 IDEAS GUARDADAS
     </button>
 
 </section>
@@ -315,8 +324,12 @@ body::after{
 
         <div class="top-buttons">
 
+            <button class="small-button btn-guardar-chat" id="btnSaveChat" onclick="saveChatProgress()">
+                💾 GUARDAR
+            </button>
+
             <button class="small-button" onclick="openSaved()">
-                💾 Guardados
+                💡 Ideas
             </button>
 
             <button class="small-button" onclick="goHome()">
@@ -369,7 +382,7 @@ Antes de empezar, ¿cómo te llamas?
     </button>
 
     <div class="saved-title">
-        💾 Guardados
+        💾 Ideas Guardadas
     </div>
 
     <div id="savedList" class="saved-list"></div>
@@ -381,6 +394,50 @@ Antes de empezar, ¿cómo te llamas?
 
 let currentName = "";
 let conversation = [];
+
+
+/* SISTEMA DE GUARDADO INTEGRADO CON PIXEL GAMES */
+
+function saveChatProgress(){
+    const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+    const btn = document.getElementById('btnSaveChat');
+
+    btn.innerText = "Pensando...";
+    btn.disabled = true;
+
+    setTimeout(() => {
+        const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+        if (!users[activeUser]) {
+            users[activeUser] = { password: '', progreso: {} };
+        }
+        if (!users[activeUser].progreso) {
+            users[activeUser].progreso = {};
+        }
+
+        users[activeUser].progreso['juego4.html'] = {
+            name: currentName,
+            conversation: conversation
+        };
+
+        localStorage.setItem('pixelgames_users', JSON.stringify(users));
+
+        btn.innerText = "¡Guardado!";
+        setTimeout(() => {
+            btn.innerText = "💾 GUARDAR";
+            btn.disabled = false;
+        }, 1500);
+    }, 400);
+}
+
+function loadSavedData(){
+    const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+    const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+    if (users[activeUser] && users[activeUser].progreso && users[activeUser].progreso['juego4.html']){
+        return users[activeUser].progreso['juego4.html'];
+    }
+    return null;
+}
 
 
 /* CAMBIAR PANTALLA */
@@ -464,13 +521,6 @@ function sendMessage(){
         content:text
     });
 
-    /*
-       TEMPORALMENTE NO HAY API.
-
-       En el siguiente paso conectaremos
-       este punto con la inteligencia artificial.
-    */
-
     setTimeout(()=>{
 
         let response="He recibido tu mensaje. 🤖";
@@ -493,6 +543,11 @@ function sendMessage(){
         }
 
         addMessage(response,"ai");
+
+        conversation.push({
+            role:"ai",
+            content:response
+        });
 
     },500);
 
@@ -611,6 +666,31 @@ function escapeHTML(text){
         .replaceAll('"',"&quot;")
         .replaceAll("'","&#039;");
 
+}
+
+
+/* AUTO-CARGA SI SE INICIÓ DESDE CONTINUAR PARTIDA */
+
+const savedData = loadSavedData();
+const action = localStorage.getItem('pixelgames_action_juego4.html');
+
+if (action === 'load' && savedData) {
+    localStorage.removeItem('pixelgames_action_juego4.html');
+    currentName = savedData.name || "";
+    conversation = savedData.conversation || [];
+
+    const messagesDiv = document.getElementById("messages");
+    messagesDiv.innerHTML = "";
+
+    if (conversation.length > 0) {
+        conversation.forEach(msg => {
+            addMessage(msg.content, msg.role);
+        });
+    } else {
+        addMessage("¡Hola de nuevo! 👋 Sesión restaurada.", "ai");
+    }
+
+    openChat();
 }
 
 </script>
