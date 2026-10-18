@@ -35,6 +35,7 @@ html,body{
 
     display:flex;
     gap:10px;
+    align-items:center;
 
     background:rgba(0,0,0,.65);
     padding:8px;
@@ -63,6 +64,22 @@ html,body{
     box-shadow:
         inset 0 0 12px rgba(255,255,255,.04),
         0 5px 18px rgba(0,0,0,.4);
+}
+
+.btn-guardar {
+    background:#2ecc71;
+    color:#050505;
+    border:none;
+    font-weight:bold;
+    font-size:14px;
+    padding:10px 16px;
+    border-radius:13px;
+    cursor:pointer;
+}
+
+.btn-guardar:disabled {
+    opacity:0.75;
+    cursor:wait;
 }
 
 .moneda{
@@ -169,6 +186,8 @@ html,body{
 
     font-size:19px;
     font-weight:bold;
+
+    cursor:pointer;
 }
 </style>
 </head>
@@ -177,9 +196,11 @@ html,body{
 
 <div id="game"></div>
 
-<!-- TRES MARCADORES EN UNA SOLA FILA -->
+<!-- MARCADORES Y BOTÓN GUARDAR -->
 
 <div id="hud">
+
+    <button class="btn-guardar" id="btnSaveGame" onclick="saveGameProgress()">💾 GUARDAR</button>
 
     <div class="marcador moneda">
         🪙 <span id="monedas">0</span>
@@ -229,7 +250,7 @@ html,body{
 
         <button
             class="reiniciar"
-            onclick="location.reload()">
+            onclick="reiniciarJuego()">
 
             Volver a jugar
 
@@ -250,93 +271,41 @@ import * as THREE from
    ESCENA
 ===================================================== */
 
-const scene =
-new THREE.Scene();
-
-scene.background =
-new THREE.Color(0x02040c);
-
-scene.fog =
-new THREE.Fog(
-    0x02040c,
-    35,
-    190
-);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x02040c);
+scene.fog = new THREE.Fog(0x02040c, 35, 190);
 
 
 /* =====================================================
    CÁMARA
 ===================================================== */
 
-const camera =
-new THREE.PerspectiveCamera(
-    60,
-    innerWidth / innerHeight,
-    .1,
-    700
-);
-
-camera.position.set(
-    0,
-    5.3,
-    10
-);
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, .1, 700);
+camera.position.set(0, 5.3, 10);
 
 
 /* =====================================================
    RENDER
 ===================================================== */
 
-const renderer =
-new THREE.WebGLRenderer({
-    antialias:true
-});
-
-renderer.setSize(
-    innerWidth,
-    innerHeight
-);
-
-renderer.setPixelRatio(
-    Math.min(devicePixelRatio,2)
-);
-
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.shadowMap.enabled=true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-renderer.shadowMap.type =
-THREE.PCFSoftShadowMap;
-
-document
-.getElementById("game")
-.appendChild(renderer.domElement);
+document.getElementById("game").appendChild(renderer.domElement);
 
 
 /* =====================================================
    LUCES
 ===================================================== */
 
-scene.add(
-    new THREE.HemisphereLight(
-        0x425c9a,
-        0x07100c,
-        1.1
-    )
-);
+scene.add(new THREE.HemisphereLight(0x425c9a, 0x07100c, 1.1));
 
-const moonLight =
-new THREE.DirectionalLight(
-    0x9db9ff,
-    2.2
-);
-
-moonLight.position.set(
-    -30,
-    45,
-    15
-);
-
+const moonLight = new THREE.DirectionalLight(0x9db9ff, 2.2);
+moonLight.position.set(-30, 45, 15);
 moonLight.castShadow=true;
-
 scene.add(moonLight);
 
 
@@ -344,13 +313,8 @@ scene.add(moonLight);
    LUNA MEDIO LLENA
 ===================================================== */
 
-const moon =
-new THREE.Mesh(
-    new THREE.SphereGeometry(
-        8,
-        32,
-        32
-    ),
+const moon = new THREE.Mesh(
+    new THREE.SphereGeometry(8, 32, 32),
     new THREE.MeshStandardMaterial({
         color:0xe7e9ef,
         emissive:0x7b88a7,
@@ -358,13 +322,7 @@ new THREE.Mesh(
         roughness:.9
     })
 );
-
-moon.position.set(
-    38,
-    35,
-    -100
-);
-
+moon.position.set(38, 35, -100);
 scene.add(moon);
 
 
@@ -372,62 +330,22 @@ scene.add(moon);
    AURORA BOREAL
 ===================================================== */
 
-const auroraColors=[
-    0x31ffb0,
-    0x54ff9a,
-    0x7d5cff,
-    0xc44dff
-];
+const auroraColors=[0x31ffb0, 0x54ff9a, 0x7d5cff, 0xc44dff];
 
-for(
-    let i=0;
-    i<13;
-    i++
-){
-
-    const geometry =
-    new THREE.PlaneGeometry(
-        18,
-        38,
-        12,
-        20
-    );
-
-    const material =
-    new THREE.MeshBasicMaterial({
-        color:
-        auroraColors[
-            i%auroraColors.length
-        ],
-
+for(let i=0; i<13; i++){
+    const geometry = new THREE.PlaneGeometry(18, 38, 12, 20);
+    const material = new THREE.MeshBasicMaterial({
+        color: auroraColors[i%auroraColors.length],
         transparent:true,
-
         opacity:.12,
-
-        side:
-        THREE.DoubleSide,
-
+        side: THREE.DoubleSide,
         depthWrite:false
     });
 
-    const aurora =
-    new THREE.Mesh(
-        geometry,
-        material
-    );
-
-    aurora.position.set(
-        -75+i*12,
-        35+(i%3)*4,
-        -110
-    );
-
-    aurora.rotation.y =
-    (Math.random()-.5)*.4;
-
-    aurora.rotation.z =
-    (Math.random()-.5)*.2;
-
+    const aurora = new THREE.Mesh(geometry, material);
+    aurora.position.set(-75+i*12, 35+(i%3)*4, -110);
+    aurora.rotation.y = (Math.random()-.5)*.4;
+    aurora.rotation.z = (Math.random()-.5)*.2;
     scene.add(aurora);
 }
 
@@ -436,35 +354,20 @@ for(
    ESTRELLAS
 ===================================================== */
 
-const starGeometry =
-new THREE.BufferGeometry();
-
+const starGeometry = new THREE.BufferGeometry();
 const starPositions=[];
 
-for(
-    let i=0;
-    i<900;
-    i++
-){
-
+for(let i=0; i<900; i++){
     starPositions.push(
         (Math.random()-.5)*350,
         15+Math.random()*120,
         -20-Math.random()*220
     );
-
 }
 
-starGeometry.setAttribute(
-    "position",
-    new THREE.Float32BufferAttribute(
-        starPositions,
-        3
-    )
-);
+starGeometry.setAttribute("position", new THREE.Float32BufferAttribute(starPositions, 3));
 
-const stars =
-new THREE.Points(
+const stars = new THREE.Points(
     starGeometry,
     new THREE.PointsMaterial({
         color:0xffffff,
@@ -473,175 +376,64 @@ new THREE.Points(
         opacity:.8
     })
 );
-
 scene.add(stars);
 
 
 /* =====================================================
-   TERRENO
+   TERRENO Y CARRETERA
 ===================================================== */
 
-const terreno =
-new THREE.Mesh(
-    new THREE.PlaneGeometry(
-        600,
-        600
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x08120f,
-        roughness:1
-    })
+const terreno = new THREE.Mesh(
+    new THREE.PlaneGeometry(600, 600),
+    new THREE.MeshStandardMaterial({ color:0x08120f, roughness:1 })
 );
-
-terreno.rotation.x =
--Math.PI/2;
-
+terreno.rotation.x = -Math.PI/2;
 terreno.position.y=-.05;
-
 terreno.receiveShadow=true;
-
 scene.add(terreno);
 
-
-/* =====================================================
-   CARRETERA
-===================================================== */
-
-const carretera =
-new THREE.Mesh(
-    new THREE.PlaneGeometry(
-        13,
-        600
-    ),
-    new THREE.MeshStandardMaterial({
-        color:0x20242b,
-        roughness:.8,
-        metalness:.1
-    })
+const carretera = new THREE.Mesh(
+    new THREE.PlaneGeometry(13, 600),
+    new THREE.MeshStandardMaterial({ color:0x20242b, roughness:.8, metalness:.1 })
 );
-
-carretera.rotation.x =
--Math.PI/2;
-
+carretera.rotation.x = -Math.PI/2;
 carretera.position.y=.02;
-
 carretera.receiveShadow=true;
-
 scene.add(carretera);
 
-
-/* =====================================================
-   LÍNEAS DE CARRETERA
-===================================================== */
-
 const lineas=[];
-
-for(
-    let z=-290;
-    z<100;
-    z+=11
-){
-
-    const linea =
-    new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .18,
-            .06,
-            5
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0xdde1e6
-        })
+for(let z=-290; z<100; z+=11){
+    const linea = new THREE.Mesh(
+        new THREE.BoxGeometry(.18, .06, 5),
+        new THREE.MeshStandardMaterial({ color:0xdde1e6 })
     );
-
-    linea.position.set(
-        0,
-        .08,
-        z
-    );
-
+    linea.position.set(0, .08, z);
     scene.add(linea);
-
     lineas.push(linea);
 }
 
 
 /* =====================================================
-   AGUA A LOS LADOS
+   AGUA Y MONTAÑAS
 ===================================================== */
 
-const aguaMaterial =
-new THREE.MeshStandardMaterial({
-    color:0x071b2e,
-    metalness:.5,
-    roughness:.2
-});
-
-for(
-    const x of [-24,24]
-){
-
-    const agua =
-    new THREE.Mesh(
-        new THREE.PlaneGeometry(
-            32,
-            600
-        ),
-        aguaMaterial
-    );
-
-    agua.rotation.x =
-    -Math.PI/2;
-
-    agua.position.set(
-        x,
-        -.02,
-        0
-    );
-
+const aguaMaterial = new THREE.MeshStandardMaterial({ color:0x071b2e, metalness:.5, roughness:.2 });
+for(const x of [-24,24]){
+    const agua = new THREE.Mesh(new THREE.PlaneGeometry(32, 600), aguaMaterial);
+    agua.rotation.x = -Math.PI/2;
+    agua.position.set(x, -.02, 0);
     scene.add(agua);
-
 }
 
-
-/* =====================================================
-   MONTAÑAS
-===================================================== */
-
-for(
-    let i=0;
-    i<25;
-    i++
-){
-
-    const montaña =
-    new THREE.Mesh(
-        new THREE.ConeGeometry(
-            12+Math.random()*12,
-            20+Math.random()*25,
-            7
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x111a29,
-            roughness:1
-        })
+for(let i=0; i<25; i++){
+    const montaña = new THREE.Mesh(
+        new THREE.ConeGeometry(12+Math.random()*12, 20+Math.random()*25, 7),
+        new THREE.MeshStandardMaterial({ color:0x111a29, roughness:1 })
     );
-
-    const lado =
-    Math.random()<.5
-    ? -1
-    : 1;
-
-    montaña.position.set(
-        lado*(25+Math.random()*30),
-        10,
-        -30-i*12
-    );
-
+    const lado = Math.random()<.5 ? -1 : 1;
+    montaña.position.set(lado*(25+Math.random()*30), 10, -30-i*12);
     montaña.castShadow=true;
-
     scene.add(montaña);
-
 }
 
 
@@ -649,102 +441,34 @@ for(
    ÁRBOLES
 ===================================================== */
 
-function crearArbol(
-    x,
-    z,
-    escala=1
-){
-
-    const grupo =
-    new THREE.Group();
-
-
-    const tronco =
-    new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .35,
-            .5,
-            4,
-            10
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x51341f
-        })
+function crearArbol(x, z, escala=1){
+    const grupo = new THREE.Group();
+    const tronco = new THREE.Mesh(
+        new THREE.CylinderGeometry(.35, .5, 4, 10),
+        new THREE.MeshStandardMaterial({ color:0x51341f })
     );
-
     tronco.position.y=2;
-
     tronco.castShadow=true;
-
     grupo.add(tronco);
 
-
-    const hojasMaterial =
-    new THREE.MeshStandardMaterial({
-        color:0x0c4c32,
-        roughness:1
-    });
-
-
-    for(
-        let i=0;
-        i<3;
-        i++
-    ){
-
-        const hojas =
-        new THREE.Mesh(
-            new THREE.ConeGeometry(
-                2.3-i*.45,
-                3,
-                10
-            ),
+    const hojasMaterial = new THREE.MeshStandardMaterial({ color:0x0c4c32, roughness:1 });
+    for(let i=0; i<3; i++){
+        const hojas = new THREE.Mesh(
+            new THREE.ConeGeometry(2.3-i*.45, 3, 10),
             hojasMaterial
         );
-
-        hojas.position.y=
-        4+i*1.5;
-
+        hojas.position.y=4+i*1.5;
         hojas.castShadow=true;
-
         grupo.add(hojas);
-
     }
-
-
-    grupo.position.set(
-        x,
-        0,
-        z
-    );
-
-    grupo.scale.setScalar(
-        escala
-    );
-
+    grupo.position.set(x, 0, z);
+    grupo.scale.setScalar(escala);
     scene.add(grupo);
-
 }
 
-
-for(
-    let z=-280;
-    z<80;
-    z+=17
-){
-
-    crearArbol(
-        -11-Math.random()*8,
-        z,
-        .7+Math.random()*.7
-    );
-
-    crearArbol(
-        11+Math.random()*8,
-        z+7,
-        .7+Math.random()*.7
-    );
-
+for(let z=-280; z<80; z+=17){
+    crearArbol(-11-Math.random()*8, z, .7+Math.random()*.7);
+    crearArbol(11+Math.random()*8, z+7, .7+Math.random()*.7);
 }
 
 
@@ -753,108 +477,33 @@ for(
 ===================================================== */
 
 function crearPersonaje(){
+    const persona = new THREE.Group();
+    const piel = new THREE.MeshStandardMaterial({ color:0xd89a73 });
+    const camiseta = new THREE.MeshStandardMaterial({ color:0x151b28 });
+    const pantalon = new THREE.MeshStandardMaterial({ color:0x090b10 });
 
-    const persona =
-    new THREE.Group();
-
-
-    const piel =
-    new THREE.MeshStandardMaterial({
-        color:0xd89a73
-    });
-
-    const camiseta =
-    new THREE.MeshStandardMaterial({
-        color:0x151b28
-    });
-
-    const pantalon =
-    new THREE.MeshStandardMaterial({
-        color:0x090b10
-    });
-
-
-    const cabeza =
-    new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .55,
-            .55,
-            .55
-        ),
-        piel
-    );
-
+    const cabeza = new THREE.Mesh(new THREE.BoxGeometry(.55, .55, .55), piel);
     cabeza.position.y=2.15;
-
     cabeza.castShadow=true;
-
     persona.add(cabeza);
 
-
-    const cuerpo =
-    new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .7,
-            .85,
-            .42
-        ),
-        camiseta
-    );
-
+    const cuerpo = new THREE.Mesh(new THREE.BoxGeometry(.7, .85, .42), camiseta);
     cuerpo.position.y=1.45;
-
     cuerpo.castShadow=true;
-
     persona.add(cuerpo);
 
-
-    for(
-        const x of [-.22,.22]
-    ){
-
-        const pierna =
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .22,
-                .7,
-                .25
-            ),
-            pantalon
-        );
-
-        pierna.position.set(
-            x,
-            .67,
-            0
-        );
-
+    for(const x of [-.22,.22]){
+        const pierna = new THREE.Mesh(new THREE.BoxGeometry(.22, .7, .25), pantalon);
+        pierna.position.set(x, .67, 0);
         pierna.castShadow=true;
-
         persona.add(pierna);
-
     }
-
-
     return persona;
-
 }
 
-
-const jugador =
-crearPersonaje();
-
-/*
-   Más pequeño y un poco más adelante.
-*/
-
+const jugador = crearPersonaje();
 jugador.scale.setScalar(.75);
-
-jugador.position.set(
-    0,
-    0,
-    5
-);
-
+jugador.position.set(0, 0, 5);
 scene.add(jugador);
 
 
@@ -866,24 +515,9 @@ const monedas=[];
 const sacosBuenos=[];
 const sacosMalos=[];
 
-
-/* =====================================================
-   MONEDA
-===================================================== */
-
-function crearMoneda(
-    x,
-    z
-){
-
-    const moneda =
-    new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .48,
-            .48,
-            .16,
-            24
-        ),
+function crearMoneda(x, z){
+    const moneda = new THREE.Mesh(
+        new THREE.CylinderGeometry(.48, .48, .16, 24),
         new THREE.MeshStandardMaterial({
             color:0xffc400,
             metalness:.85,
@@ -892,422 +526,193 @@ function crearMoneda(
             emissiveIntensity:.7
         })
     );
-
-    moneda.rotation.z =
-    Math.PI/2;
-
-    moneda.position.set(
-        x,
-        1.1,
-        z
-    );
-
+    moneda.rotation.z = Math.PI/2;
+    moneda.position.set(x, 1.1, z);
     moneda.castShadow=true;
-
     scene.add(moneda);
-
     monedas.push(moneda);
-
 }
 
-
-/* =====================================================
-   SACO BUENO
-===================================================== */
-
-function crearSacoBueno(
-    x,
-    z
-){
-
-    const saco =
-    new THREE.Group();
-
-
-    const cuerpo =
-    new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .62,
-            16,
-            12
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x116b32,
-            roughness:.8
-        })
+function crearSacoBueno(x, z){
+    const saco = new THREE.Group();
+    const cuerpo = new THREE.Mesh(
+        new THREE.SphereGeometry(.62, 16, 12),
+        new THREE.MeshStandardMaterial({ color:0x116b32, roughness:.8 })
     );
-
     cuerpo.scale.y=1.15;
-
     cuerpo.position.y=.65;
-
     cuerpo.castShadow=true;
-
     saco.add(cuerpo);
 
-
-    const símbolo =
-    new THREE.Mesh(
-        new THREE.PlaneGeometry(
-            .45,
-            .45
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0x6cff9b,
-            side:THREE.DoubleSide
-        })
+    const símbolo = new THREE.Mesh(
+        new THREE.PlaneGeometry(.45, .45),
+        new THREE.MeshBasicMaterial({ color:0x6cff9b, side:THREE.DoubleSide })
     );
-
-    símbolo.position.set(
-        0,
-        .7,
-        -.58
-    );
-
+    símbolo.position.set(0, .7, -.58);
     saco.add(símbolo);
 
-
-    saco.position.set(
-        x,
-        0,
-        z
-    );
-
+    saco.position.set(x, 0, z);
     scene.add(saco);
-
     sacosBuenos.push(saco);
-
 }
 
-
-/* =====================================================
-   SACO MALO
-===================================================== */
-
-function crearSacoMalo(
-    x,
-    z
-){
-
-    const saco =
-    new THREE.Group();
-
-
-    const cuerpo =
-    new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .65,
-            16,
-            12
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x55351e,
-            roughness:.9
-        })
+function crearSacoMalo(x, z){
+    const saco = new THREE.Group();
+    const cuerpo = new THREE.Mesh(
+        new THREE.SphereGeometry(.65, 16, 12),
+        new THREE.MeshStandardMaterial({ color:0x55351e, roughness:.9 })
     );
-
     cuerpo.scale.y=1.15;
-
     cuerpo.position.y=.65;
-
     cuerpo.castShadow=true;
-
     saco.add(cuerpo);
 
-
-    const símbolo =
-    new THREE.Mesh(
-        new THREE.PlaneGeometry(
-            .45,
-            .45
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0xff2020,
-            side:THREE.DoubleSide
-        })
+    const símbolo = new THREE.Mesh(
+        new THREE.PlaneGeometry(.45, .45),
+        new THREE.MeshBasicMaterial({ color:0xff2020, side:THREE.DoubleSide })
     );
-
-    símbolo.position.set(
-        0,
-        .7,
-        -.58
-    );
-
+    símbolo.position.set(0, .7, -.58);
     saco.add(símbolo);
 
-
-    saco.position.set(
-        x,
-        0,
-        z
-    );
-
+    saco.position.set(x, 0, z);
     scene.add(saco);
-
     sacosMalos.push(saco);
+}
 
+const carriles=[-3.6, 0, 3.6];
+
+for(let z=-25; z>-330; z-=13){
+    const carril = carriles[Math.floor(Math.random()*3)];
+    crearMoneda(carril, z);
+
+    if(Math.random()<.55){
+        crearMoneda(carriles[Math.floor(Math.random()*3)], z-4);
+    }
+    if(Math.random()<.18){
+        crearSacoBueno(carriles[Math.floor(Math.random()*3)], z-7);
+    }
+    if(Math.random()<.28){
+        crearSacoMalo(carriles[Math.floor(Math.random()*3)], z-8);
+    }
 }
 
 
 /* =====================================================
-   CREAR OBJETOS EN LA CARRETERA
-===================================================== */
-
-const carriles=[
-    -3.6,
-    0,
-    3.6
-];
-
-for(
-    let z=-25;
-    z>-330;
-    z-=13
-){
-
-    const carril =
-    carriles[
-        Math.floor(
-            Math.random()*3
-        )
-    ];
-
-
-    crearMoneda(
-        carril,
-        z
-    );
-
-
-    /*
-       Algunas veces hacemos
-       filas de monedas.
-    */
-
-    if(
-        Math.random()<.55
-    ){
-
-        crearMoneda(
-            carriles[
-                Math.floor(
-                    Math.random()*3
-                )
-            ],
-            z-4
-        );
-
-    }
-
-
-    if(
-        Math.random()<.18
-    ){
-
-        crearSacoBueno(
-            carriles[
-                Math.floor(
-                    Math.random()*3
-                )
-            ],
-            z-7
-        );
-
-    }
-
-
-    if(
-        Math.random()<.28
-    ){
-
-        crearSacoMalo(
-            carriles[
-                Math.floor(
-                    Math.random()*3
-                )
-            ],
-            z-8
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   VARIABLES
+   VARIABLES Y ESTADO DEL JUEGO
 ===================================================== */
 
 let monedasConseguidas=0;
-
 let dineroConseguido=0;
-
 let vidas=3;
-
 let velocidad=.22;
-
 let izquierda=false;
-
 let derecha=false;
+let isGameOver=false;
+
+
+/* =====================================================
+   SISTEMA DE GUARDADO
+===================================================== */
+
+window.saveGameProgress = function(){
+    const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+    const btn = document.getElementById('btnSaveGame');
+
+    btn.innerText = "Pensando...";
+    btn.disabled = true;
+
+    setTimeout(() => {
+        const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+        if (!users[activeUser]) {
+            users[activeUser] = { password: '', progreso: {} };
+        }
+        if (!users[activeUser].progreso) {
+            users[activeUser].progreso = {};
+        }
+
+        users[activeUser].progreso['juego1.html'] = {
+            monedas: monedasConseguidas,
+            dinero: dineroConseguido,
+            vidas: vidas,
+            posX: jugador.position.x
+        };
+
+        localStorage.setItem('pixelgames_users', JSON.stringify(users));
+
+        btn.innerText = "¡Guardado!";
+        setTimeout(() => {
+            btn.innerText = "💾 GUARDAR";
+            btn.disabled = false;
+        }, 1500);
+    }, 400);
+};
+
+function loadSavedData(){
+    const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+    const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+    if (users[activeUser] && users[activeUser].progreso && users[activeUser].progreso['juego1.html']){
+        return users[activeUser].progreso['juego1.html'];
+    }
+    return null;
+}
 
 
 /* =====================================================
    CONTROLES
 ===================================================== */
 
-function activarIzquierda(){
-    izquierda=true;
-}
+function activarIzquierda(){ izquierda=true; }
+function desactivarIzquierda(){ izquierda=false; }
+function activarDerecha(){ derecha=true; }
+function desactivarDerecha(){ derecha=false; }
 
-function desactivarIzquierda(){
-    izquierda=false;
-}
+const botonIzquierda = document.getElementById("izquierda");
+const botonDerecha = document.getElementById("derecha");
 
-function activarDerecha(){
-    derecha=true;
-}
+botonIzquierda.addEventListener("pointerdown", activarIzquierda);
+botonIzquierda.addEventListener("pointerup", desactivarIzquierda);
+botonIzquierda.addEventListener("pointercancel", desactivarIzquierda);
+botonIzquierda.addEventListener("pointerleave", desactivarIzquierda);
 
-function desactivarDerecha(){
-    derecha=false;
-}
+botonDerecha.addEventListener("pointerdown", activarDerecha);
+botonDerecha.addEventListener("pointerup", desactivarDerecha);
+botonDerecha.addEventListener("pointercancel", desactivarDerecha);
+botonDerecha.addEventListener("pointerleave", desactivarDerecha);
 
+addEventListener("keydown", e=>{
+    if(e.key==="ArrowLeft") izquierda=true;
+    if(e.key==="ArrowRight") derecha=true;
+});
 
-const botonIzquierda =
-document.getElementById(
-    "izquierda"
-);
-
-const botonDerecha =
-document.getElementById(
-    "derecha"
-);
-
-
-botonIzquierda.addEventListener(
-    "pointerdown",
-    activarIzquierda
-);
-
-botonIzquierda.addEventListener(
-    "pointerup",
-    desactivarIzquierda
-);
-
-botonIzquierda.addEventListener(
-    "pointercancel",
-    desactivarIzquierda
-);
-
-botonIzquierda.addEventListener(
-    "pointerleave",
-    desactivarIzquierda
-);
-
-
-botonDerecha.addEventListener(
-    "pointerdown",
-    activarDerecha
-);
-
-botonDerecha.addEventListener(
-    "pointerup",
-    desactivarDerecha
-);
-
-botonDerecha.addEventListener(
-    "pointercancel",
-    desactivarDerecha
-);
-
-botonDerecha.addEventListener(
-    "pointerleave",
-    desactivarDerecha
-);
-
-
-/* TECLADO */
-
-addEventListener(
-    "keydown",
-    e=>{
-
-        if(
-            e.key==="ArrowLeft"
-        )
-        izquierda=true;
-
-        if(
-            e.key==="ArrowRight"
-        )
-        derecha=true;
-
-    }
-);
-
-
-addEventListener(
-    "keyup",
-    e=>{
-
-        if(
-            e.key==="ArrowLeft"
-        )
-        izquierda=false;
-
-        if(
-            e.key==="ArrowRight"
-        )
-        derecha=false;
-
-    }
-);
+addEventListener("keyup", e=>{
+    if(e.key==="ArrowLeft") izquierda=false;
+    if(e.key==="ArrowRight") derecha=false;
+});
 
 
 /* =====================================================
-   COLISIÓN
+   COLISIÓN Y GAME OVER
 ===================================================== */
 
-function colision(
-    objeto,
-    distancia=1.2
-){
-
+function colision(objeto, distancia=1.2){
     return(
-        Math.abs(
-            jugador.position.x-
-            objeto.position.x
-        )<distancia
+        Math.abs(jugador.position.x - objeto.position.x)<distancia
         &&
-        Math.abs(
-            jugador.position.z-
-            objeto.position.z
-        )<2
+        Math.abs(jugador.position.z - objeto.position.z)<2
     );
-
 }
-
-
-/* =====================================================
-   GAME OVER
-===================================================== */
 
 function gameOver(){
-
-    document.getElementById(
-        "resultadoMonedas"
-    ).textContent=
-    monedasConseguidas;
-
-    document.getElementById(
-        "resultadoDinero"
-    ).textContent=
-    dineroConseguido;
-
-    document.getElementById(
-        "gameOver"
-    ).style.display="flex";
-
+    isGameOver = true;
+    document.getElementById("resultadoMonedas").textContent = monedasConseguidas;
+    document.getElementById("resultadoDinero").textContent = dineroConseguido;
+    document.getElementById("gameOver").style.display = "flex";
 }
+
+window.reiniciarJuego = function(){
+    location.reload();
+};
 
 
 /* =====================================================
@@ -1315,316 +720,116 @@ function gameOver(){
 ===================================================== */
 
 function actualizar(){
+    if (isGameOver) return;
 
-    /*
-       EL PERSONAJE AVANZA SOLO.
-       El jugador únicamente controla
-       izquierda y derecha.
-    */
+    if(izquierda) jugador.position.x-=.13;
+    if(derecha) jugador.position.x+=.13;
 
-    if(izquierda){
+    jugador.position.x = Math.max(-4.8, Math.min(4.8, jugador.position.x));
 
-        jugador.position.x-=.13;
-
-    }
-
-    if(derecha){
-
-        jugador.position.x+=.13;
-
-    }
-
-
-    jugador.position.x=
-    Math.max(
-        -4.8,
-        Math.min(
-            4.8,
-            jugador.position.x
-        )
-    );
-
-
-    /*
-       Las líneas se mueven hacia nosotros.
-    */
-
-    lineas.forEach(
-        linea=>{
-
-            linea.position.z+=
-            velocidad;
-
-            if(
-                linea.position.z>15
-            ){
-
-                linea.position.z=
-                -290;
-
-            }
-
+    lineas.forEach(linea=>{
+        linea.position.z += velocidad;
+        if(linea.position.z>15){
+            linea.position.z = -290;
         }
-    );
+    });
 
+    monedas.forEach(moneda=>{
+        moneda.position.z += velocidad;
+        moneda.rotation.y += .08;
 
-    /*
-       MONEDAS:
-       vienen automáticamente
-       hacia el jugador.
-    */
-
-    monedas.forEach(
-        moneda=>{
-
-            moneda.position.z+=
-            velocidad;
-
-            moneda.rotation.y+=
-            .08;
-
-
-            if(
-                moneda.position.z>14
-            ){
-
-                moneda.position.z=
-                -320-
-                Math.random()*40;
-
-                moneda.position.x=
-                carriles[
-                    Math.floor(
-                        Math.random()*3
-                    )
-                ];
-
-            }
-
-
-            if(
-                colision(
-                    moneda,
-                    1.15
-                )
-            ){
-
-                monedasConseguidas++;
-
-
-                document.getElementById(
-                    "monedas"
-                ).textContent=
-                monedasConseguidas;
-
-
-                moneda.position.z=
-                -320-
-                Math.random()*50;
-
-
-                moneda.position.x=
-                carriles[
-                    Math.floor(
-                        Math.random()*3
-                    )
-                ];
-
-            }
-
+        if(moneda.position.z>14){
+            moneda.position.z = -320 - Math.random()*40;
+            moneda.position.x = carriles[Math.floor(Math.random()*3)];
         }
-    );
 
-
-    /*
-       SACOS BUENOS
-    */
-
-    sacosBuenos.forEach(
-        saco=>{
-
-            saco.position.z+=
-            velocidad;
-
-            saco.rotation.y+=
-            .02;
-
-
-            if(
-                saco.position.z>14
-            ){
-
-                saco.position.z=
-                -320-
-                Math.random()*50;
-
-            }
-
-
-            if(
-                colision(
-                    saco,
-                    1.2
-                )
-            ){
-
-                dineroConseguido++;
-
-
-                document.getElementById(
-                    "dinero"
-                ).textContent=
-                dineroConseguido;
-
-
-                saco.position.z=
-                -320-
-                Math.random()*50;
-
-            }
-
+        if(colision(moneda, 1.15)){
+            monedasConseguidas++;
+            document.getElementById("monedas").textContent = monedasConseguidas;
+            moneda.position.z = -320 - Math.random()*50;
+            moneda.position.x = carriles[Math.floor(Math.random()*3)];
         }
-    );
+    });
 
+    sacosBuenos.forEach(saco=>{
+        saco.position.z += velocidad;
+        saco.rotation.y += .02;
 
-    /*
-       SACOS MALOS
-    */
-
-    sacosMalos.forEach(
-        saco=>{
-
-            saco.position.z+=
-            velocidad;
-
-            saco.rotation.y+=
-            .025;
-
-
-            if(
-                saco.position.z>14
-            ){
-
-                saco.position.z=
-                -320-
-                Math.random()*50;
-
-            }
-
-
-            if(
-                colision(
-                    saco,
-                    1.2
-                )
-            ){
-
-                vidas--;
-
-
-                document.getElementById(
-                    "vidas"
-                ).textContent=
-                vidas;
-
-
-                saco.position.z=
-                -320-
-                Math.random()*50;
-
-
-                if(
-                    vidas<=0
-                ){
-
-                    gameOver();
-
-                }
-
-            }
-
+        if(saco.position.z>14){
+            saco.position.z = -320 - Math.random()*50;
         }
-    );
 
+        if(colision(saco, 1.2)){
+            dineroConseguido++;
+            document.getElementById("dinero").textContent = dineroConseguido;
+            saco.position.z = -320 - Math.random()*50;
+        }
+    });
 
-    /*
-       CÁMARA:
-       sigue al personaje.
-    */
+    sacosMalos.forEach(saco=>{
+        saco.position.z += velocidad;
+        saco.rotation.y += .025;
 
-    camera.position.x+=
-    (
-        jugador.position.x*.35-
-        camera.position.x
-    )*.09;
+        if(saco.position.z>14){
+            saco.position.z = -320 - Math.random()*50;
+        }
 
+        if(colision(saco, 1.2)){
+            vidas--;
+            document.getElementById("vidas").textContent = vidas;
+            saco.position.z = -320 - Math.random()*50;
 
-    camera.position.y+=
-    (
-        5.1-
-        camera.position.y
-    )*.08;
+            if(vidas<=0){
+                gameOver();
+            }
+        }
+    });
 
+    camera.position.x += (jugador.position.x*.35 - camera.position.x)*.09;
+    camera.position.y += (5.1 - camera.position.y)*.08;
+    camera.position.z += (10 - camera.position.z)*.08;
 
-    camera.position.z+=
-    (
-        10-
-        camera.position.z
-    )*.08;
-
-
-    camera.lookAt(
-        jugador.position.x,
-        1.25,
-        jugador.position.z-15
-    );
-
+    camera.lookAt(jugador.position.x, 1.25, jugador.position.z-15);
 }
 
 
 /* =====================================================
-   ANIMACIÓN
+   AUTO-CARGA DE PARTIDA GUARDADA
+===================================================== */
+
+const savedData = loadSavedData();
+const action = localStorage.getItem('pixelgames_action_juego1.html');
+
+if (action === 'load' && savedData) {
+    localStorage.removeItem('pixelgames_action_juego1.html');
+    monedasConseguidas = savedData.monedas || 0;
+    dineroConseguido = savedData.dinero || 0;
+    vidas = savedData.vidas !== undefined ? savedData.vidas : 3;
+    jugador.position.x = savedData.posX || 0;
+
+    document.getElementById("monedas").textContent = monedasConseguidas;
+    document.getElementById("dinero").textContent = dineroConseguido;
+    document.getElementById("vidas").textContent = vidas;
+}
+
+
+/* =====================================================
+   ANIMACIÓN Y REDIMENSIONAR
 ===================================================== */
 
 function animar(){
-
-    requestAnimationFrame(
-        animar
-    );
-
+    requestAnimationFrame(animar);
     actualizar();
-
-    renderer.render(
-        scene,
-        camera
-    );
-
+    renderer.render(scene, camera);
 }
 
 animar();
 
-
-/* =====================================================
-   REDIMENSIONAR
-===================================================== */
-
-addEventListener(
-    "resize",
-    ()=>{
-
-        camera.aspect=
-        innerWidth/
-        innerHeight;
-
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(
-            innerWidth,
-            innerHeight
-        );
-
-    }
-);
+addEventListener("resize", ()=>{
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+});
 
 </script>
 
