@@ -81,6 +81,12 @@
     .btn:hover { filter: brightness(1.2); transform: scale(1.05); }
 
     .controls-bar { margin-top: 15px; display: flex; gap: 15px; }
+    .btn-save {
+      background: linear-gradient(180deg, #2ecc71, #27ae60);
+      color: #050505;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+    }
+    .btn-save:disabled { opacity: 0.75; cursor: wait; }
     .btn-back {
       background: linear-gradient(180deg, #ff4757, #c0392b);
       color: white;
@@ -107,6 +113,7 @@
   </div>
 
   <div class="controls-bar">
+    <button class="btn btn-save" id="btnSaveGame" onclick="saveGameProgress()">💾 GUARDAR</button>
     <a href="juegos.html" class="btn btn-back">VOLVER AL MENÚ</a>
   </div>
 
@@ -195,6 +202,52 @@
         size: Math.random() * 2 + 1,
         speed: Math.random() * 0.8 + 0.2
       });
+    }
+
+    /* SISTEMA DE GUARDADO Y CARGA */
+    function saveGameProgress() {
+      const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+      const btn = document.getElementById('btnSaveGame');
+
+      btn.innerText = "Pensando...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+        if (!users[activeUser]) {
+          users[activeUser] = { password: '', progreso: {} };
+        }
+        if (!users[activeUser].progreso) {
+          users[activeUser].progreso = {};
+        }
+
+        users[activeUser].progreso['juego12.html'] = {
+          score: score,
+          level: level,
+          lives: lives,
+          playerX: player.x,
+          shield: player.shield,
+          tripleShotTimer: player.tripleShotTimer
+        };
+
+        localStorage.setItem('pixelgames_users', JSON.stringify(users));
+
+        btn.innerText = "¡Guardado!";
+        setTimeout(() => {
+          btn.innerText = "💾 GUARDAR";
+          btn.disabled = false;
+        }, 1500);
+      }, 400);
+    }
+
+    function loadSavedData() {
+      const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+      const users = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+      if (users[activeUser] && users[activeUser].progreso && users[activeUser].progreso['juego12.html']) {
+        return users[activeUser].progreso['juego12.html'];
+      }
+      return null;
     }
 
     window.addEventListener('keydown', e => {
@@ -464,7 +517,33 @@
       if (isPlaying) requestAnimationFrame(gameLoop);
     }
 
-    draw();
+    /* AUTO-CARGA SI SE PULSÓ "CONTINUAR PARTIDA" EN EL MENÚ */
+    const savedData = loadSavedData();
+    const action = localStorage.getItem('pixelgames_action_juego12.html');
+
+    if (action === 'load' && savedData) {
+      localStorage.removeItem('pixelgames_action_juego12.html');
+      score = savedData.score || 0;
+      level = savedData.level || 1;
+      lives = savedData.lives !== undefined ? savedData.lives : 3;
+      player.x = savedData.playerX || (canvas.width / 2 - player.w / 2);
+      player.shield = savedData.shield || false;
+      player.tripleShotTimer = savedData.tripleShotTimer || 0;
+
+      scoreEl.textContent = score;
+      levelEl.textContent = level;
+      livesEl.textContent = lives;
+
+      enemySpeed = 1 + (level - 1) * 0.4;
+      enemyDir = 1;
+
+      createEnemies();
+      overlay.style.display = 'none';
+      isPlaying = true;
+      requestAnimationFrame(gameLoop);
+    } else {
+      draw();
+    }
   </script>
 </body>
 </html>
