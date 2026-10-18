@@ -418,7 +418,7 @@
   <div class="modal-overlay" id="modal-ruleta">
     <div class="modal-card" style="max-width: 440px;">
       <h2 style="color: #ff007f;">🎡 PIXELRULETA</h2>
-      <p style="color: #8191aa; font-size: 12px;">¡Prueba tu suerte y gana Pixelmonedas o Espíritus Gratis!</p>
+      <p style="color: #8191aa; font-size: 12px;">¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!</p>
 
       <div class="roulette-wrapper">
         <div class="roulette-pointer"></div>
@@ -427,7 +427,7 @@
 
       <div id="roulette-result"></div>
 
-      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA!</button>
+      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA! (🪙 1.000)</button>
       <button class="modal-btn btn-cancelar" onclick="cerrarRuleta()">Volver</button>
     </div>
   </div>
@@ -444,10 +444,13 @@
 
     const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
     if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 10000, espiritusComprados: [] };
+      usuarios[usuarioActivo] = { password: '', progreso: {}, coins: 0, espiritusComprados: [] };
     }
-    if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 10000;
+    if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 0;
     if (!usuarios[usuarioActivo].espiritusComprados) usuarios[usuarioActivo].espiritusComprados = [];
+
+    // BONO DE ENTRADA: Otorga 1.000.000 de Pixelmonedas cada vez que entra
+    usuarios[usuarioActivo].coins += 1000000;
 
     localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
 
@@ -739,7 +742,7 @@
       ctx.fillRect(98, 105, 24, 6);
     }
 
-    /* 🎡 PIXELRULETA CON PREMIOS REBALANCEADOS */
+    /* 🎡 PIXELRULETA CON COSTO DE 1.000 PIXELMONEDAS POR GIRO */
     const opcionesRuleta = [
       { text: "+1.000 🪙", type: "coins", val: 1000, color: "#1e90ff" },
       { text: "Espíritu Común 👻", type: "spirit", val: "comun", color: "#a4b0be" },
@@ -825,6 +828,21 @@
 
     function girarRuleta() {
       if (isSpinning) return;
+
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[usuarioActivo];
+
+      // Verificar si tiene al menos 1.000 Pixelmonedas
+      if (u.coins < 1000) {
+        document.getElementById('roulette-result').innerText = '❌ No tienes suficientes Pixelmonedas (necesitas 1.000).';
+        return;
+      }
+
+      // Cobrar 1.000 Pixelmonedas por el giro
+      u.coins -= 1000;
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      actualizarMonedasUI();
+
       isSpinning = true;
 
       const spinBtn = document.getElementById('btn-spin-action');
