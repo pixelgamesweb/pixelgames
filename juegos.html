@@ -457,11 +457,11 @@
     if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 0;
     if (!usuarios[usuarioActivo].espiritusComprados) usuarios[usuarioActivo].espiritusComprados = [];
 
-    // BONO DE BIENVENIDA: Entrega 5.000 Pixelmonedas ÚNICAMENTE en la primera entrada
+    // BONO DE BIENVENIDA DE 5.000 PIXELMONEDAS (SÓLO 1ª VEZ AL INICIAR SESIÓN)
     if (!usuarios[usuarioActivo].bienvenidaRecibida) {
       usuarios[usuarioActivo].coins += 5000;
       usuarios[usuarioActivo].bienvenidaRecibida = true;
-      alert(`🎁 ¡Bienvenido a PIXEL GAMES, ${usuarioActivo}!\n\nSe te han acreditado 5.000 Pixelmonedas de regalo por iniciar sesión por primera vez.`);
+      alert(`🎁 ¡Bienvenido a PIXEL GAMES, ${usuarioActivo}!\n\nSe te han acreditado 5.000 Pixelmonedas de regalo por tu primera sesión.`);
     }
 
     localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
@@ -573,7 +573,7 @@
       window.location.href = juegoSeleccionado.file;
     }
 
-    /* GENERADOR DE ESPÍRITUS CON RANGO 4.000 A 1.000.000 */
+    /* GENERADOR DE ESPÍRITUS CON DIVERSIDAD TOTAL */
     const raridades = [
       { nombre: 'comun', label: 'Común', precio: 4000, colorHex: '#a4b0be' },
       { nombre: 'raro', label: 'Raro', precio: 12000, colorHex: '#1e90ff' },
@@ -583,7 +583,7 @@
       { nombre: 'especial', label: 'Especial', precio: 1000000, colorHex: '#2ed573' }
     ];
 
-    const nombresNube = ["Tramposo", "Campeón Slime", "Sombra Carmesí", "Espectro Neón", "Fuego Fatuo", "Alma Helada", "Aura Dorada", "Centinela Pixel", "Rayo Azul", "Titán Galáctico", "Duende Rojo", "Orbe Oscuro", "Guardián Ancestral", "Espíritu Fénix", "Sombra Lunar", "Rayo Solar", "Caminante Estelar", "Señor Slime", "Espíritu Dragón", "Nube Mágica"];
+    const nombresNube = ["Tramposo", "Haina", "Sombra Carmesí", "Espectro Neón", "Fuego Fatuo", "Alma Helada", "Aura Dorada", "Centinela Pixel", "Rayo Azul", "Titán Galáctico", "Duende Rojo", "Orbe Oscuro", "Guardián Ancestral", "Espíritu Fénix", "Sombra Lunar", "Rayo Solar", "Caminante Estelar", "Señor Slime", "Espíritu Dragón", "Nube Mágica"];
 
     const catalogoEspiritus = [];
 
@@ -595,12 +595,21 @@
       if (i > 135) rIdx = 4;
       if (i > 145) rIdx = 5;
 
+      // Asignar a HAINA como el espíritu Raro ID #2
+      let nombreEspiritu = "";
+      if (i === 2) {
+        nombreEspiritu = "Haina";
+        rIdx = 1; // Raro
+      } else {
+        const baseNombre = nombresNube[(i - 1) % nombresNube.length];
+        nombreEspiritu = `${baseNombre} #${i}`;
+      }
+
       const rObj = raridades[rIdx];
-      const baseNombre = nombresNube[(i - 1) % nombresNube.length];
       
       catalogoEspiritus.push({
         id: i,
-        nombre: `${baseNombre} #${i}`,
+        nombre: nombreEspiritu,
         raridadKey: rObj.nombre,
         raridadLabel: rObj.label,
         precio: rObj.precio,
@@ -714,10 +723,19 @@
       document.getElementById('modal-ver-espiritu').style.display = 'none';
     }
 
+    /* DIBUJO PROCEDIMENTAL ÚNICO PARA CADA ESPÍRITU */
     function dibujarArtePixelEspiritu(esp) {
       const canvas = document.getElementById('spirit-viewer-canvas');
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const id = esp.id;
+
+      // Generador de color pseudoaleatorio variado pero consistente para cada ID
+      const r = (id * 67) % 255;
+      const g = (id * 131) % 255;
+      const b = (id * 199) % 255;
+      const secondaryColor = `rgb(${r}, ${g}, ${b})`;
 
       // Fondo del aura
       const grad = ctx.createRadialGradient(110, 110, 10, 110, 110, 100);
@@ -726,35 +744,111 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 220, 220);
 
-      // Renderizado del Espíritu
       ctx.fillStyle = esp.colorHex;
       ctx.shadowColor = esp.colorHex;
       ctx.shadowBlur = 12;
 
-      // Cabeza / Cuerpo flotante
-      ctx.fillRect(70, 50, 80, 80);
-      ctx.fillRect(60, 60, 100, 60);
+      // 1. FORMA DEL CUERPO (Dependiendo de id % 4)
+      const bodyType = id % 4;
+      if (bodyType === 0) { // Estándar Fantasma
+        ctx.fillRect(70, 50, 80, 80);
+        ctx.fillRect(60, 60, 100, 60);
+      } else if (bodyType === 1) { // Slime / Gota
+        ctx.fillRect(60, 70, 100, 70);
+        ctx.fillRect(70, 50, 80, 20);
+      } else if (bodyType === 2) { // Diamante / Cristal
+        ctx.fillRect(90, 40, 40, 100);
+        ctx.fillRect(60, 70, 100, 40);
+      } else { // Orbe Esférico
+        ctx.beginPath();
+        ctx.arc(110, 95, 48, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
-      // Cola Fantasmagórica
-      ctx.fillRect(80, 130, 60, 20);
-      ctx.fillRect(90, 150, 40, 20);
-      ctx.fillRect(100, 170, 20, 15);
+      // 2. DETALLES SUPERIORES (Cuernos, Orejas o Antenas)
+      ctx.fillStyle = secondaryColor;
+      const topType = id % 3;
+      if (topType === 0) { // Cuernos
+        ctx.fillRect(55, 30, 20, 30);
+        ctx.fillRect(145, 30, 20, 30);
+      } else if (topType === 1) { // Antena con gema
+        ctx.fillRect(105, 20, 10, 30);
+        ctx.fillStyle = '#ffd700';
+        ctx.fillRect(100, 10, 20, 15);
+      } else { // Orejas de Zorro / Gato Pixel
+        ctx.fillRect(65, 30, 25, 25);
+        ctx.fillRect(130, 30, 25, 25);
+      }
 
-      // Ojos brillantes Pixel Art
+      // 3. EXTREMIDADES / ALAS (Según ID)
+      if (id % 2 === 0) { // Alas laterales
+        ctx.fillStyle = esp.colorHex;
+        ctx.fillRect(30, 70, 30, 25);
+        ctx.fillRect(160, 70, 30, 25);
+      }
+
+      // 4. COLA / BASE FANTASMAGÓRICA
+      ctx.fillStyle = esp.colorHex;
+      const tailType = id % 3;
+      if (tailType === 0) {
+        ctx.fillRect(80, 130, 60, 20);
+        ctx.fillRect(90, 150, 40, 20);
+        ctx.fillRect(100, 170, 20, 15);
+      } else if (tailType === 1) {
+        ctx.fillRect(65, 135, 25, 30);
+        ctx.fillRect(130, 135, 25, 30);
+      } else {
+        ctx.fillRect(75, 130, 20, 35);
+        ctx.fillRect(100, 130, 20, 45);
+        ctx.fillRect(125, 130, 20, 35);
+      }
+
+      // 5. NÚCLEO MÁGICO INTERNO
       ctx.fillStyle = '#ffffff';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#ffffff';
+      ctx.fillRect(102, 105, 16, 16);
+
+      // 6. OJOS (Variación según ID)
       ctx.shadowBlur = 0;
-      ctx.fillRect(80, 75, 18, 18);
-      ctx.fillRect(122, 75, 18, 18);
+      const eyeType = id % 3;
+      if (eyeType === 0) { // Dos Ojos Estándar
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(80, 70, 18, 18);
+        ctx.fillRect(122, 70, 18, 18);
 
+        ctx.fillStyle = secondaryColor;
+        ctx.fillRect(85, 75, 8, 8);
+        ctx.fillRect(127, 75, 8, 8);
+      } else if (eyeType === 1) { // Un Solo Ojo Cíclope Gigante
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(92, 65, 36, 30);
+
+        ctx.fillStyle = '#ff0055';
+        ctx.fillRect(104, 73, 12, 14);
+      } else { // Ojos Enojados / Pícaros
+        ctx.fillStyle = '#ffd700';
+        ctx.fillRect(78, 72, 22, 12);
+        ctx.fillRect(120, 72, 22, 12);
+
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(88, 74, 8, 8);
+        ctx.fillRect(124, 74, 8, 8);
+      }
+
+      // 7. BOCA / MANDÍBULA
       ctx.fillStyle = '#000000';
-      ctx.fillRect(86, 80, 8, 8);
-      ctx.fillRect(128, 80, 8, 8);
-
-      // Boca
-      ctx.fillRect(98, 105, 24, 6);
+      if (id % 2 === 0) { // Sonrisa con Colmillos
+        ctx.fillRect(95, 96, 30, 6);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(98, 96, 6, 6);
+        ctx.fillRect(116, 96, 6, 6);
+      } else { // Boca Abierta Oscura
+        ctx.fillRect(98, 95, 24, 10);
+      }
     }
 
-    /* 🎡 PIXELRULETA CON PRIMER GIRO GRATIS Y PREMIO BUENO 100% GARANTIZADO */
+    /* 🎡 PIXELRULETA CON PRIMER GIRO GRATIS Y PREMIO BUENO GARANTIZADO */
     const opcionesRuleta = [
       { text: "+1.000 🪙", type: "coins", val: 1000, color: "#1e90ff", bueno: false },
       { text: "Espíritu Común 👻", type: "spirit", val: "comun", color: "#a4b0be", bueno: false },
