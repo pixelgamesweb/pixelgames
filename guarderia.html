@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIXEL GAMES - Guardería & Mercado Global de Espíritus</title>
+  <style>
+    /* ==========================================================================
+       1. RESETS Y VARIABLES GLOBALES
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    :root {
+      --bg-radial-start: #1a1f35;
+      --bg-radial-end: #080b12;
+      --accent-cyan: #00e5ff;
+      --accent-gold: #ffd700;
+      --accent-green: #2ecc71;
+      --accent-purple: #a55eea;
+      --accent-red: #ff4757;
+      --panel-bg: rgba(15, 23, 42, 0.95);
+      --panel-border: rgba(0, 229, 255, 0.25);
+      --text-main: #ffffff;
+      --text-muted: #8191aa;
+    }
+
+    body {
+      background: radial-gradient(circle at center, var(--bg-radial-start) 0%, var(--bg-radial-end) 100%);
+      color: var(--text-main);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0 60px 0;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       2. ENCABEZADO Y BARRA DE ESTADO
+       ========================================================================== */
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    h1 {
+      font-size: 38px;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 18px var(--accent-cyan);
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 13px;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    .user-bar {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid var(--accent-cyan);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--accent-cyan);
+      font-weight: bold;
+    }
+
+    .coins-badge {
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid var(--accent-gold);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--accent-gold);
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    }
+
+    .btn-nav-back {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav-back:hover {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
+      transform: scale(1.05);
+    }
+
+    /* ==========================================================================
+       3. CONTENEDOR PRINCIPAL Y PESTAÑAS DE NAVEGACIÓN
+       ========================================================================== */
+    .market-container {
+      width: 90%;
+      max-width: 1200px;
+      background: var(--panel-bg);
+      border: 2px solid var(--panel-border);
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tabs-header {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 15px;
+    }
+
+    .tab-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-muted);
+      padding: 12px 24px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-green);
+      color: #000;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .section-content {
+      display: none;
+    }
+
+    .section-content.active {
+      display: block;
+    }
+
+    /* ==========================================================================
+       4. REJILLA DE ITEMS Y TARJETAS DE ESPÍRITUS
+       ========================================================================== */
+    .spirits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 15px;
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .spirit-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .spirit-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 8px 20px rgba(0, 229, 255, 0.2);
+    }
+
+    .spirit-canvas-preview {
+      background: #02050f;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .spirit-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .spirit-owner {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .spirit-rarity {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .spirit-price {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--accent-gold);
+      margin-bottom: 14px;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-card {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: none;
+      font-weight: bold;
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.1s ease, filter 0.2s ease;
+    }
+
+    .btn-card:hover {
+      transform: scale(1.03);
+      filter: brightness(1.15);
+    }
+
+    .btn-view { background: var(--accent-purple); color: #fff; }
+    .btn-buy { background: var(--accent-gold); color: #000; }
+    .btn-edit { background: #3498db; color: #fff; }
+    .btn-remove { background: var(--accent-red); color: #fff; }
+
+    /* RARIDADES COLORING */
+    .rarity-comun { color: #a4b0be; }
+    .rarity-raro { color: #1e90ff; }
+    .rarity-epico { color: #a55eea; }
+    .rarity-legendario { color: #ffa502; }
+    .rarity-mitico { color: #ff4757; }
+    .rarity-especial { color: #2ed573; text-shadow: 0 0 8px #2ed573; }
+
+    /* ==========================================================================
+       5. FORMULARIO DE PUBLICACIÓN EN LA TIENDA
+       ========================================================================== */
+    .form-panel {
+      background: rgba(10, 15, 28, 0.8);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 16px;
+      padding: 25px;
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--accent-cyan);
+      letter-spacing: 1px;
+    }
+
+    .form-input, .form-select {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+    }
+
+    .form-submit-btn {
+      background: linear-gradient(180deg, #2ecc71, #27ae60);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+      transition: transform 0.1s ease, filter 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .form-submit-btn:hover {
+      transform: scale(1.02);
+      filter: brightness(1.15);
+    }
+
+    /* ==========================================================================
+       6. MODAL VISOR DE ESPÍRITUS EN ALTA RESOLUCIÓN
+       ========================================================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(8, 11, 18, 0.94);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #0f172a;
+      border: 2px solid var(--accent-cyan);
+      border-radius: 24px;
+      padding: 30px;
+      width: 90%;
+      max-width: 440px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(0, 229, 255, 0.35);
+      position: relative;
+    }
+
+    #modal-canvas-display {
+      background: #02050f;
+      border-radius: 16px;
+      border: 2px solid var(--accent-purple);
+      box-shadow: 0 0 25px rgba(165, 94, 234, 0.4);
+      margin: 15px auto;
+      display: block;
+    }
+
+    .btn-close-modal {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text-muted);
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .btn-close-modal:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO Y PERFIL DE USUARIO -->
+  <header>
+    <h1>🏡 GUARDERÍA & MERCADO GLOBAL</h1>
+    <div class="subtitle">TIENDA ONLINE MULTIDISPOSITIVO DE ESPÍRITUS PIXEL GAMES</div>
+    <div class="user-bar">
+      <div class="status-badge" id="display-user">👤 Cargando Usuario...</div>
+      <div class="coins-badge" id="display-coins">🪙 0 Pixelmonedas</div>
+      <button class="btn-nav-back" onclick="volverMenuJuegos()">🎮 VOLVER AL MENÚ DE JUEGOS</button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR DE LA GUARDERÍA -->
+  <main class="market-container">
+    <nav class="tabs-header">
+      <button class="tab-btn active" id="tab-btn-global" onclick="switchTab('global')">🌐 MERCADO GLOBAL</button>
+      <button class="tab-btn" id="tab-btn-mismarket" onclick="switchTab('mismarket')">📦 MIS ESPÍRITUS EN GUARDERÍA</button>
+      <button class="tab-btn" id="tab-btn-publicar" onclick="switchTab('publicar')">➕ AÑADIR ESPÍRITU A LA TIENDA</button>
+    </nav>
+
+    <!-- SECCIÓN 1: MERCADO GLOBAL -->
+    <section class="section-content active" id="sec-global">
+      <div style="font-size:12px; color: var(--text-muted); margin-bottom: 10px;">
+        Espíritus publicados por otros jugadores en la red. Compras sincronizadas en tiempo real.
+      </div>
+      <div class="spirits-grid" id="grid-global"></div>
+    </section>
+
+    <!-- SECCIÓN 2: MIS ESPÍRITUS EN GUARDERÍA -->
+    <section class="section-content" id="sec-mismarket">
+      <div style="font-size:12px; color: var(--text-muted); margin-bottom: 10px;">
+        Espíritus que tienes actualmente a la venta. Puedes editarlos o retirarlos de forma indefinida.
+      </div>
+      <div class="spirits-grid" id="grid-mismarket"></div>
+    </section>
+
+    <!-- SECCIÓN 3: FORMULARIO PUBLICAR ESPÍRITU -->
+    <section class="section-content" id="sec-publicar">
+      <form class="form-panel" onsubmit="event.preventDefault(); publicarEspirituForm();">
+        <h3 style="color: var(--accent-cyan); font-size: 18px;">AÑADIR ESPÍRITU A LA TIENDA ONLINE</h3>
+        
+        <div class="form-group">
+          <label class="form-label">SELECCIONAR ESPÍRITU DE TU COLECCIÓN *</label>
+          <select class="form-select" id="form-select-espiritu" onchange="previewSelectedSpirit()">
+            <!-- Opciones cargadas dinámicamente -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">NOMBRE DEL ESPÍRITU O VENDEDOR (OBLIGATORIO) *</label>
+          <input type="text" class="form-input" id="form-input-nombre" placeholder="Escribe el nombre obligatorio..." required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">PRECIO EN PIXELMONEDAS *</label>
+          <input type="number" class="form-input" id="form-input-precio" min="1" placeholder="Ejemplo: 20000" required>
+        </div>
+
+        <button type="submit" class="form-submit-btn">🚀 PUBLICAR EN LA GUARDERÍA GLOBAL</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- MODAL DE INSPECCIÓN VER ESPÍRITU -->
+  <div class="modal-overlay" id="modal-inspector">
+    <div class="modal-content">
+      <h2 id="modal-spirit-title" style="color: var(--accent-purple); font-size: 22px;">ESPÍRITU</h2>
+      <div id="modal-spirit-owner" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Vendedor: Usuario</div>
+      <div id="modal-spirit-rarity" style="font-weight: bold; font-size: 14px; margin-top: 6px;">RARIDAD</div>
+
+      <canvas id="modal-canvas-display" width="220" height="220"></canvas>
+
+      <div id="modal-spirit-price" style="font-size: 18px; font-weight: bold; color: var(--accent-gold); margin-top: 10px;">🪙 0 Pixelmonedas</div>
+
+      <button class="btn-close-modal" onclick="cerrarModalInspector()">CERRAR VISOR</button>
+    </div>
+  </div>
+
+  <!-- SCRIPT LÓGICO DE LA TIENDA MULTIDISPOSITIVO -->
+  <script>
+    /* ==========================================================================
+       ESTRUCTURAS Y BBDD LOCAL + SINCRONIZACIÓN RED (BROADCASTCHANNEL)
+       ========================================================================== */
+    const channel = new BroadcastChannel('pixelgames_guarderia_net');
+
+    // Cargar Usuario Activo de la Sesión
+    let activeUser = localStorage.getItem('pixelgames_session');
+    if (!activeUser) {
+      activeUser = prompt("Ingresa tu Nombre de Usuario (Obligatorio para entrar a la Guardería):");
+      if (!activeUser || activeUser.trim() === "") {
+        activeUser = "Jugador_" + Math.floor(Math.random() * 8999 + 1000);
+      }
+      localStorage.setItem('pixelgames_session', activeUser);
+    }
+
+    document.getElementById('display-user').innerText = `👤 Usuario: ${activeUser}`;
+
+    // Cargar Base de Datos de Usuarios Local
+    let allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+    if (!allUsers[activeUser]) {
+      allUsers[activeUser] = { coins: 5000, espiritusComprados: [1, 2, 3, 4, 5] };
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+    }
+
+    function updateCoinsDisplay() {
+      allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[activeUser] || { coins: 0 };
+      document.getElementById('display-coins').innerText = `🪙 ${(u.coins || 0).toLocaleString('es-ES')} Pixelmonedas`;
+    }
+
+    updateCoinsDisplay();
+
+    /* ==========================================================================
+       CATÁLOGO OFICIAL DE 150 ESPÍRITUS PROCEDIMENTALES
+       ========================================================================== */
+    const raridades = [
+      { nombre: 'comun', label: 'Común', colorHex: '#a4b0be' },
+      { nombre: 'raro', label: 'Raro', colorHex: '#1e90ff' },
+      { nombre: 'epico', label: 'Épico', colorHex: '#a55eea' },
+      { nombre: 'legendario', label: 'Legendario', colorHex: '#ffa502' },
+      { nombre: 'mitico', label: 'Mítico', colorHex: '#ff4757' },
+      { nombre: 'especial', label: 'Especial', colorHex: '#2ed573' }
+    ];
+
+    const nombresNube = ["Tramposo", "Haina", "Sombra Carmesí", "Espectro Neón", "Fuego Fatuo", "Alma Helada", "Aura Dorada", "Centinela Pixel", "Rayo Azul", "Titán Galáctico", "Duende Rojo", "Orbe Oscuro", "Guardián Ancestral", "Espíritu Fénix", "Sombra Lunar", "Rayo Solar", "Caminante Estelar", "Señor Slime", "Espíritu Dragón", "Nube Mágica"];
+
+    const catalogoEspiritus = [];
+
+    for (let i = 1; i <= 150; i++) {
+      let rIdx = 0;
+      if (i > 40) rIdx = 1;
+      if (i > 80) rIdx = 2;
+      if (i > 110) rIdx = 3;
+      if (i > 135) rIdx = 4;
+      if (i > 145) rIdx = 5;
+
+      let nameSp = (i === 2) ? "Haina" : `${nombresNube[(i - 1) % nombresNube.length]} #${i}`;
+      if (i === 2) rIdx = 1;
+
+      catalogoEspiritus.push({
+        id: i,
+        nombre: nameSp,
+        raridadKey: raridades[rIdx].nombre,
+        raridadLabel: raridades[rIdx].label,
+        colorHex: raridades[rIdx].colorHex
+      });
+    }
+
+    /* ==========================================================================
+       SISTEMA DE PERSISTENCIA Y OFERTAS DE GUARDERÍA
+       ========================================================================== */
+    function getGuarderiaMarket() {
+      return JSON.parse(localStorage.getItem('pixelgames_guarderia') || '[]');
+    }
+
+    function setGuarderiaMarket(market) {
+      localStorage.setItem('pixelgames_guarderia', JSON.stringify(market));
+      channel.postMessage({ type: 'MARKET_UPDATED' });
+    }
+
+    channel.onmessage = (event) => {
+      if (event.data && event.data.type === 'MARKET_UPDATED') {
+        renderAllTabs();
+        updateCoinsDisplay();
+      }
+    };
+
+    /* ==========================================================================
+       RENDERIZADO DE PESTAÑAS Y SECCIONES
+       ========================================================================== */
+    let activeTab = 'global';
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+
+      document.getElementById(`tab-btn-${tab}`).classList.add('active');
+      document.getElementById(`sec-${tab}`).classList.add('active');
+
+      if (tab === 'publicar') {
+        loadSelectCollectionOptions();
+      } else {
+        renderAllTabs();
+      }
+    }
+
+    function renderAllTabs() {
+      renderGlobalMarket();
+      renderMyMarket();
+    }
+
+    function renderGlobalMarket() {
+      const market = getGuarderiaMarket();
+      const grid = document.getElementById('grid-global');
+      grid.innerHTML = '';
+
+      const globalOffers = market.filter(item => item.vendedor !== activeUser);
+
+      if (globalOffers.length === 0) {
+        grid.innerHTML = `<p style="color:var(--text-muted); font-size:14px; grid-column: 1/-1; padding: 30px;">No hay otros espíritus en el mercado global actualmente.</p>`;
+        return;
+      }
+
+      globalOffers.forEach(item => {
+        const card = createSpiritCard(item, false);
+        grid.appendChild(card);
+      });
+    }
+
+    function renderMyMarket() {
+      const market = getGuarderiaMarket();
+      const grid = document.getElementById('grid-mismarket');
+      grid.innerHTML = '';
+
+      const myOffers = market.filter(item => item.vendedor === activeUser);
+
+      if (myOffers.length === 0) {
+        grid.innerHTML = `<p style="color:var(--text-muted); font-size:14px; grid-column: 1/-1; padding: 30px;">No tienes espíritus puestos a la venta en la guardería.</p>`;
+        return;
+      }
+
+      myOffers.forEach(item => {
+        const card = createSpiritCard(item, true);
+        grid.appendChild(card);
+      });
+    }
+
+    /* ==========================================================================
+       CREACIÓN DUAL DE TARJETAS HTML DE ESPÍRITUS
+       ========================================================================== */
+    function createSpiritCard(item, isMine) {
+      const esp = catalogoEspiritus.find(e => e.id === item.espirituId) || {
+        id: item.espirituId,
+        nombre: item.customNombre || "Espíritu",
+        raridadKey: 'comun',
+        raridadLabel: 'Común',
+        colorHex: '#a4b0be'
+      };
+
+      const card = document.createElement('div');
+      card.className = 'spirit-card';
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 120;
+      canvas.height = 120;
+      canvas.className = 'spirit-canvas-preview';
+      canvas.onclick = () => verEspirituInspector(item.espirituId, item.customNombre || esp.nombre, item.vendedor, item.precio);
+
+      drawPixelSpiritOnCanvas(canvas, esp.id, esp.colorHex);
+
+      card.appendChild(canvas);
+
+      const title = document.createElement('div');
+      title.className = 'spirit-title';
+      title.innerText = item.customNombre || esp.nombre;
+      card.appendChild(title);
+
+      const owner = document.createElement('div');
+      owner.className = 'spirit-owner';
+      owner.innerText = `Vendedor: ${item.vendedor}`;
+      card.appendChild(owner);
+
+      const rarity = document.createElement('div');
+      rarity.className = `spirit-rarity rarity-${esp.raridadKey}`;
+      rarity.innerText = esp.raridadLabel;
+      card.appendChild(rarity);
+
+      const price = document.createElement('div');
+      price.className = 'spirit-price';
+      price.innerText = `🪙 ${item.precio.toLocaleString('es-ES')}`;
+      card.appendChild(price);
+
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+
+      const btnView = document.createElement('button');
+      btnView.className = 'btn-card btn-view';
+      btnView.innerText = '🔍 VER';
+      btnView.onclick = () => verEspirituInspector(item.espirituId, item.customNombre || esp.nombre, item.vendedor, item.precio);
+      actions.appendChild(btnView);
+
+      if (isMine) {
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn-card btn-edit';
+        btnEdit.innerText = '✏️ PRECIO';
+        btnEdit.onclick = () => editarPrecioPrompt(item.idOferta);
+        actions.appendChild(btnEdit);
+
+        const btnRemove = document.createElement('button');
+        btnRemove.className = 'btn-card btn-remove';
+        btnRemove.innerText = '❌ RETIRAR';
+        btnRemove.onclick = () => retirarSpiritOferta(item.idOferta);
+        actions.appendChild(btnRemove);
+      } else {
+        const btnBuy = document.createElement('button');
+        btnBuy.className = 'btn-card btn-buy';
+        btnBuy.innerText = '🛒 COMPRAR';
+        btnBuy.onclick = () => comprarSpiritOferta(item.idOferta);
+        actions.appendChild(btnBuy);
+      }
+
+      card.appendChild(actions);
+      return card;
+    }
+
+    /* ==========================================================================
+       FORMULARIO Y CARGA DE COLECCIÓN
+       ========================================================================== */
+    function loadSelectCollectionOptions() {
+      allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[activeUser] || { espiritusComprados: [] };
+      const select = document.getElementById('form-select-espiritu');
+      select.innerHTML = '';
+
+      if (!u.espiritusComprados || u.espiritusComprados.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.innerText = "No tienes espíritus en tu colección personal";
+        select.appendChild(opt);
+        return;
+      }
+
+      u.espiritusComprados.forEach(idSp => {
+        const esp = catalogoEspiritus.find(e => e.id === idSp);
+        if (esp) {
+          const opt = document.createElement('option');
+          opt.value = esp.id;
+          opt.innerText = `${esp.nombre} (${esp.raridadLabel})`;
+          select.appendChild(opt);
+        }
+      });
+    }
+
+    function previewSelectedSpirit() {
+      const select = document.getElementById('form-select-espiritu');
+      const inputNombre = document.getElementById('form-input-nombre');
+      const idSp = parseInt(select.value);
+      const esp = catalogoEspiritus.find(e => e.id === idSp);
+
+      if (esp && (!inputNombre.value || inputNombre.value.trim() === '')) {
+        inputNombre.value = esp.nombre;
+      }
+    }
+
+    function publicarEspirituForm() {
+      const select = document.getElementById('form-select-espiritu');
+      const inputNombre = document.getElementById('form-input-nombre');
+      const inputPrecio = document.getElementById('form-input-precio');
+
+      const espirituId = parseInt(select.value);
+      const customNombre = inputNombre.value ? inputNombre.value.trim() : '';
+      const precio = parseInt(inputPrecio.value);
+
+      if (isNaN(espirituId)) {
+        alert('❌ Debes seleccionar un espíritu válido de tu colección.');
+        return;
+      }
+
+      if (!customNombre || customNombre === '') {
+        alert('❌ El campo NOMBRE es totalmente OBLIGATORIO.');
+        return;
+      }
+
+      if (isNaN(precio) || precio <= 0) {
+        alert('❌ Por favor ingresa un precio válido en Pixelmonedas.');
+        return;
+      }
+
+      allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[activeUser];
+
+      // Quitar espíritu de la colección
+      u.espiritusComprados = u.espiritusComprados.filter(id => id !== espirituId);
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+
+      // Guardar en la guardería
+      const market = getGuarderiaMarket();
+      market.push({
+        idOferta: Date.now(),
+        vendedor: activeUser,
+        espirituId: espirituId,
+        customNombre: customNombre,
+        precio: precio
+      });
+
+      setGuarderiaMarket(market);
+      alert(`✅ ¡"${customNombre}" ha sido puesto en la guardería por 🪙 ${precio.toLocaleString('es-ES')} Pixelmonedas!`);
+
+      inputPrecio.value = '';
+      switchTab('mismarket');
+    }
+
+    /* ==========================================================================
+       TRANSACCIONES Y EDICIÓN
+       ========================================================================== */
+    function comprarSpiritOferta(idOferta) {
+      const market = getGuarderiaMarket();
+      const item = market.find(i => i.idOferta === idOferta);
+      if (!item) return;
+
+      allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const comprador = allUsers[activeUser];
+
+      if (comprador.coins < item.precio) {
+        alert('❌ No tienes suficientes Pixelmonedas para comprar este espíritu.');
+        return;
+      }
+
+      // Transferencia
+      comprador.coins -= item.precio;
+      comprador.espiritusComprados.push(item.espirituId);
+
+      if (allUsers[item.vendedor]) {
+        allUsers[item.vendedor].coins = (allUsers[item.vendedor].coins || 0) + item.precio;
+      }
+
+      const updatedMarket = market.filter(i => i.idOferta !== idOferta);
+      setGuarderiaMarket(updatedMarket);
+
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      updateCoinsDisplay();
+      renderAllTabs();
+
+      alert(`🎉 ¡Has comprado a "${item.customNombre}" por 🪙 ${item.precio.toLocaleString('es-ES')} Pixelmonedas!`);
+    }
+
+    function editarPrecioPrompt(idOferta) {
+      const market = getGuarderiaMarket();
+      const item = market.find(i => i.idOferta === idOferta);
+      if (!item) return;
+
+      const newPriceStr = prompt(`Nuevo precio para "${item.customNombre}" en Pixelmonedas:`, item.precio);
+      if (newPriceStr === null) return;
+
+      const newPrice = parseInt(newPriceStr);
+      if (isNaN(newPrice) || newPrice <= 0) {
+        alert('❌ Ingresa un precio válido.');
+        return;
+      }
+
+      item.precio = newPrice;
+      setGuarderiaMarket(market);
+      renderAllTabs();
+    }
+
+    function retirarSpiritOferta(idOferta) {
+      const market = getGuarderiaMarket();
+      const item = market.find(i => i.idOferta === idOferta);
+      if (!item) return;
+
+      allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[activeUser];
+
+      u.espiritusComprados.push(item.espirituId);
+
+      const updatedMarket = market.filter(i => i.idOferta !== idOferta);
+      setGuarderiaMarket(updatedMarket);
+
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      renderAllTabs();
+
+      alert(`✅ Has retirado a "${item.customNombre}" de la guardería y vuelve a tu colección.`);
+    }
+
+    /* ==========================================================================
+       VISOR / INSPECTOR Y MOTOR PIXEL ART CANVAS HD
+       ========================================================================== */
+    function verEspirituInspector(espirituId, nombreCustom, vendedor, precio) {
+      const esp = catalogoEspiritus.find(e => e.id === espirituId) || {
+        id: espirituId,
+        nombre: nombreCustom,
+        raridadKey: 'comun',
+        raridadLabel: 'Común',
+        colorHex: '#a4b0be'
+      };
+
+      document.getElementById('modal-spirit-title').innerText = nombreCustom.toUpperCase();
+      document.getElementById('modal-spirit-title').style.color = esp.colorHex;
+
+      document.getElementById('modal-spirit-owner').innerText = `Vendedor: ${vendedor}`;
+      
+      const rarEl = document.getElementById('modal-spirit-rarity');
+      rarEl.innerText = `Raridad: ${esp.raridadLabel}`;
+      rarEl.className = `rarity-${esp.raridadKey}`;
+
+      document.getElementById('modal-spirit-price').innerText = `🪙 ${precio.toLocaleString('es-ES')} Pixelmonedas`;
+
+      const canvas = document.getElementById('modal-canvas-display');
+      drawPixelSpiritOnCanvas(canvas, esp.id, esp.colorHex);
+
+      document.getElementById('modal-inspector').style.display = 'flex';
+    }
+
+    function cerrarModalInspector() {
+      document.getElementById('modal-inspector').style.display = 'none';
+    }
+
+    function drawPixelSpiritOnCanvas(canvas, id, colorHex) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const r = (id * 67) % 255;
+      const g = (id * 131) % 255;
+      const b = (id * 199) % 255;
+      const secColor = `rgb(${r}, ${g}, ${b})`;
+
+      // Aura
+      const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 10, canvas.width/2, canvas.height/2, canvas.width/2);
+      grad.addColorStop(0, colorHex);
+      grad.addColorStop(1, '#02050f');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = colorHex;
+      ctx.shadowColor = colorHex;
+      ctx.shadowBlur = 10;
+
+      const scale = canvas.width / 220;
+
+      // Cuerpo
+      const bType = id % 4;
+      if (bType === 0) {
+        ctx.fillRect(70*scale, 50*scale, 80*scale, 80*scale);
+        ctx.fillRect(60*scale, 60*scale, 100*scale, 60*scale);
+      } else if (bType === 1) {
+        ctx.fillRect(60*scale, 70*scale, 100*scale, 70*scale);
+        ctx.fillRect(70*scale, 50*scale, 80*scale, 20*scale);
+      } else if (bType === 2) {
+        ctx.fillRect(90*scale, 40*scale, 40*scale, 100*scale);
+        ctx.fillRect(60*scale, 70*scale, 100*scale, 40*scale);
+      } else {
+        ctx.beginPath();
+        ctx.arc(110*scale, 95*scale, 48*scale, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Detalle Superior
+      ctx.fillStyle = secColor;
+      const tType = id % 3;
+      if (tType === 0) {
+        ctx.fillRect(55*scale, 30*scale, 20*scale, 30*scale);
+        ctx.fillRect(145*scale, 30*scale, 20*scale, 30*scale);
+      } else if (tType === 1) {
+        ctx.fillRect(105*scale, 20*scale, 10*scale, 30*scale);
+        ctx.fillStyle = '#ffd700';
+        ctx.fillRect(100*scale, 10*scale, 20*scale, 15*scale);
+      } else {
+        ctx.fillRect(65*scale, 30*scale, 25*scale, 25*scale);
+        ctx.fillRect(130*scale, 30*scale, 25*scale, 25*scale);
+      }
+
+      // Cola
+      ctx.fillStyle = colorHex;
+      ctx.fillRect(80*scale, 130*scale, 60*scale, 20*scale);
+      ctx.fillRect(90*scale, 150*scale, 40*scale, 20*scale);
+
+      // Ojos
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(80*scale, 70*scale, 18*scale, 18*scale);
+      ctx.fillRect(122*scale, 70*scale, 18*scale, 18*scale);
+
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(85*scale, 75*scale, 8*scale, 8*scale);
+      ctx.fillRect(127*scale, 75*scale, 8*scale, 8*scale);
+    }
+
+    function volverMenuJuegos() {
+      window.location.href = 'juegos.html';
+    }
+
+    // Inicialización al cargar la ventana
+    window.onload = () => {
+      renderAllTabs();
+    };
+  </script>
+</body>
+</html>
