@@ -3,220 +3,265 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Valorar Pixel Games</title>
+  <title>PIXEL GAMES - Pixel Critic</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
     body {
-      background: #050814;
+      background: radial-gradient(circle at center, #1a1f35 0%, #080b12 100%);
       color: white;
       font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
       padding: 20px;
     }
 
-    .rating-card {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(0, 229, 255, 0.3);
-      border-radius: 16px;
+    .game-card {
+      background: #0f172a;
+      border: 2px solid #ffd700;
+      border-radius: 20px;
+      padding: 30px;
       width: 100%;
-      max-width: 480px;
-      padding: 25px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+      max-width: 550px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+      position: relative;
     }
 
     h1 {
-      font-size: 24px;
-      color: #00e5ff;
-      text-shadow: 0 0 10px #00e5ff;
-      text-align: center;
+      font-size: 32px;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700;
+      margin-bottom: 5px;
     }
 
-    .stars-container {
+    .subtitle {
+      color: #8191aa;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    /* ESTRELLAS DE VALORACIÓN INTERACTIVAS */
+    .rating-stars {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      font-size: 36px;
-      cursor: pointer;
+      gap: 12px;
+      margin: 20px 0;
     }
 
     .star {
-      color: #444;
-      transition: color 0.2s, transform 0.1s;
+      font-size: 45px;
+      color: #334155;
+      cursor: pointer;
+      transition: transform 0.2s, color 0.2s, text-shadow 0.2s;
     }
 
-    .star.active {
-      color: #ffda00;
-      text-shadow: 0 0 10px #ffda00;
+    .star:hover, .star.active {
+      color: #ffd700;
+      text-shadow: 0 0 15px #ffd700;
+      transform: scale(1.2);
     }
 
-    input, textarea {
-      background: #080b12;
-      border: 1px solid rgba(0, 229, 255, 0.4);
-      color: #fff;
-      padding: 12px;
-      border-radius: 8px;
+    /* ETIQUETAS SELECCIONABLES */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .tag-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #aaa;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
       font-family: inherit;
-      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .tag-btn.selected {
+      background: #00e5ff;
+      color: #000;
+      border-color: #00e5ff;
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    }
+
+    /* CAMPO DE TEXTO PARA RESEÑA */
+    textarea {
+      width: 100%;
+      height: 80px;
+      background: #02050f;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: white;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 13px;
+      resize: none;
       outline: none;
+      margin-bottom: 20px;
+    }
+
+    textarea:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    /* BOTONES */
+    .btn-submit {
+      background: linear-gradient(180deg, #2ecc71, #27ae60);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+      transition: transform 0.1s, filter 0.2s;
       width: 100%;
     }
 
-    input:focus, textarea:focus {
-      border-color: #00e5ff;
-      box-shadow: 0 0 8px #00e5ff;
-    }
-
-    .btn {
-      padding: 12px;
-      background: linear-gradient(180deg, #00e5ff, #0088cc);
-      color: #000;
-      font-weight: bold;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: filter 0.2s, transform 0.1s;
-    }
-
-    .btn:hover { filter: brightness(1.2); transform: scale(1.02); }
-
-    .reviews-list {
-      max-height: 200px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 15px;
-    }
-
-    .review-item {
-      background: #1e293b;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-    }
-
-    .review-header {
-      display: flex;
-      justify-content: space-between;
-      color: #00e5ff;
-      font-weight: bold;
-      margin-bottom: 4px;
+    .btn-submit:hover {
+      transform: scale(1.02);
+      filter: brightness(1.2);
     }
 
     .btn-back {
+      background: transparent;
+      border: 1px solid #8191aa;
+      color: #8191aa;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
       margin-top: 15px;
-      background: linear-gradient(180deg, #ff4757, #c0392b);
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      border-color: white;
       color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
+    }
+
+    /* ANIMACIÓN Y PREMIO */
+    .reward-badge {
+      display: none;
+      background: rgba(255, 215, 0, 0.2);
+      border: 1px dashed #ffd700;
+      color: #ffd700;
+      padding: 12px;
+      border-radius: 12px;
       font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
     }
   </style>
-
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-  <div class="rating-card">
-    <h1>VALORA LA WEB ⭐</h1>
+  <div class="game-card">
+    <h1>📝 PIXEL CRITIC</h1>
+    <div class="subtitle">Evalúa la plataforma y gana recompensa</div>
 
-    <div class="stars-container" id="stars">
-      <span class="star" onclick="setRating(1)">★</span>
-      <span class="star" onclick="setRating(2)">★</span>
-      <span class="star" onclick="setRating(3)">★</span>
-      <span class="star" onclick="setRating(4)">★</span>
-      <span class="star" onclick="setRating(5)">★</span>
+    <div class="reward-badge" id="reward-box">
+      🎉 ¡Reseña enviada! Has recibido +2.000 🪙 Pixelmonedas
     </div>
 
-    <input type="text" id="username" placeholder="Tu Nombre / Apodo" maxlength="15">
-    <textarea id="comment" rows="2" placeholder="Escribe tu opinión..."></textarea>
-    
-    <button class="btn" onclick="sendRating()">GUARDAR VALORACIÓN</button>
+    <p style="font-size: 13px; color: #aaa;">¿Cuántas estrellas le das a PIXEL GAMES?</p>
 
-    <div class="reviews-list" id="reviews-list"></div>
+    <div class="rating-stars">
+      <span class="star" onclick="rate(1)">★</span>
+      <span class="star" onclick="rate(2)">★</span>
+      <span class="star" onclick="rate(3)">★</span>
+      <span class="star" onclick="rate(4)">★</span>
+      <span class="star" onclick="rate(5)">★</span>
+    </div>
+
+    <div class="tags-container">
+      <button class="tag-btn" onclick="toggleTag(this)">🎨 Buenos Gráficos</button>
+      <button class="tag-btn" onclick="toggleTag(this)">🔥 Súper Adictivo</button>
+      <button class="tag-btn" onclick="toggleTag(this)">🚀 Carga Rápido</button>
+      <button class="tag-btn" onclick="toggleTag(this)">👻 Gran Mercado</button>
+      <button class="tag-btn" onclick="toggleTag(this)">🎡 Ruleta Divertida</button>
+    </div>
+
+    <textarea id="review-text" placeholder="Escribe un comentario corto de tu experiencia (Opcional)..."></textarea>
+
+    <button class="btn-submit" id="btn-send" onclick="enviarValoracion()">🚀 ENVIAR VALORACIÓN Y COBRAR RECOMPENSA</button>
+
+    <br>
+    <button class="btn-back" onclick="volverMenu()">🎮 Volver al Menú de Juegos</button>
   </div>
 
-  <a href="juegos.html" class="btn-back">VOLVER AL MENÚ</a>
-
   <script>
-    const firebaseConfig = {
-      databaseURL: "https://pixelgames-chat-default-rtdb.europe-west1.firebasedatabase.app"
-    };
+    const activeUser = localStorage.getItem('pixelgames_session') || 'Invitado';
+    let currentRating = 0;
 
-    let db;
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-    } catch(e) {}
-
-    let selectedStars = 0;
-
-    function setRating(stars) {
-      selectedStars = stars;
-      const starEls = document.querySelectorAll('.star');
-      starEls.forEach((el, index) => {
+    function rate(stars) {
+      currentRating = stars;
+      const allStars = document.querySelectorAll('.star');
+      allStars.forEach((star, index) => {
         if (index < stars) {
-          el.classList.add('active');
+          star.classList.add('active');
         } else {
-          el.classList.remove('active');
+          star.classList.remove('active');
         }
       });
     }
 
-    function sendRating() {
-      const name = document.getElementById('username').value.trim();
-      const comment = document.getElementById('comment').value.trim();
-
-      if (selectedStars === 0) {
-        alert("¡Selecciona al menos 1 estrella!");
-        return;
-      }
-      if (!name) {
-        alert("¡Escribe tu nombre!");
-        return;
-      }
-
-      db.ref('ratings').push({
-        name: name,
-        stars: selectedStars,
-        comment: comment
-      });
-
-      document.getElementById('comment').value = "";
-      alert("¡Gracias por valorar Pixel Games!");
+    function toggleTag(btn) {
+      btn.classList.toggle('selected');
     }
 
-    if (db) {
-      db.ref('ratings').on('child_added', (snapshot) => {
-        const data = snapshot.val();
-        const list = document.getElementById('reviews-list');
-        const item = document.createElement('div');
-        item.className = 'review-item';
+    function enviarValoracion() {
+      if (currentRating === 0) {
+        alert('❌ Por favor selecciona al menos 1 estrella.');
+        return;
+      }
+
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      if (!allUsers[activeUser]) {
+        allUsers[activeUser] = { coins: 0 };
+      }
+
+      // Evitar que reclame premio infinito si ya valoró
+      const yaValoro = localStorage.getItem('pixelgames_rated_' + activeUser);
+
+      if (!yaValoro) {
+        allUsers[activeUser].coins = (allUsers[activeUser].coins || 0) + 2000;
+        localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+        localStorage.setItem('pixelgames_rated_' + activeUser, 'true');
         
-        let starsText = "★".repeat(data.stars);
+        document.getElementById('reward-box').style.display = 'block';
+      } else {
+        alert('✅ ¡Gracias por actualizar tu valoración!');
+      }
 
-        item.innerHTML = `
-          <div class="review-header">
-            <span>${data.name}</span>
-            <span style="color:#ffda00">${starsText}</span>
-          </div>
-          <div>${data.comment || "Sin comentario"}</div>
-        `;
+      document.getElementById('btn-send').disabled = true;
+      document.getElementById('btn-send').innerText = '✅ VALORACIÓN ENVIADA';
+      document.getElementById('btn-send').style.opacity = '0.6';
+    }
 
-        list.prepend(item);
-      });
+    function volverMenu() {
+      window.location.href = 'juegos.html';
     }
   </script>
 </body>
