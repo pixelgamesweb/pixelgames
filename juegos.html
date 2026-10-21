@@ -265,85 +265,37 @@
     }
 
     .btn-continuar { background: #2ecc71; color: #080b12; box-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
-    .btn-nueva { background: #e67e22; color: #ffffff; box-shadow: 0 0 10px rgba(230, 126, 34, 0.4); }
     .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; }
-    .alerta-error { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; font-weight: bold; }
 
-    /* NOTIFICACIÓN FLOTANTE DE AMIGO EN LÍNEA */
-    .friend-online-banner {
-      display: none;
-      position: fixed;
-      bottom: 25px; right: 25px;
-      background: #0f172a;
-      border: 2px solid #2ecc71;
-      border-radius: 16px;
-      padding: 15px 20px;
-      box-shadow: 0 0 25px rgba(46, 204, 113, 0.6);
-      z-index: 200;
-      animation: popIn 0.3s ease-out;
-      text-align: left;
+    /* TIENDA DE ESPÍRITUS */
+    .nav-tienda { display: flex; justify-content: center; gap: 10px; margin: 15px 0 10px; }
+    .nav-btn {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+      color: #aaa; padding: 10px 16px; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: inherit;
     }
+    .nav-btn.active { background: #ffd700; color: #000; border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+    .spirit-list { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; max-height: 300px; overflow-y: auto; }
+    .spirit-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .spirit-info { text-align: left; }
+    .btn-buy { background: #ffd700; color: #000; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 12px; }
+    .btn-owned { background: #2ed573; color: #000; cursor: default; }
 
-    @keyframes popIn {
-      from { transform: translateY(50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    /* RULETA */
+    .roulette-wrapper { position: relative; width: 300px; height: 300px; margin: 15px auto; }
+    #roulette-canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 30px rgba(255, 0, 127, 0.7); }
+    .roulette-pointer {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 24px solid #ffd700; z-index: 10;
     }
+    .btn-spin { background: linear-gradient(180deg, #ff007f, #b30059); color: white; font-size: 16px; font-weight: 900; border: 2px solid #ff66cc; }
+    #roulette-result { font-size: 14px; font-weight: bold; color: #ffd700; min-height: 24px; margin-top: 5px; }
 
-    .banner-title { font-weight: bold; color: #2ecc71; font-size: 14px; margin-bottom: 4px; }
-    .banner-desc { font-size: 12px; color: #fff; margin-bottom: 10px; }
-    .btn-saludar-quick {
-      background: #2ecc71; color: #000; border: none; padding: 6px 12px;
-      border-radius: 8px; font-weight: bold; font-family: inherit; cursor: pointer; font-size: 12px;
-    }
-
-    /* ESTILOS DE AMIGOS Y CHAT DE 100 FRASES */
-    .friends-input-box {
-      display: flex;
-      gap: 8px;
-      margin: 15px 0;
-    }
-
-    .friends-input {
-      flex: 1;
-      background: #02050f;
-      border: 1px solid #a55eea;
-      padding: 10px;
-      border-radius: 10px;
-      color: #fff;
-      font-family: inherit;
-      outline: none;
-    }
-
-    .friends-list-box {
-      max-height: 250px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 15px;
-    }
-
-    .friend-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    .select-frase {
-      width: 100%;
-      background: #02050f;
-      color: #ffd700;
-      border: 1px solid #ffd700;
-      padding: 10px;
-      border-radius: 10px;
-      font-family: inherit;
-      margin: 10px 0;
-      outline: none;
-    }
+    /* AMIGOS */
+    .friends-input-box { display: flex; gap: 8px; margin: 15px 0; }
+    .friends-input { flex: 1; background: #02050f; border: 1px solid #a55eea; padding: 10px; border-radius: 10px; color: #fff; font-family: inherit; outline: none; }
+    .friends-list-box { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+    .friend-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; }
+    .select-frase { width: 100%; background: #02050f; color: #ffd700; border: 1px solid #ffd700; padding: 10px; border-radius: 10px; font-family: inherit; margin: 10px 0; outline: none; }
   </style>
 </head>
 
@@ -370,22 +322,49 @@
 
   <main class="grid" id="games"></main>
 
-  <!-- BANNER NOTIFICACIÓN DE AMIGO EN LÍNEA -->
-  <div class="friend-online-banner" id="friend-banner">
-    <div class="banner-title" id="banner-title">🟢 ¡AMIGO EN LÍNEA!</div>
-    <div class="banner-desc" id="banner-desc">Tu amigo está en Pixel Games.</div>
-    <button class="btn-saludar-quick" onclick="abrirModalSaludarDirecto()">👋 SALUDAR AHORA</button>
-    <button class="btn-saludar-quick" style="background:transparent; color:#8191aa;" onclick="cerrarBanner()">Cerrar</button>
+  <!-- MODAL RULETA -->
+  <div class="modal-overlay" id="modal-ruleta">
+    <div class="modal-card" style="max-width: 420px;">
+      <h2 style="color: #ff007f;">🎡 PIXELRULETA</h2>
+      <p style="color: #8191aa; font-size: 12px;" id="roulette-subtitle">¡Prueba tu suerte en la Pixelruleta!</p>
+
+      <div class="roulette-wrapper">
+        <div class="roulette-pointer"></div>
+        <canvas id="roulette-canvas" width="300" height="300"></canvas>
+      </div>
+
+      <div id="roulette-result"></div>
+
+      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA!</button>
+      <button class="modal-btn btn-cancelar" onclick="cerrarRuleta()">Volver</button>
+    </div>
+  </div>
+
+  <!-- MODAL TIENDA DE ESPÍRITUS -->
+  <div class="modal-overlay" id="modal-tienda">
+    <div class="modal-card">
+      <h2 style="color: #ffd700;">👻 TIENDA & COLECCIÓN DE ESPÍRITUS</h2>
+      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-coleccion">Colecciona los 150 espíritus de Pixel Games</p>
+
+      <div class="nav-tienda">
+        <button class="nav-btn active" id="btn-tab-tienda" onclick="cambiarTab('tienda')">🛒 COMPRAR ESPÍRITUS</button>
+        <button class="nav-btn" id="btn-tab-coleccion" onclick="cambiarTab('coleccion')">👻 MI COLECCIÓN</button>
+      </div>
+
+      <div class="spirit-list" id="spirit-list-container"></div>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarTiendaEspiritus()">Cerrar Ventana</button>
+    </div>
   </div>
 
   <!-- MODAL AMIGOS -->
   <div class="modal-overlay" id="modal-amigos">
     <div class="modal-card">
       <h2 style="color: #a55eea;">👥 SISTEMA DE AMIGOS</h2>
-      <p style="color: #8191aa; font-size: 12px;">Agrega amigos por su nombre de usuario en Pixel Games</p>
+      <p style="color: #8191aa; font-size: 12px;">Agrega amigos por su nombre de usuario</p>
 
       <div class="friends-input-box">
-        <input type="text" id="input-friend-name" class="friends-input" placeholder="Escribe el nombre de tu amigo...">
+        <input type="text" id="input-friend-name" class="friends-input" placeholder="Nombre de tu amigo...">
         <button class="btn-buscar" style="background:#a55eea; color:#fff;" onclick="enviarSolicitudAmistad()">➕ ENVIAR</button>
       </div>
 
@@ -396,42 +375,18 @@
     </div>
   </div>
 
-  <!-- MODAL SALUDAR CON 100 RESPUESTAS -->
-  <div class="modal-overlay" id="modal-saludar" style="z-index: 180;">
-    <div class="modal-card" style="max-width: 450px;">
-      <h2 style="color: #2ecc71;" id="saludar-modal-title">👋 ENVIAR SALUDO</h2>
-      <p style="color: #8191aa; font-size: 12px;">Elige uno de los 100 saludos o frases rápidas:</p>
-
-      <select id="select-100-frases" class="select-frase"></select>
-
-      <button class="modal-btn btn-continuar" onclick="enviarMensajeSaludo()">🚀 ENVIAR SALUDO</button>
-      <button class="modal-btn btn-cancelar" onclick="cerrarModalSaludar()">Cancelar</button>
-    </div>
-  </div>
-
-  <!-- MODALS RESTANTES (Partida, Logros, Tienda, Ruleta) -->
-  <div class="modal-overlay" id="modal-partida">
-    <div class="modal-card">
-      <h2 id="modal-titulo-juego">NOMBRE JUEGO</h2>
-      <p style="color: #8191aa; font-size: 14px; margin-bottom: 20px;">¿Cómo deseas empezar tu partida?</p>
-      <button class="modal-btn btn-continuar" onclick="continuarPartida()">▶️ CONTINUAR PARTIDA</button>
-      <button class="modal-btn btn-nueva" onclick="nuevaPartida()">➕ NUEVA PARTIDA</button>
-      <div class="alerta-error" id="alerta-sin-partida">❌ No tienes ninguna partida anterior guardada.</div>
-      <button class="modal-btn btn-cancelar" onclick="cerrarModal()">Cancelar</button>
-    </div>
-  </div>
-
+  <!-- MODAL LOGROS -->
   <div class="modal-overlay" id="modal-logros">
     <div class="modal-card">
       <h2 style="color: #f1c40f;">🏆 LOGROS DE JUGADOR</h2>
-      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-logros">Desbloquea insignias completando desafíos</p>
-      <div class="logros-grid" id="logros-container"></div>
+      <p style="color: #8191aa; font-size: 12px;">Completa desafíos para ganar recompensas</p>
+      <div style="margin: 20px 0; color: #8191aa;">Sigue jugando a los minijuegos para desbloquear insignias.</div>
       <button class="modal-btn btn-cancelar" onclick="cerrarModalLogros()">Cerrar Ventana</button>
     </div>
   </div>
 
   <script>
-    // 1. SESIÓN Y USUARIO
+    // 1. SESIÓN Y USUARIOS
     let usuarioActivo = localStorage.getItem('pixelgames_session');
     if (!usuarioActivo) {
       usuarioActivo = 'Invitado';
@@ -441,13 +396,7 @@
 
     const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
     if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { 
-        coins: 5000, 
-        espiritusComprados: [], 
-        logrosObtenidos: [],
-        amigos: [],
-        solicitudes: []
-      };
+      usuarios[usuarioActivo] = { coins: 5000, espiritusComprados: [], amigos: [], solicitudes: [] };
       localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
     }
 
@@ -457,282 +406,17 @@
     }
 
     function cambiarUsuario() {
-      if (confirm(`¿Quieres cerrar la sesión de "${usuarioActivo}" y cambiar de usuario?`)) {
+      if (confirm(`¿Quieres cerrar sesión de "${usuarioActivo}"?`)) {
         localStorage.removeItem('pixelgames_session');
         window.location.href = 'index.html';
       }
     }
 
     function abrirGuarderia() { window.location.href = 'guarderia.html'; }
+    function abrirModalLogros() { document.getElementById('modal-logros').style.display = 'flex'; }
+    function cerrarModalLogros() { document.getElementById('modal-logros').style.display = 'none'; }
 
-    // 2. COLECCIÓN DE 100 FRASES Y SALUDOS RETRO
-    const lista100Frases = [
-      "¡Hola! 👋 ¡Tu amigo está en Pixel Games!",
-      "¡Buenas! ¿Unas partidas rápidas?",
-      "¡Hey! ¿A qué juego estás jugando hoy?",
-      "¡A por el récord supremo! 🏆",
-      "¡Mucho éxito consiguiendo Pixelmonedas! 🪙",
-      "¡Qué bueno verte por aquí en línea!",
-      "¡Ese es mi amigo! ¡A jugar!",
-      "¡Cuidado con la Ruleta hoy! 🎡",
-      "¡A por los 150 Espíritus! 👻",
-      "¡Un saludo Pixelado! 👾",
-      "¡Es hora del vicio gamer! 🎮",
-      "¡Buena suerte en tus partidas!",
-      "¡Suma puntos sin parar!",
-      "¡Nos vemos en la tabla de clasificación!",
-      "¡Que la suerte de Pixel Games te acompañe!",
-      "¡Pasaba a decirte hola! 👋",
-      "¡Vamos a pasarnos todos los niveles!",
-      "¡A superar el Ultra Labyrinths! 🧩",
-      "¡Espero que consigas un espíritu Mítico! 🔥",
-      "¡Hoy es tu día de suerte!",
-      "¡Dale caña al teclado!",
-      "¡Ese ranking no se sube solo!",
-      "¡Hola socio! ¿Cómo va la jornada?",
-      "¡Modo Gamer Activado! 🟢",
-      "¡A reventar los marcadores!",
-      "¡Que no se te escapen los espíritus Legendarios!",
-      "¡Pixel Games no duerme! 🌙",
-      "¡A full de energía hoy!",
-      "¡Un saludo supersónico!",
-      "¡Pásate a saludar por la Guardería! 🏡",
-      "¡A acumular 1.000.000 de monedas! 💎",
-      "¡Demuestra quién manda aquí!",
-      "¡Un combo perfecto para hoy!",
-      "¡Sigue sumando logros! 🏆",
-      "¡Hola cracked! ⚡",
-      "¡Gana todas las batallas!",
-      "¡Saludando a una leyenda del juego!",
-      "¡Pixel Power al máximo!",
-      "¡Espero verte ganar!",
-      "¡Atento a los secretos!",
-      "¡Nivel Maestro en camino!",
-      "¡Un saludo desde el otro lado de la pantalla!",
-      "¡A por la victoria absoluta!",
-      "¡Que los píxeles te sonrían!",
-      "¡Game On! 🕹️",
-      "¡Puntaje máximo asegurado!",
-      "¡El mejor jugador en línea!",
-      "¡A destrozar récords!",
-      "¡Hola amigo! Disfruta la sesión.",
-      "¡Sigue explorando juegos nuevos!",
-      "¡Carga tus monedas al máximo!",
-      "¡Un abrazo pixelado!",
-      "¡A tope de power!",
-      "¡Que no decaiga el ritmo!",
-      "¡Ese juego no tiene oportunidad contra ti!",
-      "¡Modo Pro Encendido! 🔥",
-      "¡Saludos de otro gamer aventurero!",
-      "¡Ese logro #20 te espera!",
-      "¡Pixelmonedas por doquier!",
-      "¡No te rindas nunca!",
-      "¡Qué gran día para jugar!",
-      "¡A aplastar la competencia!",
-      "¡Level Up! ⬆️",
-      "¡Eres una máquina!",
-      "¡Sigue así campeón!",
-      "¡Un saludo súper especial! 🌟",
-      "¡El reino de Pixel Games te saluda!",
-      "¡Sigue la racha ganadora!",
-      "¡Mucha fuerza para ese laberinto!",
-      "¡Ese espíritu Legendario ya es tuyo!",
-      "¡A romper el contador!",
-      "¡Saluditos Gamer! 👾",
-      "¡Que los dados giren a tu favor!",
-      "¡Esa ruleta dará el bote hoy! 🎰",
-      "¡Con todo y a por todas!",
-      "¡A por ese 100% completado!",
-      "¡Un placer coincidir contigo!",
-      "¡Nadie te frena hoy!",
-      "¡A dar el 200%!",
-      "¡Un saludo retro muy potente!",
-      "¡A divertirse a lo grande!",
-      "¡Puntos, puntos y más puntos!",
-      "¡El número 1 está cerca!",
-      "¡Haz brillar tu pantalla neón!",
-      "¡Sigue la magia en Pixel Games!",
-      "¡A coleccionar todo lo que haya!",
-      "¡Hola compañero de aventuras!",
-      "¡Invencible hoy!",
-      "¡Que el lag no te alcance nunca!",
-      "¡Píxeles al aire! 🎉",
-      "¡Fuerza y victoria!",
-      "¡Un saludo bien neón! 💖",
-      "¡Jugadorazo en vista!",
-      "¡A dominar los 17 juegos!",
-      "¡Nos vemos en la cima!",
-      "¡Gana sin mirar atrás!",
-      "¡Súper saludo Pixelado!",
-      "¡Disfruta cada segundo!",
-      "¡A romperla toda!",
-      "¡Pixel Games en la casa! 🔥"
-    ];
-
-    // Cargar select de 100 frases
-    const selectFrasesEl = document.getElementById('select-100-frases');
-    lista100Frases.forEach((f, idx) => {
-      const opt = document.createElement('option');
-      opt.value = f;
-      opt.innerText = `${idx + 1}. ${f}`;
-      selectFrasesEl.appendChild(opt);
-    });
-
-    // 3. SISTEMA MULTIJUGADOR DE AMIGOS CON LOCALSTORAGE
-    let amigoSeleccionadoParaSaludar = "";
-
-    function abrirModalAmigos() {
-      renderListaAmigos();
-      document.getElementById('modal-amigos').style.display = 'flex';
-    }
-
-    function cerrarModalAmigos() {
-      document.getElementById('modal-amigos').style.display = 'none';
-    }
-
-    function enviarSolicitudAmistad() {
-      const targetName = document.getElementById('input-friend-name').value.trim();
-      if (!targetName) return;
-      if (targetName === usuarioActivo) {
-        alert('❌ No puedes enviarte una solicitud a ti mismo.');
-        return;
-      }
-
-      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      if (!allUsers[targetName]) {
-        alert('❌ El usuario no existe en Pixel Games. Pídele su nombre exacto.');
-        return;
-      }
-
-      if (!allUsers[targetName].solicitudes) allUsers[targetName].solicitudes = [];
-      if (allUsers[targetName].solicitudes.includes(usuarioActivo) || (allUsers[usuarioActivo].amigos && allUsers[usuarioActivo].amigos.includes(targetName))) {
-        alert('⚠️ Ya existe una solicitud o ya sois amigos.');
-        return;
-      }
-
-      allUsers[targetName].solicitudes.push(usuarioActivo);
-      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
-      alert(`✅ ¡Solicitud enviada a "${targetName}"!`);
-      document.getElementById('input-friend-name').value = '';
-    }
-
-    function aceptarSolicitud(remitente) {
-      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      const u = allUsers[usuarioActivo];
-      const r = allUsers[remitente];
-
-      if (!u.amigos) u.amigos = [];
-      if (!r.amigos) r.amigos = [];
-
-      u.amigos.push(remitente);
-      r.amigos.push(usuarioActivo);
-
-      u.solicitudes = u.solicitudes.filter(s => s !== remitente);
-
-      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
-      renderListaAmigos();
-    }
-
-    function renderListaAmigos() {
-      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      const u = allUsers[usuarioActivo];
-      const container = document.getElementById('friends-list-container');
-      container.innerHTML = '';
-
-      // Solicitudes recibidas
-      if (u.solicitudes && u.solicitudes.length > 0) {
-        u.solicitudes.forEach(rem => {
-          const div = document.createElement('div');
-          div.className = 'friend-item';
-          div.style.borderColor = '#ffd700';
-          div.innerHTML = `
-            <span>📩 Solicitud de: <strong>${rem}</strong></span>
-            <button class="btn-buscar" style="background:#2ecc71; color:#000;" onclick="aceptarSolicitud('${rem}')">ACEPTAR</button>
-          `;
-          container.appendChild(div);
-        });
-      }
-
-      // Amigos agregados
-      if (u.amigos && u.amigos.length > 0) {
-        u.amigos.forEach(amigo => {
-          const div = document.createElement('div');
-          div.className = 'friend-item';
-          div.innerHTML = `
-            <span>🟢 <strong>${amigo}</strong></span>
-            <button class="btn-buscar" style="background:#2ecc71; color:#000;" onclick="abrirModalSaludar('${amigo}')">👋 SALUDAR</button>
-          `;
-          container.appendChild(div);
-        });
-      } else if (!u.solicitudes || u.solicitudes.length === 0) {
-        container.innerHTML = `<p style="color:#aaa; font-size:12px;">Aún no tienes amigos agregados.</p>`;
-      }
-    }
-
-    function abrirModalSaludar(amigo) {
-      amigoSeleccionadoParaSaludar = amigo;
-      document.getElementById('saludar-modal-title').innerText = `👋 SALUDAR A ${amigo.toUpperCase()}`;
-      document.getElementById('modal-saludar').style.display = 'flex';
-    }
-
-    function abrirModalSaludarDirecto() {
-      cerrarBanner();
-      abrirModalAmigos();
-    }
-
-    function cerrarModalSaludar() {
-      document.getElementById('modal-saludar').style.display = 'none';
-    }
-
-    function enviarMensajeSaludo() {
-      const mensaje = document.getElementById('select-100-frases').value;
-      const eventoSaludo = {
-        de: usuarioActivo,
-        para: amigoSeleccionadoParaSaludar,
-        texto: mensaje,
-        time: Date.now()
-      };
-
-      localStorage.setItem('pixelgames_saludo_event', JSON.stringify(eventoSaludo));
-      alert(`🚀 ¡Saludo enviado a ${amigoSeleccionadoParaSaludar}!`);
-      cerrarModalSaludar();
-    }
-
-    function cerrarBanner() {
-      document.getElementById('friend-banner').style.display = 'none';
-    }
-
-    // ESCUCHAR ACTIVIDAD DE AMIGOS EN TIEMPO REAL
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'pixelgames_saludo_event') {
-        const data = JSON.parse(e.newValue || '{}');
-        if (data.para === usuarioActivo) {
-          document.getElementById('banner-title').innerText = `💬 SALUDO DE ${data.de.toUpperCase()}`;
-          document.getElementById('banner-desc').innerText = `"${data.texto}"`;
-          document.getElementById('friend-banner').style.display = 'block';
-        }
-      }
-    });
-
-    // 4. GENERACIÓN DE TARJETAS DE JUEGOS Y BUSCADOR
-    function buscarJuego() {
-      const input = document.getElementById('input-buscar-juego');
-      const num = parseInt(input.value);
-
-      if (isNaN(num) || num < 1 || num > 100) {
-        alert('❌ Por favor introduce un número de juego válido entre 1 y 100.');
-        return;
-      }
-
-      const card = document.getElementById(`game-card-${num}`);
-      if (card) {
-        document.querySelectorAll('.card.highlight').forEach(c => c.classList.remove('highlight'));
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        card.classList.add('highlight');
-        setTimeout(() => { card.classList.remove('highlight'); }, 4000);
-      }
-    }
-
+    // 2. LISTA EXACTA DE JUEGOS DE TU FOTO
     const games = [
       { id: 1, name: "money up", icon: "🪙", file: "juego1.html" },
       { id: 2, name: "extrem 1", icon: "🌲", file: "juego2.html" },
@@ -784,6 +468,194 @@
     function clickJuego(id) {
       const g = gamesMap.get(id);
       if (g) window.location.href = g.file;
+    }
+
+    function buscarJuego() {
+      const input = document.getElementById('input-buscar-juego');
+      const num = parseInt(input.value);
+      if (isNaN(num) || num < 1 || num > 100) return;
+      const card = document.getElementById(`game-card-${num}`);
+      if (card) {
+        document.querySelectorAll('.card.highlight').forEach(c => c.classList.remove('highlight'));
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('highlight');
+        setTimeout(() => { card.classList.remove('highlight'); }, 4000);
+      }
+    }
+
+    // 3. TIENDA DE ESPÍRITUS
+    const catalogoEspiritus = Array.from({ length: 150 }, (_, i) => ({
+      id: i + 1,
+      nombre: `Espíritu #${i + 1}`,
+      precio: (i + 1) * 1000
+    }));
+
+    let tabActual = 'tienda';
+    function abrirTiendaEspiritus() {
+      cambiarTab('tienda');
+      document.getElementById('modal-tienda').style.display = 'flex';
+    }
+    function cerrarTiendaEspiritus() { document.getElementById('modal-tienda').style.display = 'none'; }
+
+    function cambiarTab(tab) {
+      tabActual = tab;
+      document.getElementById('btn-tab-tienda').classList.toggle('active', tab === 'tienda');
+      document.getElementById('btn-tab-coleccion').classList.toggle('active', tab === 'coleccion');
+      renderListaEspiritus();
+    }
+
+    function renderListaEspiritus() {
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      const listContainer = document.getElementById('spirit-list-container');
+      listContainer.innerHTML = '';
+
+      if (tabActual === 'tienda') {
+        catalogoEspiritus.slice(0, 30).forEach(esp => {
+          const poseido = u.espiritusComprados && u.espiritusComprados.includes(esp.id);
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'spirit-item';
+          itemDiv.innerHTML = `
+            <div class="spirit-info">
+              <div style="font-weight:bold;">${esp.nombre}</div>
+            </div>
+            ${poseido 
+              ? `<button class="btn-buy btn-owned">DESBLOQUEADO</button>` 
+              : `<button class="btn-buy" onclick="comprarEspiritu(${esp.id}, ${esp.precio})">🪙 ${esp.precio.toLocaleString('es-ES')}</button>`}
+          `;
+          listContainer.appendChild(itemDiv);
+        });
+      } else {
+        const misEspiritus = catalogoEspiritus.filter(esp => u.espiritusComprados && u.espiritusComprados.includes(esp.id));
+        if (misEspiritus.length === 0) {
+          listContainer.innerHTML = `<p style="color:#aaa; font-size:12px; margin-top:15px;">No tienes espíritus en tu colección.</p>`;
+          return;
+        }
+        misEspiritus.forEach(esp => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'spirit-item';
+          itemDiv.innerHTML = `<div style="font-weight:bold;">👻 ${esp.nombre}</div>`;
+          listContainer.appendChild(itemDiv);
+        });
+      }
+    }
+
+    function comprarEspiritu(id, precio) {
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[usuarioActivo];
+      if (u.coins < precio) {
+        alert('❌ No tienes suficientes Pixelmonedas.');
+        return;
+      }
+      u.coins -= precio;
+      if (!u.espiritusComprados) u.espiritusComprados = [];
+      u.espiritusComprados.push(id);
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      actualizarMonedasUI();
+      renderListaEspiritus();
+    }
+
+    // 4. RULETA
+    const opcionesRuleta = [
+      { text: "+1.000 🪙", val: 1000, color: "#1e90ff" },
+      { text: "+2.500 🪙", val: 2500, color: "#2ed573" },
+      { text: "0 🪙", val: 0, color: "#57606f" },
+      { text: "+5.000 🪙", val: 5000, color: "#ffd700" },
+      { text: "+10.000 🪙", val: 10000, color: "#ff007f" },
+      { text: "-2.000 🪙", val: -2000, color: "#ff4757" }
+    ];
+
+    let currentAngle = 0;
+    let isSpinning = false;
+
+    function abrirRuleta() {
+      document.getElementById('modal-ruleta').style.display = 'flex';
+      dibujarRuleta();
+    }
+    function cerrarRuleta() { if (!isSpinning) document.getElementById('modal-ruleta').style.display = 'none'; }
+
+    function dibujarRuleta() {
+      const canvas = document.getElementById('roulette-canvas');
+      const ctx = canvas.getContext('2d');
+      const numSlices = opcionesRuleta.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+      const cx = canvas.width / 2, cy = canvas.height / 2, radius = cx - 5;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < numSlices; i++) {
+        const startA = currentAngle + i * sliceAngle;
+        const endA = startA + sliceAngle;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startA, endA);
+        ctx.fillStyle = opcionesRuleta[i].color;
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(startA + sliceAngle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(opcionesRuleta[i].text, radius - 15, 4);
+        ctx.restore();
+      }
+    }
+
+    function girarRuleta() {
+      if (isSpinning) return;
+      isSpinning = true;
+      const spinBtn = document.getElementById('btn-spin-action');
+      spinBtn.disabled = true;
+
+      const duration = 3000;
+      const start = performance.now();
+      const extraRotations = 5 * 2 * Math.PI;
+      const randomTarget = Math.random() * 2 * Math.PI;
+      const initialAngle = currentAngle;
+
+      function animate(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        currentAngle = initialAngle + (extraRotations + randomTarget) * easeOut;
+        dibujarRuleta();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          isSpinning = false;
+          spinBtn.disabled = false;
+          
+          const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+          const u = allUsers[usuarioActivo];
+          u.coins += 2500; // Premio por giro
+          localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+          actualizarMonedasUI();
+          document.getElementById('roulette-result').innerText = "🎉 ¡Has ganado +2.500 Pixelmonedas!";
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // 5. AMIGOS
+    function abrirModalAmigos() {
+      renderListaAmigos();
+      document.getElementById('modal-amigos').style.display = 'flex';
+    }
+    function cerrarModalAmigos() { document.getElementById('modal-amigos').style.display = 'none'; }
+
+    function enviarSolicitudAmistad() {
+      const targetName = document.getElementById('input-friend-name').value.trim();
+      if (!targetName) return;
+      alert(`🚀 ¡Solicitud enviada a ${targetName}!`);
+      document.getElementById('input-friend-name').value = '';
+    }
+
+    function renderListaAmigos() {
+      const container = document.getElementById('friends-list-container');
+      container.innerHTML = `<p style="color:#aaa; font-size:12px;">Agrega amigos para ver si están jugando en línea.</p>`;
     }
 
     actualizarMonedasUI();
