@@ -1,845 +1,833 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIXEL GAMES - Menú Principal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Games - Menú Principal</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    
+    /* Estilos personalizados Neón Retro */
     body {
-      background: radial-gradient(circle at center, #1a1f35 0%, #080b12 100%);
-      color: white;
-      font-family: 'Courier New', Courier, monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 0;
-      position: relative;
+      font-family: 'Rajdhani', sans-serif;
+      background-color: #09090e;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    .font-pixel {
+      font-family: 'Press Start 2P', monospace;
     }
 
-    header { text-align: center; margin-bottom: 30px; }
-
-    h1 {
-      font-size: 42px;
-      color: #00e5ff;
-      text-shadow: 0 0 20px #00e5ff, 0 0 40px rgba(0, 229, 255, 0.6);
-      letter-spacing: 3px;
-      margin-bottom: 5px;
+    /* Animación Neón de Colores Difuminados para Tarjetas */
+    @keyframes neonGlow {
+      0% { box-shadow: 0 0 10px rgba(236, 72, 153, 0.4), inset 0 0 10px rgba(236, 72, 153, 0.2); border-color: #ec4899; }
+      25% { box-shadow: 0 0 10px rgba(168, 85, 247, 0.4), inset 0 0 10px rgba(168, 85, 247, 0.2); border-color: #a855f7; }
+      50% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.4), inset 0 0 10px rgba(59, 130, 246, 0.2); border-color: #3b82f6; }
+      75% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.4), inset 0 0 10px rgba(16, 185, 129, 0.2); border-color: #10b981; }
+      100% { box-shadow: 0 0 10px rgba(236, 72, 153, 0.4), inset 0 0 10px rgba(236, 72, 153, 0.2); border-color: #ec4899; }
     }
 
-    .subtitle { color: #8191aa; font-size: 14px; letter-spacing: 2px; font-weight: bold; }
-
-    /* BARRA SUPERIOR */
-    .user-bar {
-      margin-top: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
+    .neon-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid #ec4899;
+      animation: neonGlow 8s infinite alternate;
+      transition: all 0.3s ease;
+    }
+    .neon-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.8), 0 0 30px rgba(168, 85, 247, 0.6);
     }
 
-    .user-tag {
-      background: rgba(0, 229, 255, 0.15);
-      border: 1px solid #00e5ff;
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      color: #00e5ff;
-      font-weight: bold;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3b0764;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a855f7;
     }
 
-    .coins-tag {
-      background: rgba(255, 215, 0, 0.2);
-      border: 1px solid #ffd700;
-      padding: 6px 18px;
-      border-radius: 20px;
-      font-size: 13px;
-      color: #ffd700;
-      font-weight: bold;
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-      cursor: pointer;
-      transition: transform 0.2s;
+    /* Modal Styling */
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
     }
 
-    .coins-tag:hover { transform: scale(1.08); }
-
-    .btn-ruleta, .btn-guarderia, .btn-logros, .btn-amigos, .btn-cambiar-usuario {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      font-family: inherit;
-      transition: transform 0.2s, filter 0.2s;
-      border: 1px solid transparent;
+    /* Pixel Canvas Styling */
+    canvas {
+      image-rendering: pixelated;
     }
-
-    .btn-ruleta { background: linear-gradient(180deg, #ff007f, #99004d); border-color: #ff66cc; color: white; box-shadow: 0 0 15px rgba(255, 0, 127, 0.7); }
-    .btn-guarderia { background: linear-gradient(180deg, #2ecc71, #27ae60); border-color: #2ecc71; color: white; box-shadow: 0 0 15px rgba(46, 204, 113, 0.7); }
-    .btn-logros { background: linear-gradient(180deg, #f39c12, #d35400); border-color: #f1c40f; color: white; box-shadow: 0 0 15px rgba(241, 196, 15, 0.7); }
-    .btn-amigos { background: linear-gradient(180deg, #9b59b6, #8e44ad); border-color: #a55eea; color: white; box-shadow: 0 0 15px rgba(165, 94, 234, 0.7); }
-    .btn-cambiar-usuario { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; box-shadow: 0 0 12px rgba(231, 76, 60, 0.5); color: #ff6b6b; }
-
-    .btn-ruleta:hover, .btn-guarderia:hover, .btn-logros:hover, .btn-amigos:hover, .btn-cambiar-usuario:hover {
-      transform: scale(1.05); filter: brightness(1.2);
-    }
-
-    .search-box {
-      display: flex; align-items: center; background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #00e5ff; border-radius: 20px; padding: 2px 4px 2px 12px;
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
-    }
-
-    .search-input { background: transparent; border: none; color: #ffffff; font-family: inherit; font-size: 12px; width: 90px; outline: none; }
-    .search-input::placeholder { color: #8191aa; }
-    .btn-buscar { background: #00e5ff; color: #080b12; border: none; padding: 5px 10px; border-radius: 16px; font-size: 11px; font-weight: bold; cursor: pointer; font-family: inherit; box-shadow: 0 0 10px rgba(0, 229, 255, 0.6); }
-
-    .grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px; width: 90%; max-width: 1200px;
-    }
-
-    /* ANIMACIÓN LUZ DE NEÓN CONTINUA */
-    @keyframes neonRainbow {
-      0% { border-color: #ff007f; box-shadow: 0 0 20px #ff007f, inset 0 0 10px rgba(255, 0, 127, 0.3); }
-      25% { border-color: #00e5ff; box-shadow: 0 0 20px #00e5ff, inset 0 0 10px rgba(0, 229, 255, 0.3); }
-      50% { border-color: #2ecc71; box-shadow: 0 0 20px #2ecc71, inset 0 0 10px rgba(46, 204, 113, 0.3); }
-      75% { border-color: #ffd700; box-shadow: 0 0 20px #ffd700, inset 0 0 10px rgba(255, 215, 0, 0.3); }
-      100% { border-color: #ff007f; box-shadow: 0 0 20px #ff007f, inset 0 0 10px rgba(255, 0, 127, 0.3); }
-    }
-
-    .card {
-      background: rgba(15, 23, 42, 0.85); border: 2px solid #ff007f; border-radius: 16px;
-      padding: 25px 15px; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; text-align: center; min-height: 220px;
-      animation: neonRainbow 6s linear infinite; transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card.available:hover { transform: translateY(-5px); filter: brightness(1.2); }
-    .card.highlight { animation: highlightGlow 2s ease-in-out infinite alternate !important; transform: scale(1.08) !important; z-index: 10; }
-
-    @keyframes highlightGlow {
-      0% { border-color: #ffd700; box-shadow: 0 0 30px #ffd700, inset 0 0 15px #ffd700; }
-      100% { border-color: #ff007f; box-shadow: 0 0 50px #ff007f, inset 0 0 25px #ff007f; }
-    }
-
-    .icon { font-size: 52px; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5)); }
-    .name { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.3); }
-
-    .play {
-      display: inline-block; padding: 10px 24px; border-radius: 13px;
-      background: linear-gradient(180deg, #35a8ff, #1266e8); color: white;
-      text-decoration: none; font-weight: 800; box-shadow: 0 5px 0 #0844a0, 0 0 15px rgba(0,100,255,.5);
-      transition: transform 0.1s; cursor: pointer; border: none;
-    }
-    .play:hover { transform: scale(1.05); }
-
-    .locked { opacity: .68; }
-    .lock { font-size: 62px; margin-bottom: 13px; filter: drop-shadow(0 10px 5px rgba(0,0,0,.6)); }
-    .locked .name { color: #aab6cc; text-shadow: none; }
-    .badge { font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #8191aa; border: 1px solid rgba(255,255,255,.12); padding: 8px 13px; border-radius: 999px; background: rgba(0,0,0,.2); }
-
-    /* MODALES GENERALES */
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(8, 11, 18, 0.92); z-index: 100; justify-content: center; align-items: center;
-    }
-
-    .modal-card {
-      background: #0f172a; border: 2px solid #00e5ff; border-radius: 20px;
-      padding: 25px; width: 92%; max-width: 620px; text-align: center;
-      box-shadow: 0 0 35px rgba(0, 229, 255, 0.5);
-    }
-
-    .modal-card h2 { color: #00e5ff; font-size: 24px; margin-bottom: 5px; text-shadow: 0 0 10px #00e5ff; }
-
-    .modal-btn {
-      width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: none;
-      font-size: 15px; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s;
-    }
-
-    .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; }
-
-    /* TIENDA DE ESPÍRITUS */
-    .nav-tienda { display: flex; justify-content: center; gap: 10px; margin: 15px 0 10px; }
-    .nav-btn {
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
-      color: #aaa; padding: 10px 16px; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: inherit;
-    }
-    .nav-btn.active { background: #ffd700; color: #000; border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-    .spirit-list { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
-    .spirit-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-    .spirit-info { text-align: left; display: flex; align-items: center; gap: 10px; }
-    .spirit-emoji-display { font-size: 26px; }
-
-    .rarity-comun { color: #a4b0be; }
-    .rarity-raro { color: #1e90ff; }
-    .rarity-epico { color: #a55eea; }
-    .rarity-legendario { color: #ffa502; }
-    .rarity-especial { color: #2ed573; text-shadow: 0 0 8px #2ed573; }
-
-    .btn-buy, .btn-view-spirit { background: #ffd700; color: #000; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 12px; }
-    .btn-owned { background: #2ed573; color: #000; cursor: default; }
-
-    /* LOGROS GRID */
-    .logros-grid { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
-    .logro-card { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-    .logro-card.completado { border-color: #ffd700; background: rgba(255, 215, 0, 0.08); }
-
-    /* RULETA 25 SECCIONES */
-    .roulette-wrapper { position: relative; width: 320px; height: 320px; margin: 15px auto; }
-    #roulette-canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 30px rgba(255, 0, 127, 0.7); }
-    .roulette-pointer {
-      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-      width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 24px solid #ffd700; z-index: 10;
-    }
-    .btn-spin { background: linear-gradient(180deg, #ff007f, #b30059); color: white; font-size: 16px; font-weight: 900; border: 2px solid #ff66cc; }
-    .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
-    #roulette-result { font-size: 14px; font-weight: bold; color: #ffd700; min-height: 24px; margin-top: 5px; }
-
-    #spirit-viewer-canvas, #insignia-canvas { background: #02050f; border-radius: 16px; border: 2px solid #a55eea; box-shadow: 0 0 20px rgba(165, 94, 234, 0.4); margin: 15px auto; display: block; }
   </style>
 </head>
+<body class="min-h-screen flex flex-col justify-between">
 
-<body>
-
-  <header>
-    <h1>PIXEL GAMES</h1>
-    <div class="subtitle">ELIGE TU JUEGO</div>
-    <div class="user-bar">
-      <div class="user-tag" id="user-display">👤 Usuario: Invitado</div>
-      <div class="coins-tag" id="coins-display" onclick="abrirTiendaEspiritus()">🪙 0 Pixelmonedas</div>
-      <button class="btn-ruleta" onclick="abrirRuleta()">🎡 PIXELRULETA</button>
-      <button class="btn-guarderia" onclick="abrirGuarderia()">🏡 GUARDERÍA</button>
-      <button class="btn-logros" onclick="abrirModalLogros()">🏆 LOGROS</button>
-      <button class="btn-cambiar-usuario" onclick="cambiarUsuario()">🔄 CAMBIAR USUARIO</button>
+  <!-- 1. BARRA SUPERIOR -->
+  <header class="sticky top-0 z-40 bg-slate-950/90 border-b border-purple-500/30 backdrop-blur-md px-4 py-3 shadow-lg shadow-purple-950/30">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
       
-      <div class="search-box">
-        <input type="number" id="input-buscar-juego" class="search-input" placeholder="Nº..." onkeypress="if(event.key === 'Enter') buscarJuego();">
-        <button class="btn-buscar" onclick="buscarJuego()">🔍 IR</button>
+      <!-- LOGO / TITULO -->
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-gamepad text-3xl text-pink-500 animate-pulse"></i>
+        <h1 class="font-pixel text-lg md:text-xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-400">
+          PIXEL GAMES
+        </h1>
+      </div>
+
+      <!-- MONEDAS Y BOTONES PRINCIPALES -->
+      <div class="flex items-center gap-2 md:gap-4 flex-wrap">
+        
+        <!-- Pixelmonedas Balance -->
+        <div class="flex items-center gap-2 bg-slate-900 border border-yellow-500/50 px-3 py-1.5 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.2)]">
+          <i class="fa-solid fa-coins text-yellow-400 animate-bounce"></i>
+          <span id="user-coins" class="font-pixel text-yellow-300 text-sm">0</span>
+        </div>
+
+        <!-- Botón Pixelruleta -->
+        <button onclick="openModal('modal-ruleta')" class="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md transition-all active:scale-95 border border-pink-400/30">
+          <i class="fa-solid fa-dharmachakra text-amber-300"></i>
+          <span>Pixelruleta</span>
+        </button>
+
+        <!-- Botón Guardería (Espíritus / Mascotas) -->
+        <button onclick="openModal('modal-spirits')" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md transition-all active:scale-95 border border-purple-400/30">
+          <i class="fa-solid fa-ghost text-cyan-300"></i>
+          <span>Guardería</span>
+        </button>
+
+        <!-- Botón Logros -->
+        <button onclick="openModal('modal-logros')" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md transition-all active:scale-95 border border-cyan-400/30">
+          <i class="fa-solid fa-trophy text-yellow-300"></i>
+          <span>Logros</span>
+        </button>
+
+        <!-- Botón Amigos -->
+        <button onclick="openModal('modal-amigos')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-md transition-all active:scale-95 border border-emerald-400/30">
+          <i class="fa-solid fa-users text-emerald-200"></i>
+          <span>Amigos</span>
+        </button>
+
+        <!-- Info Usuario & Cambiar Usuario -->
+        <div class="flex items-center gap-2 border-l border-slate-700 pl-3">
+          <span id="user-name" class="font-bold text-slate-200 text-sm hidden sm:inline">Jugador</span>
+          <button onclick="changeUser()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white p-2 rounded-lg text-xs transition" title="Cambiar Usuario">
+            <i class="fa-solid fa-user-gear"></i>
+          </button>
+        </div>
+
       </div>
     </div>
   </header>
 
-  <main class="grid" id="games"></main>
-
-  <!-- MODAL PIXELRULETA (25 APARTADOS) -->
-  <div class="modal-overlay" id="modal-ruleta">
-    <div class="modal-card" style="max-width: 440px;">
-      <h2 style="color: #ff007f;">🎡 PIXELRULETA (25 PREMIOS)</h2>
-      <p style="color: #8191aa; font-size: 12px;" id="roulette-subtitle">¡Primer giro GRATIS!</p>
-
-      <div class="roulette-wrapper">
-        <div class="roulette-pointer"></div>
-        <canvas id="roulette-canvas" width="320" height="320"></canvas>
+  <!-- CONTENIDO PRINCIPAL: BUSCADOR Y GRID DE 100 JUEGOS -->
+  <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+    
+    <!-- BARRA DE BÚSQUEDA / FILTRO POR NÚMERO O NOMBRE -->
+    <div class="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-900/60 p-4 rounded-xl border border-purple-500/20 backdrop-blur">
+      <div>
+        <h2 class="text-xl font-bold text-purple-300 flex items-center gap-2">
+          <i class="fa-solid fa-gamepad"></i> Catálogo de Juegos
+        </h2>
+        <p class="text-xs text-slate-400">100 Experiencias Retro esperándote</p>
       </div>
 
-      <div id="roulette-result"></div>
-
-      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA!</button>
-      <button class="modal-btn btn-cancelar" onclick="cerrarRuleta()">Volver</button>
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <div class="relative w-full sm:w-64">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="game-search" oninput="renderGames()" placeholder="Buscar por nombre o # (1-100)..." class="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-pink-500 transition" />
+        </div>
+        <button onclick="randomGame()" class="bg-purple-900/50 hover:bg-purple-800 text-purple-200 border border-purple-500/40 px-3 py-2 rounded-lg text-sm transition flex items-center gap-1 shrink-0">
+          <i class="fa-solid fa-dice"></i> Aleatorio
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- MODAL TIENDA DE ESPÍRITUS (150 ESPÍRITUS) -->
-  <div class="modal-overlay" id="modal-tienda">
-    <div class="modal-card">
-      <h2 style="color: #ffd700;">👻 TIENDA & COLECCIÓN DE ESPÍRITUS</h2>
-      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-coleccion">Colecciona los 150 espíritus de Pixel Games</p>
+    <!-- GRID DE 100 TARJETAS -->
+    <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <!-- Generado Dinámicamente por JavaScript -->
+    </div>
 
-      <div class="nav-tienda">
-        <button class="nav-btn active" id="btn-tab-tienda" onclick="cambiarTab('tienda')">🛒 COMPRAR ESPÍRITUS</button>
-        <button class="nav-btn" id="btn-tab-coleccion" onclick="cambiarTab('coleccion')">👻 MI COLECCIÓN</button>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    <p>© 2026 Pixel Games Arcade. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- ==================== MODALES ==================== -->
+
+  <!-- MODAL: PIXELRULETA (25 SECCIONES) -->
+  <div id="modal-ruleta" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-pink-500 rounded-2xl p-6 max-w-lg w-full relative shadow-[0_0_50px_rgba(236,72,153,0.3)]">
+      <button onclick="closeModal('modal-ruleta')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="text-center mb-4">
+        <h3 class="font-pixel text-lg text-pink-400 mb-1 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-dharmachakra"></i> PIXELRULETA
+        </h3>
+        <p class="text-xs text-slate-400">¡Gira y duplica tus Pixelmonedas!</p>
       </div>
 
-      <div class="spirit-list" id="spirit-list-container"></div>
+      <!-- Ruleta Canvas Container -->
+      <div class="relative flex justify-center items-center my-4">
+        <!-- Indicador/Aguja superior -->
+        <div class="absolute -top-3 z-10 text-yellow-400 text-3xl filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          <i class="fa-solid fa-caret-down"></i>
+        </div>
+        <canvas id="ruleta-canvas" width="320" height="320" class="rounded-full border-4 border-purple-600 shadow-[0_0_20px_rgba(168,85,247,0.5)]"></canvas>
+      </div>
 
-      <button class="modal-btn btn-cancelar" onclick="cerrarTiendaEspiritus()">Cerrar Ventana</button>
+      <!-- Mensaje de Resultado -->
+      <div id="ruleta-status" class="text-center font-bold text-lg min-h-[30px] my-2 text-yellow-300">
+        ¡Prueba tu suerte!
+      </div>
+
+      <!-- Botón Girar -->
+      <button id="btn-spin" onclick="spinRuleta()" class="w-full py-3 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 font-pixel text-xs text-white rounded-xl shadow-lg shadow-pink-950/50 transition transform active:scale-95">
+        GIRAR RULETA
+      </button>
     </div>
   </div>
 
-  <!-- MODAL VISOR DE ESPÍRITU -->
-  <div class="modal-overlay" id="modal-ver-espiritu" style="z-index: 150;">
-    <div class="modal-card" style="max-width: 400px;">
-      <h2 id="spirit-view-title" style="color: #a55eea;">ESPÍRITU</h2>
-      <div id="spirit-view-rarity" style="font-weight: bold; font-size: 14px; margin-bottom: 10px;">RARIDAD</div>
+  <!-- MODAL: GUARDERÍA & TIENDA DE ESPÍRITUS (150 ESPÍRITUS) -->
+  <div id="modal-spirits" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-purple-500 rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] flex flex-col relative shadow-[0_0_50px_rgba(168,85,247,0.3)]">
+      <button closeModal('modal-spirits')" onclick="closeModal('modal-spirits')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl z-10">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
 
-      <canvas id="spirit-viewer-canvas" width="220" height="220"></canvas>
+      <div class="mb-4">
+        <h3 class="font-pixel text-lg text-purple-400 mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-ghost"></i> GUARDERÍA DE ESPÍRITUS
+        </h3>
+        <p class="text-xs text-slate-400">Colecciona y admira los 150 Espíritus Pixelados</p>
+      </div>
 
-      <button class="modal-btn btn-cancelar" onclick="cerrarVisorEspiritu()">Cerrar Visor</button>
+      <!-- Visualizador Arte Pixel Interactivo + Catálogo -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 overflow-hidden">
+        
+        <!-- Visor Pixel Canvas -->
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center">
+          <div id="spirit-preview-title" class="font-bold text-purple-300 mb-2 text-center text-base">Selecciona un Espíritu</div>
+          <canvas id="spirit-canvas" width="160" height="160" class="bg-slate-900 rounded-lg border border-purple-500/30 my-2 shadow-inner"></canvas>
+          <div id="spirit-rarity" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800 text-slate-300 mt-2">---</div>
+          <div id="spirit-price" class="text-xs text-yellow-400 mt-2 font-pixel">---</div>
+          <button id="btn-buy-spirit" onclick="buyCurrentSpirit()" class="mt-4 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold hidden w-full">
+            Comprar Espíritu
+          </button>
+        </div>
+
+        <!-- Lista de Espíritus -->
+        <div class="md:col-span-2 overflow-y-auto pr-2 space-y-2 max-h-[50vh] md:max-h-none">
+          <div id="spirits-list-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <!-- Rellenado dinámicamente -->
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 
-  <!-- MODAL LOGROS (20 LOGROS) -->
-  <div class="modal-overlay" id="modal-logros">
-    <div class="modal-card">
-      <h2 style="color: #f1c40f;">🏆 20 LOGROS DE JUGADOR</h2>
-      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-logros">Desbloquea insignias completando desafíos</p>
+  <!-- MODAL: LOGROS (20 LOGROS CON CANVAS) -->
+  <div id="modal-logros" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-cyan-500 rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] flex flex-col relative shadow-[0_0_50px_rgba(6,182,212,0.3)]">
+      <button onclick="closeModal('modal-logros')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
 
-      <div class="logros-grid" id="logros-container"></div>
+      <div class="mb-4">
+        <h3 class="font-pixel text-lg text-cyan-400 mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-trophy"></i> LOGROS & INSIGNIAS
+        </h3>
+        <p class="text-xs text-slate-400">Completa desafíos para desbloquear insignias pixel</p>
+      </div>
 
-      <button class="modal-btn btn-cancelar" onclick="cerrarModalLogros()">Cerrar Ventana</button>
+      <div id="logros-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto pr-2 flex-1">
+        <!-- Rellenado dinámicamente -->
+      </div>
     </div>
   </div>
 
-  <!-- MODAL VISOR DE INSIGNIA -->
-  <div class="modal-overlay" id="modal-ver-insignia" style="z-index: 160;">
-    <div class="modal-card" style="max-width: 380px;">
-      <h2 id="insignia-title" style="color: #f1c40f;">INSIGNIA</h2>
-      <p id="insignia-status" style="font-size: 12px; margin-top: 4px; font-weight: bold;"></p>
+  <!-- MODAL: AMIGOS -->
+  <div id="modal-amigos" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-emerald-500 rounded-2xl p-6 max-w-md w-full relative shadow-[0_0_50px_rgba(16,185,129,0.3)]">
+      <button onclick="closeModal('modal-amigos')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
 
-      <canvas id="insignia-canvas" width="180" height="180"></canvas>
+      <h3 class="font-pixel text-lg text-emerald-400 mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-users"></i> AMIGOS
+      </h3>
 
-      <button class="modal-btn btn-cancelar" onclick="cerrarVisorInsignia()">Volver</button>
+      <div class="space-y-3 mb-4">
+        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-pink-600 flex items-center justify-center font-bold text-xs">P1</div>
+            <div>
+              <p class="text-sm font-bold text-slate-200">PixelMaster99</p>
+              <p class="text-xs text-emerald-400">En línea - Jugando Chess 3D</p>
+            </div>
+          </div>
+          <i class="fa-solid fa-circle text-emerald-500 text-xs"></i>
+        </div>
+
+        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center font-bold text-xs">R2</div>
+            <div>
+              <p class="text-sm font-bold text-slate-200">RetroGamer_X</p>
+              <p class="text-xs text-slate-500">Desconectado hace 2h</p>
+            </div>
+          </div>
+          <i class="fa-solid fa-circle text-slate-600 text-xs"></i>
+        </div>
+
+        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center font-bold text-xs">A7</div>
+            <div>
+              <p class="text-sm font-bold text-slate-200">ArcadeQueen</p>
+              <p class="text-xs text-emerald-400">En línea - Ruleta</p>
+            </div>
+          </div>
+          <i class="fa-solid fa-circle text-emerald-500 text-xs"></i>
+        </div>
+      </div>
+
+      <button onclick="alert('¡Solicitud de amistad enviada!')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-sm transition">
+        + Añadir Amigo
+      </button>
     </div>
   </div>
 
+  <!-- SCRIPT LÓGICA COMPLETA DE LA APLICACIÓN -->
   <script>
-    // 1. SESIÓN Y USUARIOS
-    let usuarioActivo = localStorage.getItem('pixelgames_session');
-    if (!usuarioActivo) {
-      usuarioActivo = 'Invitado';
-      localStorage.setItem('pixelgames_session', usuarioActivo);
-    }
-    document.getElementById('user-display').innerText = `👤 Usuario: ${usuarioActivo}`;
+    // -------------------------------------------------------------
+    // CONSTANTE CON LOS 17 JUEGOS EXACTOS MENCIONADOS
+    // -------------------------------------------------------------
+    const games = [
+      "money up", "extrem 1", "Football Legends", "Pixel AI", "Ultra Labyrinths", 
+      "Dreamer up", "tic tac toe", "color snake", "gems mine", "tadtic board", 
+      "chess 3D", "Galaxy Defender", "Pixel Chat", "Pixel Critic", "boss slayer D2", 
+      "Project X", "sliting puzle"
+    ];
 
-    const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-    if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { coins: 5000, espiritusComprados: [], logrosObtenidos: [], ruletaUsada: false };
-      localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
+    // GENERAR CATÁLOGO COMPLETO DE 100 JUEGOS REPETIENDO O COMBINANDO VARIACIONES
+    const fullGamesList = [];
+    const iconsList = ["fa-gamepad", "fa-ghost", "fa-dragon", "fa-robot", "fa-rocket", "fa-dice-d20", "fa-trophy", "fa-bolt", "fa-shield-halved", "fa-wand-magic-sparkles"];
+
+    for (let i = 1; i <= 100; i++) {
+      const baseGame = games[(i - 1) % games.length];
+      const version = Math.floor((i - 1) / games.length) + 1;
+      const title = version > 1 ? `${baseGame} ${version}` : baseGame;
+      fullGamesList.push({
+        id: i,
+        title: title,
+        icon: iconsList[i % iconsList.length],
+        plays: Math.floor(Math.random() * 5000) + 100
+      });
+    }
+
+    // -------------------------------------------------------------
+    // USUARIO Y ESTADO GLOBAL (LOCALSTORAGE)
+    // -------------------------------------------------------------
+    let user = {
+      name: "PixelPlayer",
+      coins: 10000,
+      ownedSpirits: [0], // Posee el espíritu 0 de inicio
+      unlockedAchievements: [0]
+    };
+
+    function loadUserData() {
+      const saved = localStorage.getItem("pixel_games_user");
+      if (saved) {
+        try {
+          user = JSON.parse(saved);
+        } catch(e) { console.error("Error al cargar localStorage", e); }
+      }
+      actualizarMonedasUI();
+    }
+
+    function saveUserData() {
+      localStorage.setItem("pixel_games_user", JSON.stringify(user));
+      actualizarMonedasUI();
     }
 
     function actualizarMonedasUI() {
-      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
-      document.getElementById('coins-display').innerText = `🪙 ${(u ? u.coins : 0).toLocaleString('es-ES')} Pixelmonedas`;
-      verificarLogrosAutomaticos();
+      document.getElementById("user-coins").innerText = user.coins.toLocaleString();
+      document.getElementById("user-name").innerText = user.name;
     }
 
-    function cambiarUsuario() {
-      if (confirm(`¿Quieres cerrar sesión de "${usuarioActivo}"?`)) {
-        localStorage.removeItem('pixelgames_session');
-        window.location.href = 'index.html';
+    function changeUser() {
+      const newName = prompt("Introduce nuevo nombre de usuario:", user.name);
+      if (newName && newName.trim() !== "") {
+        user.name = newName.trim();
+        saveUserData();
       }
     }
 
-    function abrirGuarderia() { window.location.href = 'guarderia.html'; }
+    // -------------------------------------------------------------
+    // RENDERIZADO DEL GRID DE 100 JUEGOS CON BÚSQUEDA
+    // -------------------------------------------------------------
+    function renderGames() {
+      const container = document.getElementById("games-grid");
+      const search = document.getElementById("game-search").value.toLowerCase().trim();
+      container.innerHTML = "";
 
-    // 2. ESTRUCTURA EXACTA DE MENÚ DE JUEGOS
-    const games = [
-      { id: 1, name: "money up", icon: "🪙", file: "juego1.html" },
-      { id: 2, name: "extrem 1", icon: "🌲", file: "juego2.html" },
-      { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html" },
-      { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html" },
-      { id: 5, name: "Ultra Labyrinths", icon: "🧩", file: "juego5.html" },
-      { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html" },
-      { id: 7, name: "tic tac toe", icon: "🔴", file: "juego7.html" },
-      { id: 8, name: "color snake", icon: "💎", file: "juego8.html" },
-      { id: 9, name: "gems mine", icon: "🍎", file: "juego9.html" },
-      { id: 10, name: "tadtic board", icon: "⚽", file: "juego10.html" },
-      { id: 11, name: "chess 3D", icon: "♟️", file: "juego11.html" },
-      { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html" },
-      { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html" },
-      { id: 14, name: "Pixel Critic", icon: "⭐", file: "juego14.html" },
-      { id: 15, name: "boss slayer D2", icon: "⚡", file: "juego15.html" },
-      { id: 16, name: "Project X", icon: "❓", file: "juego16.html" },
-      { id: 17, name: "sliting puzle", icon: "🧩", file: "juego17.html" }
-    ];
-
-    const gamesMap = new Map(games.map(g => [g.id, g]));
-    const container = document.getElementById("games");
-    const fragment = document.createDocumentFragment();
-
-    for (let i = 1; i <= 100; i++) {
-      const gameData = gamesMap.get(i);
-      const card = document.createElement("article");
-      card.id = `game-card-${i}`;
-
-      if (gameData) {
-        card.className = "card available";
-        card.innerHTML = `
-          <div class="icon">${gameData.icon}</div>
-          <div class="name">${gameData.name}</div>
-          <button class="play" onclick="clickJuego(${gameData.id})">JUGAR</button>
-        `;
-      } else {
-        card.className = "card locked";
-        card.innerHTML = `
-          <div class="lock">🔒</div>
-          <div class="name">Juego ${i}</div>
-          <div class="badge">PRÓXIMAMENTE</div>
-        `;
-      }
-      fragment.appendChild(card);
-    }
-    container.appendChild(fragment);
-
-    function clickJuego(id) {
-      const g = gamesMap.get(id);
-      if (g) window.location.href = g.file;
-    }
-
-    function buscarJuego() {
-      const input = document.getElementById('input-buscar-juego');
-      const num = parseInt(input.value);
-      if (isNaN(num) || num < 1 || num > 100) return;
-      const card = document.getElementById(`game-card-${num}`);
-      if (card) {
-        document.querySelectorAll('.card.highlight').forEach(c => c.classList.remove('highlight'));
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        card.classList.add('highlight');
-        setTimeout(() => { card.classList.remove('highlight'); }, 4000);
-      }
-    }
-
-    // 3. GENERADOR DE 150 ESPÍRITUS CON NOMBRES, EMOJIS, VISOR ÚNICO Y 5 RAREZAS
-    const raridades = [
-      { key: 'comun', label: 'Común', precio: 3000, colorHex: '#a4b0be' },
-      { key: 'raro', label: 'Raro', precio: 10000, colorHex: '#1e90ff' },
-      { key: 'epico', label: 'Épico', precio: 30000, colorHex: '#a55eea' },
-      { key: 'legendario', label: 'Legendario', precio: 90000, colorHex: '#ffa502' },
-      { key: 'especial', label: 'Especial', precio: 500000, colorHex: '#2ed573' }
-    ];
-
-    const nombresBases = ["Espectro", "Duende", "Orbe", "Sombra", "Titán", "Fantasmin", "Alma", "Aura", "Centinela", "Rayo", "Fuego Fatuo", "Nube", "Dragón", "Guardián", "Caminante"];
-    const emojisEspiritus = ["👻", "👾", "🔮", "🔥", "⚡", "🌟", "💀", "🐉", "🤖", "🎃", "👁️", "🌀", "🌙", "👑", "🦁"];
-
-    const catalogoEspiritus = [];
-    for (let i = 1; i <= 150; i++) {
-      let rIdx = 0;
-      if (i > 45) rIdx = 1;
-      if (i > 85) rIdx = 2;
-      if (i > 120) rIdx = 3;
-      if (i > 140) rIdx = 4;
-
-      const rObj = raridades[rIdx];
-      const baseNombre = nombresBases[(i - 1) % nombresBases.length];
-      const emoji = emojisEspiritus[(i - 1) % emojisEspiritus.length];
-
-      catalogoEspiritus.push({
-        id: i,
-        nombre: `${baseNombre} Pixel #${i}`,
-        emoji: emoji,
-        raridadKey: rObj.key,
-        raridadLabel: rObj.label,
-        precio: rObj.precio,
-        colorHex: rObj.colorHex,
-        seedShape: i // Semilla para dibujo único en visor
+      const filtered = fullGamesList.filter(g => {
+        return g.id.toString() === search || g.title.toLowerCase().includes(search);
       });
-    }
 
-    let tabActual = 'tienda';
-    function abrirTiendaEspiritus() {
-      cambiarTab('tienda');
-      document.getElementById('modal-tienda').style.display = 'flex';
-    }
-    function cerrarTiendaEspiritus() { document.getElementById('modal-tienda').style.display = 'none'; }
-
-    function cambiarTab(tab) {
-      tabActual = tab;
-      document.getElementById('btn-tab-tienda').classList.toggle('active', tab === 'tienda');
-      document.getElementById('btn-tab-coleccion').classList.toggle('active', tab === 'coleccion');
-      renderListaEspiritus();
-    }
-
-    function renderListaEspiritus() {
-      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
-      const listContainer = document.getElementById('spirit-list-container');
-      const subtitulo = document.getElementById('subtitulo-coleccion');
-      listContainer.innerHTML = '';
-
-      if (tabActual === 'tienda') {
-        subtitulo.innerText = "Compra espíritus con tus Pixelmonedas";
-        catalogoEspiritus.forEach(esp => {
-          const poseido = u.espiritusComprados && u.espiritusComprados.includes(esp.id);
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'spirit-item';
-          itemDiv.innerHTML = `
-            <div class="spirit-info">
-              <span class="spirit-emoji-display">${esp.emoji}</span>
-              <div>
-                <div style="font-weight:bold; font-size:14px;">${esp.nombre}</div>
-                <div class="rarity-${esp.raridadKey}" style="font-size:11px; font-weight:bold;">${esp.raridadLabel}</div>
-              </div>
-            </div>
-            <div>
-              <button class="btn-view-spirit" style="background:#a55eea; color:#fff; margin-right:5px;" onclick="verVisorEspiritu(${esp.id})">🔍 VISOR</button>
-              ${poseido 
-                ? `<button class="btn-buy btn-owned">DESBLOQUEADO</button>` 
-                : `<button class="btn-buy" onclick="comprarEspiritu(${esp.id}, ${esp.precio})">🪙 ${esp.precio.toLocaleString('es-ES')}</button>`}
-            </div>
-          `;
-          listContainer.appendChild(itemDiv);
-        });
-      } else {
-        const misEspiritus = catalogoEspiritus.filter(esp => u.espiritusComprados && u.espiritusComprados.includes(esp.id));
-        subtitulo.innerText = `Has desbloqueado ${misEspiritus.length} de 150 espíritus`;
-
-        if (misEspiritus.length === 0) {
-          listContainer.innerHTML = `<p style="color:#aaa; font-size:12px; margin-top:15px;">No tienes espíritus en tu colección.</p>`;
-          return;
-        }
-
-        misEspiritus.forEach(esp => {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'spirit-item';
-          itemDiv.innerHTML = `
-            <div class="spirit-info">
-              <span class="spirit-emoji-display">${esp.emoji}</span>
-              <div>
-                <div style="font-weight:bold; font-size:14px;">${esp.nombre}</div>
-                <div class="rarity-${esp.raridadKey}" style="font-size:11px; font-weight:bold;">${esp.raridadLabel}</div>
-              </div>
-            </div>
-            <button class="btn-view-spirit" onclick="verVisorEspiritu(${esp.id})">🔍 VISOR</button>
-          `;
-          listContainer.appendChild(itemDiv);
-        });
-      }
-    }
-
-    function comprarEspiritu(id, precio) {
-      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      const u = allUsers[usuarioActivo];
-      if (u.coins < precio) {
-        alert('❌ No tienes suficientes Pixelmonedas.');
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center text-slate-500 py-12">No se encontraron juegos matching con "${search}"</div>`;
         return;
       }
-      u.coins -= precio;
-      if (!u.espiritusComprados) u.espiritusComprados = [];
-      u.espiritusComprados.push(id);
-      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
-      actualizarMonedasUI();
-      renderListaEspiritus();
-    }
 
-    function verVisorEspiritu(id) {
-      const esp = catalogoEspiritus.find(e => e.id === id);
-      if (!esp) return;
+      filtered.forEach(game => {
+        const card = document.createElement("div");
+        card.className = "neon-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group cursor-pointer";
+        card.onclick = () => launchGame(game);
 
-      document.getElementById('spirit-view-title').innerText = `${esp.emoji} ${esp.nombre.toUpperCase()}`;
-      document.getElementById('spirit-view-title').style.color = esp.colorHex;
-
-      const rarityEl = document.getElementById('spirit-view-rarity');
-      rarityEl.innerText = `Raridad: ${esp.raridadLabel}`;
-      rarityEl.className = `rarity-${esp.raridadKey}`;
-
-      dibujarFormaPixelUnica(esp);
-      document.getElementById('modal-ver-espiritu').style.display = 'flex';
-    }
-
-    function cerrarVisorEspiritu() { document.getElementById('modal-ver-espiritu').style.display = 'none'; }
-
-    // DIBUJO DIVERSIFICADO EN CANVAS PARA CADA ESPÍRITU
-    function dibujarFormaPixelUnica(esp) {
-      const canvas = document.getElementById('spirit-viewer-canvas');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const s = esp.seedShape;
-      ctx.fillStyle = '#02050f';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = esp.colorHex;
-      ctx.shadowColor = esp.colorHex;
-      ctx.shadowBlur = 15;
-
-      // Forma base personalizada según ID
-      const sizeType = s % 3;
-      if (sizeType === 0) {
-        ctx.fillRect(60, 50, 100, 100);
-        ctx.fillRect(40, 70, 140, 60);
-      } else if (sizeType === 1) {
-        ctx.beginPath();
-        ctx.arc(110, 100, 55, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        ctx.fillRect(70, 40, 80, 120);
-        ctx.fillRect(50, 60, 120, 80);
-      }
-
-      // Ojos y detalles
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(80, 80, 18, 18);
-      ctx.fillRect(122, 80, 18, 18);
-
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(85 + (s % 5), 85, 8, 8);
-      ctx.fillRect(127 + (s % 5), 85, 8, 8);
-    }
-
-    // 4. 20 LOGROS CON VISOR INDIVIDUAL
-    const lista20Logros = [
-      { id: 1, titulo: "Gran Acumulador", desc: "Tener más de 200.000 Pixelmonedas", icono: "💰" },
-      { id: 2, titulo: "Maestro del Laberinto", desc: "Completar Ultra Labyrinths", icono: "🧩" },
-      { id: 3, titulo: "Coleccionista", desc: "Tener más de 20 espíritus", icono: "👻" },
-      { id: 4, titulo: "Encuentro Divino", desc: "Tener 1 espíritu Especial", icono: "🌟" },
-      { id: 5, titulo: "Primeros Pasos", desc: "Acumular 1.000 Pixelmonedas", icono: "🪙" },
-      { id: 6, titulo: "Millonario Pixel", desc: "Alcanzar 1.000.000 Pixelmonedas", icono: "💎" },
-      { id: 7, titulo: "Cazador de Espíritus", desc: "Tener 50 espíritus", icono: "🔮" },
-      { id: 8, titulo: "Maestro del Zoo", desc: "Coleccionar 100 espíritus", icono: "🏛️" },
-      { id: 9, titulo: "Leyenda Suprema", desc: "Tener los 150 espíritus completos", icono: "👑" },
-      { id: 10, titulo: "Giro de Suerte", desc: "Girar la Pixelruleta 1 vez", icono: "🎡" },
-      { id: 11, titulo: "Adicto a la Ruleta", desc: "Girar la Pixelruleta 10 veces", icono: "🎰" },
-      { id: 12, titulo: "Comerciante Novato", desc: "Visitar la Guardería", icono: "🏡" },
-      { id: 13, titulo: "Magnate del Mercado", desc: "Hacer transacciones en Guardería", icono: "🤝" },
-      { id: 14, titulo: "Toque Legendario", desc: "Conseguir espíritu Legendario", icono: "🦁" },
-      { id: 15, titulo: "Poder Mítico", desc: "Conseguir espíritu Épico", icono: "🔥" },
-      { id: 16, titulo: "Afortunado Supremo", desc: "Ganar el Gran Bote en Ruleta", icono: "🎉" },
-      { id: 17, titulo: "Explorador", desc: "Jugar 5 juegos distintos", icono: "🎮" },
-      { id: 18, titulo: "Veterano", desc: "Jugar 10 juegos distintos", icono: "🎖️" },
-      { id: 19, titulo: "Crítico de Élite", desc: "Enviar reseña en Pixel Critic", icono: "⭐" },
-      { id: 20, titulo: "Campeón Pixel", desc: "Desbloquear 15 logros", icono: "🏆" }
-    ];
-
-    function verificarLogrosAutomaticos() {
-      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      const u = allUsers[usuarioActivo];
-      if (!u) return;
-
-      if (!u.logrosObtenidos) u.logrosObtenidos = [];
-
-      if (u.coins >= 1000 && !u.logrosObtenidos.includes(5)) u.logrosObtenidos.push(5);
-      if (u.coins >= 200000 && !u.logrosObtenidos.includes(1)) u.logrosObtenidos.push(1);
-      if (u.espiritusComprados && u.espiritusComprados.length >= 20 && !u.logrosObtenidos.includes(3)) u.logrosObtenidos.push(3);
-      if (u.ruletaUsada && !u.logrosObtenidos.includes(10)) u.logrosObtenidos.push(10);
-
-      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
-    }
-
-    function abrirModalLogros() {
-      verificarLogrosAutomaticos();
-      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
-      const container = document.getElementById('logros-container');
-      const subtitulo = document.getElementById('subtitulo-logros');
-      container.innerHTML = '';
-
-      const comp = u.logrosObtenidos ? u.logrosObtenidos.length : 0;
-      subtitulo.innerText = `Has completado ${comp} de 20 logros`;
-
-      lista20Logros.forEach(logro => {
-        const completado = u.logrosObtenidos && u.logrosObtenidos.includes(logro.id);
-        const card = document.createElement('div');
-        card.className = `logro-card ${completado ? 'completado' : ''}`;
         card.innerHTML = `
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:28px;">${logro.icono}</span>
-            <div style="text-align:left;">
-              <div style="font-weight:bold; font-size:13px;">${logro.titulo} ${completado ? '✅' : '🔒'}</div>
-              <div style="font-size:11px; color:#8191aa;">${logro.desc}</div>
+          <div class="absolute top-2 right-3 font-pixel text-[10px] text-purple-400/60">#${game.id}</div>
+          <div>
+            <div class="w-12 h-12 rounded-lg bg-slate-950/80 border border-pink-500/40 flex items-center justify-center text-pink-400 text-xl mb-3 group-hover:scale-110 transition">
+              <i class="fa-solid ${game.icon}"></i>
             </div>
+            <h3 class="font-bold text-slate-100 text-base group-hover:text-pink-300 transition capitalize">${game.title}</h3>
+            <p class="text-xs text-slate-400 mt-1"><i class="fa-solid fa-play text-[10px] text-emerald-400"></i> ${game.plays} partidas</p>
           </div>
-          <button class="btn-buy" style="background:#ffd700;" onclick="verInsigniaLogro(${logro.id})">🔍 VISOR</button>
+          <button class="mt-4 w-full py-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-lg text-xs shadow transition">
+            JUGAR
+          </button>
         `;
         container.appendChild(card);
       });
-
-      document.getElementById('modal-logros').style.display = 'flex';
     }
 
-    function cerrarModalLogros() { document.getElementById('modal-logros').style.display = 'none'; }
-
-    function verInsigniaLogro(id) {
-      const logro = lista20Logros.find(l => l.id === id);
-      if (!logro) return;
-
-      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
-      const completado = u.logrosObtenidos && u.logrosObtenidos.includes(logro.id);
-
-      document.getElementById('insignia-title').innerText = logro.titulo.toUpperCase();
-      const st = document.getElementById('insignia-status');
-      st.innerText = completado ? "STATUS: ¡DESBLOQUEADO!" : "STATUS: BLOQUEADO";
-      st.style.color = completado ? "#2ecc71" : "#e74c3c";
-
-      dibujarInsigniaCanvas(logro, completado);
-      document.getElementById('modal-ver-insignia').style.display = 'flex';
+    function launchGame(game) {
+      alert(`Iniciando juego #${game.id}: ${game.title}`);
     }
 
-    function cerrarVisorInsignia() { document.getElementById('modal-ver-insignia').style.display = 'none'; }
+    function randomGame() {
+      const randomIndex = Math.floor(Math.random() * fullGamesList.length);
+      const game = fullGamesList[randomIndex];
+      launchGame(game);
+    }
 
-    function dibujarInsigniaCanvas(logro, completado) {
-      const canvas = document.getElementById('insignia-canvas');
-      const ctx = canvas.getContext('2d');
+    // -------------------------------------------------------------
+    // CATÁLOGO DE 150 ESPÍRITUS & ARTE PIXEL
+    // -------------------------------------------------------------
+    const rarities = [
+      { name: "Común", color: "#94a3b8", price: 500 },
+      { name: "Raro", color: "#3b82f6", price: 1500 },
+      { name: "Épico", color: "#a855f7", price: 4000 },
+      { name: "Legendario", color: "#eab308", price: 10000 },
+      { name: "Especial", color: "#ec4899", price: 25000 }
+    ];
+
+    const spiritEmojis = ["👻", "🔥", "💧", "🌿", "⚡", "💀", "👾", "🤖", "🦊", "🐉", "🦄", "🦅", "🔮", "⭐", "🌙"];
+    const spiritsData = [];
+
+    for (let i = 0; i < 150; i++) {
+      const rarityIdx = i % 5;
+      const emoji = spiritEmojis[i % spiritEmojis.length];
+      spiritsData.push({
+        id: i,
+        name: `Espíritu #${i + 1}`,
+        rarity: rarities[rarityIdx].name,
+        color: rarities[rarityIdx].color,
+        price: rarities[rarityIdx].price,
+        emoji: emoji
+      });
+    }
+
+    let selectedSpirit = null;
+
+    function renderSpiritsList() {
+      const container = document.getElementById("spirits-list-grid");
+      container.innerHTML = "";
+
+      spiritsData.forEach(s => {
+        const isOwned = user.ownedSpirits.includes(s.id);
+        const card = document.createElement("div");
+        card.className = `p-3 rounded-lg border cursor-pointer transition flex items-center gap-3 ${selectedSpirit && selectedSpirit.id === s.id ? 'border-pink-500 bg-slate-800' : 'border-slate-800 bg-slate-950/60 hover:bg-slate-800'}`;
+        card.onclick = () => selectSpirit(s);
+
+        card.innerHTML = `
+          <div class="text-2xl">${s.emoji}</div>
+          <div class="overflow-hidden">
+            <p class="text-xs font-bold text-slate-200 truncate">${s.name}</p>
+            <p class="text-[10px]" style="color:${s.color}">${s.rarity}</p>
+            <p class="text-[10px] text-slate-400">${isOwned ? '✓ Poseído' : s.price + ' pts'}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectSpirit(s) {
+      selectedSpirit = s;
+      document.getElementById("spirit-preview-title").innerText = `${s.emoji} ${s.name}`;
+      
+      const rarityBadge = document.getElementById("spirit-rarity");
+      rarityBadge.innerText = s.rarity;
+      rarityBadge.style.color = s.color;
+      rarityBadge.style.borderColor = s.color;
+
+      const isOwned = user.ownedSpirits.includes(s.id);
+      const buyBtn = document.getElementById("btn-buy-spirit");
+      const priceTag = document.getElementById("spirit-price");
+
+      if (isOwned) {
+        priceTag.innerText = "¡YA EN TU COLECCIÓN!";
+        priceTag.className = "text-xs text-emerald-400 mt-2 font-pixel";
+        buyBtn.classList.add("hidden");
+      } else {
+        priceTag.innerText = `PRECIO: ${s.price} Pixelmonedas`;
+        priceTag.className = "text-xs text-yellow-400 mt-2 font-pixel";
+        buyBtn.classList.remove("hidden");
+      }
+
+      drawSpiritPixelArt(s);
+      renderSpiritsList();
+    }
+
+    function drawSpiritPixelArt(spirit) {
+      const canvas = document.getElementById("spirit-canvas");
+      const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#02050f';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const size = 16;
+      const pixelSize = canvas.width / size;
 
-      ctx.fillStyle = completado ? '#ffd700' : '#334155';
-      ctx.fillRect(30, 20, 120, 140);
+      // Dibujar marco neón
+      ctx.strokeStyle = spirit.color;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
 
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(40, 30, 100, 120);
+      // Dibujar patrón pixel art según ID
+      for (let x = 2; x < size - 2; x++) {
+        for (let y = 2; y < size - 2; y++) {
+          const pseudoRandom = Math.sin(spirit.id * 99 + x * 13 + y * 37);
+          if (pseudoRandom > 0.2) {
+            ctx.fillStyle = spirit.color;
+            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+          } else if (pseudoRandom > -0.3) {
+            ctx.fillStyle = "#1e293b";
+            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+          }
+        }
+      }
 
-      ctx.font = "40px Courier New";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(logro.icono, canvas.width / 2, canvas.height / 2);
+      // Dibujar ojos pixelados
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(5 * pixelSize, 5 * pixelSize, 2 * pixelSize, 2 * pixelSize);
+      ctx.fillRect(9 * pixelSize, 5 * pixelSize, 2 * pixelSize, 2 * pixelSize);
+
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(6 * pixelSize, 6 * pixelSize, 1 * pixelSize, 1 * pixelSize);
+      ctx.fillRect(10 * pixelSize, 6 * pixelSize, 1 * pixelSize, 1 * pixelSize);
     }
 
-    // 5. PIXELRULETA DE 25 APARTADOS (1er Giro Gratis, siguientes 1.000 coins)
-    const opciones25Ruleta = [
-      { text: "+1.000 🪙", val: 1000, color: "#1e90ff", bueno: false },
-      { text: "+2.000 🪙", val: 2000, color: "#2ed573", bueno: false },
-      { text: "0 🪙", val: 0, color: "#57606f", bueno: false },
-      { text: "+5.000 🪙", val: 5000, color: "#ffd700", bueno: true },
-      { text: "Bomba -500 🪙", val: -500, color: "#ff4757", bueno: false },
-      { text: "+3.000 🪙", val: 3000, color: "#1e90ff", bueno: false },
-      { text: "+10.000 🪙", val: 10000, color: "#ff007f", bueno: true },
-      { text: "+1.500 🪙", val: 1500, color: "#2ed573", bueno: false },
-      { text: "+500 🪙", val: 500, color: "#a4b0be", bueno: false },
-      { text: "Gran Bote +25.000 🪙", val: 25000, color: "#ffd700", bueno: true },
-      { text: "+2.500 🪙", val: 2500, color: "#1e90ff", bueno: false },
-      { text: "Cofre +8.000 🪙", val: 8000, color: "#a55eea", bueno: true },
-      { text: "0 🪙", val: 0, color: "#57606f", bueno: false },
-      { text: "+4.000 🪙", val: 4000, color: "#2ed573", bueno: false },
-      { text: "+1.200 🪙", val: 1200, color: "#1e90ff", bueno: false },
-      { text: "+15.000 🪙", val: 15000, color: "#ff7f50", bueno: true },
-      { text: "Bomba -1.000 🪙", val: -1000, color: "#ff4757", bueno: false },
-      { text: "+3.500 🪙", val: 3500, color: "#2ed573", bueno: false },
-      { text: "+6.000 🪙", val: 6000, color: "#a55eea", bueno: true },
-      { text: "+2.000 🪙", val: 2000, color: "#1e90ff", bueno: false },
-      { text: "+50.000 🪙 SUPER BOTE", val: 50000, color: "#2ed573", bueno: true },
-      { text: "+1.000 🪙", val: 1000, color: "#1e90ff", bueno: false },
-      { text: "0 🪙", val: 0, color: "#57606f", bueno: false },
-      { text: "+7.000 🪙", val: 7000, color: "#ffd700", bueno: true },
-      { text: "+3.000 🪙", val: 3000, color: "#1e90ff", bueno: false }
+    function buyCurrentSpirit() {
+      if (!selectedSpirit) return;
+      if (user.ownedSpirits.includes(selectedSpirit.id)) return;
+
+      if (user.coins >= selectedSpirit.price) {
+        user.coins -= selectedSpirit.price;
+        user.ownedSpirits.push(selectedSpirit.id);
+        saveUserData();
+        selectSpirit(selectedSpirit);
+        alert(`¡Has adquirido a ${selectedSpirit.name}!`);
+      } else {
+        alert("No tienes suficientes Pixelmonedas.");
+      }
+    }
+
+    // -------------------------------------------------------------
+    // SISTEMA DE 20 LOGROS CON INSIGNIAS CANVAS
+    // -------------------------------------------------------------
+    const logrosData = [
+      { id: 0, title: "Primer Paso", desc: "Únete a Pixel Games Arcade", icon: "fa-star" },
+      { id: 1, title: "Giro de Suerte", desc: "Gira la Pixelruleta 1 vez", icon: "fa-dharmachakra" },
+      { id: 2, title: "Gran Ganador", desc: "Gana 7,000 Pixelmonedas en la Ruleta", icon: "fa-coins" },
+      { id: 3, title: "Coleccionista", desc: "Posee tu primer Espíritu", icon: "fa-ghost" },
+      { id: 4, title: "Maestro Arcade", desc: "Juega a 10 juegos diferentes", icon: "fa-gamepad" },
+      { id: 5, title: "Millonario", desc: "Acumula 50,000 Pixelmonedas", icon: "fa-vault" },
+      { id: 6, title: "Social Pixel", desc: "Añade un amigo a tu lista", icon: "fa-users" },
+      { id: 7, title: "Noche Retro", desc: "Juega durante la noche", icon: "fa-moon" },
+      { id: 8, title: "Cazador Épico", desc: "Consigue un Espíritu Épico", icon: "fa-wand-magic-sparkles" },
+      { id: 9, title: "Superviviente", desc: "Sobrevive en Boss Slayer D2", icon: "fa-skull" },
+      { id: 10, title: "Estratega Chess", desc: "Juega a Chess 3D", icon: "fa-chess" },
+      { id: 11, title: "Serpiente Neón", desc: "Logra 1000 pts en Color Snake", icon: "fa-staff-snake" },
+      { id: 12, title: "Laboratorio IA", desc: "Visita Pixel AI", icon: "fa-brain" },
+      { id: 13, title: "Red Social", desc: "Envía un mensaje en Pixel Chat", icon: "fa-comments" },
+      { id: 14, title: "Crítico Legendario", desc: "Deja una reseña en Pixel Critic", icon: "fa-pen" },
+      { id: 15, title: "Aventurero", desc: "Supera Ultra Labyrinths", icon: "fa-compass" },
+      { id: 16, title: "Reyes del Fútbol", desc: "Anota en Football Legends", icon: "fa-football" },
+      { id: 17, title: "Buscador Gemas", desc: "Mina 50 gemas en Gems Mine", icon: "fa-gem" },
+      { id: 18, title: "Leyenda Pixel", desc: "Desbloquea 10 logros", icon: "fa-crown" },
+      { id: 19, title: "Coleccionista Supremo", desc: "Posee 50 Espíritus", icon: "fa-dragon" }
+    ];
+
+    function renderLogros() {
+      const container = document.getElementById("logros-container");
+      container.innerHTML = "";
+
+      logrosData.forEach(logro => {
+        const isUnlocked = user.unlockedAchievements.includes(logro.id);
+        const card = document.createElement("div");
+        card.className = `p-4 rounded-xl border flex items-center gap-4 ${isUnlocked ? 'bg-slate-950/80 border-cyan-500/50' : 'bg-slate-950/30 border-slate-800 opacity-60'}`;
+
+        const canvasId = `logro-canvas-${logro.id}`;
+        card.innerHTML = `
+          <canvas id="${canvasId}" width="50" height="50" class="rounded-lg shrink-0"></canvas>
+          <div>
+            <h4 class="font-bold text-slate-100 text-sm ${isUnlocked ? 'text-cyan-300' : 'text-slate-400'}">${logro.title}</h4>
+            <p class="text-xs text-slate-400 mt-0.5">${logro.desc}</p>
+            <span class="inline-block mt-2 text-[10px] px-2 py-0.5 rounded ${isUnlocked ? 'bg-cyan-950 text-cyan-400 border border-cyan-800' : 'bg-slate-900 text-slate-500'}">
+              ${isUnlocked ? 'DESBLOQUEADO' : 'BLOQUEADO'}
+            </span>
+          </div>
+        `;
+        container.appendChild(card);
+
+        // Dibujar insignia canvas
+        setTimeout(() => drawLogroBadge(canvasId, logro, isUnlocked), 0);
+      });
+    }
+
+    function drawLogroBadge(canvasId, logro, isUnlocked) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      ctx.clearRect(0, 0, 50, 50);
+
+      // Fondo Insignia
+      ctx.fillStyle = isUnlocked ? "#0891b2" : "#334155";
+      ctx.beginPath();
+      ctx.arc(25, 25, 22, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = isUnlocked ? "#22d3ee" : "#64748b";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Detalle Estrella interior
+      ctx.fillStyle = isUnlocked ? "#fef08a" : "#94a3b8";
+      ctx.font = "20px FontAwesome";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("\uf095", 25, 25); // Ícono genérico estrella
+    }
+
+    // -------------------------------------------------------------
+    // PIXELRULETA CON 25 SECCIONES Y ACTUALIZACIÓN INMEDIATA
+    // -------------------------------------------------------------
+    // Lista exacta de 25 premios
+    const ruletaPremios = [
+      { text: "+7.000 Monedas", val: 7000, color: "#ec4899" },
+      { text: "+500 Monedas", val: 500, color: "#3b82f6" },
+      { text: "+1.000 Monedas", val: 1000, color: "#a855f7" },
+      { text: "Casi Casi", val: 0, color: "#64748b" },
+      { text: "+2.500 Monedas", val: 2500, color: "#10b981" },
+      { text: "+10.000 BOTE!", val: 10000, color: "#eab308" },
+      { text: "+200 Monedas", val: 200, color: "#06b6d4" },
+      { text: "-500 Monedas", val: -500, color: "#ef4444" },
+      { text: "+7.000 Monedas", val: 7000, color: "#ec4899" },
+      { text: "+100 Monedas", val: 100, color: "#64748b" },
+      { text: "+5.000 Monedas", val: 5000, color: "#a855f7" },
+      { text: "Inténtalo de nuevo", val: 0, color: "#475569" },
+      { text: "+1.500 Monedas", val: 1500, color: "#3b82f6" },
+      { text: "+7.000 Monedas", val: 7000, color: "#ec4899" },
+      { text: "+300 Monedas", val: 300, color: "#10b981" },
+      { text: "+800 Monedas", val: 800, color: "#06b6d4" },
+      { text: "+12.000 SUPER BOTE", val: 12000, color: "#eab308" },
+      { text: "Sin suerte", val: 0, color: "#64748b" },
+      { text: "+7.000 Monedas", val: 7000, color: "#ec4899" },
+      { text: "+2.000 Monedas", val: 2000, color: "#a855f7" },
+      { text: "+400 Monedas", val: 400, color: "#3b82f6" },
+      { text: "-1.000 Monedas", val: -1000, color: "#ef4444" },
+      { text: "+7.000 Monedas", val: 7000, color: "#ec4899" },
+      { text: "+3.000 Monedas", val: 3000, color: "#10b981" },
+      { text: "+50 Monedas", val: 50, color: "#64748b" }
     ];
 
     let currentAngle = 0;
     let isSpinning = false;
 
-    function abrirRuleta() {
-      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
-      const spinBtn = document.getElementById('btn-spin-action');
-      const subtitulo = document.getElementById('roulette-subtitle');
-
-      if (u && !u.ruletaUsada) {
-        subtitulo.innerHTML = '🎁 ¡Tu <strong>primer giro es GRATIS</strong> y tiene premio bueno asegurado!';
-        spinBtn.innerText = '¡PRIMER GIRO GRATIS! 🎁';
-      } else {
-        subtitulo.innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
-        spinBtn.innerText = '¡GIRAR RULETA! (🪙 1.000)';
-      }
-
-      document.getElementById('modal-ruleta').style.display = 'flex';
-      document.getElementById('roulette-result').innerText = '';
-      dibujarRuleta();
-    }
-
-    function cerrarRuleta() { if (!isSpinning) document.getElementById('modal-ruleta').style.display = 'none'; }
-
-    function dibujarRuleta() {
-      const canvas = document.getElementById('roulette-canvas');
-      const ctx = canvas.getContext('2d');
-      const numSlices = opciones25Ruleta.length;
-      const sliceAngle = (2 * Math.PI) / numSlices;
-      const cx = canvas.width / 2, cy = canvas.height / 2, radius = cx - 5;
+    function drawRuleta() {
+      const canvas = document.getElementById("ruleta-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const numSectors = ruletaPremios.length;
+      const arc = (2 * Math.PI) / numSectors;
+      const radius = canvas.width / 2;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      for (let i = 0; i < numSlices; i++) {
-        const startA = currentAngle + i * sliceAngle;
-        const endA = startA + sliceAngle;
+      for (let i = 0; i < numSectors; i++) {
+        const angle = currentAngle + i * arc;
+        
+        // Dibujar Sector
+        ctx.fillStyle = ruletaPremios[i].color;
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, radius, startA, endA);
-        ctx.fillStyle = opciones25Ruleta[i].color;
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius - 5, angle, angle + arc);
+        ctx.lineTo(radius, radius);
         ctx.fill();
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 1;
         ctx.stroke();
 
+        // Texto del sector
         ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate(startA + sliceAngle / 2);
+        ctx.translate(radius, radius);
+        ctx.rotate(angle + arc / 2);
         ctx.textAlign = "right";
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 8px sans-serif";
-        ctx.fillText(opciones25Ruleta[i].text, radius - 8, 3);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 9px Rajdhani";
+        ctx.fillText(ruletaPremios[i].text, radius - 12, 3);
         ctx.restore();
       }
+
+      // Círculo Central Decorativo
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.arc(radius, radius, 25, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.strokeStyle = "#ec4899";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = "#ec4899";
+      ctx.font = "bold 10px Press Start 2P";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("PX", radius, radius);
     }
 
-    function girarRuleta() {
+    function spinRuleta() {
       if (isSpinning) return;
-      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-      const u = allUsers[usuarioActivo];
-      const esPrimerGiro = !u.ruletaUsada;
-
-      if (!esPrimerGiro) {
-        if (u.coins < 1000) {
-          document.getElementById('roulette-result').innerText = '❌ No tienes suficientes Pixelmonedas (necesitas 1.000).';
-          return;
-        }
-        u.coins -= 1000;
-        localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
-        actualizarMonedasUI();
-      }
-
       isSpinning = true;
-      const spinBtn = document.getElementById('btn-spin-action');
-      spinBtn.disabled = true;
 
-      const numSlices = opciones25Ruleta.length;
-      const sliceAngle = (2 * Math.PI) / numSlices;
+      const btn = document.getElementById("btn-spin");
+      btn.disabled = true;
+      btn.classList.add("opacity-50");
 
-      let targetIndex;
-      if (esPrimerGiro) {
-        const indicesBuenos = opciones25Ruleta.map((op, idx) => op.bueno ? idx : null).filter(val => val !== null);
-        targetIndex = indicesBuenos[Math.floor(Math.random() * indicesBuenos.length)];
-      } else {
-        targetIndex = Math.floor(Math.random() * numSlices);
+      document.getElementById("ruleta-status").innerText = "¡Girando...";
+
+      // Registrar logro de giro
+      if (!user.unlockedAchievements.includes(1)) {
+        user.unlockedAchievements.push(1);
       }
 
-      const duration = 4000;
-      const start = performance.now();
-      const extraRotations = 5 * 2 * Math.PI;
-      const angleForTarget = (1.5 * Math.PI) - (targetIndex * sliceAngle) - (sliceAngle / 2);
-      
-      let finalAngle = (currentAngle % (2 * Math.PI)) + angleForTarget;
-      while (finalAngle < currentAngle + extraRotations) finalAngle += 2 * Math.PI;
+      const spins = Math.floor(Math.random() * 5) + 5; // Entre 5 y 10 vueltas
+      const extraAngle = Math.random() * Math.PI * 2;
+      const totalRotation = spins * Math.PI * 2 + extraAngle;
 
-      const totalRotation = finalAngle - currentAngle;
+      const duration = 4000; // 4 segundos
+      const start = performance.now();
       const initialAngle = currentAngle;
 
-      function animate(now) {
-        const elapsed = now - start;
+      function animateRuleta(time) {
+        const elapsed = time - start;
         const progress = Math.min(elapsed / duration, 1);
+        
+        // Función de desaceleración (easeOutCubic)
         const easeOut = 1 - Math.pow(1 - progress, 3);
-
         currentAngle = initialAngle + totalRotation * easeOut;
-        dibujarRuleta();
+
+        drawRuleta();
 
         if (progress < 1) {
-          requestAnimationFrame(animate);
+          requestAnimationFrame(animateRuleta);
         } else {
+          // CALCULAR PREMIO GANADOR AL FINALIZAR
           isSpinning = false;
-          spinBtn.disabled = false;
+          btn.disabled = false;
+          btn.classList.remove("opacity-50");
 
-          if (esPrimerGiro) {
-            u.ruletaUsada = true;
-            document.getElementById('roulette-subtitle').innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
-            spinBtn.innerText = '¡GIRAR RULETA! (🪙 1.000)';
+          const numSectors = ruletaPremios.length;
+          const arc = (2 * Math.PI) / numSectors;
+
+          // Normalizar ángulo actual
+          const normalizedAngle = (Math.PI * 2.5 - (currentAngle % (Math.PI * 2))) % (Math.PI * 2);
+          const winningIndex = Math.floor(normalizedAngle / arc) % numSectors;
+          const premio = ruletaPremios[winningIndex];
+
+          // IMPORTANTE: SUMAR/ACTUALIZAR MONEDAS INMEDIATAMENTE AL BALANCE
+          user.coins += premio.val;
+          if (user.coins < 0) user.coins = 0; // Evitar valores negativos
+
+          // LOGRO ESPECIAL 7000 PIXELMONEDAS
+          if (premio.val === 7000 && !user.unlockedAchievements.includes(2)) {
+            user.unlockedAchievements.push(2);
           }
 
-          const premio = opciones25Ruleta[targetIndex];
-          u.coins = Math.max(0, u.coins + premio.val);
-          localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
-          actualizarMonedasUI();
+          // GUARDAR EN LOCALSTORAGE Y ACTUALIZAR LA INTERFAZ DE USUARIO
+          saveUserData();
 
-          document.getElementById('roulette-result').innerText = premio.val >= 0 
-            ? `🎉 ¡Has ganado ${premio.text}!` 
-            : `💥 ${premio.text}`;
+          // Mostrar Mensaje de Ganador
+          const statusElem = document.getElementById("ruleta-status");
+          if (premio.val > 0) {
+            statusElem.innerText = `¡GANASTE ${premio.text}! 🎉`;
+            statusElem.className = "text-center font-bold text-lg my-2 text-emerald-400 animate-bounce";
+          } else if (premio.val < 0) {
+            statusElem.innerText = `¡MALA SUERTE! ${premio.text} 😅`;
+            statusElem.className = "text-center font-bold text-lg my-2 text-red-400";
+          } else {
+            statusElem.innerText = `¡${premio.text}! Vuelve a intentar.`;
+            statusElem.className = "text-center font-bold text-lg my-2 text-slate-300";
+          }
         }
       }
-      requestAnimationFrame(animate);
+
+      requestAnimationFrame(animateRuleta);
     }
 
-    actualizarMonedasUI();
+    // -------------------------------------------------------------
+    // CONTROL DE MODALES
+    // -------------------------------------------------------------
+    function openModal(id) {
+      document.getElementById(id).classList.remove("hidden");
+      if (id === "modal-ruleta") {
+        setTimeout(drawRuleta, 50);
+      } else if (id === "modal-spirits") {
+        renderSpiritsList();
+        if (spiritsData.length > 0 && !selectedSpirit) {
+          selectSpirit(spiritsData[0]);
+        }
+      } else if (id === "modal-logros") {
+        renderLogros();
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add("hidden");
+    }
+
+    // -------------------------------------------------------------
+    // INICIALIZACIÓN
+    // -------------------------------------------------------------
+    window.onload = function() {
+      loadUserData();
+      renderGames();
+    };
   </script>
 </body>
 </html>
