@@ -90,32 +90,19 @@
     }
 
     .search-box {
-      display: flex;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #00e5ff;
-      border-radius: 20px;
-      padding: 2px 4px 2px 12px;
+      display: flex; align-items: center; background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #00e5ff; border-radius: 20px; padding: 2px 4px 2px 12px;
       box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
     }
 
-    .search-input {
-      background: transparent;
-      border: none;
-      color: #ffffff;
-      font-family: inherit;
-      font-size: 12px;
-      width: 90px;
-      outline: none;
-    }
-
+    .search-input { background: transparent; border: none; color: #ffffff; font-family: inherit; font-size: 12px; width: 90px; outline: none; }
     .search-input::placeholder { color: #8191aa; }
+    .btn-buscar { background: #00e5ff; color: #080b12; border: none; padding: 5px 10px; border-radius: 16px; font-size: 11px; font-weight: bold; cursor: pointer; font-family: inherit; box-shadow: 0 0 10px rgba(0, 229, 255, 0.6); }
 
-    .btn-buscar {
-      background: #00e5ff; color: #080b12; border: none; padding: 5px 10px; border-radius: 16px; font-size: 11px; font-weight: bold; cursor: pointer; font-family: inherit; box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px; width: 90%; max-width: 1200px;
     }
-
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; width: 90%; max-width: 1200px; }
 
     /* ANIMACIÓN LUZ DE NEÓN CONTINUA */
     @keyframes neonRainbow {
@@ -127,27 +114,14 @@
     }
 
     .card {
-      background: rgba(15, 23, 42, 0.85);
-      border: 2px solid #ff007f;
-      border-radius: 16px;
-      padding: 25px 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 220px;
-      animation: neonRainbow 6s linear infinite;
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: rgba(15, 23, 42, 0.85); border: 2px solid #ff007f; border-radius: 16px;
+      padding: 25px 15px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; min-height: 220px;
+      animation: neonRainbow 6s linear infinite; transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .card.available:hover { transform: translateY(-5px); filter: brightness(1.2); }
-
-    .card.highlight {
-      animation: highlightGlow 2s ease-in-out infinite alternate !important;
-      transform: scale(1.08) !important;
-      z-index: 10;
-    }
+    .card.highlight { animation: highlightGlow 2s ease-in-out infinite alternate !important; transform: scale(1.08) !important; z-index: 10; }
 
     @keyframes highlightGlow {
       0% { border-color: #ffd700; box-shadow: 0 0 30px #ffd700, inset 0 0 15px #ffd700; }
@@ -158,9 +132,11 @@
     .name { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.3); }
 
     .play {
-      display: inline-block; padding: 10px 24px; border-radius: 13px; background: linear-gradient(180deg, #35a8ff, #1266e8); color: white; text-decoration: none; font-weight: 800; box-shadow: 0 5px 0 #0844a0, 0 0 15px rgba(0,100,255,.5); transition: transform 0.1s; cursor: pointer; border: none;
+      display: inline-block; padding: 10px 24px; border-radius: 13px;
+      background: linear-gradient(180deg, #35a8ff, #1266e8); color: white;
+      text-decoration: none; font-weight: 800; box-shadow: 0 5px 0 #0844a0, 0 0 15px rgba(0,100,255,.5);
+      transition: transform 0.1s; cursor: pointer; border: none;
     }
-
     .play:hover { transform: scale(1.05); }
 
     .locked { opacity: .68; }
@@ -169,33 +145,61 @@
     .badge { font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #8191aa; border: 1px solid rgba(255,255,255,.12); padding: 8px 13px; border-radius: 999px; background: rgba(0,0,0,.2); }
 
     /* MODALES GENERALES */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8, 11, 18, 0.92); z-index: 100; justify-content: center; align-items: center; }
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(8, 11, 18, 0.92); z-index: 100; justify-content: center; align-items: center;
+    }
 
-    .modal-card { background: #0f172a; border: 2px solid #00e5ff; border-radius: 20px; padding: 25px; width: 92%; max-width: 620px; text-align: center; box-shadow: 0 0 35px rgba(0, 229, 255, 0.5); }
+    .modal-card {
+      background: #0f172a; border: 2px solid #00e5ff; border-radius: 20px;
+      padding: 25px; width: 92%; max-width: 620px; text-align: center;
+      box-shadow: 0 0 35px rgba(0, 229, 255, 0.5);
+    }
 
     .modal-card h2 { color: #00e5ff; font-size: 24px; margin-bottom: 5px; text-shadow: 0 0 10px #00e5ff; }
 
-    .modal-btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: none; font-size: 15px; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .modal-btn {
+      width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: none;
+      font-size: 15px; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s;
+    }
 
-    .btn-continuar { background: #2ecc71; color: #080b12; box-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
     .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; }
 
-    /* TIENDA DE ESPÍRITUS Y LOGROS */
+    /* TIENDA DE ESPÍRITUS */
     .nav-tienda { display: flex; justify-content: center; gap: 10px; margin: 15px 0 10px; }
-    .nav-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #aaa; padding: 10px 16px; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: inherit; }
+    .nav-btn {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+      color: #aaa; padding: 10px 16px; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: inherit;
+    }
     .nav-btn.active { background: #ffd700; color: #000; border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-    .spirit-list, .logros-grid { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
-    .spirit-item, .logro-card { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-    .logro-card.completado { border-color: #ffd700; background: rgba(255, 215, 0, 0.08); }
-    .spirit-info { text-align: left; }
-    .btn-buy, .btn-view-spirit { background: #ffd700; color: #000; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 12px; }
+    .spirit-list { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
+    .spirit-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .spirit-info { text-align: left; display: flex; align-items: center; gap: 10px; }
+    .spirit-emoji-display { font-size: 26px; }
+
+    .rarity-comun { color: #a4b0be; }
+    .rarity-raro { color: #1e90ff; }
+    .rarity-epico { color: #a55eea; }
+    .rarity-legendario { color: #ffa502; }
+    .rarity-especial { color: #2ed573; text-shadow: 0 0 8px #2ed573; }
+
+    .btn-buy, .btn-view-spirit { background: #ffd700; color: #000; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 12px; }
     .btn-owned { background: #2ed573; color: #000; cursor: default; }
 
-    /* RULETA */
+    /* LOGROS GRID */
+    .logros-grid { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
+    .logro-card { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .logro-card.completado { border-color: #ffd700; background: rgba(255, 215, 0, 0.08); }
+
+    /* RULETA 25 SECCIONES */
     .roulette-wrapper { position: relative; width: 320px; height: 320px; margin: 15px auto; }
     #roulette-canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 30px rgba(255, 0, 127, 0.7); }
-    .roulette-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 24px solid #ffd700; z-index: 10; }
+    .roulette-pointer {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 24px solid #ffd700; z-index: 10;
+    }
     .btn-spin { background: linear-gradient(180deg, #ff007f, #b30059); color: white; font-size: 16px; font-weight: 900; border: 2px solid #ff66cc; }
+    .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
     #roulette-result { font-size: 14px; font-weight: bold; color: #ffd700; min-height: 24px; margin-top: 5px; }
 
     #spirit-viewer-canvas, #insignia-canvas { background: #02050f; border-radius: 16px; border: 2px solid #a55eea; box-shadow: 0 0 20px rgba(165, 94, 234, 0.4); margin: 15px auto; display: block; }
@@ -213,7 +217,6 @@
       <button class="btn-ruleta" onclick="abrirRuleta()">🎡 PIXELRULETA</button>
       <button class="btn-guarderia" onclick="abrirGuarderia()">🏡 GUARDERÍA</button>
       <button class="btn-logros" onclick="abrirModalLogros()">🏆 LOGROS</button>
-      <button class="btn-amigos" onclick="abrirModalAmigos()">👥 AMIGOS</button>
       <button class="btn-cambiar-usuario" onclick="cambiarUsuario()">🔄 CAMBIAR USUARIO</button>
       
       <div class="search-box">
@@ -225,11 +228,11 @@
 
   <main class="grid" id="games"></main>
 
-  <!-- MODAL RULETA DE 25 CASILLAS -->
+  <!-- MODAL PIXELRULETA (25 APARTADOS) -->
   <div class="modal-overlay" id="modal-ruleta">
     <div class="modal-card" style="max-width: 440px;">
-      <h2 style="color: #ff007f;">🎡 PIXELRULETA (25 CASILLAS)</h2>
-      <p style="color: #8191aa; font-size: 12px;" id="roulette-subtitle">¡Gira la gran ruleta especial!</p>
+      <h2 style="color: #ff007f;">🎡 PIXELRULETA (25 PREMIOS)</h2>
+      <p style="color: #8191aa; font-size: 12px;" id="roulette-subtitle">¡Primer giro GRATIS!</p>
 
       <div class="roulette-wrapper">
         <div class="roulette-pointer"></div>
@@ -243,10 +246,10 @@
     </div>
   </div>
 
-  <!-- MODAL TIENDA DE 150 ESPÍRITUS -->
+  <!-- MODAL TIENDA DE ESPÍRITUS (150 ESPÍRITUS) -->
   <div class="modal-overlay" id="modal-tienda">
     <div class="modal-card">
-      <h2 style="color: #ffd700;">👻 TIENDA DE ESPÍRITUS (150 TOTAL)</h2>
+      <h2 style="color: #ffd700;">👻 TIENDA & COLECCIÓN DE ESPÍRITUS</h2>
       <p style="color: #8191aa; font-size: 12px;" id="subtitulo-coleccion">Colecciona los 150 espíritus de Pixel Games</p>
 
       <div class="nav-tienda">
@@ -260,11 +263,14 @@
     </div>
   </div>
 
-  <!-- MODAL VER ESPÍRITU (FORMA ÚNICA PROCEDURAL) -->
+  <!-- MODAL VISOR DE ESPÍRITU -->
   <div class="modal-overlay" id="modal-ver-espiritu" style="z-index: 150;">
-    <div class="modal-card" style="max-width: 380px;">
-      <h2 id="spirit-view-title" style="color: #a55eea;">NOMBRE ESPÍRITU</h2>
+    <div class="modal-card" style="max-width: 400px;">
+      <h2 id="spirit-view-title" style="color: #a55eea;">ESPÍRITU</h2>
+      <div id="spirit-view-rarity" style="font-weight: bold; font-size: 14px; margin-bottom: 10px;">RARIDAD</div>
+
       <canvas id="spirit-viewer-canvas" width="220" height="220"></canvas>
+
       <button class="modal-btn btn-cancelar" onclick="cerrarVisorEspiritu()">Cerrar Visor</button>
     </div>
   </div>
@@ -273,7 +279,7 @@
   <div class="modal-overlay" id="modal-logros">
     <div class="modal-card">
       <h2 style="color: #f1c40f;">🏆 20 LOGROS DE JUGADOR</h2>
-      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-logros">Completa desafíos para desbloquear insignias</p>
+      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-logros">Desbloquea insignias completando desafíos</p>
 
       <div class="logros-grid" id="logros-container"></div>
 
@@ -284,20 +290,12 @@
   <!-- MODAL VISOR DE INSIGNIA -->
   <div class="modal-overlay" id="modal-ver-insignia" style="z-index: 160;">
     <div class="modal-card" style="max-width: 380px;">
-      <h2 id="insignia-title" style="color: #f1c40f;">NOMBRE INSIGNIA</h2>
+      <h2 id="insignia-title" style="color: #f1c40f;">INSIGNIA</h2>
       <p id="insignia-status" style="font-size: 12px; margin-top: 4px; font-weight: bold;"></p>
-      <canvas id="insignia-canvas" width="180" height="180"></canvas>
-      <button class="modal-btn btn-cancelar" onclick="cerrarVisorInsignia()">Volver</button>
-    </div>
-  </div>
 
-  <!-- MODAL AMIGOS -->
-  <div class="modal-overlay" id="modal-amigos">
-    <div class="modal-card">
-      <h2 style="color: #a55eea;">👥 SISTEMA DE AMIGOS</h2>
-      <p style="color: #8191aa; font-size: 12px;">Agrega amigos por su nombre de usuario</p>
-      <div style="margin: 20px 0; color: #8191aa;">Sincronizado para interacciones entre jugadores.</div>
-      <button class="modal-btn btn-cancelar" onclick="cerrarModalAmigos()">Cerrar Ventana</button>
+      <canvas id="insignia-canvas" width="180" height="180"></canvas>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarVisorInsignia()">Volver</button>
     </div>
   </div>
 
@@ -312,7 +310,7 @@
 
     const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
     if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { coins: 5000, espiritusComprados: [], logrosObtenidos: [] };
+      usuarios[usuarioActivo] = { coins: 5000, espiritusComprados: [], logrosObtenidos: [], ruletaUsada: false };
       localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
     }
 
@@ -330,10 +328,8 @@
     }
 
     function abrirGuarderia() { window.location.href = 'guarderia.html'; }
-    function abrirModalAmigos() { document.getElementById('modal-amigos').style.display = 'flex'; }
-    function cerrarModalAmigos() { document.getElementById('modal-amigos').style.display = 'none'; }
 
-    // 2. LISTA EXACTA DE JUEGOS[cite: 6]
+    // 2. ESTRUCTURA EXACTA DE MENÚ DE JUEGOS
     const games = [
       { id: 1, name: "money up", icon: "🪙", file: "juego1.html" },
       { id: 2, name: "extrem 1", icon: "🌲", file: "juego2.html" },
@@ -400,25 +396,47 @@
       }
     }
 
-    // 3. GENERACIÓN DE 150 ESPÍRITUS CON DIBUJO PROCEDURAL ÚNICO
-    const nombresBases = ["Espectro", "Centinela", "Sombra", "Aura", "Orbe", "Fuego Fatuo", "Titán", "Rayo", "Duende", "Guardián", "Fénix", "Nube", "Dragón", "Draco", "Golem", "Alma"];
-    const elementos = ["Neón", "Helado", "Carmesí", "Dorado", "Azul", "Oscuro", "Lunar", "Solar", "Estelar", "Místico", "Fantasmal", "Ancestral", "Eléctrico", "Radioactivo", "Galáctico"];
+    // 3. GENERADOR DE 150 ESPÍRITUS CON NOMBRES, EMOJIS, VISOR ÚNICO Y 5 RAREZAS
+    const raridades = [
+      { key: 'comun', label: 'Común', precio: 3000, colorHex: '#a4b0be' },
+      { key: 'raro', label: 'Raro', precio: 10000, colorHex: '#1e90ff' },
+      { key: 'epico', label: 'Épico', precio: 30000, colorHex: '#a55eea' },
+      { key: 'legendario', label: 'Legendario', precio: 90000, colorHex: '#ffa502' },
+      { key: 'especial', label: 'Especial', precio: 500000, colorHex: '#2ed573' }
+    ];
+
+    const nombresBases = ["Espectro", "Duende", "Orbe", "Sombra", "Titán", "Fantasmin", "Alma", "Aura", "Centinela", "Rayo", "Fuego Fatuo", "Nube", "Dragón", "Guardián", "Caminante"];
+    const emojisEspiritus = ["👻", "👾", "🔮", "🔥", "⚡", "🌟", "💀", "🐉", "🤖", "🎃", "👁️", "🌀", "🌙", "👑", "🦁"];
 
     const catalogoEspiritus = [];
     for (let i = 1; i <= 150; i++) {
-      let rHex = '#a4b0be';
-      if (i > 40) rHex = '#1e90ff';
-      if (i > 80) rHex = '#a55eea';
-      if (i > 110) rHex = '#ffa502';
-      if (i > 135) rHex = '#ff4757';
-      if (i > 145) rHex = '#2ed573';
+      let rIdx = 0;
+      if (i > 45) rIdx = 1;
+      if (i > 85) rIdx = 2;
+      if (i > 120) rIdx = 3;
+      if (i > 140) rIdx = 4;
 
-      let nom = i === 2 ? "Haina" : `${nombresBases[(i * 3) % nombresBases.length]} ${elementos[(i * 7) % elementos.length]} #${i}`;
-      catalogoEspiritus.push({ id: i, nombre: nom, precio: i * 2500, colorHex: rHex });
+      const rObj = raridades[rIdx];
+      const baseNombre = nombresBases[(i - 1) % nombresBases.length];
+      const emoji = emojisEspiritus[(i - 1) % emojisEspiritus.length];
+
+      catalogoEspiritus.push({
+        id: i,
+        nombre: `${baseNombre} Pixel #${i}`,
+        emoji: emoji,
+        raridadKey: rObj.key,
+        raridadLabel: rObj.label,
+        precio: rObj.precio,
+        colorHex: rObj.colorHex,
+        seedShape: i // Semilla para dibujo único en visor
+      });
     }
 
     let tabActual = 'tienda';
-    function abrirTiendaEspiritus() { cambiarTab('tienda'); document.getElementById('modal-tienda').style.display = 'flex'; }
+    function abrirTiendaEspiritus() {
+      cambiarTab('tienda');
+      document.getElementById('modal-tienda').style.display = 'flex';
+    }
     function cerrarTiendaEspiritus() { document.getElementById('modal-tienda').style.display = 'none'; }
 
     function cambiarTab(tab) {
@@ -431,35 +449,53 @@
     function renderListaEspiritus() {
       const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
       const listContainer = document.getElementById('spirit-list-container');
+      const subtitulo = document.getElementById('subtitulo-coleccion');
       listContainer.innerHTML = '';
 
       if (tabActual === 'tienda') {
+        subtitulo.innerText = "Compra espíritus con tus Pixelmonedas";
         catalogoEspiritus.forEach(esp => {
           const poseido = u.espiritusComprados && u.espiritusComprados.includes(esp.id);
           const itemDiv = document.createElement('div');
           itemDiv.className = 'spirit-item';
           itemDiv.innerHTML = `
             <div class="spirit-info">
-              <div style="font-weight:bold; color:${esp.colorHex};">${esp.nombre}</div>
+              <span class="spirit-emoji-display">${esp.emoji}</span>
+              <div>
+                <div style="font-weight:bold; font-size:14px;">${esp.nombre}</div>
+                <div class="rarity-${esp.raridadKey}" style="font-size:11px; font-weight:bold;">${esp.raridadLabel}</div>
+              </div>
             </div>
-            ${poseido 
-              ? `<button class="btn-buy btn-owned">DESBLOQUEADO</button>` 
-              : `<button class="btn-buy" onclick="comprarEspiritu(${esp.id}, ${esp.precio})">🪙 ${esp.precio.toLocaleString('es-ES')}</button>`}
+            <div>
+              <button class="btn-view-spirit" style="background:#a55eea; color:#fff; margin-right:5px;" onclick="verVisorEspiritu(${esp.id})">🔍 VISOR</button>
+              ${poseido 
+                ? `<button class="btn-buy btn-owned">DESBLOQUEADO</button>` 
+                : `<button class="btn-buy" onclick="comprarEspiritu(${esp.id}, ${esp.precio})">🪙 ${esp.precio.toLocaleString('es-ES')}</button>`}
+            </div>
           `;
           listContainer.appendChild(itemDiv);
         });
       } else {
         const misEspiritus = catalogoEspiritus.filter(esp => u.espiritusComprados && u.espiritusComprados.includes(esp.id));
+        subtitulo.innerText = `Has desbloqueado ${misEspiritus.length} de 150 espíritus`;
+
         if (misEspiritus.length === 0) {
-          listContainer.innerHTML = `<p style="color:#aaa; font-size:12px; margin-top:15px;">Aún no posees espíritus.</p>`;
+          listContainer.innerHTML = `<p style="color:#aaa; font-size:12px; margin-top:15px;">No tienes espíritus en tu colección.</p>`;
           return;
         }
+
         misEspiritus.forEach(esp => {
           const itemDiv = document.createElement('div');
           itemDiv.className = 'spirit-item';
           itemDiv.innerHTML = `
-            <div style="font-weight:bold; color:${esp.colorHex};">👻 ${esp.nombre}</div>
-            <button class="btn-view-spirit" onclick="verImagenEspiritu(${esp.id})">🔍 VER FORMA</button>
+            <div class="spirit-info">
+              <span class="spirit-emoji-display">${esp.emoji}</span>
+              <div>
+                <div style="font-weight:bold; font-size:14px;">${esp.nombre}</div>
+                <div class="rarity-${esp.raridadKey}" style="font-size:11px; font-weight:bold;">${esp.raridadLabel}</div>
+              </div>
+            </div>
+            <button class="btn-view-spirit" onclick="verVisorEspiritu(${esp.id})">🔍 VISOR</button>
           `;
           listContainer.appendChild(itemDiv);
         });
@@ -469,7 +505,10 @@
     function comprarEspiritu(id, precio) {
       const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
       const u = allUsers[usuarioActivo];
-      if (u.coins < precio) { alert('❌ No tienes suficientes Pixelmonedas.'); return; }
+      if (u.coins < precio) {
+        alert('❌ No tienes suficientes Pixelmonedas.');
+        return;
+      }
       u.coins -= precio;
       if (!u.espiritusComprados) u.espiritusComprados = [];
       u.espiritusComprados.push(id);
@@ -478,94 +517,97 @@
       renderListaEspiritus();
     }
 
-    function verImagenEspiritu(id) {
+    function verVisorEspiritu(id) {
       const esp = catalogoEspiritus.find(e => e.id === id);
       if (!esp) return;
-      document.getElementById('spirit-view-title').innerText = esp.nombre.toUpperCase();
+
+      document.getElementById('spirit-view-title').innerText = `${esp.emoji} ${esp.nombre.toUpperCase()}`;
       document.getElementById('spirit-view-title').style.color = esp.colorHex;
 
-      dibujarArtePixelEspirituProcedural(esp);
+      const rarityEl = document.getElementById('spirit-view-rarity');
+      rarityEl.innerText = `Raridad: ${esp.raridadLabel}`;
+      rarityEl.className = `rarity-${esp.raridadKey}`;
+
+      dibujarFormaPixelUnica(esp);
       document.getElementById('modal-ver-espiritu').style.display = 'flex';
     }
 
     function cerrarVisorEspiritu() { document.getElementById('modal-ver-espiritu').style.display = 'none'; }
 
-    // DIBUJA UNA FORMA PIXEL ART 100% ÚNICA SEGÚN LA ID DEL ESPÍRITU
-    function dibujarArtePixelEspirituProcedural(esp) {
+    // DIBUJO DIVERSIFICADO EN CANVAS PARA CADA ESPÍRITU
+    function dibujarFormaPixelUnica(esp) {
       const canvas = document.getElementById('spirit-viewer-canvas');
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const id = esp.id;
-      const gridSize = 10;
-      const pixelSize = 16;
-      const offsetX = (canvas.width - gridSize * pixelSize) / 2;
-      const offsetY = (canvas.height - gridSize * pixelSize) / 2;
-
+      const s = esp.seedShape;
       ctx.fillStyle = '#02050f';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.fillStyle = esp.colorHex;
       ctx.shadowColor = esp.colorHex;
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 15;
 
-      // Generar patrón simétrico basado en algoritmos de ID
-      for (let x = 0; x < gridSize / 2; x++) {
-        for (let y = 0; y < gridSize; y++) {
-          const val = (id * 17 + x * 31 + y * 13) % 100;
-          if (val > 38) {
-            // Dibujar mitad izquierda y su simétrico derecho
-            ctx.fillRect(offsetX + x * pixelSize, offsetY + y * pixelSize, pixelSize - 1, pixelSize - 1);
-            ctx.fillRect(offsetX + (gridSize - 1 - x) * pixelSize, offsetY + y * pixelSize, pixelSize - 1, pixelSize - 1);
-          }
-        }
+      // Forma base personalizada según ID
+      const sizeType = s % 3;
+      if (sizeType === 0) {
+        ctx.fillRect(60, 50, 100, 100);
+        ctx.fillRect(40, 70, 140, 60);
+      } else if (sizeType === 1) {
+        ctx.beginPath();
+        ctx.arc(110, 100, 55, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(70, 40, 80, 120);
+        ctx.fillRect(50, 60, 120, 80);
       }
 
-      // Ojos en pixel art
+      // Ojos y detalles
       ctx.shadowBlur = 0;
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(offsetX + 2 * pixelSize, offsetY + 3 * pixelSize, pixelSize, pixelSize);
-      ctx.fillRect(offsetX + 7 * pixelSize, offsetY + 3 * pixelSize, pixelSize, pixelSize);
+      ctx.fillRect(80, 80, 18, 18);
+      ctx.fillRect(122, 80, 18, 18);
 
       ctx.fillStyle = "#000000";
-      ctx.fillRect(offsetX + 2 * pixelSize + 4, offsetY + 3 * pixelSize + 4, 8, 8);
-      ctx.fillRect(offsetX + 7 * pixelSize + 4, offsetY + 3 * pixelSize + 4, 8, 8);
+      ctx.fillRect(85 + (s % 5), 85, 8, 8);
+      ctx.fillRect(127 + (s % 5), 85, 8, 8);
     }
 
-    // 4. SISTEMA DE 20 LOGROS
-    const listaLogros = [
-      { id: 1, titulo: "Gran Acumulador", desc: "Tener más de 200.000 Pixelmonedas.", icono: "💰" },
-      { id: 2, titulo: "Maestro del Laberinto", desc: "Pasarse Ultra Laberintos.", icono: "🧩" },
-      { id: 3, titulo: "Coleccionista", desc: "Tener más de 20 espíritus.", icono: "👻" },
-      { id: 4, titulo: "Encuentro Divino", desc: "Tener 1 espíritu Especial.", icono: "🌟" },
-      { id: 5, titulo: "Primeros Pasos", desc: "Acumular 1.000 Pixelmonedas.", icono: "🪙" },
-      { id: 6, titulo: "Millonario Pixel", desc: "Alcanzar 1.000.000 de Pixelmonedas.", icono: "💎" },
-      { id: 7, titulo: "Cazador de Espíritus", desc: "Tener 50 espíritus.", icono: "🔮" },
-      { id: 8, titulo: "Maestro del Zoo", desc: "Coleccionar 100 espíritus.", icono: "🏛️" },
-      { id: 9, titulo: "Leyenda Suprema", desc: "Tener los 150 espíritus.", icono: "👑" },
-      { id: 10, titulo: "Giro de Suerte", desc: "Girar la Pixelruleta por primera vez.", icono: "🎡" },
-      { id: 11, titulo: "Adicto a la Ruleta", desc: "Girar la Pixelruleta 10 veces.", icono: "🎰" },
-      { id: 12, titulo: "Comerciante Novato", desc: "Poner un espíritu en la Guardería.", icono: "🏡" },
-      { id: 13, titulo: "Magnate del Mercado", desc: "Realizar 5 transacciones.", icono: "🤝" },
-      { id: 14, titulo: "Toque Legendario", desc: "Conseguir un espíritu Legendario.", icono: "🦁" },
-      { id: 15, titulo: "Poder Mítico", desc: "Conseguir un espíritu Mítico.", icono: "🔥" },
-      { id: 16, titulo: "Haina Descubierto", desc: "Poseer al espíritu 'Haina'.", icono: "🐉" },
-      { id: 17, titulo: "Afortunado Supremo", desc: "Ganar el Gran Bote en la Ruleta.", icono: "🎉" },
-      { id: 18, titulo: "Explorador", desc: "Jugar a 5 juegos distintos.", icono: "🎮" },
-      { id: 19, titulo: "Veterano", desc: "Jugar a 10 juegos distintos.", icono: "🎖️" },
-      { id: 20, titulo: "Campeón Pixel", desc: "Desbloquear 15 logros.", icono: "🏆" }
+    // 4. 20 LOGROS CON VISOR INDIVIDUAL
+    const lista20Logros = [
+      { id: 1, titulo: "Gran Acumulador", desc: "Tener más de 200.000 Pixelmonedas", icono: "💰" },
+      { id: 2, titulo: "Maestro del Laberinto", desc: "Completar Ultra Labyrinths", icono: "🧩" },
+      { id: 3, titulo: "Coleccionista", desc: "Tener más de 20 espíritus", icono: "👻" },
+      { id: 4, titulo: "Encuentro Divino", desc: "Tener 1 espíritu Especial", icono: "🌟" },
+      { id: 5, titulo: "Primeros Pasos", desc: "Acumular 1.000 Pixelmonedas", icono: "🪙" },
+      { id: 6, titulo: "Millonario Pixel", desc: "Alcanzar 1.000.000 Pixelmonedas", icono: "💎" },
+      { id: 7, titulo: "Cazador de Espíritus", desc: "Tener 50 espíritus", icono: "🔮" },
+      { id: 8, titulo: "Maestro del Zoo", desc: "Coleccionar 100 espíritus", icono: "🏛️" },
+      { id: 9, titulo: "Leyenda Suprema", desc: "Tener los 150 espíritus completos", icono: "👑" },
+      { id: 10, titulo: "Giro de Suerte", desc: "Girar la Pixelruleta 1 vez", icono: "🎡" },
+      { id: 11, titulo: "Adicto a la Ruleta", desc: "Girar la Pixelruleta 10 veces", icono: "🎰" },
+      { id: 12, titulo: "Comerciante Novato", desc: "Visitar la Guardería", icono: "🏡" },
+      { id: 13, titulo: "Magnate del Mercado", desc: "Hacer transacciones en Guardería", icono: "🤝" },
+      { id: 14, titulo: "Toque Legendario", desc: "Conseguir espíritu Legendario", icono: "🦁" },
+      { id: 15, titulo: "Poder Mítico", desc: "Conseguir espíritu Épico", icono: "🔥" },
+      { id: 16, titulo: "Afortunado Supremo", desc: "Ganar el Gran Bote en Ruleta", icono: "🎉" },
+      { id: 17, titulo: "Explorador", desc: "Jugar 5 juegos distintos", icono: "🎮" },
+      { id: 18, titulo: "Veterano", desc: "Jugar 10 juegos distintos", icono: "🎖️" },
+      { id: 19, titulo: "Crítico de Élite", desc: "Enviar reseña en Pixel Critic", icono: "⭐" },
+      { id: 20, titulo: "Campeón Pixel", desc: "Desbloquear 15 logros", icono: "🏆" }
     ];
 
     function verificarLogrosAutomaticos() {
       const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
       const u = allUsers[usuarioActivo];
       if (!u) return;
+
       if (!u.logrosObtenidos) u.logrosObtenidos = [];
 
-      if (u.coins >= 200000 && !u.logrosObtenidos.includes(1)) u.logrosObtenidos.push(1);
       if (u.coins >= 1000 && !u.logrosObtenidos.includes(5)) u.logrosObtenidos.push(5);
+      if (u.coins >= 200000 && !u.logrosObtenidos.includes(1)) u.logrosObtenidos.push(1);
       if (u.espiritusComprados && u.espiritusComprados.length >= 20 && !u.logrosObtenidos.includes(3)) u.logrosObtenidos.push(3);
-      if (u.espiritusComprados && u.espiritusComprados.includes(2) && !u.logrosObtenidos.includes(16)) u.logrosObtenidos.push(16);
+      if (u.ruletaUsada && !u.logrosObtenidos.includes(10)) u.logrosObtenidos.push(10);
 
       localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
     }
@@ -574,21 +616,25 @@
       verificarLogrosAutomaticos();
       const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
       const container = document.getElementById('logros-container');
+      const subtitulo = document.getElementById('subtitulo-logros');
       container.innerHTML = '';
 
-      listaLogros.forEach(logro => {
+      const comp = u.logrosObtenidos ? u.logrosObtenidos.length : 0;
+      subtitulo.innerText = `Has completado ${comp} de 20 logros`;
+
+      lista20Logros.forEach(logro => {
         const completado = u.logrosObtenidos && u.logrosObtenidos.includes(logro.id);
         const card = document.createElement('div');
         card.className = `logro-card ${completado ? 'completado' : ''}`;
         card.innerHTML = `
-          <div style="display:flex; align-items:center;">
-            <div style="font-size:26px; margin-right:10px;">${logro.icono}</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:28px;">${logro.icono}</span>
             <div style="text-align:left;">
               <div style="font-weight:bold; font-size:13px;">${logro.titulo} ${completado ? '✅' : '🔒'}</div>
               <div style="font-size:11px; color:#8191aa;">${logro.desc}</div>
             </div>
           </div>
-          <button class="btn-buy" onclick="verInsigniaLogro(${logro.id})">INSIGNIA</button>
+          <button class="btn-buy" style="background:#ffd700;" onclick="verInsigniaLogro(${logro.id})">🔍 VISOR</button>
         `;
         container.appendChild(card);
       });
@@ -599,73 +645,99 @@
     function cerrarModalLogros() { document.getElementById('modal-logros').style.display = 'none'; }
 
     function verInsigniaLogro(id) {
-      const logro = listaLogros.find(l => l.id === id);
+      const logro = lista20Logros.find(l => l.id === id);
       if (!logro) return;
+
       const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
       const completado = u.logrosObtenidos && u.logrosObtenidos.includes(logro.id);
 
       document.getElementById('insignia-title').innerText = logro.titulo.toUpperCase();
-      document.getElementById('insignia-status').innerText = completado ? "STATUS: ¡DESBLOQUEADO!" : "STATUS: BLOQUEADO";
-      document.getElementById('insignia-status').style.color = completado ? "#2ecc71" : "#e74c3c";
+      const st = document.getElementById('insignia-status');
+      st.innerText = completado ? "STATUS: ¡DESBLOQUEADO!" : "STATUS: BLOQUEADO";
+      st.style.color = completado ? "#2ecc71" : "#e74c3c";
 
+      dibujarInsigniaCanvas(logro, completado);
+      document.getElementById('modal-ver-insignia').style.display = 'flex';
+    }
+
+    function cerrarVisorInsignia() { document.getElementById('modal-ver-insignia').style.display = 'none'; }
+
+    function dibujarInsigniaCanvas(logro, completado) {
       const canvas = document.getElementById('insignia-canvas');
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = '#02050f';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = completado ? '#ffd700' : '#4a5568';
+      ctx.fillStyle = completado ? '#ffd700' : '#334155';
+      ctx.fillRect(30, 20, 120, 140);
+
+      ctx.fillStyle = '#0f172a';
       ctx.fillRect(40, 30, 100, 120);
 
       ctx.font = "40px Courier New";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(logro.icono, canvas.width / 2, canvas.height / 2);
-
-      document.getElementById('modal-ver-insignia').style.display = 'flex';
     }
 
-    function cerrarVisorInsignia() { document.getElementById('modal-ver-insignia').style.display = 'none'; }
-
-    // 5. RULETA CON EXACTAMENTE 25 APARTADOS
-    const opcionesRuleta25 = [
-      { text: "+1K 🪙", val: 1000, color: "#1e90ff" },
-      { text: "+2K 🪙", val: 2000, color: "#2ed573" },
-      { text: "0 🪙", val: 0, color: "#57606f" },
-      { text: "+5K 🪙", val: 5000, color: "#ffd700" },
-      { text: "Bomba -1K", val: -1000, color: "#ff4757" },
-      { text: "+10K 🪙", val: 10000, color: "#a55eea" },
-      { text: "+3K 🪙", val: 3000, color: "#1e90ff" },
-      { text: "0 🪙", val: 0, color: "#57606f" },
-      { text: "+15K 🪙", val: 15000, color: "#ffa502" },
-      { text: "Cofre +8K", val: 8000, color: "#2ed573" },
-      { text: "+500 🪙", val: 500, color: "#1e90ff" },
-      { text: "-3K 🪙", val: -3000, color: "#ff4757" },
-      { text: "¡GRAN BOTE! +50K", val: 50000, color: "#ffd700" },
-      { text: "+4K 🪙", val: 4000, color: "#2ed573" },
-      { text: "0 🪙", val: 0, color: "#57606f" },
-      { text: "+12K 🪙", val: 12000, color: "#a55eea" },
-      { text: "Baja -2K", val: -2000, color: "#ff4757" },
-      { text: "+7K 🪙", val: 7000, color: "#1e90ff" },
-      { text: "+20K 🪙", val: 20000, color: "#ffa502" },
-      { text: "+1.5K 🪙", val: 1500, color: "#2ed573" },
-      { text: "0 🪙", val: 0, color: "#57606f" },
-      { text: "+25K 🪙", val: 25000, color: "#ffd700" },
-      { text: "+6K 🪙", val: 6000, color: "#1e90ff" },
-      { text: "-500 🪙", val: -500, color: "#ff4757" },
-      { text: "Súper +30K 🪙", val: 30000, color: "#ff007f" }
+    // 5. PIXELRULETA DE 25 APARTADOS (1er Giro Gratis, siguientes 1.000 coins)
+    const opciones25Ruleta = [
+      { text: "+1.000 🪙", val: 1000, color: "#1e90ff", bueno: false },
+      { text: "+2.000 🪙", val: 2000, color: "#2ed573", bueno: false },
+      { text: "0 🪙", val: 0, color: "#57606f", bueno: false },
+      { text: "+5.000 🪙", val: 5000, color: "#ffd700", bueno: true },
+      { text: "Bomba -500 🪙", val: -500, color: "#ff4757", bueno: false },
+      { text: "+3.000 🪙", val: 3000, color: "#1e90ff", bueno: false },
+      { text: "+10.000 🪙", val: 10000, color: "#ff007f", bueno: true },
+      { text: "+1.500 🪙", val: 1500, color: "#2ed573", bueno: false },
+      { text: "+500 🪙", val: 500, color: "#a4b0be", bueno: false },
+      { text: "Gran Bote +25.000 🪙", val: 25000, color: "#ffd700", bueno: true },
+      { text: "+2.500 🪙", val: 2500, color: "#1e90ff", bueno: false },
+      { text: "Cofre +8.000 🪙", val: 8000, color: "#a55eea", bueno: true },
+      { text: "0 🪙", val: 0, color: "#57606f", bueno: false },
+      { text: "+4.000 🪙", val: 4000, color: "#2ed573", bueno: false },
+      { text: "+1.200 🪙", val: 1200, color: "#1e90ff", bueno: false },
+      { text: "+15.000 🪙", val: 15000, color: "#ff7f50", bueno: true },
+      { text: "Bomba -1.000 🪙", val: -1000, color: "#ff4757", bueno: false },
+      { text: "+3.500 🪙", val: 3500, color: "#2ed573", bueno: false },
+      { text: "+6.000 🪙", val: 6000, color: "#a55eea", bueno: true },
+      { text: "+2.000 🪙", val: 2000, color: "#1e90ff", bueno: false },
+      { text: "+50.000 🪙 SUPER BOTE", val: 50000, color: "#2ed573", bueno: true },
+      { text: "+1.000 🪙", val: 1000, color: "#1e90ff", bueno: false },
+      { text: "0 🪙", val: 0, color: "#57606f", bueno: false },
+      { text: "+7.000 🪙", val: 7000, color: "#ffd700", bueno: true },
+      { text: "+3.000 🪙", val: 3000, color: "#1e90ff", bueno: false }
     ];
 
     let currentAngle = 0;
     let isSpinning = false;
 
-    function abrirRuleta() { document.getElementById('modal-ruleta').style.display = 'flex'; dibujarRuleta(); }
+    function abrirRuleta() {
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      const spinBtn = document.getElementById('btn-spin-action');
+      const subtitulo = document.getElementById('roulette-subtitle');
+
+      if (u && !u.ruletaUsada) {
+        subtitulo.innerHTML = '🎁 ¡Tu <strong>primer giro es GRATIS</strong> y tiene premio bueno asegurado!';
+        spinBtn.innerText = '¡PRIMER GIRO GRATIS! 🎁';
+      } else {
+        subtitulo.innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
+        spinBtn.innerText = '¡GIRAR RULETA! (🪙 1.000)';
+      }
+
+      document.getElementById('modal-ruleta').style.display = 'flex';
+      document.getElementById('roulette-result').innerText = '';
+      dibujarRuleta();
+    }
+
     function cerrarRuleta() { if (!isSpinning) document.getElementById('modal-ruleta').style.display = 'none'; }
 
     function dibujarRuleta() {
       const canvas = document.getElementById('roulette-canvas');
       const ctx = canvas.getContext('2d');
-      const numSlices = opcionesRuleta25.length;
+      const numSlices = opciones25Ruleta.length;
       const sliceAngle = (2 * Math.PI) / numSlices;
       const cx = canvas.width / 2, cy = canvas.height / 2, radius = cx - 5;
 
@@ -677,10 +749,8 @@
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.arc(cx, cy, radius, startA, endA);
-        ctx.fillStyle = opcionesRuleta25[i].color;
+        ctx.fillStyle = opciones25Ruleta[i].color;
         ctx.fill();
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 1;
         ctx.stroke();
 
         ctx.save();
@@ -689,28 +759,59 @@
         ctx.textAlign = "right";
         ctx.fillStyle = "#fff";
         ctx.font = "bold 8px sans-serif";
-        ctx.fillText(opcionesRuleta25[i].text, radius - 8, 3);
+        ctx.fillText(opciones25Ruleta[i].text, radius - 8, 3);
         ctx.restore();
       }
     }
 
     function girarRuleta() {
       if (isSpinning) return;
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[usuarioActivo];
+      const esPrimerGiro = !u.ruletaUsada;
+
+      if (!esPrimerGiro) {
+        if (u.coins < 1000) {
+          document.getElementById('roulette-result').innerText = '❌ No tienes suficientes Pixelmonedas (necesitas 1.000).';
+          return;
+        }
+        u.coins -= 1000;
+        localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+        actualizarMonedasUI();
+      }
+
       isSpinning = true;
       const spinBtn = document.getElementById('btn-spin-action');
       spinBtn.disabled = true;
 
+      const numSlices = opciones25Ruleta.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      let targetIndex;
+      if (esPrimerGiro) {
+        const indicesBuenos = opciones25Ruleta.map((op, idx) => op.bueno ? idx : null).filter(val => val !== null);
+        targetIndex = indicesBuenos[Math.floor(Math.random() * indicesBuenos.length)];
+      } else {
+        targetIndex = Math.floor(Math.random() * numSlices);
+      }
+
       const duration = 4000;
       const start = performance.now();
-      const extraRotations = 6 * 2 * Math.PI;
-      const randomTarget = Math.random() * 2 * Math.PI;
+      const extraRotations = 5 * 2 * Math.PI;
+      const angleForTarget = (1.5 * Math.PI) - (targetIndex * sliceAngle) - (sliceAngle / 2);
+      
+      let finalAngle = (currentAngle % (2 * Math.PI)) + angleForTarget;
+      while (finalAngle < currentAngle + extraRotations) finalAngle += 2 * Math.PI;
+
+      const totalRotation = finalAngle - currentAngle;
       const initialAngle = currentAngle;
 
       function animate(now) {
         const elapsed = now - start;
         const progress = Math.min(elapsed / duration, 1);
         const easeOut = 1 - Math.pow(1 - progress, 3);
-        currentAngle = initialAngle + (extraRotations + randomTarget) * easeOut;
+
+        currentAngle = initialAngle + totalRotation * easeOut;
         dibujarRuleta();
 
         if (progress < 1) {
@@ -719,20 +820,20 @@
           isSpinning = false;
           spinBtn.disabled = false;
 
-          const numSlices = opcionesRuleta25.length;
-          const sliceAngle = (2 * Math.PI) / numSlices;
-          let norm = (1.5 * Math.PI - (currentAngle % (2 * Math.PI))) % (2 * Math.PI);
-          if (norm < 0) norm += 2 * Math.PI;
-          const index = Math.floor(norm / sliceAngle) % numSlices;
-          const premio = opcionesRuleta25[index];
+          if (esPrimerGiro) {
+            u.ruletaUsada = true;
+            document.getElementById('roulette-subtitle').innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
+            spinBtn.innerText = '¡GIRAR RULETA! (🪙 1.000)';
+          }
 
-          const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-          const u = allUsers[usuarioActivo];
+          const premio = opciones25Ruleta[targetIndex];
           u.coins = Math.max(0, u.coins + premio.val);
-
           localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
           actualizarMonedasUI();
-          document.getElementById('roulette-result').innerText = `🎉 Resultado: ${premio.text}`;
+
+          document.getElementById('roulette-result').innerText = premio.val >= 0 
+            ? `🎉 ¡Has ganado ${premio.text}!` 
+            : `💥 ${premio.text}`;
         }
       }
       requestAnimationFrame(animate);
