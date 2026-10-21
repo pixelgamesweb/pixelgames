@@ -39,7 +39,7 @@
       font-weight: bold;
     }
 
-    /* BARRA SUPERIOR CON BOTONES */
+    /* BARRA SUPERIOR */
     .user-bar {
       margin-top: 15px;
       display: flex;
@@ -199,7 +199,7 @@
       border: 1px solid rgba(255,255,255,.12); padding: 8px 13px; border-radius: 999px; background: rgba(0,0,0,.2);
     }
 
-    /* MODALES Y CAPAS SUPERPUESTAS */
+    /* MODALES */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -249,7 +249,7 @@
       border-color: #ffd700;
     }
 
-    .spirit-list {
+    .spirit-list, .logros-grid {
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -259,7 +259,7 @@
       padding-right: 5px;
     }
 
-    .spirit-item {
+    .spirit-item, .logro-card {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -268,6 +268,15 @@
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.1);
     }
+
+    .logro-card.completado {
+      border-color: #ffd700;
+      background: rgba(255, 215, 0, 0.08);
+    }
+
+    .logro-icon { font-size: 28px; margin-right: 12px; }
+    .logro-title { font-weight: bold; font-size: 14px; color: #ffffff; }
+    .logro-desc { font-size: 11px; color: #8191aa; margin-top: 2px; }
 
     .spirit-info { text-align: left; }
     .spirit-name { font-weight: bold; font-size: 14px; }
@@ -279,7 +288,7 @@
     .rarity-mitico { color: #ff4757; }
     .rarity-especial { color: #2ed573; text-shadow: 0 0 8px #2ed573; }
 
-    .btn-buy {
+    .btn-buy, .btn-insignia {
       background: #ffd700;
       color: #000;
       border: none;
@@ -291,7 +300,7 @@
       font-size: 12px;
     }
 
-    .btn-buy:hover { background: #ffea70; }
+    .btn-buy:hover, .btn-insignia:hover { background: #ffea70; }
     .btn-owned { background: #2ed573; color: #000; cursor: default; }
 
     .btn-view-spirit {
@@ -320,50 +329,7 @@
     .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; }
     .alerta-error { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; font-weight: bold; }
 
-    /* ESTILOS DE LOGROS */
-    .logros-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 15px 0;
-      max-height: 380px;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-
-    .logro-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 12px;
-      border-radius: 12px;
-      text-align: left;
-    }
-
-    .logro-card.completado {
-      border-color: #ffd700;
-      background: rgba(255, 215, 0, 0.08);
-    }
-
-    .logro-icon { font-size: 28px; margin-right: 12px; }
-    .logro-title { font-weight: bold; font-size: 14px; color: #ffffff; }
-    .logro-desc { font-size: 11px; color: #8191aa; margin-top: 2px; }
-
-    .btn-insignia {
-      background: #f39c12;
-      color: #000;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 11px;
-      font-family: inherit;
-    }
-
-    /* ESTILOS DE LA PIXELRULETA */
+    /* RULETA */
     .roulette-wrapper {
       position: relative;
       width: 320px;
@@ -401,10 +367,7 @@
       box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
     }
 
-    .btn-spin:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
 
     #roulette-result {
       font-size: 16px;
@@ -530,13 +493,13 @@
 
   <script>
     // 1. GESTIÓN DE SESIÓN
-    const usuarioActivo = localStorage.getItem('pixelgames_session');
+    let usuarioActivo = localStorage.getItem('pixelgames_session');
     
     if (!usuarioActivo) {
-      window.location.href = 'index.html';
-    } else {
-      document.getElementById('user-display').innerText = `👤 Usuario: ${usuarioActivo}`;
+      usuarioActivo = 'Invitado';
+      localStorage.setItem('pixelgames_session', usuarioActivo);
     }
+    document.getElementById('user-display').innerText = `👤 Usuario: ${usuarioActivo}`;
 
     const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
     if (!usuarios[usuarioActivo]) {
@@ -570,8 +533,6 @@
       verificarLogrosAutomaticos();
     }
 
-    actualizarMonedasUI();
-
     function cambiarUsuario() {
       if (confirm(`¿Quieres cerrar la sesión de "${usuarioActivo}" y cambiar de usuario?`)) {
         localStorage.removeItem('pixelgames_session');
@@ -583,7 +544,7 @@
       window.location.href = 'guarderia.html';
     }
 
-    // 2. SISTEMA DE 20 LOGROS
+    // 2. SISTEMA DE LOGROS
     const listaLogros = [
       { id: 1, titulo: "Gran Acumulador", desc: "Tener más de 200.000 Pixelmonedas.", icono: "💰" },
       { id: 2, titulo: "Maestro del Laberinto", desc: "Conseguir pasarte Ultra Laberintos.", icono: "🧩" },
@@ -614,29 +575,17 @@
 
       if (!u.logrosObtenidos) u.logrosObtenidos = [];
 
-      // 1. Tener más de 200.000
       if (u.coins >= 200000 && !u.logrosObtenidos.includes(1)) u.logrosObtenidos.push(1);
-      // 2. Ultra laberintos
       if (u.progreso && u.progreso['juego5.html'] && u.progreso['juego5.html'].completado && !u.logrosObtenidos.includes(2)) u.logrosObtenidos.push(2);
-      // 3. Más de 20 espíritus
       if (u.espiritusComprados.length >= 20 && !u.logrosObtenidos.includes(3)) u.logrosObtenidos.push(3);
-      // 4. Tener 1 espíritu especial (IDs 146-150)
       if (u.espiritusComprados.some(id => id >= 146) && !u.logrosObtenidos.includes(4)) u.logrosObtenidos.push(4);
-      // 5. Primeras 1000
       if (u.coins >= 1000 && !u.logrosObtenidos.includes(5)) u.logrosObtenidos.push(5);
-      // 6. Millonario
       if (u.coins >= 1000000 && !u.logrosObtenidos.includes(6)) u.logrosObtenidos.push(6);
-      // 7. 50 espiritus
       if (u.espiritusComprados.length >= 50 && !u.logrosObtenidos.includes(7)) u.logrosObtenidos.push(7);
-      // 8. 100 espiritus
       if (u.espiritusComprados.length >= 100 && !u.logrosObtenidos.includes(8)) u.logrosObtenidos.push(8);
-      // 9. 150 espiritus
       if (u.espiritusComprados.length >= 150 && !u.logrosObtenidos.includes(9)) u.logrosObtenidos.push(9);
-      // 10. Giro ruleta
       if (u.ruletaUsada && !u.logrosObtenidos.includes(10)) u.logrosObtenidos.push(10);
-      // 16. Haina descubierto (ID 2)
       if (u.espiritusComprados.includes(2) && !u.logrosObtenidos.includes(16)) u.logrosObtenidos.push(16);
-      // 20. Campeón Pixel
       if (u.logrosObtenidos.length >= 15 && !u.logrosObtenidos.includes(20)) u.logrosObtenidos.push(20);
 
       localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
@@ -705,11 +654,9 @@
       const colorBase = completado ? '#ffd700' : '#4a5568';
       const colorBorde = completado ? '#f1c40f' : '#2d3748';
 
-      // Fondo escudo
       ctx.fillStyle = '#02050f';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Marco Medalla Pixelated
       ctx.fillStyle = colorBorde;
       ctx.fillRect(30, 20, 120, 140);
 
@@ -719,39 +666,39 @@
       ctx.fillStyle = '#0f172a';
       ctx.fillRect(50, 40, 80, 100);
 
-      // Icono central
       ctx.font = "46px Courier New";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(logro.icono, canvas.width / 2, canvas.height / 2);
     }
 
-    // LISTA DE JUEGOS
+    // 3. GENERACIÓN DE TARJETAS DE JUEGOS OPTIMIZADA
     const games = [
       { id: 1, name: "money up", icon: "🪙", file: "juego1.html", permiteGuardar: true },
-      { id: 2, name: "extrem 1", icon: "🌲", file: "juego2.html", permiteGuardar: true },
+      { id: 2, name: "batle", icon: "🌲", file: "juego2.html", permiteGuardar: true },
       { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html", permiteGuardar: true },
       { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html", permiteGuardar: true },
-      { id: 5, name: "Ultra Mazes.", icon: "🧩", file: "juego5.html", permiteGuardar: true },
+      { id: 5, name: "Ultra Labyrinths", icon: "🧩", file: "juego5.html", permiteGuardar: true },
       { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html", permiteGuardar: true },
-      { id: 7, name: "tic tac toe", icon: "🔴", file: "juego7.html", permiteGuardar: false },
-      { id: 8, name: "color snake", icon: "🍎", file: "juego8.html", permiteGuardar: false },
-      { id: 9, name: "gems mine", icon: "💎", file: "juego9.html", permiteGuardar: false },
-      { id: 10, name: "football board", icon: "⚽", file: "juego10.html", permiteGuardar: false },
-      { id: 11, name: "3D Chess game", icon: "♟️", file: "juego11.html", permiteGuardar: true },
+      { id: 7, name: "4 en raya", icon: "🔴", file: "juego7.html", permiteGuardar: false },
+      { id: 8, name: "serpiente de colores", icon: "💎", file: "juego8.html", permiteGuardar: false },
+      { id: 9, name: "money up 2", icon: "🍎", file: "juego9.html", permiteGuardar: false },
+      { id: 10, name: "Pizarra magnética", icon: "⚽", file: "juego10.html", permiteGuardar: false },
+      { id: 11, name: "Ajedrez en 3D", icon: "♟️", file: "juego11.html", permiteGuardar: true },
       { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html", permiteGuardar: true },
       { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html", permiteGuardar: false },
-      { id: 14, name: "Pixel Critic", icon: "⭐", file: "juego14.html", permiteGuardar: false }
+      { id: 14, name: "Pixel Critic", icon: "⭐", file: "juego14.html", permiteGuardar: false },
       { id: 15, name: "boss slayer D2", icon: "⚡", file: "juego15.html", permiteGuardar: false },
-      { id: 16, name: "X project", icon: "❓", file: "juego16.html", permiteGuardar: false },
-      { id: 17, name: "sliding puzzle.", icon: "🧩", file: "juego17.html", permiteGuardar: false }
+      { id: 16, name: "Proyecto X", icon: "❓", file: "juego16.html", permiteGuardar: false },
+      { id: 17, name: "puzle dezlizante", icon: "🧩", file: "juego17.html", permiteGuardar: false }
     ];
 
+    const gamesMap = new Map(games.map(g => [g.id, g]));
     const container = document.getElementById("games");
-    let juegoSeleccionado = null;
+    const fragment = document.createDocumentFragment();
 
-    for (let i = 1; i <= 1000; i++) {
-      const gameData = games.find(g => g.id === i);
+    for (let i = 1; i <= 100; i++) {
+      const gameData = gamesMap.get(i);
       const card = document.createElement("article");
 
       if (gameData) {
@@ -769,12 +716,14 @@
           <div class="badge">PRÓXIMAMENTE</div>
         `;
       }
-
-      container.appendChild(card);
+      fragment.appendChild(card);
     }
+    container.appendChild(fragment);
+
+    let juegoSeleccionado = null;
 
     function clickJuego(id) {
-      const g = games.find(item => item.id === id);
+      const g = gamesMap.get(id);
       if (!g) return;
 
       juegoSeleccionado = g;
@@ -819,7 +768,7 @@
       window.location.href = juegoSeleccionado.file;
     }
 
-    /* GENERADOR DE ESPÍRITUS */
+    // 4. GENERADOR DE ESPÍRITUS
     const raridades = [
       { nombre: 'comun', label: 'Común', precio: 4000, colorHex: '#a4b0be' },
       { nombre: 'raro', label: 'Raro', precio: 12000, colorHex: '#1e90ff' },
@@ -948,7 +897,6 @@
       renderListaEspiritus();
     }
 
-    /* VISOR EN CANVAS DIBUJO PROCEDIMENTAL */
     function verImagenEspiritu(id) {
       const esp = catalogoEspiritus.find(e => e.id === id);
       if (!esp) return;
@@ -1010,7 +958,7 @@
       ctx.fillRect(127, 75, 8, 8);
     }
 
-    /* PIXELRULETA */
+    // 5. RULETA
     const opcionesRuleta = [
       { text: "+1.000 🪙", type: "coins", val: 1000, color: "#1e90ff", bueno: false },
       { text: "Espíritu Común 👻", type: "spirit", val: "comun", color: "#a4b0be", bueno: false },
@@ -1224,6 +1172,1189 @@
       localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
       actualizarMonedasUI();
     }
+
+    // Inicializar interfaz
+    actualizarMonedasUI();
+  </script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIXEL GAMES - Menú Principal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    body {
+      background: radial-gradient(circle at center, #1a1f35 0%, #080b12 100%);
+      color: white;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 0;
+      position: relative;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 42px;
+      color: #00e5ff;
+      text-shadow: 0 0 15px #00e5ff;
+      letter-spacing: 3px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #8191aa;
+      font-size: 14px;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    /* BARRA SUPERIOR */
+    .user-bar {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .user-tag {
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid #00e5ff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #00e5ff;
+      font-weight: bold;
+    }
+
+    .coins-tag {
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid #ffd700;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #ffd700;
+      font-weight: bold;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .coins-tag:hover {
+      transform: scale(1.08);
+      background: rgba(255, 215, 0, 0.35);
+    }
+
+    .btn-ruleta {
+      background: linear-gradient(180deg, #ff007f, #99004d);
+      border: 1px solid #ff66cc;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 0 12px rgba(255, 0, 127, 0.5);
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .btn-ruleta:hover { transform: scale(1.08); filter: brightness(1.2); }
+
+    .btn-guarderia {
+      background: linear-gradient(180deg, #2ecc71, #27ae60);
+      border: 1px solid #2ecc71;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 0 12px rgba(46, 204, 113, 0.5);
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .btn-guarderia:hover { transform: scale(1.08); filter: brightness(1.2); }
+
+    .btn-logros {
+      background: linear-gradient(180deg, #f39c12, #d35400);
+      border: 1px solid #f1c40f;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 0 12px rgba(241, 196, 15, 0.5);
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .btn-logros:hover { transform: scale(1.08); filter: brightness(1.2); }
+
+    .btn-cambiar-usuario {
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid #e74c3c;
+      color: #ff6b6b;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .btn-cambiar-usuario:hover {
+      background: #e74c3c;
+      color: #ffffff;
+      transform: scale(1.05);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 16px;
+      padding: 25px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 220px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .card.available:hover {
+      transform: translateY(-5px);
+      border-color: #00e5ff;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+    }
+
+    .icon { font-size: 52px; margin-bottom: 10px; }
+    .name { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: #ffffff; }
+
+    .play {
+      display: inline-block;
+      padding: 10px 24px;
+      border-radius: 13px;
+      background: linear-gradient(180deg, #35a8ff, #1266e8);
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      box-shadow: 0 5px 0 #0844a0, 0 8px 18px rgba(0,100,255,.25);
+      transition: transform 0.1s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .play:hover { transform: scale(1.05); }
+    .locked { opacity: .68; border-color: rgba(255,255,255,0.05); }
+    .lock { font-size: 62px; margin-bottom: 13px; filter: drop-shadow(0 10px 5px rgba(0,0,0,.6)); }
+    .locked .name { color: #aab6cc; }
+    .badge {
+      font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #8191aa;
+      border: 1px solid rgba(255,255,255,.12); padding: 8px 13px; border-radius: 999px; background: rgba(0,0,0,.2);
+    }
+
+    /* MODALES */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(8, 11, 18, 0.92);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-card {
+      background: #0f172a;
+      border: 2px solid #00e5ff;
+      border-radius: 20px;
+      padding: 25px;
+      width: 92%;
+      max-width: 620px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+    }
+
+    .modal-card h2 { color: #00e5ff; font-size: 24px; margin-bottom: 5px; }
+
+    .nav-tienda {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0 10px;
+    }
+
+    .nav-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #aaa;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .nav-btn.active {
+      background: #ffd700;
+      color: #000;
+      border-color: #ffd700;
+    }
+
+    .spirit-list, .logros-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 10px 0;
+      max-height: 340px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .spirit-item, .logro-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logro-card.completado {
+      border-color: #ffd700;
+      background: rgba(255, 215, 0, 0.08);
+    }
+
+    .logro-icon { font-size: 28px; margin-right: 12px; }
+    .logro-title { font-weight: bold; font-size: 14px; color: #ffffff; }
+    .logro-desc { font-size: 11px; color: #8191aa; margin-top: 2px; }
+
+    .spirit-info { text-align: left; }
+    .spirit-name { font-weight: bold; font-size: 14px; }
+    
+    .rarity-comun { color: #a4b0be; }
+    .rarity-raro { color: #1e90ff; }
+    .rarity-epico { color: #a55eea; }
+    .rarity-legendario { color: #ffa502; }
+    .rarity-mitico { color: #ff4757; }
+    .rarity-especial { color: #2ed573; text-shadow: 0 0 8px #2ed573; }
+
+    .btn-buy, .btn-insignia {
+      background: #ffd700;
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    .btn-buy:hover, .btn-insignia:hover { background: #ffea70; }
+    .btn-owned { background: #2ed573; color: #000; cursor: default; }
+
+    .btn-view-spirit {
+      background: linear-gradient(180deg, #a55eea, #8854d0);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      box-shadow: 0 0 10px rgba(165, 94, 234, 0.4);
+      transition: transform 0.1s;
+    }
+
+    .btn-view-spirit:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+    .modal-btn {
+      width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: none;
+      font-size: 15px; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s;
+    }
+
+    .btn-continuar { background: #2ecc71; color: #080b12; }
+    .btn-nueva { background: #e67e22; color: #ffffff; }
+    .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; }
+    .alerta-error { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; font-weight: bold; }
+
+    /* RULETA */
+    .roulette-wrapper {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      margin: 15px auto;
+    }
+
+    #roulette-canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+    }
+
+    .roulette-pointer {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 24px solid #ffd700;
+      z-index: 10;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
+    }
+
+    .btn-spin {
+      background: linear-gradient(180deg, #ff007f, #b30059);
+      color: white;
+      font-size: 18px;
+      font-weight: 900;
+      border: 2px solid #ff66cc;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+    }
+
+    .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    #roulette-result {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffd700;
+      min-height: 24px;
+      margin-top: 5px;
+    }
+
+    #spirit-viewer-canvas, #insignia-canvas {
+      background: #02050f;
+      border-radius: 16px;
+      border: 2px solid #a55eea;
+      box-shadow: 0 0 20px rgba(165, 94, 234, 0.4);
+      margin: 15px auto;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>PIXEL GAMES</h1>
+    <div class="subtitle">ELIGE TU JUEGO</div>
+    <div class="user-bar">
+      <div class="user-tag" id="user-display">👤 Usuario: Invitado</div>
+      <div class="coins-tag" id="coins-display" onclick="abrirTiendaEspiritus()">🪙 0 Pixelmonedas</div>
+      <button class="btn-ruleta" onclick="abrirRuleta()">🎡 PIXELRULETA</button>
+      <button class="btn-guarderia" onclick="abrirGuarderia()">🏡 GUARDERÍA</button>
+      <button class="btn-logros" onclick="abrirModalLogros()">🏆 LOGROS</button>
+      <button class="btn-cambiar-usuario" onclick="cambiarUsuario()">🔄 CAMBIAR USUARIO</button>
+    </div>
+  </header>
+
+  <main class="grid" id="games"></main>
+
+  <!-- MODAL PARTIDA -->
+  <div class="modal-overlay" id="modal-partida">
+    <div class="modal-card">
+      <h2 id="modal-titulo-juego">NOMBRE JUEGO</h2>
+      <p style="color: #8191aa; font-size: 14px; margin-bottom: 20px;">¿Cómo deseas empezar tu partida?</p>
+
+      <button class="modal-btn btn-continuar" onclick="continuarPartida()">▶️ CONTINUAR PARTIDA</button>
+      <button class="modal-btn btn-nueva" onclick="nuevaPartida()">➕ NUEVA PARTIDA</button>
+      
+      <div class="alerta-error" id="alerta-sin-partida">❌ No tienes ninguna partida anterior guardada.</div>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL LOGROS -->
+  <div class="modal-overlay" id="modal-logros">
+    <div class="modal-card">
+      <h2 style="color: #f1c40f;">🏆 LOGROS DE JUGADOR</h2>
+      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-logros">Desbloquea insignias completando desafíos</p>
+
+      <div class="logros-grid" id="logros-container"></div>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarModalLogros()">Cerrar Ventana</button>
+    </div>
+  </div>
+
+  <!-- MODAL VISOR DE INSIGNIA -->
+  <div class="modal-overlay" id="modal-ver-insignia" style="z-index: 160;">
+    <div class="modal-card" style="max-width: 380px;">
+      <h2 id="insignia-title" style="color: #f1c40f;">NOMBRE INSIGNIA</h2>
+      <p id="insignia-status" style="font-size: 12px; margin-top: 4px; font-weight: bold;"></p>
+
+      <canvas id="insignia-canvas" width="180" height="180"></canvas>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarVisorInsignia()">Volver</button>
+    </div>
+  </div>
+
+  <!-- MODAL TIENDA Y COLECCIÓN -->
+  <div class="modal-overlay" id="modal-tienda">
+    <div class="modal-card">
+      <h2 style="color: #ffd700;">👻 TIENDA & COLECCIÓN DE ESPÍRITUS</h2>
+      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-coleccion">Colecciona los 150 espíritus de Pixel Games</p>
+
+      <div class="nav-tienda">
+        <button class="nav-btn active" id="btn-tab-tienda" onclick="cambiarTab('tienda')">🛒 COMPRAR ESPÍRITUS</button>
+        <button class="nav-btn" id="btn-tab-coleccion" onclick="cambiarTab('coleccion')">👻 MI COLECCIÓN</button>
+      </div>
+
+      <div class="spirit-list" id="spirit-list-container"></div>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarTiendaEspiritus()">Cerrar Ventana</button>
+    </div>
+  </div>
+
+  <!-- MODAL VER ESPÍRITU -->
+  <div class="modal-overlay" id="modal-ver-espiritu" style="z-index: 150;">
+    <div class="modal-card" style="max-width: 400px;">
+      <h2 id="spirit-view-title" style="color: #a55eea;">NOMBRE ESPÍRITU</h2>
+      <div id="spirit-view-rarity" style="font-weight: bold; font-size: 14px; margin-bottom: 10px;">RARIDAD</div>
+
+      <canvas id="spirit-viewer-canvas" width="220" height="220"></canvas>
+
+      <button class="modal-btn btn-cancelar" onclick="cerrarVisorEspiritu()">Cerrar Visor</button>
+    </div>
+  </div>
+
+  <!-- MODAL PIXELRULETA -->
+  <div class="modal-overlay" id="modal-ruleta">
+    <div class="modal-card" style="max-width: 440px;">
+      <h2 style="color: #ff007f;">🎡 PIXELRULETA</h2>
+      <p style="color: #8191aa; font-size: 12px;" id="roulette-subtitle">¡Prueba tu suerte en la Pixelruleta!</p>
+
+      <div class="roulette-wrapper">
+        <div class="roulette-pointer"></div>
+        <canvas id="roulette-canvas" width="320" height="320"></canvas>
+      </div>
+
+      <div id="roulette-result"></div>
+
+      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA!</button>
+      <button class="modal-btn btn-cancelar" onclick="cerrarRuleta()">Volver</button>
+    </div>
+  </div>
+
+  <script>
+    // 1. GESTIÓN DE SESIÓN
+    let usuarioActivo = localStorage.getItem('pixelgames_session');
+    
+    if (!usuarioActivo) {
+      usuarioActivo = 'Invitado';
+      localStorage.setItem('pixelgames_session', usuarioActivo);
+    }
+    document.getElementById('user-display').innerText = `👤 Usuario: ${usuarioActivo}`;
+
+    const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+    if (!usuarios[usuarioActivo]) {
+      usuarios[usuarioActivo] = { 
+        password: '', 
+        progreso: {}, 
+        coins: 0, 
+        espiritusComprados: [], 
+        ruletaUsada: false, 
+        bienvenidaRecibida: false,
+        logrosObtenidos: []
+      };
+    }
+
+    if (usuarios[usuarioActivo].coins === undefined) usuarios[usuarioActivo].coins = 0;
+    if (!usuarios[usuarioActivo].espiritusComprados) usuarios[usuarioActivo].espiritusComprados = [];
+    if (!usuarios[usuarioActivo].logrosObtenidos) usuarios[usuarioActivo].logrosObtenidos = [];
+
+    // BONO DE BIENVENIDA ÚNICO
+    if (!usuarios[usuarioActivo].bienvenidaRecibida) {
+      usuarios[usuarioActivo].coins += 5000;
+      usuarios[usuarioActivo].bienvenidaRecibida = true;
+      alert(`🎁 ¡Bienvenido a PIXEL GAMES, ${usuarioActivo}!\n\nSe te han acreditado 5.000 Pixelmonedas de regalo por tu primera sesión.`);
+    }
+
+    localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
+
+    function actualizarMonedasUI() {
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      document.getElementById('coins-display').innerText = `🪙 ${(u ? u.coins : 0).toLocaleString('es-ES')} Pixelmonedas`;
+      verificarLogrosAutomaticos();
+    }
+
+    function cambiarUsuario() {
+      if (confirm(`¿Quieres cerrar la sesión de "${usuarioActivo}" y cambiar de usuario?`)) {
+        localStorage.removeItem('pixelgames_session');
+        window.location.href = 'index.html';
+      }
+    }
+
+    function abrirGuarderia() {
+      window.location.href = 'guarderia.html';
+    }
+
+    // 2. SISTEMA DE LOGROS
+    const listaLogros = [
+      { id: 1, titulo: "Gran Acumulador", desc: "Tener más de 200.000 Pixelmonedas.", icono: "💰" },
+      { id: 2, titulo: "Maestro del Laberinto", desc: "Conseguir pasarte Ultra Laberintos.", icono: "🧩" },
+      { id: 3, titulo: "Coleccionista", desc: "Tener más de 20 espíritus.", icono: "👻" },
+      { id: 4, titulo: "Encuentro Divino", desc: "Tener 1 espíritu Especial.", icono: "🌟" },
+      { id: 5, titulo: "Primeros Pasos", desc: "Acumular tus primeras 1.000 Pixelmonedas.", icono: "🪙" },
+      { id: 6, titulo: "Millonario Pixel", desc: "Alcanzar 1.000.000 de Pixelmonedas.", icono: "💎" },
+      { id: 7, titulo: "Cazador de Espíritus", desc: "Tener 50 espíritus en tu colección.", icono: "🔮" },
+      { id: 8, titulo: "Maestro del Zoo", desc: "Coleccionar 100 espíritus.", icono: "🏛️" },
+      { id: 9, titulo: "Leyenda Suprema", desc: "Tener los 150 espíritus de Pixel Games.", icono: "👑" },
+      { id: 10, titulo: "Giro de Suerte", desc: "Girar la Pixelruleta por primera vez.", icono: "🎡" },
+      { id: 11, titulo: "Adicto a la Ruleta", desc: "Girar la Pixelruleta 10 veces.", icono: "🎰" },
+      { id: 12, titulo: "Comerciante Novato", desc: "Poner un espíritu en la Guardería.", icono: "🏡" },
+      { id: 13, titulo: "Magnate del Mercado", desc: "Realizar 5 transacciones en la Guardería.", icono: "🤝" },
+      { id: 14, titulo: "Toque Legendario", desc: "Conseguir un espíritu Legendario.", icono: "🦁" },
+      { id: 15, titulo: "Poder Mítico", desc: "Conseguir un espíritu Mítico.", icono: "🔥" },
+      { id: 16, titulo: "Haina Descubierto", desc: "Poseer al espíritu raro 'Haina'.", icono: "🐉" },
+      { id: 17, titulo: "Afortunado Supremo", desc: "Ganar el Gran Bote de 50.000 en la Ruleta.", icono: "🎉" },
+      { id: 18, titulo: "Explorador", desc: "Jugar a 5 juegos distintos.", icono: "🎮" },
+      { id: 19, titulo: "Veterano", desc: "Jugar a 10 juegos distintos.", icono: "🎖️" },
+      { id: 20, titulo: "Campeón Pixel", desc: "Desbloquear 15 logros.", icono: "🏆" }
+    ];
+
+    function verificarLogrosAutomaticos() {
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[usuarioActivo];
+      if (!u) return;
+
+      if (!u.logrosObtenidos) u.logrosObtenidos = [];
+
+      if (u.coins >= 200000 && !u.logrosObtenidos.includes(1)) u.logrosObtenidos.push(1);
+      if (u.progreso && u.progreso['juego5.html'] && u.progreso['juego5.html'].completado && !u.logrosObtenidos.includes(2)) u.logrosObtenidos.push(2);
+      if (u.espiritusComprados.length >= 20 && !u.logrosObtenidos.includes(3)) u.logrosObtenidos.push(3);
+      if (u.espiritusComprados.some(id => id >= 146) && !u.logrosObtenidos.includes(4)) u.logrosObtenidos.push(4);
+      if (u.coins >= 1000 && !u.logrosObtenidos.includes(5)) u.logrosObtenidos.push(5);
+      if (u.coins >= 1000000 && !u.logrosObtenidos.includes(6)) u.logrosObtenidos.push(6);
+      if (u.espiritusComprados.length >= 50 && !u.logrosObtenidos.includes(7)) u.logrosObtenidos.push(7);
+      if (u.espiritusComprados.length >= 100 && !u.logrosObtenidos.includes(8)) u.logrosObtenidos.push(8);
+      if (u.espiritusComprados.length >= 150 && !u.logrosObtenidos.includes(9)) u.logrosObtenidos.push(9);
+      if (u.ruletaUsada && !u.logrosObtenidos.includes(10)) u.logrosObtenidos.push(10);
+      if (u.espiritusComprados.includes(2) && !u.logrosObtenidos.includes(16)) u.logrosObtenidos.push(16);
+      if (u.logrosObtenidos.length >= 15 && !u.logrosObtenidos.includes(20)) u.logrosObtenidos.push(20);
+
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+    }
+
+    function abrirModalLogros() {
+      verificarLogrosAutomaticos();
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      const container = document.getElementById('logros-container');
+      const subtitulo = document.getElementById('subtitulo-logros');
+      container.innerHTML = '';
+
+      const completadosCount = u.logrosObtenidos ? u.logrosObtenidos.length : 0;
+      subtitulo.innerText = `Has completado ${completadosCount} de ${listaLogros.length} logros`;
+
+      listaLogros.forEach(logro => {
+        const completado = u.logrosObtenidos && u.logrosObtenidos.includes(logro.id);
+        const card = document.createElement('div');
+        card.className = `logro-card ${completado ? 'completado' : ''}`;
+
+        card.innerHTML = `
+          <div style="display:flex; align-items:center;">
+            <div class="logro-icon">${logro.icono}</div>
+            <div>
+              <div class="logro-title">${logro.titulo} ${completado ? '✅' : '🔒'}</div>
+              <div class="logro-desc">${logro.desc}</div>
+            </div>
+          </div>
+          <button class="btn-insignia" onclick="verInsigniaLogro(${logro.id})">🔍 INSIGNIA</button>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('modal-logros').style.display = 'flex';
+    }
+
+    function cerrarModalLogros() {
+      document.getElementById('modal-logros').style.display = 'none';
+    }
+
+    function verInsigniaLogro(id) {
+      const logro = listaLogros.find(l => l.id === id);
+      if (!logro) return;
+
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      const completado = u.logrosObtenidos && u.logrosObtenidos.includes(logro.id);
+
+      document.getElementById('insignia-title').innerText = logro.titulo.toUpperCase();
+      const statusEl = document.getElementById('insignia-status');
+      statusEl.innerText = completado ? "STATUS: ¡DESBLOQUEADO!" : "STATUS: BLOQUEADO";
+      statusEl.style.color = completado ? "#2ecc71" : "#e74c3c";
+
+      dibujarInsigniaPixel(logro, completado);
+      document.getElementById('modal-ver-insignia').style.display = 'flex';
+    }
+
+    function cerrarVisorInsignia() {
+      document.getElementById('modal-ver-insignia').style.display = 'none';
+    }
+
+    function dibujarInsigniaPixel(logro, completado) {
+      const canvas = document.getElementById('insignia-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const colorBase = completado ? '#ffd700' : '#4a5568';
+      const colorBorde = completado ? '#f1c40f' : '#2d3748';
+
+      ctx.fillStyle = '#02050f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = colorBorde;
+      ctx.fillRect(30, 20, 120, 140);
+
+      ctx.fillStyle = colorBase;
+      ctx.fillRect(40, 30, 100, 120);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(50, 40, 80, 100);
+
+      ctx.font = "46px Courier New";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(logro.icono, canvas.width / 2, canvas.height / 2);
+    }
+
+    // 3. GENERACIÓN DE TARJETAS DE JUEGOS OPTIMIZADA
+    const games = [
+      { id: 1, name: "money up", icon: "🪙", file: "juego1.html", permiteGuardar: true },
+      { id: 2, name: "batle", icon: "🌲", file: "juego2.html", permiteGuardar: true },
+      { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html", permiteGuardar: true },
+      { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html", permiteGuardar: true },
+      { id: 5, name: "Ultra Labyrinths", icon: "🧩", file: "juego5.html", permiteGuardar: true },
+      { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html", permiteGuardar: true },
+      { id: 7, name: "4 en raya", icon: "🔴", file: "juego7.html", permiteGuardar: false },
+      { id: 8, name: "serpiente de colores", icon: "💎", file: "juego8.html", permiteGuardar: false },
+      { id: 9, name: "money up 2", icon: "🍎", file: "juego9.html", permiteGuardar: false },
+      { id: 10, name: "Pizarra magnética", icon: "⚽", file: "juego10.html", permiteGuardar: false },
+      { id: 11, name: "Ajedrez en 3D", icon: "♟️", file: "juego11.html", permiteGuardar: true },
+      { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html", permiteGuardar: true },
+      { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html", permiteGuardar: false },
+      { id: 14, name: "Pixel Critic", icon: "⭐", file: "juego14.html", permiteGuardar: false },
+      { id: 15, name: "boss slayer D2", icon: "⚡", file: "juego15.html", permiteGuardar: false },
+      { id: 16, name: "Proyecto X", icon: "❓", file: "juego16.html", permiteGuardar: false },
+      { id: 17, name: "puzle dezlizante", icon: "🧩", file: "juego17.html", permiteGuardar: false }
+    ];
+
+    const gamesMap = new Map(games.map(g => [g.id, g]));
+    const container = document.getElementById("games");
+    const fragment = document.createDocumentFragment();
+
+    for (let i = 1; i <= 100; i++) {
+      const gameData = gamesMap.get(i);
+      const card = document.createElement("article");
+
+      if (gameData) {
+        card.className = "card available";
+        card.innerHTML = `
+          <div class="icon">${gameData.icon}</div>
+          <div class="name">${gameData.name}</div>
+          <button class="play" onclick="clickJuego(${gameData.id})">JUGAR</button>
+        `;
+      } else {
+        card.className = "card locked";
+        card.innerHTML = `
+          <div class="lock">🔒</div>
+          <div class="name">Juego ${i}</div>
+          <div class="badge">PRÓXIMAMENTE</div>
+        `;
+      }
+      fragment.appendChild(card);
+    }
+    container.appendChild(fragment);
+
+    let juegoSeleccionado = null;
+
+    function clickJuego(id) {
+      const g = gamesMap.get(id);
+      if (!g) return;
+
+      juegoSeleccionado = g;
+
+      if (!g.permiteGuardar) {
+        window.location.href = g.file;
+        return;
+      }
+
+      document.getElementById('modal-titulo-juego').innerText = g.name.toUpperCase();
+      document.getElementById('alerta-sin-partida').style.display = 'none';
+      document.getElementById('modal-partida').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-partida').style.display = 'none';
+      juegoSeleccionado = null;
+    }
+
+    function continuarPartida() {
+      if (!juegoSeleccionado) return;
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+
+      if (u && u.progreso && u.progreso[juegoSeleccionado.file]) {
+        localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'load');
+        window.location.href = juegoSeleccionado.file;
+      } else {
+        document.getElementById('alerta-sin-partida').style.display = 'block';
+      }
+    }
+
+    function nuevaPartida() {
+      if (!juegoSeleccionado) return;
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+
+      if (allUsers[usuarioActivo] && allUsers[usuarioActivo].progreso) {
+        delete allUsers[usuarioActivo].progreso[juegoSeleccionado.file];
+        localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      }
+
+      localStorage.setItem('pixelgames_action_' + juegoSeleccionado.file, 'new');
+      window.location.href = juegoSeleccionado.file;
+    }
+
+    // 4. GENERADOR DE ESPÍRITUS
+    const raridades = [
+      { nombre: 'comun', label: 'Común', precio: 4000, colorHex: '#a4b0be' },
+      { nombre: 'raro', label: 'Raro', precio: 12000, colorHex: '#1e90ff' },
+      { nombre: 'epico', label: 'Épico', precio: 35000, colorHex: '#a55eea' },
+      { nombre: 'legendario', label: 'Legendario', precio: 100000, colorHex: '#ffa502' },
+      { nombre: 'mitico', label: 'Mítico', precio: 350000, colorHex: '#ff4757' },
+      { nombre: 'especial', label: 'Especial', precio: 1000000, colorHex: '#2ed573' }
+    ];
+
+    const nombresNube = ["Tramposo", "Haina", "Sombra Carmesí", "Espectro Neón", "Fuego Fatuo", "Alma Helada", "Aura Dorada", "Centinela Pixel", "Rayo Azul", "Titán Galáctico", "Duende Rojo", "Orbe Oscuro", "Guardián Ancestral", "Espíritu Fénix", "Sombra Lunar", "Rayo Solar", "Caminante Estelar", "Señor Slime", "Espíritu Dragón", "Nube Mágica"];
+
+    const catalogoEspiritus = [];
+
+    for (let i = 1; i <= 150; i++) {
+      let rIdx = 0;
+      if (i > 40) rIdx = 1;
+      if (i > 80) rIdx = 2;
+      if (i > 110) rIdx = 3;
+      if (i > 135) rIdx = 4;
+      if (i > 145) rIdx = 5;
+
+      let nombreEspiritu = "";
+      if (i === 2) {
+        nombreEspiritu = "Haina";
+        rIdx = 1;
+      } else {
+        const baseNombre = nombresNube[(i - 1) % nombresNube.length];
+        nombreEspiritu = `${baseNombre} #${i}`;
+      }
+
+      const rObj = raridades[rIdx];
+      
+      catalogoEspiritus.push({
+        id: i,
+        nombre: nombreEspiritu,
+        raridadKey: rObj.nombre,
+        raridadLabel: rObj.label,
+        precio: rObj.precio,
+        colorHex: rObj.colorHex
+      });
+    }
+
+    let tabActual = 'tienda';
+
+    function abrirTiendaEspiritus() {
+      cambiarTab('tienda');
+      document.getElementById('modal-tienda').style.display = 'flex';
+    }
+
+    function cerrarTiendaEspiritus() {
+      document.getElementById('modal-tienda').style.display = 'none';
+    }
+
+    function cambiarTab(tab) {
+      tabActual = tab;
+      document.getElementById('btn-tab-tienda').classList.toggle('active', tab === 'tienda');
+      document.getElementById('btn-tab-coleccion').classList.toggle('active', tab === 'coleccion');
+      renderListaEspiritus();
+    }
+
+    function renderListaEspiritus() {
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      const listContainer = document.getElementById('spirit-list-container');
+      const subtitulo = document.getElementById('subtitulo-coleccion');
+      listContainer.innerHTML = '';
+
+      if (tabActual === 'tienda') {
+        subtitulo.innerText = "Compra espíritus con tus Pixelmonedas";
+        
+        catalogoEspiritus.forEach(esp => {
+          const poseido = u.espiritusComprados.includes(esp.id);
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'spirit-item';
+
+          itemDiv.innerHTML = `
+            <div class="spirit-info">
+              <div class="spirit-name">${esp.nombre}</div>
+              <div class="rarity-${esp.raridadKey}" style="font-size:12px; font-weight:bold;">${esp.raridadLabel}</div>
+            </div>
+            ${poseido 
+              ? `<button class="btn-buy btn-owned">DESBLOQUEADO</button>` 
+              : `<button class="btn-buy" onclick="comprarEspiritu(${esp.id}, ${esp.precio})">🪙 ${esp.precio.toLocaleString('es-ES')}</button>`}
+          `;
+          listContainer.appendChild(itemDiv);
+        });
+
+      } else {
+        const totalComprados = u.espiritusComprados.length;
+        subtitulo.innerText = `Has desbloqueado ${totalComprados} de 150 espíritus`;
+
+        if (totalComprados === 0) {
+          listContainer.innerHTML = `<p style="color:#aaa; font-size:14px; margin-top:20px;">Aún no tienes espíritus en tu colección. ¡Cómpralos en la tienda!</p>`;
+          return;
+        }
+
+        catalogoEspiritus.filter(esp => u.espiritusComprados.includes(esp.id)).forEach(esp => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'spirit-item';
+
+          itemDiv.innerHTML = `
+            <div class="spirit-info">
+              <div class="spirit-name">${esp.nombre}</div>
+              <div class="rarity-${esp.raridadKey}" style="font-size:12px; font-weight:bold;">${esp.raridadLabel}</div>
+            </div>
+            <button class="btn-view-spirit" onclick="verImagenEspiritu(${esp.id})">🔍 VER ESPÍRITU</button>
+          `;
+          listContainer.appendChild(itemDiv);
+        });
+      }
+    }
+
+    function comprarEspiritu(id, precio) {
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[usuarioActivo];
+
+      if (u.coins < precio) {
+        alert('❌ No tienes suficientes Pixelmonedas.');
+        return;
+      }
+
+      u.coins -= precio;
+      u.espiritusComprados.push(id);
+
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      actualizarMonedasUI();
+      renderListaEspiritus();
+    }
+
+    function verImagenEspiritu(id) {
+      const esp = catalogoEspiritus.find(e => e.id === id);
+      if (!esp) return;
+
+      document.getElementById('spirit-view-title').innerText = esp.nombre.toUpperCase();
+      document.getElementById('spirit-view-title').style.color = esp.colorHex;
+
+      const rarityEl = document.getElementById('spirit-view-rarity');
+      rarityEl.innerText = `Raridad: ${esp.raridadLabel}`;
+      rarityEl.className = `rarity-${esp.raridadKey}`;
+
+      dibujarArtePixelEspiritu(esp);
+      document.getElementById('modal-ver-espiritu').style.display = 'flex';
+    }
+
+    function cerrarVisorEspiritu() {
+      document.getElementById('modal-ver-espiritu').style.display = 'none';
+    }
+
+    function dibujarArtePixelEspiritu(esp) {
+      const canvas = document.getElementById('spirit-viewer-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const id = esp.id;
+      const r = (id * 67) % 255;
+      const g = (id * 131) % 255;
+      const b = (id * 199) % 255;
+      const secondaryColor = `rgb(${r}, ${g}, ${b})`;
+
+      const grad = ctx.createRadialGradient(110, 110, 10, 110, 110, 100);
+      grad.addColorStop(0, esp.colorHex);
+      grad.addColorStop(1, '#02050f');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 220, 220);
+
+      ctx.fillStyle = esp.colorHex;
+      ctx.shadowColor = esp.colorHex;
+      ctx.shadowBlur = 12;
+
+      ctx.fillRect(70, 50, 80, 80);
+      ctx.fillRect(60, 60, 100, 60);
+
+      ctx.fillStyle = secondaryColor;
+      ctx.fillRect(55, 30, 20, 30);
+      ctx.fillRect(145, 30, 20, 30);
+
+      ctx.fillStyle = esp.colorHex;
+      ctx.fillRect(80, 130, 60, 20);
+      ctx.fillRect(90, 150, 40, 20);
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(80, 70, 18, 18);
+      ctx.fillRect(122, 70, 18, 18);
+
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(85, 75, 8, 8);
+      ctx.fillRect(127, 75, 8, 8);
+    }
+
+    // 5. RULETA
+    const opcionesRuleta = [
+      { text: "+1.000 🪙", type: "coins", val: 1000, color: "#1e90ff", bueno: false },
+      { text: "Espíritu Común 👻", type: "spirit", val: "comun", color: "#a4b0be", bueno: false },
+      { text: "+2.500 🪙", type: "coins", val: 2500, color: "#2ed573", bueno: false },
+      { text: "¡Ouch! 0 🪙", type: "none", val: 0, color: "#57606f", bueno: false },
+      { text: "+5.000 🪙", type: "coins", val: 5000, color: "#1e90ff", bueno: false },
+      { text: "Espíritu Raro 💎", type: "spirit", val: "raro", color: "#70a1ff", bueno: false },
+      { text: "+10.000 🪙", type: "coins", val: 10000, color: "#2ed573", bueno: false },
+      { text: "Bomba -2.000 🪙", type: "coins", val: -2000, color: "#ff4757", bueno: false },
+      { text: "+15.000 🪙", type: "coins", val: 15000, color: "#ffa502", bueno: true },
+      { text: "Espíritu Épico 🔮", type: "spirit", val: "epico", color: "#a55eea", bueno: false },
+      { text: "+3.000 🪙", type: "coins", val: 3000, color: "#1e90ff", bueno: false },
+      { text: "Casino -5.000 🪙", type: "coins", val: -5000, color: "#ff4757", bueno: false },
+      { text: "+25.000 🪙", type: "coins", val: 25000, color: "#eccc68", bueno: true },
+      { text: "Espíritu Legendario 👑", type: "spirit", val: "legendario", color: "#ff7f50", bueno: true },
+      { text: "+8.000 🪙", type: "coins", val: 8000, color: "#2ed573", bueno: false },
+      { text: "Giro Extra 🎡", type: "extra", val: 0, color: "#ff6b81", bueno: false },
+      { text: "Espíritu Mítico 🔥", type: "spirit", val: "mitico", color: "#ff4757", bueno: true },
+      { text: "+2.000 🪙", type: "coins", val: 2000, color: "#1e90ff", bueno: false },
+      { text: "Gran Bote +50.000 🪙", type: "coins", val: 50000, color: "#ffd700", bueno: true },
+      { text: "Cofre Sorpresa 🎁", type: "coins", val: 12000, color: "#74b9ff", bueno: false }
+    ];
+
+    let currentAngle = 0;
+    let isSpinning = false;
+
+    function abrirRuleta() {
+      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
+      const spinBtn = document.getElementById('btn-spin-action');
+      const subtitulo = document.getElementById('roulette-subtitle');
+
+      if (u && !u.ruletaUsada) {
+        subtitulo.innerHTML = '🎁 ¡Tu <strong>primer giro es GRATIS</strong> y tiene premio bueno asegurado!';
+        spinBtn.innerText = '¡PRIMER GIRO GRATIS! 🎁';
+      } else {
+        subtitulo.innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
+        spinBtn.innerText = '¡GIRAR RULETA! (🪙 1.000)';
+      }
+
+      document.getElementById('modal-ruleta').style.display = 'flex';
+      document.getElementById('roulette-result').innerText = '';
+      dibujarRuleta();
+    }
+
+    function cerrarRuleta() {
+      if (isSpinning) return;
+      document.getElementById('modal-ruleta').style.display = 'none';
+    }
+
+    function dibujarRuleta() {
+      const canvas = document.getElementById('roulette-canvas');
+      const ctx = canvas.getContext('2d');
+      const numSlices = opcionesRuleta.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const radius = canvas.width / 2 - 5;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < numSlices; i++) {
+        const startA = currentAngle + i * sliceAngle;
+        const endA = startA + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startA, endA);
+        ctx.closePath();
+        ctx.fillStyle = opcionesRuleta[i].color;
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(startA + sliceAngle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 10px sans-serif";
+        ctx.shadowColor = "#000000";
+        ctx.shadowBlur = 4;
+        ctx.fillText(opcionesRuleta[i].text, radius - 12, 4);
+        ctx.restore();
+      }
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 22, 0, 2 * Math.PI);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    function girarRuleta() {
+      if (isSpinning) return;
+
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[usuarioActivo];
+      const esPrimerGiro = !u.ruletaUsada;
+
+      if (!esPrimerGiro) {
+        if (u.coins < 1000) {
+          document.getElementById('roulette-result').innerText = '❌ No tienes suficientes Pixelmonedas (necesitas 1.000).';
+          return;
+        }
+        u.coins -= 1000;
+        localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+        actualizarMonedasUI();
+      }
+
+      isSpinning = true;
+
+      const spinBtn = document.getElementById('btn-spin-action');
+      spinBtn.disabled = true;
+      document.getElementById('roulette-result').innerText = '🌀 Girando... ¡Mucha suerte!';
+
+      const numSlices = opcionesRuleta.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      let targetIndex;
+      if (esPrimerGiro) {
+        const indicesBuenos = opcionesRuleta.map((op, idx) => op.bueno ? idx : null).filter(val => val !== null);
+        targetIndex = indicesBuenos[Math.floor(Math.random() * indicesBuenos.length)];
+      } else {
+        targetIndex = Math.floor(Math.random() * numSlices);
+      }
+
+      const extraRotations = 5 + Math.floor(Math.random() * 3);
+      const angleForTarget = (1.5 * Math.PI) - (targetIndex * sliceAngle) - (sliceAngle / 2);
+      
+      let finalAngle = (currentAngle % (2 * Math.PI)) + angleForTarget;
+      while (finalAngle < currentAngle + extraRotations * 2 * Math.PI) {
+        finalAngle += 2 * Math.PI;
+      }
+
+      const totalRotation = finalAngle - currentAngle;
+      const duration = 4000;
+      const start = performance.now();
+      const initialAngle = currentAngle;
+
+      function animateSpin(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+
+        currentAngle = initialAngle + totalRotation * easeOut;
+        dibujarRuleta();
+
+        if (progress < 1) {
+          requestAnimationFrame(animateSpin);
+        } else {
+          isSpinning = false;
+          spinBtn.disabled = false;
+          evaluarResultadoRuleta(esPrimerGiro);
+        }
+      }
+
+      requestAnimationFrame(animateSpin);
+    }
+
+    function evaluarResultadoRuleta(esPrimerGiro) {
+      const numSlices = opcionesRuleta.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      let normalizedAngle = (1.5 * Math.PI - (currentAngle % (2 * Math.PI))) % (2 * Math.PI);
+      if (normalizedAngle < 0) normalizedAngle += 2 * Math.PI;
+
+      const index = Math.floor(normalizedAngle / sliceAngle) % numSlices;
+      const premio = opcionesRuleta[index];
+
+      const resEl = document.getElementById('roulette-result');
+      const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+      const u = allUsers[usuarioActivo];
+
+      if (esPrimerGiro) {
+        u.ruletaUsada = true;
+        document.getElementById('roulette-subtitle').innerHTML = '¡Cada giro cuesta <strong>🪙 1.000 Pixelmonedas</strong>!';
+        document.getElementById('btn-spin-action').innerText = '¡GIRAR RULETA! (🪙 1.000)';
+      }
+
+      if (premio.type === 'coins') {
+        u.coins = Math.max(0, u.coins + premio.val);
+        resEl.innerText = premio.val >= 0 
+          ? `🎉 ¡Genial! Has ganado ${premio.text}` 
+          : `💥 ${premio.text}`;
+        
+        if (premio.val === 50000 && !u.logrosObtenidos.includes(17)) {
+          u.logrosObtenidos.push(17);
+        }
+      } else if (premio.type === 'spirit') {
+        const disponibles = catalogoEspiritus.filter(e => e.raridadKey === premio.val && !u.espiritusComprados.includes(e.id));
+        if (disponibles.length > 0) {
+          const regalado = disponibles[Math.floor(Math.random() * disponibles.length)];
+          u.espiritusComprados.push(regalado.id);
+          resEl.innerText = `🎁 ¡Premio Especial! Has obtenido el espíritu "${regalado.nombre}"`;
+
+          if (regalado.raridadKey === 'legendario' && !u.logrosObtenidos.includes(14)) u.logrosObtenidos.push(14);
+          if (regalado.raridadKey === 'mitico' && !u.logrosObtenidos.includes(15)) u.logrosObtenidos.push(15);
+        } else {
+          u.coins += 5000;
+          resEl.innerText = `🎁 ¡Espíritu repetido! Te damos +5.000 Pixelmonedas en su lugar.`;
+        }
+      } else if (premio.type === 'extra') {
+        resEl.innerText = `🎉 ¡TIENES UN GIRO EXTRA! Vuelve a girar.`;
+      } else {
+        resEl.innerText = `😅 Mala suerte, esta vez te llevas 0 Pixelmonedas.`;
+      }
+
+      localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
+      actualizarMonedasUI();
+    }
+
+    // Inicializar interfaz
+    actualizarMonedasUI();
   </script>
 
 </body>
