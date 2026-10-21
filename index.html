@@ -3,139 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel Games - Iniciar Sesión</title>
+  <title>Tarjeta Galaxy Defender</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0b132b;
-      color: #ffffff;
+      background-color: #080b12;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
     }
 
-    .contenedor {
-      background: #1c2541;
-      padding: 30px;
-      border-radius: 15px;
-      border: 2px solid #5bc0be;
-      box-shadow: 0 0 25px rgba(91, 192, 190, 0.3);
-      width: 100%;
-      max-width: 400px;
+    /* TARJETA CON BORDE Y RESPLANDOR NEÓN FUSCIA / ROSA */
+    .card {
+      background: #0d1424;
+      border: 2px solid #ff007f;
+      border-radius: 20px;
+      padding: 30px 20px;
+      width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.7), inset 0 0 15px rgba(255, 0, 127, 0.2);
     }
 
-    h1 { color: #5bc0be; margin-bottom: 20px; font-size: 26px; }
-    
-    .campo { margin-bottom: 15px; text-align: left; }
-    .campo label { display: block; font-size: 13px; color: #a0aab8; margin-bottom: 5px; }
-    .campo input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #3a506b;
-      background: #0b132b;
-      color: #fff;
-      font-size: 15px;
+    /* ALIENÍGENA DIBUJADO PÍXEL A PÍXEL EN CSS */
+    .pixel-invader {
+      width: 5px;
+      height: 5px;
+      background: #a55eea;
+      margin-bottom: 25px;
+      box-shadow: 
+        /* Fila 1 */
+        15px 0 #a55eea, 25px 0 #a55eea,
+        /* Fila 2 */
+        20px 5px #a55eea,
+        /* Fila 3 */
+        10px 10px #a55eea, 15px 10px #a55eea, 20px 10px #a55eea, 25px 10px #a55eea, 30px 10px #a55eea,
+        /* Fila 4 */
+        5px 15px #a55eea, 10px 15px #a55eea, 20px 15px #a55eea, 30px 15px #a55eea, 35px 15px #a55eea,
+        /* Fila 5 */
+        0px 20px #a55eea, 5px 20px #a55eea, 10px 20px #a55eea, 15px 20px #a55eea, 20px 20px #a55eea, 25px 20px #a55eea, 30px 20px #a55eea, 35px 20px #a55eea, 40px 20px #a55eea,
+        /* Fila 6 */
+        0px 25px #a55eea, 10px 25px #a55eea, 30px 25px #a55eea, 40px 25px #a55eea,
+        /* Fila 7 */
+        0px 30px #a55eea, 15px 30px #a55eea, 25px 30px #a55eea, 40px 30px #a55eea,
+        /* Fila 8 */
+        20px 35px #a55eea,
+        /* Fila 9 */
+        15px 40px #a55eea, 25px 40px #a55eea;
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
+    /* TÍTULO DE JUEGO */
+    .title {
+      color: #ffffff;
+      font-size: 22px;
       font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-      background: #5bc0be;
-      color: #0b132b;
-      transition: all 0.2s;
+      margin-bottom: 25px;
+      line-height: 1.2;
     }
 
-    button:hover { background: #6fffe9; }
+    /* BOTÓN JUGAR 3D NEÓN */
+    .btn-jugar {
+      background: linear-gradient(180deg, #35a8ff 0%, #1266e8 100%);
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: bold;
+      font-size: 15px;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0844a0, 0 0 15px rgba(0, 100, 255, 0.6);
+      transition: transform 0.1s;
+    }
 
-    .alerta {
-      color: #e74c3c;
-      font-size: 12px;
-      margin-top: 5px;
-      display: none;
+    .btn-jugar:hover {
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
 
-  <div class="contenedor">
-    <h1>🎮 PIXEL GAMES</h1>
-    <p style="color:#a0aab8; font-size:14px; margin-bottom:20px;">Acceso de Usuario</p>
-
-    <div class="campo">
-      <label>Usuario:</label>
-      <input type="text" id="usuario-input" placeholder="Ej: Player1">
-    </div>
-
-    <div class="campo">
-      <label>Contraseña (1 Mayúscula, 1 Minúscula, 2 Números):</label>
-      <input type="password" id="pass-input" placeholder="Ej: P1xel2026">
-      <div class="alerta" id="alerta-pass">Requiere: 1 mayúscula, 1 minúscula y 2 números.</div>
-    </div>
-
-    <button onclick="iniciarSesion()">Entrar a Juegos</button>
+  <div class="card">
+    <div class="pixel-invader"></div>
+    <div class="title">Galaxy<br>Defender</div>
+    <button class="btn-jugar">JUGAR</button>
   </div>
 
-  <script>
-    function validarContrasena(pass) {
-      const tieneMayuscula = /[A-Z]/.test(pass);
-      const tieneMinuscula = /[a-z]/.test(pass);
-      const numeros = pass.match(/\d/g);
-      const tieneDosNumeros = numeros && numeros.length >= 2;
-      return tieneMayuscula && tieneMinuscula && tieneDosNumeros;
-    }
-
-    function iniciarSesion() {
-      const user = document.getElementById('usuario-input').value.trim();
-      const pass = document.getElementById('pass-input').value;
-      const alerta = document.getElementById('alerta-pass');
-
-      if (!user) {
-        alert("Escribe un nombre de usuario.");
-        return;
-      }
-
-      if (!validarContrasena(pass)) {
-        alerta.style.display = 'block';
-        return;
-      }
-
-      alerta.style.display = 'none';
-
-      const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-
-      if (usuarios[user]) {
-        if (usuarios[user].password !== pass) {
-          alert("Contraseña incorrecta.");
-          return;
-        }
-      } else {
-        usuarios[user] = {
-          password: pass,
-          progreso: {}
-        };
-        localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
-      }
-
-      localStorage.setItem('pixelgames_session', user);
-      window.location.href = 'juegos.html';
-    }
-
-    // Si ya inició sesión previamente, lo lleva directo
-    window.onload = () => {
-      if (localStorage.getItem('pixelgames_session')) {
-        window.location.href = 'juegos.html';
-      }
-    };
-  </script>
 </body>
 </html>
