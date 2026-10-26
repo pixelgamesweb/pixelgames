@@ -375,6 +375,18 @@
     <button class="btn-saludar-quick" style="background:transparent; color:#8191aa;" onclick="cerrarBanner()">Cerrar</button>
   </div>
 
+  <!-- MODAL SELECCIÓN DE PARTIDA -->
+  <div class="modal-overlay" id="modal-partida">
+    <div class="modal-card">
+      <h2 id="modal-titulo-juego">NOMBRE JUEGO</h2>
+      <p style="color: #8191aa; font-size: 14px; margin-bottom: 20px;">¿Cómo deseas empezar tu partida?</p>
+      <button class="modal-btn btn-continuar" onclick="continuarPartida()">▶️ CONTINUAR PARTIDA</button>
+      <button class="modal-btn btn-nueva" onclick="nuevaPartida()">➕ NUEVA PARTIDA</button>
+      <div class="alerta-error" id="alerta-sin-partida">❌ No tienes ninguna partida anterior guardada.</div>
+      <button class="modal-btn btn-cancelar" onclick="cerrarModalPartida()">Cancelar</button>
+    </div>
+  </div>
+
   <!-- MODAL PIXELRULETA (25 APARTADOS) -->
   <div class="modal-overlay" id="modal-ruleta">
     <div class="modal-card" style="max-width: 440px;">
@@ -563,9 +575,49 @@
     }
     container.appendChild(fragment);
 
+    // LÓGICA DE PARTIDA (NUEVA / CONTINUAR)
+    const juegosConModal = [1, 2, 3, 4, 5, 6, 11];
+    let juegoSeleccionado = null;
+
     function clickJuego(id) {
       const g = gamesMap.get(id);
-      if (g) window.location.href = g.file;
+      if (!g) return;
+
+      if (juegosConModal.includes(id)) {
+        juegoSeleccionado = g;
+        document.getElementById('modal-titulo-juego').innerText = g.name.toUpperCase();
+        document.getElementById('alerta-sin-partida').style.display = 'none';
+        document.getElementById('modal-partida').style.display = 'flex';
+      } else {
+        window.location.href = g.file;
+      }
+    }
+
+    function cerrarModalPartida() {
+      document.getElementById('modal-partida').style.display = 'none';
+    }
+
+    function nuevaPartida() {
+      if (juegoSeleccionado) {
+        localStorage.removeItem(`pixelgames_save_${usuarioActivo}_${juegoSeleccionado.id}`);
+        window.location.href = juegoSeleccionado.file + '?mode=new';
+      }
+    }
+
+    function continuarPartida() {
+      if (juegoSeleccionado) {
+        // Busca si existe una partida guardada previamente para este usuario y juego
+        const claveGuardado = `pixelgames_save_${usuarioActivo}_${juegoSeleccionado.id}`;
+        const partidaGuardada = localStorage.getItem(claveGuardado);
+
+        if (partidaGuardada) {
+          // Si existe, se inicia la partida guardada más reciente
+          window.location.href = juegoSeleccionado.file + '?mode=continue';
+        } else {
+          // Si no existe ninguna partida guardada previa, muestra el mensaje de error
+          document.getElementById('alerta-sin-partida').style.display = 'block';
+        }
+      }
     }
 
     function buscarJuego() {
@@ -864,7 +916,7 @@
       ctx.fillText(logro.icono, canvas.width / 2, canvas.height / 2);
     }
 
-    // 5. PIXELRULETA DE 25 APARTADOS CON ACTUALIZACIÓN EXACTA DE SUMA
+    // 5. PIXELRULETA DE 25 APARTADOS
     const opciones25Ruleta = [
       { text: "+1.000 🪙", val: 1000, color: "#1e90ff", bueno: false },
       { text: "+2.000 🪙", val: 2000, color: "#2ed573", bueno: false },
