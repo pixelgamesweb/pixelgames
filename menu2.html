@@ -1,1 +1,139 @@
-bfbdhvfbdbbbbbbbbbbbbbbbbbbbbbbbbbbbbbfhbbbbbbbbbbbvsjddddddjddddddddddddddddddddddddddfskl
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIXEL GAMES - Iniciar Sesión</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      /* Fondo difuminado de rojo a azul */
+      background: radial-gradient(circle at center, #8b0000 0%, #1a0033 50%, #00051a 100%);
+      color: white;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #00e5ff;
+      text-shadow: 0 0 15px #00e5ff, 0 0 30px rgba(0, 229, 255, 0.6);
+      letter-spacing: 3px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    /* CONTENEDOR PRINCIPAL DEL FORMULARIO */
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    /* CADA UNO DE LOS 3 ESPACIOS EN NEGRO CON BORDES DE NEÓN */
+    .black-box {
+      background-color: #000000;
+      border: 2px solid #ff007f;
+      border-radius: 16px;
+      padding: 16px 20px;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .box-label {
+      font-size: 13px;
+      color: #00e5ff;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .input-field {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 16px;
+      outline: none;
+      width: 100%;
+    }
+
+    .input-field::placeholder {
+      color: #555555;
+    }
+
+    /* 3er ESPACIO EN NEGRO: BOTÓN ENTRAR QUE REDIRIGE A MENUDEGAME.HTML */
+    .box-btn-entrar {
+      background-color: #000000;
+      border: 2px solid #2ecc71;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+      color: #2ecc71;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s, background-color 0.2s, color 0.2s;
+    }
+
+    .box-btn-entrar:hover {
+      transform: scale(1.03);
+      background-color: #2ecc71;
+      color: #000000;
+      box-shadow: 0 0 25px rgba(46, 204, 113, 0.8);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>PIXEL GAMES</h1>
+
+  <div class="login-container">
+    
+    <!-- 1er ESPACIO EN NEGRO: NOMBRE -->
+    <div class="black-box">
+      <label class="box-label">Nombre:</label>
+      <input type="text" class="input-field" id="input-nombre" placeholder="Escribe tu nombre..." autocomplete="off">
+    </div>
+
+    <!-- 2n ESPACIO EN NEGRO: CONTRASEÑA -->
+    <div class="black-box">
+      <label class="box-label">Contraseña:</label>
+      <input type="password" class="input-field" id="input-pass" placeholder="Escribe tu contraseña...">
+    </div>
+
+    <!-- 3r ESPACIO EN NEGRO: ENTRAR -->
+    <button class="box-btn-entrar" onclick="iniciarSesion()">ENTRAR</button>
+
+  </div>
+
+  <script>
+    function iniciarSesion() {
+      const nombre = document.getElementById('input-nombre').value.trim();
+      if (nombre !== '') {
+        localStorage.setItem('pixelgames_session', nombre);
+      }
+      // Redirige a menudegame.html
+      window.location.href = 'menudegame.html';
+    }
+  </script>
+
+</body>
+</html>
