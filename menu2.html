@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WAHC 2.0- Iniciar Sesión</title>
+  <title>PIXEL GAMES - Elegir Personaje</title>
   <style>
     * {
       box-sizing: border-box;
@@ -13,20 +13,19 @@
     }
 
     body {
-      /* Fondo difuminado de rojo a azul */
       background: radial-gradient(circle at center, #8b0000 0%, #1a0033 50%, #00051a 100%);
       color: white;
       font-family: 'Courier New', Courier, monospace;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 30px 20px 80px 20px;
+      position: relative;
     }
 
     h1 {
-      font-size: 36px;
+      font-size: 38px;
       color: #00e5ff;
       text-shadow: 0 0 15px #00e5ff, 0 0 30px rgba(0, 229, 255, 0.6);
       letter-spacing: 3px;
@@ -34,105 +33,277 @@
       text-align: center;
     }
 
-    /* CONTENEDOR PRINCIPAL DEL FORMULARIO */
-    .login-container {
-      display: flex;
-      flex-direction: column;
+    .grid-personajes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 20px;
       width: 100%;
-      max-width: 380px;
+      max-width: 1100px;
     }
 
-    /* CADA UNO DE LOS 3 ESPACIOS EN NEGRO CON BORDES DE NEÓN */
-    .black-box {
+    .card-personaje {
       background-color: #000000;
       border: 2px solid #ff007f;
       border-radius: 16px;
-      padding: 16px 20px;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+      padding: 20px 15px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
 
-    .box-label {
-      font-size: 13px;
-      color: #00e5ff;
-      font-weight: bold;
-      letter-spacing: 1px;
+    .card-personaje:hover {
+      transform: translateY(-5px);
+      border-color: #00e5ff;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
     }
 
-    .input-field {
-      background: transparent;
-      border: none;
-      color: #ffffff;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 16px;
-      outline: none;
-      width: 100%;
+    .card-personaje.seleccionado {
+      border-color: #2ecc71 !important;
+      box-shadow: 0 0 25px rgba(46, 204, 113, 0.8) !important;
     }
 
-    .input-field::placeholder {
-      color: #555555;
-    }
-
-    /* 3er ESPACIO EN NEGRO: BOTÓN ENTRAR QUE REDIRIGE A MENUDEGAME.HTML */
-    .box-btn-entrar {
-      background-color: #000000;
-      border: 2px solid #2ecc71;
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
-      color: #2ecc71;
-      font-family: 'Courier New', Courier, monospace;
+    .nombre-personaje {
       font-size: 18px;
       font-weight: bold;
-      text-align: center;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.2s, background-color 0.2s, color 0.2s;
+      color: #ffffff;
+      margin-bottom: 12px;
+      text-shadow: 0 0 8px rgba(255,255,255,0.4);
     }
 
-    .box-btn-entrar:hover {
-      transform: scale(1.03);
-      background-color: #2ecc71;
+    .visor-canvas {
+      background: #090d16;
+      border: 2px solid #333;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+
+    .btn-elegir {
+      background: linear-gradient(180deg, #35a8ff, #1266e8);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0844a0;
+      transition: transform 0.1s;
+    }
+
+    .btn-elegir:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #0844a0;
+    }
+
+    .badge-activo {
+      color: #2ecc71;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .btn-ajustes-flotante {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 55px;
+      height: 55px;
+      background: #000000;
+      border: 2px solid #00e5ff;
+      border-radius: 50%;
+      font-size: 26px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+      z-index: 99;
+      transition: transform 0.2s;
+    }
+
+    .btn-ajustes-flotante:hover {
+      transform: scale(1.1) rotate(30deg);
+    }
+
+    .menu-ajustes-container {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 25px;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      z-index: 100;
+    }
+
+    .menu-ajustes-box {
+      background: #000000;
+      border: 2px solid #ff007f;
+      border-radius: 16px;
+      padding: 15px;
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+    }
+
+    .btn-menu-opcion {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid #00e5ff;
+      color: #ffffff;
+      padding: 10px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-menu-opcion:hover {
+      background: #00e5ff;
       color: #000000;
-      box-shadow: 0 0 25px rgba(46, 204, 113, 0.8);
+    }
+
+    .btn-siguiente {
+      width: 100%;
+      background: linear-gradient(180deg, #2ecc71, #27ae60);
+      border: 1px solid #2ecc71;
+      color: white;
+      padding: 12px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+    }
+
+    .btn-siguiente:hover {
+      filter: brightness(1.2);
     }
   </style>
 </head>
 <body>
 
-  <h1>WACH2.0</h1>
+  <h1>ELEGIR PERSONAJE</h1>
 
-  <div class="login-container">
-    
-    <!-- 1er ESPACIO EN NEGRO: NOMBRE -->
-    <div class="black-box">
-      <label class="box-label">Nombre:</label>
-      <input type="text" class="input-field" id="input-nombre" placeholder="Escribe tu nombre..." autocomplete="off">
+  <main class="grid-personajes" id="contenedor-personajes"></main>
+
+  <button class="btn-ajustes-flotante" onclick="toggleMenuAjustes()" title="Ajustes">⚙️</button>
+
+  <div class="menu-ajustes-container" id="menu-ajustes">
+    <div class="menu-ajustes-box">
+      <button class="btn-menu-opcion" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+      <button class="btn-menu-opcion" onclick="toggleMenuAjustes()">VOLVER</button>
+      <button class="btn-menu-opcion" onclick="pausarJuego()">PAUSAR</button>
+      <a href="instrucciones.html" class="btn-menu-opcion">INSTRUCCIONES</a>
     </div>
 
-    <!-- 2n ESPACIO EN NEGRO: CONTRASEÑA -->
-    <div class="black-box">
-      <label class="box-label">Contraseña:</label>
-      <input type="password" class="input-field" id="input-pass" placeholder="Escribe tu contraseña...">
-    </div>
-
-    <!-- 3r ESPACIO EN NEGRO: ENTRAR -->
-    <button class="box-btn-entrar" onclick="iniciarSesion()">ENTRAR</button>
-
+    <!-- BOTÓN SIGUIENTE AHORA ABRE PERSONAJE.HTML -->
+    <a href="personaje.html" class="btn-siguiente">SIGUIENTE ▶</a>
   </div>
 
   <script>
-    function iniciarSesion() {
-      const nombre = document.getElementById('input-nombre').value.trim();
-      if (nombre !== '') {
-        localStorage.setItem('pixelgames_session', nombre);
-      }
-      // Redirige a menudegame.html
-      window.location.href = 'menudegame.html';
+    const personajes = [
+      { id: 1, nombre: "Rojo Neon", colorCamiseta: "#ff0055", detalle: "collar_oro", piel: "#f1c27d" },
+      { id: 2, nombre: "Azul Pixel", colorCamiseta: "#0088ff", detalle: "pulsera_cian", piel: "#ffdbac" },
+      { id: 3, nombre: "Verde Cyber", colorCamiseta: "#00ff66", detalle: "collar_plata", piel: "#e0ac69" },
+      { id: 4, nombre: "Amarillo Star", colorCamiseta: "#ffd700", detalle: "pulsera_roja", piel: "#f1c27d" },
+      { id: 5, nombre: "Morado Shadow", colorCamiseta: "#9b59b6", detalle: "collar_rubi", piel: "#8d5524" },
+      { id: 6, nombre: "Naranja Flare", colorCamiseta: "#e67e22", detalle: "pulsera_oro", piel: "#ffdbac" }
+    ];
+
+    let personajeSeleccionadoId = localStorage.getItem('pixelgames_personaje_id') || 1;
+
+    function renderizarPersonajes() {
+      const container = document.getElementById('contenedor-personajes');
+      container.innerHTML = '';
+
+      personajes.forEach(p => {
+        const esSeleccionado = (p.id == personajeSeleccionadoId);
+        const card = document.createElement('div');
+        card.className = `card-personaje ${esSeleccionado ? 'seleccionado' : ''}`;
+        
+        card.innerHTML = `
+          <div class="nombre-personaje">${p.nombre}</div>
+          <canvas class="visor-canvas" id="canvas-personaje-${p.id}" width="120" height="120"></canvas>
+          <button class="btn-elegir" onclick="seleccionarPersonaje(${p.id})">
+            ${esSeleccionado ? 'ELEGIDO' : 'ELEJIR'}
+          </button>
+          <div class="badge-activo" style="display: ${esSeleccionado ? 'block' : 'none'}">✓ EN USO</div>
+        `;
+        container.appendChild(card);
+
+        setTimeout(() => dibujarAvatar(p), 10);
+      });
     }
+
+    function dibujarAvatar(p) {
+      const canvas = document.getElementById(`canvas-personaje-${p.id}`);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = p.piel;
+      ctx.fillRect(40, 20, 40, 35);
+
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(48, 32, 6, 6);
+      ctx.fillRect(66, 32, 6, 6);
+
+      ctx.fillStyle = "#1a0033";
+      ctx.fillRect(36, 16, 48, 10);
+
+      ctx.fillStyle = p.colorCamiseta;
+      ctx.fillRect(30, 55, 60, 45);
+
+      ctx.fillStyle = p.piel;
+      ctx.fillRect(18, 55, 12, 35);
+      ctx.fillRect(90, 55, 12, 35);
+
+      if (p.detalle.startsWith('collar')) {
+        ctx.fillStyle = p.detalle === 'collar_oro' ? '#ffd700' : (p.detalle === 'collar_rubi' ? '#ff0055' : '#c0c0c0');
+        ctx.fillRect(46, 57, 28, 4);
+        ctx.fillRect(56, 61, 8, 6);
+      }
+
+      if (p.detalle.startsWith('pulsera')) {
+        ctx.fillStyle = p.detalle === 'pulsera_cian' ? '#00e5ff' : (p.detalle === 'pulsera_roja' ? '#ff0000' : '#ffd700');
+        ctx.fillRect(90, 75, 12, 5);
+      }
+    }
+
+    function seleccionarPersonaje(id) {
+      personajeSeleccionadoId = id;
+      localStorage.setItem('pixelgames_personaje_id', id);
+      renderizarPersonajes();
+    }
+
+    function toggleMenuAjustes() {
+      const menu = document.getElementById('menu-ajustes');
+      menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('pixelgames_session');
+      window.location.href = 'index.html';
+    }
+
+    function pausarJuego() {
+      alert("⏸️ Juego Pausado");
+    }
+
+    renderizarPersonajes();
   </script>
 
 </body>
