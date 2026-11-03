@@ -194,7 +194,7 @@
       100% { border-color: #ff007f; box-shadow: 0 0 20px #ff007f, inset 0 0 10px rgba(255, 0, 127, 0.3); }
     }
 
-    /* TARJETA DESTACADA GRANDE A ANCHO COMPLETO */
+    /* TARJETA DESTACADA GRANDE A ANCHO COMPLETO (WAHC2.0) */
     .card-featured {
       grid-column: 1 / -1;
       background: rgba(15, 23, 42, 0.95);
@@ -354,37 +354,6 @@
     .btn-spin { background: linear-gradient(180deg, #ff007f, #b30059); color: white; font-size: 16px; font-weight: 900; border: 2px solid #ff66cc; }
     .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
     #roulette-result { font-size: 14px; font-weight: bold; color: #ffd700; min-height: 24px; margin-top: 5px; }
-
-    /* TIENDA ESPÍRITUS */
-    .nav-tienda { display: flex; justify-content: center; gap: 10px; margin: 15px 0 10px; }
-    .nav-btn {
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
-      color: #aaa; padding: 10px 16px; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: inherit;
-    }
-    .nav-btn.active { background: #ffd700; color: #000; border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-    .spirit-list { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
-    .spirit-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-    .spirit-info { text-align: left; display: flex; align-items: center; gap: 10px; }
-    .spirit-emoji-display { font-size: 26px; }
-
-    .rarity-comun { color: #a4b0be; }
-    .rarity-raro { color: #1e90ff; }
-    .rarity-epico { color: #a55eea; }
-    .rarity-legendario { color: #ffa502; }
-    .rarity-especial { color: #2ed573; text-shadow: 0 0 8px #2ed573; }
-
-    .btn-buy, .btn-view-spirit { background: #ffd700; color: #000; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 12px; }
-    .btn-owned { background: #2ed573; color: #000; cursor: default; }
-
-    .logros-grid { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
-    .logro-card { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-    .logro-card.completado { border-color: #ffd700; background: rgba(255, 215, 0, 0.08); }
-
-    .friends-input-box { display: flex; gap: 8px; margin: 15px 0; }
-    .friends-input { flex: 1; background: #02050f; border: 1px solid #a55eea; padding: 10px; border-radius: 10px; color: #fff; font-family: inherit; outline: none; }
-    .friends-list-box { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
-    .friend-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; }
-    .select-frase { width: 100%; background: #02050f; color: #ffd700; border: 1px solid #ffd700; padding: 10px; border-radius: 10px; font-family: inherit; margin: 10px 0; outline: none; }
   </style>
 </head>
 
@@ -399,10 +368,7 @@
       <button class="btn-ruleta" onclick="abrirRuleta()">🎡 PIXELRULETA</button>
       <button class="btn-guarderia" onclick="abrirGuarderia()">🏡 GUARDERÍA</button>
       <a href="online server.html" class="btn-comunidad">🌐 COMUNIDAD</a>
-      
-      <!-- BOTÓN CREAR ABRIRÁ CREAR.HTML -->
       <a href="crear.html" class="btn-crear">✏️ CREAR</a>
-      
       <button class="btn-logros" onclick="abrirModalLogros()">🏆 LOGROS</button>
       <button class="btn-amigos" onclick="abrirModalAmigos()">👥 AMIGOS</button>
       <button class="btn-cambiar-usuario" onclick="cambiarUsuario()">🔄 CAMBIAR USUARIO</button>
@@ -415,31 +381,31 @@
   </header>
 
   <main class="grid" id="games">
-    <!-- TARJETA DESTACADA WAHJ2.0 -->
+    <!-- TARJETA DESTACADA WAHC2.0 (REDIRIGE A MENU.HTML) -->
     <article class="card-featured">
       <div>
         <span class="featured-badge">★ JUEGO DESTACADO ★</span>
         <h2 class="featured-title">WAHC2.0</h2>
-        <p class="featured-desc">Sobrevive en una vida cruel vigila con los traidores!</p>
+        <p class="featured-desc">Sobrevive juntando madera y manteniendo tu fuego encendido. ¡Resiste la aventura en la oscuridad!</p>
         <div class="featured-emojis">
-          <span class="emoji-pill" title="natural">🌲</span>
-          <span class="emoji-pill" title="mente">🪵</span>
-          <span class="emoji-pill" title="cruel">🪓</span>
-          <span class="emoji-pill" title="y">🧟</span>
-          <span class="emoji-pill" title="fiel">🏕️</span>
+          <span class="emoji-pill" title="Bosque">🌲</span>
+          <span class="emoji-pill" title="Madera">🪵</span>
+          <span class="emoji-pill" title="Hacha">🪓</span>
+          <span class="emoji-pill" title="Zombie">🧟</span>
+          <span class="emoji-pill" title="Refugio">🏕️</span>
         </div>
       </div>
       <div>
-        <a href="menú.html" class="play" style="background: linear-gradient(180deg, #2ecc71, #27ae60); box-shadow: 0 5px 0 #1e8449; font-size: 16px; padding: 14px 28px;">▶ ENTRAR AL JUEGO</a>
+        <a href="menu.html" class="play" style="background: linear-gradient(180deg, #2ecc71, #27ae60); box-shadow: 0 5px 0 #1e8449; font-size: 16px; padding: 14px 28px;">▶ ENTRAR AL JUEGO</a>
       </div>
     </article>
   </main>
 
-  <!-- MODAL PIXELRULETA CON GIRO FÍSICO ANIMADO -->
+  <!-- MODAL PIXELRULETA -->
   <div class="modal-overlay" id="modal-ruleta">
     <div class="modal-card" style="max-width: 440px;">
       <h2 style="color: #ff007f;">🎡 PIXELRULETA (25 PREMIOS)</h2>
-      <p style="color: #8191aa; font-size: 12px;" id="roulette-subtitle">¡Primer giro GRATIS!</p>
+      <p style="color: #8191aa; font-size: 12px;">¡Primer giro GRATIS!</p>
 
       <div class="roulette-wrapper">
         <div class="roulette-pointer"></div>
@@ -453,7 +419,7 @@
     </div>
   </div>
 
-  <!-- MODAL SELECCIÓN DE PARTIDA -->
+  <!-- MODAL PARTIDA -->
   <div class="modal-overlay" id="modal-partida">
     <div class="modal-card">
       <h2 id="modal-titulo-juego">NOMBRE JUEGO</h2>
@@ -465,47 +431,8 @@
     </div>
   </div>
 
-  <!-- MODAL TIENDA DE ESPÍRITUS -->
-  <div class="modal-overlay" id="modal-tienda">
-    <div class="modal-card">
-      <h2 style="color: #ffd700;">👻 TIENDA & COLECCIÓN DE ESPÍRITUS</h2>
-      <p style="color: #8191aa; font-size: 12px;" id="subtitulo-coleccion">Colecciona los 150 espíritus de Pixel Games</p>
-      <div class="nav-tienda">
-        <button class="nav-btn active" id="btn-tab-tienda" onclick="cambiarTab('tienda')">🛒 COMPRAR ESPÍRITUS</button>
-        <button class="nav-btn" id="btn-tab-coleccion" onclick="cambiarTab('coleccion')">👻 MI COLECCIÓN</button>
-      </div>
-      <div class="spirit-list" id="spirit-list-container"></div>
-      <button class="modal-btn btn-cancelar" onclick="cerrarTiendaEspiritus()">Cerrar Ventana</button>
-    </div>
-  </div>
-
-  <!-- MODAL LOGROS -->
-  <div class="modal-overlay" id="modal-logros">
-    <div class="modal-card">
-      <h2 style="color: #f1c40f;">🏆 20 LOGROS DE JUGADOR</h2>
-      <p style="color: #8191aa; font-size: 12px;">Desbloquea insignias completando desafíos</p>
-      <div class="logros-grid" id="logros-container"></div>
-      <button class="modal-btn btn-cancelar" onclick="cerrarModalLogros()">Cerrar Ventana</button>
-    </div>
-  </div>
-
-  <!-- MODAL AMIGOS -->
-  <div class="modal-overlay" id="modal-amigos">
-    <div class="modal-card">
-      <h2 style="color: #a55eea;">👥 SISTEMA DE AMIGOS</h2>
-      <p style="color: #8191aa; font-size: 12px;">Agrega amigos por su nombre de usuario en Pixel Games</p>
-      <div class="friends-input-box">
-        <input type="text" id="input-friend-name" class="friends-input" placeholder="Escribe el nombre de tu amigo...">
-        <button class="btn-buscar" style="background:#a55eea; color:#fff;" onclick="enviarSolicitudAmistad()">➕ ENVIAR</button>
-      </div>
-      <div style="font-weight: bold; font-size: 13px; margin: 10px 0; text-align: left; color:#00e5ff;">MIS AMIGOS:</div>
-      <div class="friends-list-box" id="friends-list-container"></div>
-      <button class="modal-btn btn-cancelar" onclick="cerrarModalAmigos()">Cerrar Ventana</button>
-    </div>
-  </div>
-
   <script>
-    // 1. SESIÓN Y USUARIOS
+    // SESIÓN Y MONEDAS
     let usuarioActivo = localStorage.getItem('pixelgames_session');
     if (!usuarioActivo) {
       usuarioActivo = 'polmega_95';
@@ -542,7 +469,7 @@
 
     function abrirGuarderia() { window.location.href = 'guarderia.html'; }
 
-    // 2. REJILLA DE JUEGOS
+    // CATÁLOGO DE MINIJUEGOS
     const games = [
       { id: 1, name: "money up", icon: "🪙", file: "juego1.html" },
       { id: 2, name: "extrem 1", icon: "🌲", file: "juego2.html" },
@@ -620,13 +547,8 @@
       }
     }
 
-    // 3. RULETA CON 25 PREMIOS Y ANIMACIÓN FÍSICA EN CANVAS
-    const premiosRuleta = [
-      100, 500, 200, 1000, 50, 300, 1500, 250, 800, 100,
-      2000, 400, 600, 100, 5000, 300, 750, 120, 900, 450,
-      2500, 150, 350, 700, 10000
-    ];
-
+    // PIXELRULETA ANIMADA
+    const premiosRuleta = [100, 500, 200, 1000, 50, 300, 1500, 250, 800, 100, 2000, 400, 600, 100, 5000, 300, 750, 120, 900, 450, 2500, 150, 350, 700, 10000];
     let currentAngle = 0;
     let isSpinning = false;
 
@@ -725,15 +647,6 @@
 
       requestAnimationFrame(animate);
     }
-
-    // TIENDA, LOGROS Y AMIGOS
-    function abrirTiendaEspiritus() { document.getElementById('modal-tienda').style.display = 'flex'; }
-    function cerrarTiendaEspiritus() { document.getElementById('modal-tienda').style.display = 'none'; }
-    function abrirModalLogros() { document.getElementById('modal-logros').style.display = 'flex'; }
-    function cerrarModalLogros() { document.getElementById('modal-logros').style.display = 'none'; }
-    function abrirModalAmigos() { document.getElementById('modal-amigos').style.display = 'flex'; }
-    function cerrarModalAmigos() { document.getElementById('modal-amigos').style.display = 'none'; }
-    function cambiarTab(t) {}
   </script>
 </body>
 </html>
