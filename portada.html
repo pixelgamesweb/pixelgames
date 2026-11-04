@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>joc - Elegir Personaje</title>
+  <title>WAHC2.0 - Elegir Personaje</title>
   <style>
     * {
       box-sizing: border-box;
@@ -13,6 +13,7 @@
     }
 
     body {
+      /* Fondo difuminado de rojo a azul */
       background: radial-gradient(circle at center, #8b0000 0%, #1a0033 50%, #00051a 100%);
       color: white;
       font-family: 'Courier New', Courier, monospace;
@@ -24,6 +25,7 @@
       position: relative;
     }
 
+    /* TÍTULO PRINCIPAL */
     h1 {
       font-size: 38px;
       color: #00e5ff;
@@ -33,6 +35,7 @@
       text-align: center;
     }
 
+    /* REJILLA DE PERSONAJES (CUADRADOS NEGROS NEÓN) */
     .grid-personajes {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -72,6 +75,7 @@
       text-shadow: 0 0 8px rgba(255,255,255,0.4);
     }
 
+    /* VISOR CANVAS PIXELADO */
     .visor-canvas {
       background: #090d16;
       border: 2px solid #333;
@@ -106,6 +110,7 @@
       display: none;
     }
 
+    /* BOTÓN FLOTANTE DE AJUSTES (ABAJO A LA DERECHA) */
     .btn-ajustes-flotante {
       position: fixed;
       bottom: 25px;
@@ -129,6 +134,7 @@
       transform: scale(1.1) rotate(30deg);
     }
 
+    /* MINI MENÚ FLOTANTE DE AJUSTES */
     .menu-ajustes-container {
       display: none;
       position: fixed;
@@ -172,6 +178,7 @@
       color: #000000;
     }
 
+    /* BOTÓN SIGUIENTE ABAJO DEL MENÚ */
     .btn-siguiente {
       width: 100%;
       background: linear-gradient(180deg, #2ecc71, #27ae60);
@@ -197,10 +204,13 @@
 
   <h1>ELEGIR PERSONAJE</h1>
 
+  <!-- REJILLA DE PERSONAJES -->
   <main class="grid-personajes" id="contenedor-personajes"></main>
 
+  <!-- BOTÓN FLOTANTE DE AJUSTES -->
   <button class="btn-ajustes-flotante" onclick="toggleMenuAjustes()" title="Ajustes">⚙️</button>
 
+  <!-- MINI MENÚ FLOTANTE -->
   <div class="menu-ajustes-container" id="menu-ajustes">
     <div class="menu-ajustes-box">
       <button class="btn-menu-opcion" onclick="cerrarSesion()">CERRAR SESIÓN</button>
@@ -209,11 +219,12 @@
       <a href="instrucciones.html" class="btn-menu-opcion">INSTRUCCIONES</a>
     </div>
 
-    <!-- BOTÓN SIGUIENTE AHORA ABRE PERSONAJE.HTML -->
-    <a href="personaje.html" class="btn-siguiente">SIGUIENTE ▶</a>
+    <!-- BOTÓN SIGUIENTE ABAJO DEL MENÚ -->
+    <a href="menudegame.html" class="btn-siguiente">SIGUIENTE ▶</a>
   </div>
 
   <script>
+    // LISTA DE PERSONAJES CON DETALLES ÚNICOS
     const personajes = [
       { id: 1, nombre: "Rojo Neon", colorCamiseta: "#ff0055", detalle: "collar_oro", piel: "#f1c27d" },
       { id: 2, nombre: "Azul Pixel", colorCamiseta: "#0088ff", detalle: "pulsera_cian", piel: "#ffdbac" },
@@ -244,51 +255,61 @@
         `;
         container.appendChild(card);
 
+        // Dibujar el avatar en el Canvas del visor
         setTimeout(() => dibujarAvatar(p), 10);
       });
     }
 
+    // DIBUJA EL PERSONAJE EN PIXEL ART CON DETALLES DE CAMISETA Y ACCESORIOS
     function dibujarAvatar(p) {
       const canvas = document.getElementById(`canvas-personaje-${p.id}`);
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Cabeza
       ctx.fillStyle = p.piel;
       ctx.fillRect(40, 20, 40, 35);
 
+      // Ojos
       ctx.fillStyle = "#000000";
       ctx.fillRect(48, 32, 6, 6);
       ctx.fillRect(66, 32, 6, 6);
 
+      // Pelo
       ctx.fillStyle = "#1a0033";
       ctx.fillRect(36, 16, 48, 10);
 
+      // Camiseta (Color personalizado)
       ctx.fillStyle = p.colorCamiseta;
       ctx.fillRect(30, 55, 60, 45);
 
+      // Brazos
       ctx.fillStyle = p.piel;
-      ctx.fillRect(18, 55, 12, 35);
-      ctx.fillRect(90, 55, 12, 35);
+      ctx.fillRect(18, 55, 12, 35); // Brazo izq
+      ctx.fillRect(90, 55, 12, 35); // Brazo der
 
+      // DETALLES: COLLARES O PULSERAS
       if (p.detalle.startsWith('collar')) {
         ctx.fillStyle = p.detalle === 'collar_oro' ? '#ffd700' : (p.detalle === 'collar_rubi' ? '#ff0055' : '#c0c0c0');
         ctx.fillRect(46, 57, 28, 4);
-        ctx.fillRect(56, 61, 8, 6);
+        ctx.fillRect(56, 61, 8, 6); // Colgante
       }
 
       if (p.detalle.startsWith('pulsera')) {
         ctx.fillStyle = p.detalle === 'pulsera_cian' ? '#00e5ff' : (p.detalle === 'pulsera_roja' ? '#ff0000' : '#ffd700');
-        ctx.fillRect(90, 75, 12, 5);
+        ctx.fillRect(90, 75, 12, 5); // Pulsera en brazo derecho
       }
     }
 
+    // SELECCIONAR Y GUARDAR EN LOCALSTORAGE
     function seleccionarPersonaje(id) {
       personajeSeleccionadoId = id;
       localStorage.setItem('pixelgames_personaje_id', id);
       renderizarPersonajes();
     }
 
+    // MENÚ FLOTANTE DE AJUSTES
     function toggleMenuAjustes() {
       const menu = document.getElementById('menu-ajustes');
       menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
@@ -303,6 +324,7 @@
       alert("⏸️ Juego Pausado");
     }
 
+    // Inicializar al cargar
     renderizarPersonajes();
   </script>
 
