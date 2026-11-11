@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Fútbol 3D - 1 contra 1</title>
+<title>Fútbol 3D - 1 contra 1 (Cámara 360°)</title>
 <style>
 *{box-sizing:border-box;user-select:none;-webkit-user-select:none}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07100a;font-family:Arial,sans-serif}
-#game{position:fixed;inset:0}
+#game{position:fixed;inset:0;touch-action:none}
 button{border:1px solid #ffffff25;border-radius:14px;background:#050505;color:#62aaff;font-weight:bold;padding:13px;cursor:pointer}
 #menu,#onlineMenu,#pause{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 20% 20%,#168bff55,transparent 30%),radial-gradient(circle at 80% 80%,#39ff8b33,transparent 30%),#05070b}
 #onlineMenu,#pause{display:none}
@@ -26,6 +26,8 @@ h1{text-align:center;font-size:clamp(42px,9vw,75px);margin:0}
 #knob{position:absolute;left:41px;top:41px;width:58px;height:58px;border-radius:50%;background:#111}
 #actions{position:absolute;right:15px;bottom:0;display:grid;grid-template-columns:82px 82px;gap:8px;pointer-events:auto}
 #actions button{height:62px;padding:4px;font-size:10px}
+#steal{background:#e74c3c;color:white}
+#steal:disabled{opacity:0.35;filter:grayscale(1)}
 #countdown{display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;color:white;font-size:clamp(90px,20vw,180px);font-weight:900;text-shadow:0 8px 30px #000;pointer-events:none}
 #goal{display:none;position:fixed;z-index:51;top:105px;left:50%;transform:translateX(-50%);padding:10px 28px;border-radius:18px;background:#ffd400;color:#111;font-size:clamp(30px,7vw,64px);font-weight:900}
 .code{width:100%;padding:16px;border-radius:14px;border:1px solid #ffffff25;background:#10131b;color:white;font-size:24px;text-align:center;letter-spacing:6px}
@@ -74,23 +76,47 @@ h1{text-align:center;font-size:clamp(42px,9vw,75px);margin:0}
 <div id="joystick"><div id="knob"></div></div>
 <div id="actions">
 <button id="shoot">TIRAR</button><button id="sprint">SPRINT</button>
+<button id="steal" style="grid-column: span 2;">ROBAR</button>
 </div>
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+<!-- Import Map para resolver las importaciones de Three.js -->
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+</script>
+
 <script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x07120b);
 scene.fog=new THREE.Fog(0x07120b,80,350);
+
 const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,1000);
 camera.position.set(0,12,18);
+
 const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.shadowMap.enabled=true;
 document.getElementById("game").appendChild(renderer.domElement);
+
+// CONTROLES DE CÁMARA 360°
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.maxPolarAngle = Math.PI / 2 - 0.02; // No traspasar el suelo
+controls.minDistance = 5;
+controls.maxDistance = 55;
+
 scene.add(new THREE.HemisphereLight(0xcfe7ff,0x142719,1.8));
 const light=new THREE.DirectionalLight(0xffffff,2.5);light.position.set(-50,100,40);light.castShadow=true;scene.add(light);
 
@@ -108,14 +134,72 @@ function goal(z){
 }
 goal(-L/2);goal(L/2);
 
-function makePlayer(color){
+function makePlayer(color, numberText){
  const g=new THREE.Group();
  const body=new THREE.Mesh(new THREE.CapsuleGeometry(.42,1,8,12),new THREE.MeshStandardMaterial({color}));
  body.position.y=1.35;body.castShadow=true;g.add(body);
  const head=new THREE.Mesh(new THREE.SphereGeometry(.38,16,12),new THREE.MeshStandardMaterial({color:0xd69a73}));
- head.position.y=2.35;g.add(head);return g;
+ head.position.y=2.35;g.add(head);
+
+ // --- AÑADIR BRAZOS EN 3D ---
+ const armMat = new THREE.MeshStandardMaterial({color});
+ const leftArm = new THREE.Mesh(new THREE.CapsuleGeometry(.14, .7, 6, 8), armMat);
+ leftArm.position.set(-0.55, 1.4, 0);
+ leftArm.rotation.z = Math.PI / 12;
+ leftArm.castShadow = true;
+ g.add(leftArm);
+
+ const rightArm = new THREE.Mesh(new THREE.CapsuleGeometry(.14, .7, 6, 8), armMat);
+ rightArm.position.set(0.55, 1.4, 0);
+ rightArm.rotation.z = -Math.PI / 12;
+ rightArm.castShadow = true;
+ g.add(rightArm);
+
+ // --- AÑADIR PIERNAS EN 3D ---
+ const legMat = new THREE.MeshStandardMaterial({color: 0x111111});
+ const leftLeg = new THREE.Mesh(new THREE.CapsuleGeometry(.16, .7, 6, 8), legMat);
+ leftLeg.position.set(-0.25, 0.45, 0);
+ leftLeg.castShadow = true;
+ g.add(leftLeg);
+
+ const rightLeg = new THREE.Mesh(new THREE.CapsuleGeometry(.16, .7, 6, 8), legMat);
+ rightLeg.position.set(0.25, 0.45, 0);
+ rightLeg.castShadow = true;
+ g.add(rightLeg);
+
+ // Guardar referencias para animación
+ g.userData.leftLeg = leftLeg;
+ g.userData.rightLeg = rightLeg;
+ g.userData.leftArm = leftArm;
+ g.userData.rightArm = rightArm;
+
+ // --- NÚMERO DE CAMISETA EN TEXTURA / CANVAS ---
+ const canvas = document.createElement('canvas');
+ canvas.width = 128; canvas.height = 128;
+ const ctx = canvas.getContext('2d');
+ ctx.fillStyle = '#ffffff';
+ ctx.font = 'bold 80px Arial';
+ ctx.textAlign = 'center';
+ ctx.textBaseline = 'middle';
+ ctx.fillText(numberText, 64, 64);
+ 
+ const numberTex = new THREE.CanvasTexture(canvas);
+ const numberMat = new THREE.MeshBasicMaterial({map: numberTex, transparent: true});
+
+ // Dorsal Espalda
+ const backNumber = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.5), numberMat);
+ backNumber.position.set(0, 1.45, 0.44);
+ backNumber.rotation.y = Math.PI;
+ g.add(backNumber);
+
+ // Dorsal Pecho
+ const frontNumber = new THREE.Mesh(new THREE.PlaneGeometry(0.35, 0.35), numberMat);
+ frontNumber.position.set(0, 1.5, -0.44);
+ g.add(frontNumber);
+
+ return g;
 }
-const me=makePlayer(0x2878e8),enemy=makePlayer(0xf2c230);
+const me=makePlayer(0x2878e8, "10"),enemy=makePlayer(0xf2c230, "7");
 me.position.set(0,0,22);enemy.position.set(0,0,-22);scene.add(me,enemy);
 const ball=new THREE.Mesh(new THREE.SphereGeometry(.55,24,16),new THREE.MeshStandardMaterial({color:0xffffff}));
 ball.position.set(0,.55,0);ball.castShadow=true;scene.add(ball);
@@ -169,8 +253,49 @@ document.getElementById("saveButton").onclick = saveGame;
 
 function clamp(p){p.x=THREE.MathUtils.clamp(p.x,-W/2+1,W/2-1);p.z=THREE.MathUtils.clamp(p.z,-L/2+1,L/2-1)}
 function move(p,i,s,d){
- let z=(i.w?1:0)-(i.s?1:0),x=(i.d?1:0)-(i.a?1:0);
- if(x||z){const n=Math.hypot(x,z);x/=n;z/=n;p.position.x+=x*s*d;p.position.z+=z*s*d;p.rotation.y=Math.atan2(x,z)}
+ // --- CORRECCIÓN DE DIRECCIÓN RELATIVA A LA CÁMARA (NO INVERTIDA) ---
+ let inputZ = (i.s?1:0) - (i.w?1:0); // Hacia adelante (W) es -Z en espacio local de cámara
+ let inputX = (i.d?1:0) - (i.a?1:0);
+
+ if(inputX || inputZ){
+  const n = Math.hypot(inputX, inputZ);
+  inputX /= n;
+  inputZ /= n;
+
+  // Obtener la dirección horizontal de la cámara
+  const camDir = new THREE.Vector3();
+  camera.getWorldDirection(camDir);
+  camDir.y = 0;
+  camDir.normalize();
+
+  const camRight = new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0), camDir).normalize();
+
+  // Movimiento corregido
+  const moveDir = new THREE.Vector3()
+    .addScaledVector(camDir, inputZ)
+    .addScaledVector(camRight, inputX);
+
+  p.position.x += moveDir.x * s * d;
+  p.position.z += moveDir.z * s * d;
+  p.rotation.y = Math.atan2(moveDir.x, moveDir.z);
+
+  // Animación de piernas y brazos al correr
+  const walkCycle = Math.sin(performance.now() * 0.012 * (s > 8 ? 1.5 : 1.0));
+  if(p.userData.leftLeg) {
+    p.userData.leftLeg.rotation.x = walkCycle * 0.6;
+    p.userData.rightLeg.rotation.x = -walkCycle * 0.6;
+    p.userData.leftArm.rotation.x = -walkCycle * 0.5;
+    p.userData.rightArm.rotation.x = walkCycle * 0.5;
+  }
+ } else {
+  // Reposo
+  if(p.userData.leftLeg) {
+    p.userData.leftLeg.rotation.x = 0;
+    p.userData.rightLeg.rotation.x = 0;
+    p.userData.leftArm.rotation.x = 0;
+    p.userData.rightArm.rotation.x = 0;
+  }
+ }
  clamp(p)
 }
 function shoot(){
@@ -178,6 +303,18 @@ function shoot(){
  if(online&&!host){if(conn?.open)conn.send({type:"action",a:"shoot"});return}
  owner=null;bv.set(0,5.2,-28)
 }
+
+function stealBall(){
+ // Permite robar la pelota si el rival la tiene y estamos muy cerca (en contacto)
+ if(owner===enemy && me.position.distanceTo(enemy.position) < 2.5){
+  owner = me;
+  bv.set(0,0,0);
+  if(online && !host && conn?.open){
+   conn.send({type:"action",a:"steal"});
+  }
+ }
+}
+
 function reset(){ball.position.set(0,.55,0);bv.set(0,0,0);owner=null;me.position.set(0,0,22);enemy.position.set(0,0,-22)}
 function goalScored(n){
  if(n===1)score1++;else score2++;
@@ -249,21 +386,22 @@ joy.addEventListener("pointerup",joyReset);joy.addEventListener("pointercancel",
 function joyMove(e){const r=joy.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2,len=Math.min(50,Math.hypot(x,y)),a=Math.atan2(y,x);knob.style.left=41+Math.cos(a)*len+"px";knob.style.top=41+Math.sin(a)*len+"px";keys.a=x<-18;keys.d=x>18;keys.w=y<-18;keys.s=y>18}
 function joyReset(){pid=null;knob.style.left="41px";knob.style.top="41px";keys.w=keys.a=keys.s=keys.d=false}
 document.getElementById("shoot").onpointerdown=shoot;
+document.getElementById("steal").onpointerdown=stealBall;
 document.getElementById("sprint").onpointerdown=()=>sprinting=true;
 document.getElementById("sprint").onpointerup=()=>sprinting=false;
 
 document.getElementById("play").onclick=()=>{
-  online=false;
-  const savedData = loadSavedData();
-  const action = localStorage.getItem('pixelgames_action_juego3.html');
+ online=false;
+ const savedData = loadSavedData();
+ const action = localStorage.getItem('pixelgames_action_juego3.html');
 
-  if (action === 'load' && savedData) {
-    localStorage.removeItem('pixelgames_action_juego3.html');
-    apply(savedData);
-  } else {
-    reset();
-  }
-  start();
+ if (action === 'load' && savedData) {
+   localStorage.removeItem('pixelgames_action_juego3.html');
+   apply(savedData);
+ } else {
+   reset();
+ }
+ start();
 };
 document.getElementById("online").onclick=()=>{document.getElementById("menu").style.display="none";document.getElementById("onlineMenu").style.display="flex"};
 document.getElementById("create").onclick=createRoom;
@@ -279,10 +417,10 @@ const savedData = loadSavedData();
 const action = localStorage.getItem('pixelgames_action_juego3.html');
 
 if (action === 'load' && savedData) {
-  localStorage.removeItem('pixelgames_action_juego3.html');
-  online = false;
-  apply(savedData);
-  start();
+ localStorage.removeItem('pixelgames_action_juego3.html');
+ online = false;
+ apply(savedData);
+ start();
 }
 
 let last=performance.now(),net=0;
@@ -292,7 +430,20 @@ function loop(now){
   if(!online||host){time+=d;move(me,keys,sprinting?12:7,d);if(online)move(enemy,remote,remote.sprint?12:7,d);else{const q=ball.position.clone().sub(enemy.position);q.y=0;if(q.length()>1){q.normalize();enemy.position.addScaledVector(q,5*d);clamp(enemy)}}collide();possession();ballUpdate(d)}
   else move(me,keys,sprinting?12:7,d);
   document.getElementById("score").textContent="J1 "+score1+" — "+score2+" J2";
-  const target=me.position.clone();target.y=1;camera.position.lerp(new THREE.Vector3(me.position.x,12,me.position.z+18),.08);camera.lookAt(target);
+
+  // Actualizar estado táctil del botón ROBAR (se activa sólo si el rival lleva el balón y estamos cerca)
+  const stealBtn = document.getElementById("steal");
+  if(stealBtn){
+   const canSteal = owner === enemy && me.position.distanceTo(enemy.position) < 2.5;
+   stealBtn.disabled = !canSteal;
+  }
+  
+  // SEGUIMIENTO DE CÁMARA CON ORBITCONTROLS EN 360°
+  const targetOffset = me.position.clone().sub(controls.target);
+  controls.target.copy(me.position);
+  camera.position.add(targetOffset);
+  controls.update();
+
   if(online&&connected&&conn?.open&&now-net>50){net=now;if(host)conn.send({type:"state",s:state()});else conn.send({type:"input",i:{...keys,sprint:sprinting}})}
  }
  renderer.render(scene,camera)
