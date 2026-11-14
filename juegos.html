@@ -1,652 +1,506 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIXEL GAMES - Menú Principal</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    
-    body {
-      background: radial-gradient(circle at center, #1a1f35 0%, #080b12 100%);
-      color: white;
-      font-family: 'Courier New', Courier, monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 0;
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Portal Tecnológico</title>
+    <!-- Carga de Tailwind CSS para utilidades y diseño responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter para una tipografía limpia y moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para replicar fielmente la estética tecnológica y el efecto cristal */
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            box-sizing: border-box;
+        }
 
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #030805;
+            background-image: 
+                radial-gradient(circle at 18% 22%, rgba(20, 88, 42, 0.45) 0%, transparent 45%),
+                radial-gradient(circle at 82% 78%, rgba(16, 75, 36, 0.42) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, #081a0f 0%, #020503 100%);
+            overflow-x: hidden;
+        }
 
-    h1 {
-      font-size: 42px;
-      color: #00e5ff;
-      text-shadow: 0 0 20px #00e5ff, 0 0 40px rgba(0, 229, 255, 0.6);
-      letter-spacing: 3px;
-      margin-bottom: 5px;
-    }
+        /* Lienzo de fondo para hexágonos, circuitos y red de nodos brillantes */
+        #tech-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
 
-    .subtitle {
-      color: #8191aa;
-      font-size: 14px;
-      letter-spacing: 2px;
-      font-weight: bold;
-    }
+        /* Tarjeta principal Glassmorphism oscuro */
+        .login-glass-card {
+            background: rgba(12, 28, 16, 0.84);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1.5px solid #4d8a47;
+            border-radius: 18px;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(77, 138, 71, 0.18),
+                inset 0 0 20px rgba(77, 138, 71, 0.06);
+        }
 
-    /* BARRA SUPERIOR */
-    .user-bar {
-      margin-top: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+        /* Campos de entrada oscuros con borde verde claro */
+        .custom-input {
+            background-color: #363636;
+            border: 1.5px solid #7cb855;
+            border-radius: 8px;
+            color: #ffffff;
+            transition: all 0.25s ease;
+        }
 
-    .user-tag {
-      background: rgba(0, 229, 255, 0.15);
-      border: 1px solid #00e5ff;
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      color: #00e5ff;
-      font-weight: bold;
-    }
+        .custom-input::placeholder {
+            color: #9ca3af;
+        }
 
-    .coins-tag {
-      background: rgba(255, 215, 0, 0.2);
-      border: 1px solid #ffd700;
-      padding: 6px 18px;
-      border-radius: 20px;
-      font-size: 13px;
-      color: #ffd700;
-      font-weight: bold;
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+        .custom-input:focus {
+            outline: none;
+            border-color: #9ee370;
+            box-shadow: 0 0 12px rgba(124, 184, 85, 0.45);
+            background-color: #3d3d3d;
+        }
 
-    .coins-tag:hover { transform: scale(1.08); }
+        /* Botón principal verde redondeado */
+        .btn-login {
+            background-color: #559e42;
+            border-radius: 9999px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(85, 158, 66, 0.3);
+        }
 
-    .btn-ruleta, .btn-guarderia, .btn-logros, .btn-amigos, .btn-cambiar-usuario, .btn-crear, .btn-comunidad {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      font-family: inherit;
-      transition: transform 0.2s, filter 0.2s;
-      border: 1px solid transparent;
-      text-decoration: none;
-    }
+        .btn-login:hover {
+            background-color: #62b34d;
+            box-shadow: 0 6px 22px rgba(98, 179, 77, 0.5);
+            transform: translateY(-1px);
+        }
 
-    .btn-ruleta {
-      background: linear-gradient(180deg, #ff007f, #99004d);
-      border-color: #ff66cc;
-      color: white;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.7);
-    }
+        .btn-login:active {
+            transform: translateY(0) scale(0.98);
+        }
 
-    .btn-guarderia {
-      background: linear-gradient(180deg, #2ecc71, #27ae60);
-      border-color: #2ecc71;
-      color: white;
-      box-shadow: 0 0 15px rgba(46, 204, 113, 0.7);
-    }
-
-    .btn-comunidad {
-      background: linear-gradient(180deg, #16a085, #117a65);
-      border-color: #1abc9c;
-      color: white;
-      box-shadow: 0 0 15px rgba(26, 188, 156, 0.7);
-    }
-
-    .btn-crear {
-      background: linear-gradient(180deg, #9b59b6, #6c5ce7);
-      border-color: #a55eea;
-      color: #ffd700;
-      box-shadow: 0 0 15px rgba(165, 94, 234, 0.7);
-    }
-
-    .btn-logros {
-      background: linear-gradient(180deg, #f39c12, #d35400);
-      border-color: #f1c40f;
-      color: white;
-      box-shadow: 0 0 15px rgba(241, 196, 15, 0.7);
-    }
-
-    .btn-amigos {
-      background: linear-gradient(180deg, #8e44ad, #5b2c6f);
-      border-color: #a55eea;
-      color: white;
-      box-shadow: 0 0 15px rgba(165, 94, 234, 0.7);
-    }
-
-    .btn-cambiar-usuario {
-      background: rgba(231, 76, 60, 0.2);
-      border-color: #e74c3c;
-      box-shadow: 0 0 12px rgba(231, 76, 60, 0.5);
-      color: #ff6b6b;
-    }
-
-    .btn-ruleta:hover, .btn-guarderia:hover, .btn-comunidad:hover, .btn-crear:hover, .btn-logros:hover, .btn-amigos:hover, .btn-cambiar-usuario:hover {
-      transform: scale(1.05);
-      filter: brightness(1.2);
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #00e5ff;
-      border-radius: 20px;
-      padding: 2px 4px 2px 12px;
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
-    }
-
-    .search-input {
-      background: transparent;
-      border: none;
-      color: #ffffff;
-      font-family: inherit;
-      font-size: 12px;
-      width: 90px;
-      outline: none;
-    }
-
-    .search-input::placeholder { color: #8191aa; }
-
-    .btn-buscar {
-      background: #00e5ff;
-      color: #080b12;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 16px;
-      font-size: 11px;
-      font-weight: bold;
-      cursor: pointer;
-      font-family: inherit;
-      box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      width: 90%;
-      max-width: 1200px;
-    }
-
-    /* ANIMACIÓN LUZ DE NEÓN CONTINUA */
-    @keyframes neonRainbow {
-      0% { border-color: #ff007f; box-shadow: 0 0 20px #ff007f, inset 0 0 10px rgba(255, 0, 127, 0.3); }
-      25% { border-color: #00e5ff; box-shadow: 0 0 20px #00e5ff, inset 0 0 10px rgba(0, 229, 255, 0.3); }
-      50% { border-color: #2ecc71; box-shadow: 0 0 20px #2ecc71, inset 0 0 10px rgba(46, 204, 113, 0.3); }
-      75% { border-color: #ffd700; box-shadow: 0 0 20px #ffd700, inset 0 0 10px rgba(255, 215, 0, 0.3); }
-      100% { border-color: #ff007f; box-shadow: 0 0 20px #ff007f, inset 0 0 10px rgba(255, 0, 127, 0.3); }
-    }
-
-    /* TARJETA DESTACADA GRANDE A ANCHO COMPLETO (WAHC2.0) */
-    .card-featured {
-      grid-column: 1 / -1;
-      background: rgba(15, 23, 42, 0.95);
-      border: 3px solid #2ecc71;
-      border-radius: 20px;
-      padding: 25px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      animation: neonRainbow 6s linear infinite;
-      box-shadow: 0 0 30px rgba(46, 204, 113, 0.5);
-    }
-
-    .featured-badge {
-      display: inline-block;
-      background: #ffd700;
-      color: #000;
-      font-weight: 900;
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .featured-title {
-      font-size: 26px;
-      font-weight: 800;
-      color: #2ecc71;
-      text-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
-      margin-bottom: 8px;
-    }
-
-    .featured-desc {
-      font-size: 13px;
-      color: #cbd5e1;
-      line-height: 1.5;
-      margin-bottom: 15px;
-    }
-
-    .featured-emojis {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .emoji-pill {
-      background: #02050f;
-      border: 1px solid #2ecc71;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 18px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .emoji-pill:hover { transform: scale(1.2); }
-
-    .card {
-      background: rgba(15, 23, 42, 0.85);
-      border: 2px solid #ff007f;
-      border-radius: 16px;
-      padding: 25px 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 220px;
-      animation: neonRainbow 6s linear infinite;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card.available:hover { transform: translateY(-5px); filter: brightness(1.2); }
-
-    .card.highlight {
-      animation: highlightGlow 2s ease-in-out infinite alternate !important;
-      transform: scale(1.08) !important;
-      z-index: 10;
-    }
-
-    @keyframes highlightGlow {
-      0% { border-color: #ffd700; box-shadow: 0 0 30px #ffd700, inset 0 0 15px #ffd700; }
-      100% { border-color: #ff007f; box-shadow: 0 0 50px #ff007f, inset 0 0 25px #ff007f; }
-    }
-
-    .icon { font-size: 52px; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5)); }
-    .name { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.3); }
-
-    .play {
-      display: inline-block;
-      padding: 10px 24px;
-      border-radius: 13px;
-      background: linear-gradient(180deg, #35a8ff, #1266e8);
-      color: white;
-      text-decoration: none;
-      font-weight: 800;
-      box-shadow: 0 5px 0 #0844a0, 0 0 15px rgba(0,100,255,.5);
-      transition: transform 0.1s;
-      cursor: pointer;
-      border: none;
-    }
-
-    .play:hover { transform: scale(1.05); }
-
-    .locked { opacity: .68; }
-    .lock { font-size: 62px; margin-bottom: 13px; filter: drop-shadow(0 10px 5px rgba(0,0,0,.6)); }
-    .locked .name { color: #aab6cc; text-shadow: none; }
-    .badge {
-      font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #8191aa;
-      border: 1px solid rgba(255,255,255,.12); padding: 8px 13px; border-radius: 999px; background: rgba(0,0,0,.2);
-    }
-
-    /* MODALES GENERALES */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(8, 11, 18, 0.92);
-      z-index: 100;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-card {
-      background: #0f172a;
-      border: 2px solid #00e5ff;
-      border-radius: 20px;
-      padding: 25px;
-      width: 92%;
-      max-width: 620px;
-      text-align: center;
-      box-shadow: 0 0 35px rgba(0, 229, 255, 0.5);
-    }
-
-    .modal-card h2 { color: #00e5ff; font-size: 24px; margin-bottom: 5px; text-shadow: 0 0 10px #00e5ff; }
-
-    .modal-btn {
-      width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: none;
-      font-size: 15px; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s;
-    }
-
-    .btn-continuar { background: #2ecc71; color: #080b12; box-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
-    .btn-nueva { background: #e67e22; color: #ffffff; box-shadow: 0 0 10px rgba(230, 126, 34, 0.4); }
-    .btn-cancelar { background: rgba(255,255,255,0.1); color: #8191aa; }
-    .alerta-error { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; font-weight: bold; }
-
-    /* RULETA ANIMADA INTERACTIVA */
-    .roulette-wrapper { position: relative; width: 320px; height: 320px; margin: 15px auto; }
-    #roulette-canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 30px rgba(255, 0, 127, 0.7); }
-    .roulette-pointer {
-      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-      width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 24px solid #ffd700; z-index: 10;
-    }
-    .btn-spin { background: linear-gradient(180deg, #ff007f, #b30059); color: white; font-size: 16px; font-weight: 900; border: 2px solid #ff66cc; }
-    .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
-    #roulette-result { font-size: 14px; font-weight: bold; color: #ffd700; min-height: 24px; margin-top: 5px; }
-  </style>
+        /* Animación suave para la notificación visual */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .toast-animate {
+            animation: slideIn 0.3s ease forwards;
+        }
+    </style>
 </head>
+<body class="flex items-center justify-center p-4 sm:p-6 relative">
 
-<body>
+    <!-- Canvas animado con red de nodos, líneas de circuito y hexágonos translúcidos -->
+    <canvas id="tech-canvas"></canvas>
 
-  <header>
-    <h1>PIXEL GAMES</h1>
-    <div class="subtitle">ELIGE TU JUEGO</div>
-    <div class="user-bar">
-      <div class="user-tag" id="user-display">👤 Usuario: Invitado</div>
-      <div class="coins-tag" id="coins-display" onclick="abrirTiendaEspiritus()">🪙 0 Pixelmonedas</div>
-      <button class="btn-ruleta" onclick="abrirRuleta()">🎡 PIXELRULETA</button>
-      <button class="btn-guarderia" onclick="abrirGuarderia()">🏡 GUARDERÍA</button>
-      <a href="online server.html" class="btn-comunidad">🌐 COMUNIDAD</a>
-      <a href="crear.html" class="btn-crear">✏️ CREAR</a>
-      <button class="btn-logros" onclick="abrirModalLogros()">🏆 LOGROS</button>
-      <button class="btn-amigos" onclick="abrirModalAmigos()">👥 AMIGOS</button>
-      <button class="btn-cambiar-usuario" onclick="cambiarUsuario()">🔄 CAMBIAR USUARIO</button>
-      
-      <div class="search-box">
-        <input type="number" id="input-buscar-juego" class="search-input" placeholder="Nº..." onkeypress="if(event.key === 'Enter') buscarJuego();">
-        <button class="btn-buscar" onclick="buscarJuego()">🔍 IR</button>
-      </div>
-    </div>
-  </header>
+    <!-- Contenedor principal centrado -->
+    <main class="relative z-10 w-full max-w-[410px]">
+        <div class="login-glass-card relative px-7 py-9 sm:px-9 sm:py-10 text-white">
+            
+            <!-- Icono de escudo con candado en la esquina superior derecha -->
+            <div class="absolute top-4 right-4 text-gray-400 opacity-75 hover:opacity-100 transition-opacity" title="Acceso Protegido">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <rect x="9" y="10" width="6" height="5" rx="1"></rect>
+                    <path d="M10 10V8a2 2 0 1 1 4 0v2"></path>
+                </svg>
+            </div>
 
-  <main class="grid" id="games">
-    <!-- TARJETA DESTACADA WAHC2.0 (REDIRIGE A menú.html) -->
-    <article class="card-featured">
-      <div>
-        <span class="featured-badge">★ JUEGO DESTACADO ★</span>
-        <h2 class="featured-title">WAHC2.0</h2>
-        <p class="featured-desc">sobrevive todo lo posible!</p>
-        <div class="featured-emojis">
-          <span class="emoji-pill" title="Bosque">🌲</span>
-          <span class="emoji-pill" title="Madera">🪵</span>
-          <span class="emoji-pill" title="Hacha">🪓</span>
-          <span class="emoji-pill" title="Zombie">🧟</span>
-          <span class="emoji-pill" title="Refugio">🏕️</span>
+            <!-- Título en mayúsculas -->
+            <h1 class="text-center text-2xl sm:text-[26px] font-bold tracking-wider uppercase mb-7 text-white">
+                INICIAR SESIÓN
+            </h1>
+
+            <!-- Notificación visual de estado (oculta por defecto) -->
+            <div id="status-box" class="hidden mb-5 p-3 rounded-lg border text-xs sm:text-sm flex items-center gap-2.5 toast-animate">
+                <span id="status-icon"></span>
+                <span id="status-text" class="font-medium"></span>
+            </div>
+
+            <!-- Formulario de Inicio de Sesión -->
+            <form id="login-form" class="space-y-5" novalidate>
+                
+                <!-- Campo: Usuario o Correo Electrónico -->
+                <div>
+                    <label for="username" class="flex items-center gap-2 text-sm font-medium text-gray-200 mb-2">
+                        <!-- Icono de usuario en verde -->
+                        <svg class="w-4 h-4 fill-[#7cb855] shrink-0" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span>Usuario o Correo Electrónico</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username"
+                        class="custom-input w-full px-3.5 py-3 text-sm" 
+                        placeholder="ejemplo@correo.com"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <!-- Campo: Contraseña -->
+                <div>
+                    <label for="password" class="flex items-center gap-2 text-sm font-medium text-gray-200 mb-2">
+                        <!-- Icono de candado en verde -->
+                        <svg class="w-4 h-4 fill-[#7cb855] shrink-0" viewBox="0 0 24 24">
+                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                        </svg>
+                        <span>Contraseña</span>
+                    </label>
+                    <div class="relative flex items-center">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            class="custom-input w-full pl-3.5 pr-11 py-3 text-sm tracking-widest" 
+                            placeholder="••••••••••••"
+                            value="••••••••••••"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <!-- Botón interactivo del ojo para mostrar/ocultar contraseña -->
+                        <button 
+                            type="button" 
+                            id="toggle-password" 
+                            class="absolute right-3 p-1.5 text-gray-400 hover:text-white focus:outline-none transition-colors"
+                            aria-label="Mostrar u ocultar contraseña"
+                            title="Mostrar/Ocultar contraseña"
+                        >
+                            <!-- SVG inicial: ojo tachado -->
+                            <svg id="eye-icon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Botón de envío -->
+                <div class="pt-2">
+                    <button 
+                        type="submit" 
+                        class="btn-login w-full py-3.5 text-white font-bold text-sm sm:text-base tracking-wide uppercase cursor-pointer"
+                    >
+                        INICIAR SESIÓN
+                    </button>
+                </div>
+
+                <!-- Enlaces inferiores centrados en verde claro -->
+                <div class="pt-2 flex flex-col items-center space-y-2.5 text-xs sm:text-[13px]">
+                    <a href="#recuperar" id="forgot-link" class="text-[#8ab87f] hover:text-[#b6e8aa] hover:underline transition-colors">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                    <a href="#registro" id="register-link" class="text-[#8ab87f] hover:text-[#b6e8aa] hover:underline transition-colors">
+                        Crear una cuenta
+                    </a>
+                </div>
+            </form>
         </div>
-      </div>
-      <div>
-        <a href="portada.html" class="play" style="background: linear-gradient(180deg, #2ecc71, #27ae60); box-shadow: 0 5px 0 #1e8449; font-size: 16px; padding: 14px 28px;">▶ ENTRAR AL JUEGO</a>
-      </div>
-    </article>
-  </main>
+    </main>
 
-  <!-- MODAL PIXELRULETA -->
-  <div class="modal-overlay" id="modal-ruleta">
-    <div class="modal-card" style="max-width: 440px;">
-      <h2 style="color: #ff007f;">🎡 PIXELRULETA (25 PREMIOS)</h2>
-      <p style="color: #8191aa; font-size: 12px;">¡Primer giro GRATIS!</p>
+    <script>
+        /**
+         * 1. INTERACTIVIDAD DEL FORMULARIO Y MOSTRAR/OCULTAR CONTRASEÑA
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const togglePasswordBtn = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            const loginForm = document.getElementById('login-form');
+            const usernameInput = document.getElementById('username');
+            const statusBox = document.getElementById('status-box');
+            const statusText = document.getElementById('status-text');
+            const statusIcon = document.getElementById('status-icon');
+            const forgotLink = document.getElementById('forgot-link');
+            const registerLink = document.getElementById('register-link');
 
-      <div class="roulette-wrapper">
-        <div class="roulette-pointer"></div>
-        <canvas id="roulette-canvas" width="320" height="320"></canvas>
-      </div>
+            // Alternar visibilidad de la contraseña
+            togglePasswordBtn.addEventListener('click', () => {
+                const isHidden = passwordInput.type === 'password';
+                passwordInput.type = isHidden ? 'text' : 'password';
 
-      <div id="roulette-result"></div>
+                // Ajustar espaciado de letras según si está oculta o visible
+                if (isHidden) {
+                    passwordInput.classList.remove('tracking-widest');
+                    eyeIcon.innerHTML = `
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    `;
+                } else {
+                    passwordInput.classList.add('tracking-widest');
+                    eyeIcon.innerHTML = `
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    `;
+                }
+            });
 
-      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA!</button>
-      <button class="modal-btn btn-cancelar" onclick="cerrarRuleta()">Volver</button>
-    </div>
-  </div>
+            // Función auxiliar para mostrar mensajes visuales en la tarjeta (sin alert())
+            function showMessage(message, type = 'success') {
+                statusBox.classList.remove('hidden', 'bg-emerald-950/90', 'border-emerald-500', 'text-emerald-200', 'bg-red-950/90', 'border-red-500', 'text-red-200');
+                
+                if (type === 'success') {
+                    statusBox.classList.add('bg-emerald-950/90', 'border-emerald-500', 'text-emerald-200');
+                    statusIcon.innerHTML = `<svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                } else {
+                    statusBox.classList.add('bg-red-950/90', 'border-red-500', 'text-red-200');
+                    statusIcon.innerHTML = `<svg class="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                }
+                
+                statusText.textContent = message;
+            }
 
-  <!-- MODAL PARTIDA -->
-  <div class="modal-overlay" id="modal-partida">
-    <div class="modal-card">
-      <h2 id="modal-titulo-juego">NOMBRE JUEGO</h2>
-      <p style="color: #8191aa; font-size: 14px; margin-bottom: 20px;">¿Cómo deseas empezar tu partida?</p>
-      <button class="modal-btn btn-continuar" onclick="continuarPartida()">▶️ CONTINUAR PARTIDA</button>
-      <button class="modal-btn btn-nueva" onclick="nuevaPartida()">➕ NUEVA PARTIDA</button>
-      <div class="alerta-error" id="alerta-sin-partida">❌ No tienes ninguna partida anterior guardada.</div>
-      <button class="modal-btn btn-cancelar" onclick="cerrarModalPartida()">Cancelar</button>
-    </div>
-  </div>
+            // Validación y mensaje de confirmación al enviar el formulario
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const userVal = usernameInput.value.trim();
+                const passVal = passwordInput.value.trim();
 
-  <script>
-    // SESIÓN Y MONEDAS
-    let usuarioActivo = localStorage.getItem('pixelgames_session');
-    if (!usuarioActivo) {
-      usuarioActivo = 'polmega_95';
-      localStorage.setItem('pixelgames_session', usuarioActivo);
-    }
-    document.getElementById('user-display').innerText = `👤 Usuario: ${usuarioActivo}`;
+                if (!userVal) {
+                    showMessage('Por favor, ingresa tu usuario o correo electrónico.', 'error');
+                    usernameInput.focus();
+                    return;
+                }
 
-    const usuarios = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-    if (!usuarios[usuarioActivo]) {
-      usuarios[usuarioActivo] = { coins: 124773, espiritusComprados: [], logrosObtenidos: [], amigos: [], ruletaUsada: false };
-      localStorage.setItem('pixelgames_users', JSON.stringify(usuarios));
-    }
+                if (!passVal) {
+                    showMessage('Por favor, ingresa tu contraseña.', 'error');
+                    passwordInput.focus();
+                    return;
+                }
 
-    function actualizarMonedasUI() {
-      const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}')[usuarioActivo];
-      document.getElementById('coins-display').innerText = `🪙 ${(u ? u.coins : 0).toLocaleString('es-ES')} Pixelmonedas`;
-    }
-    actualizarMonedasUI();
+                // Deshabilitar el botón temporalmente y mostrar estado de redirección
+                const submitBtn = loginForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-75', 'cursor-wait');
+                    submitBtn.textContent = 'REDIRIGIENDO...';
+                }
 
-    function cambiarUsuario() {
-      const nuevo = prompt("Escribe tu nuevo nombre de usuario:");
-      if (nuevo) {
-        localStorage.setItem('pixelgames_session', nuevo);
-        usuarioActivo = nuevo;
-        document.getElementById('user-display').innerText = `👤 Usuario: ${usuarioActivo}`;
-        const u = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-        if (!u[nuevo]) {
-          u[nuevo] = { coins: 5000, espiritusComprados: [], logrosObtenidos: [], amigos: [], ruletaUsada: false };
-          localStorage.setItem('pixelgames_users', JSON.stringify(u));
-        }
-        actualizarMonedasUI();
-      }
-    }
+                showMessage(`¡Acceso concedido, ${userVal}! Redirigiendo a juegos.html...`, 'success');
 
-    function abrirGuarderia() { window.location.href = 'guarderia.html'; }
+                // Redirigir automáticamente a juegos.html tras mostrar brevemente la confirmación
+                setTimeout(() => {
+                    window.location.href = 'juegos.html';
 
-    // CATÁLOGO DE MINIJUEGOS
-    const games = [
-      { id: 1, name: "money up", icon: "🪙", file: "juego1.html" },
-      { id: 2, name: "extrem 1", icon: "🌲", file: "juego2.html" },
-      { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html" },
-      { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html" },
-      { id: 5, name: "Ultra Labyrinths", icon: "🧩", file: "juego5.html" },
-      { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html" },
-      { id: 7, name: "tic tac toe", icon: "🔴", file: "juego7.html" },
-      { id: 8, name: "color snake", icon: "💎", file: "juego8.html" },
-      { id: 9, name: "gems mine", icon: "🍎", file: "juego9.html" },
-      { id: 10, name: "tadtic board", icon: "⚽", file: "juego10.html" },
-      { id: 11, name: "chess 3D", icon: "♟️", file: "juego11.html" },
-      { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html" },
-      { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html" },
-      { id: 14, name: "Pixel Critic", icon: "⭐", file: "juego14.html" },
-      { id: 15, name: "boss slayer D2", icon: "⚡", file: "juego15.html" },
-      { id: 16, name: "Project X", icon: "❓", file: "juego16.html" },
-      { id: 17, name: "sliting puzle", icon: "🧩", file: "juego17.html" }
-    ];
+                    // Aviso visual de respaldo si el entorno aislado de vista previa no dispone de juegos.html
+                    setTimeout(() => {
+                        showMessage('Redirección ejecutada hacia "juegos.html" (vista previa aislada: archivo destino no encontrado).', 'success');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.classList.remove('opacity-75', 'cursor-wait');
+                            submitBtn.textContent = 'INICIAR SESIÓN';
+                        }
+                    }, 900);
+                }, 1000);
+            });
 
-    const gamesMap = new Map(games.map(g => [g.id, g]));
-    const container = document.getElementById("games");
+            // Interacción demostrativa para los enlaces inferiores
+            forgotLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showMessage('Se ha enviado un enlace de recuperación de clave a tu correo.', 'success');
+            });
 
-    for (let i = 1; i <= 100; i++) {
-      const gameData = gamesMap.get(i);
-      const card = document.createElement("article");
-      card.id = `game-card-${i}`;
+            registerLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showMessage('Módulo de registro de nueva cuenta activado.', 'success');
+            });
+        });
 
-      if (gameData) {
-        card.className = "card available";
-        card.innerHTML = `
-          <div class="icon">${gameData.icon}</div>
-          <div class="name">${gameData.name}</div>
-          <button class="play" onclick="clickJuego(${gameData.id})">JUGAR</button>
-        `;
-      } else {
-        card.className = "card locked";
-        card.innerHTML = `
-          <div class="lock">🔒</div>
-          <div class="name">Juego ${i}</div>
-          <div class="badge">PRÓXIMAMENTE</div>
-        `;
-      }
-      container.appendChild(card);
-    }
+        /**
+         * 2. FONDO TECNOLÓGICO ANIMADO (CANVAS):
+         * Hexágonos translúcidos, líneas de circuito impreso y red de nodos brillantes
+         */
+        window.onload = function () {
+            const canvas = document.getElementById('tech-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let nodes = [];
+            let circuits = [];
 
-    let juegoSeleccionado = null;
-    function clickJuego(id) {
-      const g = gamesMap.get(id);
-      if (!g) return;
-      juegoSeleccionado = g;
-      document.getElementById('modal-titulo-juego').innerText = g.name.toUpperCase();
-      document.getElementById('alerta-sin-partida').style.display = 'none';
-      document.getElementById('modal-partida').style.display = 'flex';
-    }
+            function initCanvas() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
 
-    function cerrarModalPartida() { document.getElementById('modal-partida').style.display = 'none'; }
-    function nuevaPartida() { if(juegoSeleccionado) window.location.href = juegoSeleccionado.file + '?mode=new'; }
-    function continuarPartida() {
-      if(juegoSeleccionado) {
-        const guardado = localStorage.getItem(`pixelgames_save_${usuarioActivo}_${juegoSeleccionado.id}`);
-        if(guardado) window.location.href = juegoSeleccionado.file + '?mode=continue';
-        else document.getElementById('alerta-sin-partida').style.display = 'block';
-      }
-    }
+                // Generar nodos brillantes conectados
+                const nodeCount = Math.min(Math.floor((width * height) / 16000), 85);
+                nodes = [];
+                for (let i = 0; i < nodeCount; i++) {
+                    nodes.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.35,
+                        vy: (Math.random() - 0.5) * 0.35,
+                        radius: Math.random() * 1.8 + 1,
+                        pulse: Math.random() * Math.PI * 2
+                    });
+                }
 
-    function buscarJuego() {
-      const num = parseInt(document.getElementById('input-buscar-juego').value);
-      if (isNaN(num) || num < 1 || num > 100) return;
-      const card = document.getElementById(`game-card-${num}`);
-      if (card) {
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        card.classList.add('highlight');
-        setTimeout(() => { card.classList.remove('highlight'); }, 4000);
-      }
-    }
+                // Generar líneas de circuito decorativas en los laterales
+                circuits = [
+                    // Circuito superior izquierdo
+                    [
+                        { x: 0, y: height * 0.32 },
+                        { x: width * 0.14, y: height * 0.32 },
+                        { x: width * 0.18, y: height * 0.38 },
+                        { x: width * 0.32, y: height * 0.38 }
+                    ],
+                    [
+                        { x: 0, y: height * 0.36 },
+                        { x: width * 0.11, y: height * 0.36 },
+                        { x: width * 0.16, y: height * 0.43 },
+                        { x: width * 0.28, y: height * 0.43 }
+                    ],
+                    // Circuito superior derecho/central
+                    [
+                        { x: width * 0.56, y: 0 },
+                        { x: width * 0.56, y: height * 0.15 },
+                        { x: width * 0.52, y: height * 0.20 }
+                    ],
+                    // Circuito inferior derecho
+                    [
+                        { x: width, y: height * 0.68 },
+                        { x: width * 0.85, y: height * 0.68 },
+                        { x: width * 0.80, y: height * 0.62 },
+                        { x: width * 0.68, y: height * 0.62 }
+                    ]
+                ];
+            }
 
-    // PIXELRULETA ANIMADA
-    const premiosRuleta = [100, 500, 200, 1000, 50, 300, 1500, 250, 800, 100, 2000, 400, 600, 100, 5000, 300, 750, 120, 900, 450, 2500, 150, 350, 700, 10000];
-    let currentAngle = 0;
-    let isSpinning = false;
+            window.addEventListener('resize', initCanvas);
+            initCanvas();
 
-    function dibujarRuleta(angulo) {
-      const canvas = document.getElementById('roulette-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const numSlices = premiosRuleta.length;
-      const sliceAngle = (Math.PI * 2) / numSlices;
+            // Dibujar un hexágono individual con relleno sutil y borde fino
+            function drawHexagon(cx, cy, r, fillAlpha = 0.04, strokeAlpha = 0.14) {
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i - Math.PI / 6;
+                    const x = cx + r * Math.cos(angle);
+                    const y = cy + r * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fillStyle = `rgba(45, 130, 68, ${fillAlpha})`;
+                ctx.fill();
+                ctx.strokeStyle = `rgba(95, 195, 115, ${strokeAlpha})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Dibujar clústeres de hexágonos en esquinas superior derecha e inferior izquierda
+            function drawHexagonClusters() {
+                const r = Math.max(28, Math.min(width, height) * 0.042);
+                const dx = r * Math.sqrt(3);
+                const dy = r * 1.5;
 
-      for (let i = 0; i < numSlices; i++) {
-        const start = angulo + i * sliceAngle;
-        const end = start + sliceAngle;
+                // Clúster superior derecho
+                const topRightBaseX = width * 0.84;
+                const topRightBaseY = height * 0.12;
+                const trOffsets = [
+                    [0, 0, 0.07], [1, 0, 0.04], [-1, 0, 0.05], [-2, 0, 0.03],
+                    [0.5, 1, 0.06], [-0.5, 1, 0.08], [-1.5, 1, 0.04],
+                    [0, 2, 0.05], [1, 2, 0.03]
+                ];
+                trOffsets.forEach(([ox, oy, alpha]) => {
+                    drawHexagon(topRightBaseX + ox * dx, topRightBaseY + oy * dy, r, alpha, alpha * 2.2);
+                });
 
-        ctx.beginPath();
-        ctx.moveTo(160, 160);
-        ctx.arc(160, 160, 155, start, end);
-        ctx.closePath();
+                // Clúster inferior izquierdo
+                const botLeftBaseX = width * 0.12;
+                const botLeftBaseY = height * 0.72;
+                const blOffsets = [
+                    [0, 0, 0.06], [1, 0, 0.04], [-1, 0, 0.05],
+                    [0.5, 1, 0.08], [-0.5, 1, 0.05], [1.5, 1, 0.03],
+                    [0, 2, 0.07], [1, 2, 0.05], [-1, 2, 0.04]
+                ];
+                blOffsets.forEach(([ox, oy, alpha]) => {
+                    drawHexagon(botLeftBaseX + ox * dx, botLeftBaseY + oy * dy, r, alpha, alpha * 2.2);
+                });
+            }
 
-        ctx.fillStyle = (i % 2 === 0) ? (i % 4 === 0 ? '#ff007f' : '#00e5ff') : (i % 3 === 0 ? '#ffd700' : '#2ecc71');
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#0f172a';
-        ctx.stroke();
+            // Dibujar líneas de circuito impreso con pequeños nodos terminales
+            function drawCircuits() {
+                circuits.forEach(path => {
+                    if (path.length < 2) return;
+                    ctx.beginPath();
+                    ctx.moveTo(path[0].x, path[0].y);
+                    for (let i = 1; i < path.length; i++) {
+                        ctx.lineTo(path[i].x, path[i].y);
+                    }
+                    ctx.strokeStyle = 'rgba(77, 168, 95, 0.18)';
+                    ctx.lineWidth = 1.2;
+                    ctx.stroke();
 
-        ctx.save();
-        ctx.translate(160, 160);
-        ctx.rotate(start + sliceAngle / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 9px monospace";
-        ctx.fillText("+" + premiosRuleta[i], 145, 4);
-        ctx.restore();
-      }
+                    // Nodo circular al final de la pista
+                    const last = path[path.length - 1];
+                    ctx.beginPath();
+                    ctx.arc(last.x, last.y, 2.8, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(124, 215, 130, 0.45)';
+                    ctx.fill();
+                });
+            }
 
-      ctx.beginPath();
-      ctx.arc(160, 160, 25, 0, Math.PI * 2);
-      ctx.fillStyle = '#0f172a';
-      ctx.fill();
-      ctx.strokeStyle = '#ffd700';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
+            // Bucle principal de animación
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
 
-    function abrirRuleta() {
-      document.getElementById('modal-ruleta').style.display = 'flex';
-      dibujarRuleta(currentAngle);
-    }
-    function cerrarRuleta() { document.getElementById('modal-ruleta').style.display = 'none'; }
+                drawHexagonClusters();
+                drawCircuits();
 
-    function girarRuleta() {
-      if (isSpinning) return;
-      isSpinning = true;
+                // Actualizar y dibujar red de nodos brillantes
+                for (let i = 0; i < nodes.length; i++) {
+                    const n1 = nodes[i];
+                    n1.x += n1.vx;
+                    n1.y += n1.vy;
+                    n1.pulse += 0.03;
 
-      const btn = document.getElementById('btn-spin-action');
-      const resText = document.getElementById('roulette-result');
-      btn.disabled = true;
-      resText.innerText = "¡GIRANDO LA RULETA!";
+                    // Rebote suave en los bordes
+                    if (n1.x < 0 || n1.x > width) n1.vx *= -1;
+                    if (n1.y < 0 || n1.y > height) n1.vy *= -1;
 
-      const totalSpinTime = 4000;
-      const startTime = performance.now();
-      const extraRounds = Math.floor(Math.random() * 5 + 6) * Math.PI * 2;
-      const targetRewardIdx = Math.floor(Math.random() * premiosRuleta.length);
-      const sliceAngle = (Math.PI * 2) / premiosRuleta.length;
-      
-      const finalAngleOffset = (Math.PI * 2) - (targetRewardIdx * sliceAngle + sliceAngle / 2) - (Math.PI / 2);
-      const startAngle = currentAngle;
-      const totalRotation = extraRounds + (finalAngleOffset - (startAngle % (Math.PI * 2)));
+                    // Brillo pulsante del nodo
+                    const glow = 0.45 + Math.sin(n1.pulse) * 0.25;
+                    ctx.beginPath();
+                    ctx.arc(n1.x, n1.y, n1.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(130, 235, 145, ${glow})`;
+                    ctx.fill();
 
-      function animate(now) {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / totalSpinTime, 1);
-        const easeOut = 1 - Math.pow(1 - progress, 3);
+                    // Conectar nodos cercanos con líneas finas
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const n2 = nodes[j];
+                        const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+                        const maxDist = 145;
 
-        currentAngle = startAngle + totalRotation * easeOut;
-        dibujarRuleta(currentAngle);
+                        if (dist < maxDist) {
+                            const lineAlpha = 0.22 * (1 - dist / maxDist);
+                            ctx.beginPath();
+                            ctx.moveTo(n1.x, n1.y);
+                            ctx.lineTo(n2.x, n2.y);
+                            ctx.strokeStyle = `rgba(92, 196, 108, ${lineAlpha})`;
+                            ctx.lineWidth = 0.85;
+                            ctx.stroke();
+                        }
+                    }
+                }
 
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          isSpinning = false;
-          btn.disabled = false;
-          const premio = premiosRuleta[targetRewardIdx];
-          resText.innerText = `¡HAS GANADO +${premio.toLocaleString('es-ES')} PIXELMONEDAS! 🪙`;
+                requestAnimationFrame(animate);
+            }
 
-          const allUsers = JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
-          if (allUsers[usuarioActivo]) {
-            allUsers[usuarioActivo].coins += premio;
-            localStorage.setItem('pixelgames_users', JSON.stringify(allUsers));
-          }
-          actualizarMonedasUI();
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-  </script>
+            animate();
+        };
+    </script>
 </body>
 </html>
