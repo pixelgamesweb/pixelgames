@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Battle Arena 2D - Juego 2</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #0b132b;
@@ -15,6 +15,7 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      touch-action: none;
     }
 
     /* MENÚ PRINCIPAL */
@@ -119,6 +120,7 @@
       font-weight: bold;
       display: none;
       z-index: 6;
+      pointer-events: none;
     }
 
     /* INVENTARIO ARMAS */
@@ -161,7 +163,101 @@
     .cuadrado-arma .numero { position: absolute; top: 2px; left: 4px; font-size: 10px; color: #5bc0be; font-weight: bold; }
     .cuadrado-arma .icono { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 3px; }
 
-    canvas { display: block; background-color: #0b132b; }
+    /* CONTROLES TÁCTILES MÓVIL / TABLET */
+    #controles-tactiles {
+      display: none;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 7;
+    }
+
+    .dpad-tactil {
+      position: absolute;
+      bottom: 95px;
+      left: 20px;
+      width: 150px;
+      height: 150px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 6px;
+      pointer-events: auto;
+    }
+
+    .btn-tactil-dir {
+      background: rgba(28, 37, 65, 0.72);
+      border: 2px solid rgba(91, 192, 190, 0.75);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      touch-action: none;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
+    }
+
+    .btn-tactil-dir:active, .btn-tactil-dir.pulsado {
+      background: rgba(91, 192, 190, 0.75);
+      color: #0b132b;
+      transform: scale(0.95);
+    }
+
+    .acciones-tactiles {
+      position: absolute;
+      bottom: 95px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .btn-tactil-accion {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(28, 37, 65, 0.78);
+      border: 2px solid #5bc0be;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      touch-action: none;
+      box-shadow: 0 0 14px rgba(91, 192, 190, 0.35);
+    }
+
+    .btn-tactil-accion:active {
+      background: #5bc0be;
+      color: #0b132b;
+      transform: scale(0.94);
+    }
+
+    @media (max-width: 768px) {
+      #inventario-armas {
+        bottom: 10px;
+        gap: 5px;
+      }
+      .cuadrado-arma {
+        width: 44px;
+        height: 44px;
+        font-size: 8px;
+      }
+      .barra-contenedor { width: 160px; height: 16px; }
+      #info-arma, #info-corazones, #info-bunkers, #info-enemigos {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
+    }
+
+    canvas { display: block; background-color: #0b132b; touch-action: none; }
 
     /* GAME OVER / VICTORIA */
     #pantalla-game-over {
@@ -248,6 +344,25 @@
 
   <div id="prompt-interaccion">Presiona [E] o [F] para interactuar</div>
 
+  <!-- CONTROLES TÁCTILES PARA MÓVIL / TABLET -->
+  <div id="controles-tactiles">
+    <div class="dpad-tactil">
+      <div></div>
+      <button type="button" class="btn-tactil-dir" data-tecla="w">▲</button>
+      <div></div>
+      <button type="button" class="btn-tactil-dir" data-tecla="a">◀</button>
+      <div></div>
+      <button type="button" class="btn-tactil-dir" data-tecla="d">▶</button>
+      <div></div>
+      <button type="button" class="btn-tactil-dir" data-tecla="s">▼</button>
+      <div></div>
+    </div>
+    <div class="acciones-tactiles">
+      <button type="button" class="btn-tactil-accion" id="btn-tactil-e">📦/🚪<br>[E]</button>
+      <button type="button" class="btn-tactil-accion" id="btn-tactil-f">🛡️<br>[F]</button>
+    </div>
+  </div>
+
   <!-- INVENTARIO -->
   <div id="inventario-armas">
     <div class="cuadrado-arma" onclick="seleccionarArmaPorIndex(0)"><span class="numero">1</span><div class="icono" id="ico-0"></div><span id="txt-0">Vacío</span></div>
@@ -278,6 +393,7 @@
         <li><b>Mapa Gigante & Minimapa:</b> Revisa la esquina superior derecha.</li>
         <li><b>Búnker [F]:</b> Coloca o recoge refugios portátiles.</li>
         <li><b>Tecla [E]:</b> Entra o sal del búnker.</li>
+        <li><b>Controles Táctiles:</b> Usa la cruceta inferior izquierda para moverte y pulsa cualquier punto de la pantalla para apuntar y disparar.</li>
       </ul>
       <button onclick="toggleInfo(false)">Cerrar</button>
     </div>
@@ -315,6 +431,11 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
     const ANCHO_MAPA = 10000;
     const ALTO_MAPA = 10000;
 
@@ -334,7 +455,7 @@
     let socketOnline = null;
     let jugadoresOnline = {};
 
-    const raton = { x: 0, y: 0, worldX: 0, worldY: 0, presionado: false };
+    const raton = { x: canvas.width / 2, y: canvas.height / 2, worldX: 0, worldY: 0, presionado: false };
     const teclas = {};
 
     let jugador = { 
@@ -521,6 +642,94 @@
     window.addEventListener('mousemove', e => { raton.x = e.clientX; raton.y = e.clientY; });
     window.addEventListener('mousedown', () => { raton.presionado = true; ejecutarInteraccionE(); });
     window.addEventListener('mouseup', () => raton.presionado = false);
+
+    // --- CONTROLES TÁCTILES MÓVIL / TABLET ---
+    let toqueDisparoId = null;
+
+    document.querySelectorAll('.btn-tactil-dir').forEach(btn => {
+      const tecla = btn.getAttribute('data-tecla');
+      const activar = e => {
+        e.preventDefault();
+        e.stopPropagation();
+        teclas[tecla] = true;
+        btn.classList.add('pulsado');
+      };
+      const desactivar = e => {
+        e.preventDefault();
+        e.stopPropagation();
+        teclas[tecla] = false;
+        btn.classList.remove('pulsado');
+      };
+      btn.addEventListener('touchstart', activar, { passive: false });
+      btn.addEventListener('touchend', desactivar, { passive: false });
+      btn.addEventListener('touchcancel', desactivar, { passive: false });
+      btn.addEventListener('mousedown', activar);
+      btn.addEventListener('mouseup', desactivar);
+      btn.addEventListener('mouseleave', desactivar);
+    });
+
+    const btnTactilE = document.getElementById('btn-tactil-e');
+    btnTactilE.addEventListener('touchstart', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      ejecutarInteraccionE();
+    }, { passive: false });
+    btnTactilE.addEventListener('click', e => {
+      e.stopPropagation();
+      ejecutarInteraccionE();
+    });
+
+    const btnTactilF = document.getElementById('btn-tactil-f');
+    btnTactilF.addEventListener('touchstart', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      ejecutarAccionBunkerF();
+    }, { passive: false });
+    btnTactilF.addEventListener('click', e => {
+      e.stopPropagation();
+      ejecutarAccionBunkerF();
+    });
+
+    // Pulsar cualquier lugar de la pantalla (canvas) apunta y dispara hacia ese punto
+    canvas.addEventListener('touchstart', e => {
+      if (!enJuego) return;
+      e.preventDefault();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (toqueDisparoId === null) {
+          toqueDisparoId = t.identifier;
+          raton.x = t.clientX;
+          raton.y = t.clientY;
+          raton.presionado = true;
+        }
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', e => {
+      if (!enJuego) return;
+      e.preventDefault();
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === toqueDisparoId) {
+          raton.x = t.clientX;
+          raton.y = t.clientY;
+        }
+      }
+    }, { passive: false });
+
+    function finalizarToqueDisparo(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === toqueDisparoId) {
+          toqueDisparoId = null;
+          raton.presionado = false;
+        }
+      }
+    }
+
+    canvas.addEventListener('touchend', finalizarToqueDisparo, { passive: false });
+    canvas.addEventListener('touchcancel', finalizarToqueDisparo, { passive: false });
 
     let ultimoDisparoJugador = 0;
 
@@ -840,13 +1049,13 @@
       ctx.fillRect(centroX - anchoBunker/2, centroY - altoBunker/2, anchoBunker, altoBunker);
       ctx.strokeRect(centroX - anchoBunker/2, centroY - altoBunker/2, anchoBunker, altoBunker);
 
-      ctx.fillStyle = '#5bc0be'; ctx.beginPath(); ctx.arc(centroX, centroY, 15, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#ffffff'; ctx.font = '14px Segoe UI'; ctx.textAlign = 'center';
-      ctx.fillText('¡DENTRO DEL BÚNKER 4x4! (E para Salir / F para Recoger)', centroX, centroY - altoBunker/2 - 15);
+      ctx.fillStyle = '#5bc0be';
+      ctx.beginPath();
+      ctx.arc(centroX, centroY, jugador.radio, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    function bucle() { actualizar(); renderizar(); requestAnimationFrame(bucle); }
-
+    // --- FLUJO DE PARTIDA ---
     function iniciarJuego() {
       dificultadBot = parseInt(document.getElementById('dificultad').value);
       modoJuego = document.getElementById('modo-juego').value;
@@ -854,93 +1063,102 @@
       document.getElementById('menu-principal').style.display = 'none';
       document.getElementById('hud').style.display = 'block';
       document.getElementById('inventario-armas').style.display = 'flex';
+      document.getElementById('controles-tactiles').style.display = 'block';
+      document.getElementById('pantalla-game-over').style.display = 'none';
+
+      const params = new URLSearchParams(window.location.search);
+      const cargado = params.get('mode') === 'continue' ? cargarPartidaGuardada() : false;
+
+      if (!cargado) {
+        jugador.x = 5000;
+        jugador.y = 5000;
+        jugador.vida = 100;
+        jugador.corazones = 0;
+        jugador.bunkersGuardados = 0;
+        jugador.enBunker = false;
+        jugador.inventario = [LAS_7_ARMAS[0], null, null, null, null, null, null];
+        jugador.indexArmaEquipada = 0;
+      }
 
       generarMuros();
       generarArmas();
       generarCofresYCorazones();
       generarBots();
 
-      // Comprobar si se pidió cargar la partida guardada
-      const accionModo = localStorage.getItem('pixelgames_action_juego2.html');
-      let cargadoConExito = false;
-
-      if (accionModo === 'load') {
-        cargadoConExito = cargarPartidaGuardada();
-        localStorage.removeItem('pixelgames_action_juego2.html');
-      }
-
-      if (!cargadoConExito) {
-        jugador.inventario = [LAS_7_ARMAS[0], null, null, null, null, null, null];
-        jugador.indexArmaEquipada = 0;
-        jugador.vida = 100;
-        jugador.corazones = 0;
-        jugador.bunkersGuardados = 0;
-        jugador.enBunker = false;
-        jugador.x = 5000;
-        jugador.y = 5000;
-      }
-
-      actualizarBarraVida();
-      actualizarUICorazones();
-      actualizarUIBunkers();
-      actualizarUIInventario();
-
       if (modoJuego === 'online') conectarServidorOnline();
 
+      actualizarBarraVida();
+      actualizarUIInventario();
+      actualizarUICorazones();
+      actualizarUIBunkers();
+
       enJuego = true;
+      requestAnimationFrame(buclePrincipal);
+    }
+
+    function buclePrincipal() {
+      actualizar();
+      renderizar();
+      if (enJuego) requestAnimationFrame(buclePrincipal);
     }
 
     function finalizarJuego(victoria) {
       enJuego = false;
-      actualizarContadorJugadores();
+      raton.presionado = false;
+      toqueDisparoId = null;
+      document.getElementById('controles-tactiles').style.display = 'none';
       const pantalla = document.getElementById('pantalla-game-over');
       const titulo = document.getElementById('titulo-fin');
       const subtitulo = document.getElementById('subtitulo-fin');
       const btnRevivir = document.getElementById('btn-revivir');
 
-      if (victoria) {
-        titulo.innerText = "¡HAS GANADO!"; titulo.style.color = "#2ecc71";
-        subtitulo.innerText = "¡Eres el único superviviente de la Arena!";
-        btnRevivir.style.display = "none";
-      } else {
-        titulo.innerText = "GAME OVER"; titulo.style.color = "#e74c3c";
-        subtitulo.innerText = "Has sido eliminado en combate.";
-        if (jugador.corazones > 0) {
-          btnRevivir.style.display = "block";
-          btnRevivir.innerText = `REVIVIR CON ❤️ (Tienes ${jugador.corazones})`;
-        } else {
-          btnRevivir.style.display = "none";
-        }
-      }
-
       pantalla.style.display = 'flex';
-      document.getElementById('inventario-armas').style.display = 'none';
+      if (victoria) {
+        titulo.innerText = "¡VICTORIA!";
+        titulo.style.color = "#2ecc71";
+        subtitulo.innerText = "Eres el último superviviente en pie.";
+        btnRevivir.style.display = 'none';
+      } else {
+        titulo.innerText = "GAME OVER";
+        titulo.style.color = "#e74c3c";
+        subtitulo.innerText = "Has sido eliminado.";
+        btnRevivir.style.display = jugador.corazones > 0 ? 'inline-block' : 'none';
+      }
     }
 
     function usarCorazonRevivir() {
       if (jugador.corazones > 0) {
-        jugador.corazones--; jugador.vida = 100;
-        actualizarBarraVida(); actualizarUICorazones();
+        jugador.corazones--;
+        jugador.vida = jugador.maxVida;
+        actualizarUICorazones();
+        actualizarBarraVida();
+        actualizarContadorJugadores();
         document.getElementById('pantalla-game-over').style.display = 'none';
-        document.getElementById('inventario-armas').style.display = 'flex';
+        document.getElementById('controles-tactiles').style.display = 'block';
         enJuego = true;
+        requestAnimationFrame(buclePrincipal);
       }
     }
 
     function reiniciarPartida() {
-      document.getElementById('pantalla-game-over').style.display = 'none';
       iniciarJuego();
     }
 
     function volverAMenu() {
-      window.location.href = "juegos.html";
+      try {
+        window.location.href = 'juegos.html';
+      } catch (e) {
+        document.getElementById('pantalla-game-over').style.display = 'none';
+        document.getElementById('hud').style.display = 'none';
+        document.getElementById('inventario-armas').style.display = 'none';
+        document.getElementById('controles-tactiles').style.display = 'none';
+        document.getElementById('menu-principal').style.display = 'block';
+      }
     }
 
     function toggleInfo(mostrar) {
       document.getElementById('modal-info').style.display = mostrar ? 'flex' : 'none';
     }
-
-    bucle();
   </script>
 </body>
 </html>
