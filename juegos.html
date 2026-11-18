@@ -1,506 +1,1748 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Portal Tecnológico</title>
-    <!-- Carga de Tailwind CSS para utilidades y diseño responsivo -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fuente Inter para una tipografía limpia y moderna -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos personalizados para replicar fielmente la estética tecnológica y el efecto cristal */
-        * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIXEL GAMES - Cyber-Tech OS (juegos.html)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
+    :root {
+      --bg-deep: #04070d;
+      --bg-panel: rgba(15, 23, 42, 0.78);
+      --slate-dark: #1e293b;
+      --slate-mid: #475569;
+      --slate-light: #94a3b8;
+      --cyan-neon: #00e5ff;
+      --cyan-deep: #0284c7;
+      --gold-neon: #ffd700;
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background-color: #030805;
-            background-image: 
-                radial-gradient(circle at 18% 22%, rgba(20, 88, 42, 0.45) 0%, transparent 45%),
-                radial-gradient(circle at 82% 78%, rgba(16, 75, 36, 0.42) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, #081a0f 0%, #020503 100%);
-            overflow-x: hidden;
-        }
+    body {
+      background: radial-gradient(circle at 50% 15%, #0c192c 0%, #050912 60%, #020408 100%);
+      color: #f8fafc;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 35px 0 60px;
+      position: relative;
+      overflow-x: hidden;
+    }
 
-        /* Lienzo de fondo para hexágonos, circuitos y red de nodos brillantes */
-        #tech-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
+    /* CANVAS FONDO FUTURISTA EN MOVIMIENTO */
+    #bg-futuristic {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-        /* Tarjeta principal Glassmorphism oscuro */
-        .login-glass-card {
-            background: rgba(12, 28, 16, 0.84);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1.5px solid #4d8a47;
-            border-radius: 18px;
-            box-shadow: 
-                0 20px 50px rgba(0, 0, 0, 0.8),
-                0 0 30px rgba(77, 138, 71, 0.18),
-                inset 0 0 20px rgba(77, 138, 71, 0.06);
-        }
+    /* REJILLA HOLOGRÁFICA Y ESCÁNER EN MOVIMIENTO */
+    .cyber-grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      z-index: 0;
+      pointer-events: none;
+      animation: gridDrift 25s linear infinite;
+    }
 
-        /* Campos de entrada oscuros con borde verde claro */
-        .custom-input {
-            background-color: #363636;
-            border: 1.5px solid #7cb855;
-            border-radius: 8px;
-            color: #ffffff;
-            transition: all 0.25s ease;
-        }
+    @keyframes gridDrift {
+      0% { background-position: 0 0; }
+      100% { background-position: 48px 48px; }
+    }
 
-        .custom-input::placeholder {
-            color: #9ca3af;
-        }
+    .hud-scanner-line {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.5), rgba(148, 163, 184, 0.4), transparent);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
+      z-index: 1;
+      pointer-events: none;
+      animation: scanVertical 8s ease-in-out infinite;
+    }
 
-        .custom-input:focus {
-            outline: none;
-            border-color: #9ee370;
-            box-shadow: 0 0 12px rgba(124, 184, 85, 0.45);
-            background-color: #3d3d3d;
-        }
+    @keyframes scanVertical {
+      0%, 100% { top: 0%; opacity: 0.2; }
+      50% { top: 100%; opacity: 0.8; }
+    }
 
-        /* Botón principal verde redondeado */
-        .btn-login {
-            background-color: #559e42;
-            border-radius: 9999px;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 15px rgba(85, 158, 66, 0.3);
-        }
+    /* ANILLOS HUD DECORATIVOS GIRATORIOS */
+    .hud-ring {
+      position: fixed;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 229, 255, 0.16);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hud-ring-1 {
+      width: 580px; height: 580px;
+      top: -180px; right: -160px;
+      border-color: rgba(0, 229, 255, 0.18);
+      animation: spinSlow 45s linear infinite;
+    }
+    .hud-ring-2 {
+      width: 460px; height: 460px;
+      bottom: -150px; left: -140px;
+      border: 2px dotted rgba(148, 163, 184, 0.2);
+      animation: spinSlowReverse 35s linear infinite;
+    }
 
-        .btn-login:hover {
-            background-color: #62b34d;
-            box-shadow: 0 6px 22px rgba(98, 179, 77, 0.5);
-            transform: translateY(-1px);
-        }
+    @keyframes spinSlow { 100% { transform: rotate(360deg); } }
+    @keyframes spinSlowReverse { 100% { transform: rotate(-360deg); } }
 
-        .btn-login:active {
-            transform: translateY(0) scale(0.98);
-        }
+    header, main {
+      position: relative;
+      z-index: 2;
+    }
 
-        /* Animación suave para la notificación visual */
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .toast-animate {
-            animation: slideIn 0.3s ease forwards;
-        }
-    </style>
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      width: 92%;
+      max-width: 1240px;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      border-top: 2px solid #00e5ff;
+      border-bottom: 2px solid #475569;
+      clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px);
+      padding: 24px 20px;
+      box-shadow: 0 0 35px rgba(2, 132, 199, 0.25), inset 0 0 25px rgba(0, 229, 255, 0.08);
+    }
+
+    .system-tag {
+      font-size: 11px;
+      color: #94a3b8;
+      letter-spacing: 3px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      color: #00e5ff;
+      text-shadow: 0 0 18px rgba(0, 229, 255, 0.85), 0 0 38px rgba(2, 132, 199, 0.6);
+      letter-spacing: 4px;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 13px;
+      letter-spacing: 3px;
+      font-weight: bold;
+    }
+
+    /* BARRA SUPERIOR HUD */
+    .user-bar {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .user-tag {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #00e5ff;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.35);
+      padding: 7px 15px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #00e5ff;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .equipped-companion-hud {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(0, 229, 255, 0.14);
+      border: 1px solid rgba(0, 229, 255, 0.5);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 13px;
+      animation: floatMini 2.5s ease-in-out infinite;
+    }
+
+    @keyframes floatMini {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .coins-tag {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+      border: 1px solid #ffd700;
+      padding: 7px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #ffd700;
+      font-weight: bold;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .coins-tag:hover { transform: scale(1.05); box-shadow: 0 0 22px rgba(255, 215, 0, 0.55); }
+
+    .hud-btn {
+      padding: 7px 13px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      border: 1px solid #475569;
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.95));
+      color: #e2e8f0;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.2);
+    }
+
+    .hud-btn:hover {
+      transform: translateY(-2px);
+      border-color: #00e5ff;
+      color: #ffffff;
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.55);
+    }
+
+    .btn-tienda-espiritus {
+      background: linear-gradient(135deg, #0284c7, #0f172a);
+      border-color: #00e5ff;
+      color: #00e5ff;
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.45);
+    }
+
+    .btn-ruleta {
+      border-color: #38bdf8;
+      color: #7dd3fc;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+    }
+
+    .btn-guarderia {
+      border-color: #94a3b8;
+      color: #cbd5e1;
+    }
+
+    .btn-cambiar-usuario {
+      border-color: #64748b;
+      color: #94a3b8;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #00e5ff;
+      border-radius: 6px;
+      padding: 2px 3px 2px 10px;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.35);
+    }
+
+    .search-input {
+      background: transparent;
+      border: none;
+      color: #00e5ff;
+      font-family: inherit;
+      font-size: 12px;
+      width: 90px;
+      outline: none;
+    }
+
+    .search-input::placeholder { color: #64748b; }
+
+    .btn-buscar {
+      background: linear-gradient(180deg, #00e5ff, #0284c7);
+      color: #04070d;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      transition: filter 0.15s;
+    }
+    .btn-buscar:hover { filter: brightness(1.15); }
+
+    /* GRID DE JUEGOS */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+      gap: 20px;
+      width: 92%;
+      max-width: 1240px;
+    }
+
+    /* ANIMACIÓN DE PULSO CYBER AZUL Y GRIS METÁLICO */
+    @keyframes cyberPulse {
+      0% { border-color: #00e5ff; box-shadow: 0 0 18px rgba(0, 229, 255, 0.35), inset 0 0 12px rgba(0, 229, 255, 0.12); }
+      50% { border-color: #64748b; box-shadow: 0 0 22px rgba(2, 132, 199, 0.45), inset 0 0 14px rgba(148, 163, 184, 0.12); }
+      100% { border-color: #00e5ff; box-shadow: 0 0 18px rgba(0, 229, 255, 0.35), inset 0 0 12px rgba(0, 229, 255, 0.12); }
+    }
+
+    /* TARJETA DESTACADA WAHC2.0 */
+    .card-featured {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.85));
+      backdrop-filter: blur(10px);
+      border: 2px solid #00e5ff;
+      border-radius: 14px;
+      padding: 26px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+      animation: cyberPulse 5s ease-in-out infinite;
+    }
+
+    .card-featured::before {
+      content: "";
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.08), transparent);
+      transform: skewX(-25deg);
+      animation: sheenSweep 6s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes sheenSweep {
+      0% { left: -100%; }
+      45%, 100% { left: 160%; }
+    }
+
+    .featured-badge {
+      display: inline-block;
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid #00e5ff;
+      color: #00e5ff;
+      font-weight: 900;
+      font-size: 11px;
+      padding: 4px 11px;
+      border-radius: 4px;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+    }
+
+    .featured-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #f8fafc;
+      text-shadow: 0 0 14px rgba(0, 229, 255, 0.7);
+      margin-bottom: 8px;
+    }
+
+    .featured-desc {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 15px;
+      max-width: 660px;
+    }
+
+    .featured-emojis {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .emoji-pill {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #475569;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .emoji-pill:hover {
+      transform: scale(1.18);
+      border-color: #00e5ff;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.6);
+    }
+
+    /* TARJETAS DE JUEGOS */
+    .card {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(8px);
+      border: 1px solid #334155;
+      border-top: 2px solid #00e5ff;
+      border-radius: 12px;
+      padding: 25px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 225px;
+      position: relative;
+      animation: cyberPulse 6s ease-in-out infinite;
+      transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+    }
+
+    .card-num {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      font-size: 11px;
+      color: #00e5ff;
+      background: rgba(2, 132, 199, 0.18);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .card.available:hover {
+      transform: translateY(-6px);
+      border-color: #00e5ff;
+      box-shadow: 0 10px 28px rgba(0, 229, 255, 0.4), inset 0 0 18px rgba(0, 229, 255, 0.15);
+    }
+
+    .card.highlight {
+      animation: highlightCyber 1s ease-in-out infinite alternate !important;
+      transform: scale(1.07) !important;
+      z-index: 10;
+    }
+
+    @keyframes highlightCyber {
+      0% { border-color: #00e5ff; box-shadow: 0 0 30px #00e5ff, inset 0 0 18px rgba(0, 229, 255, 0.4); }
+      100% { border-color: #f8fafc; box-shadow: 0 0 48px #38bdf8, inset 0 0 25px rgba(56, 189, 248, 0.5); }
+    }
+
+    .icon { font-size: 50px; margin-bottom: 12px; filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.55)); }
+    .name { font-size: 19px; font-weight: 800; margin-bottom: 15px; color: #f1f5f9; letter-spacing: 0.5px; }
+
+    .play {
+      display: inline-block;
+      padding: 10px 24px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #00e5ff, #0284c7);
+      color: #04070d;
+      text-decoration: none;
+      font-weight: 900;
+      font-family: inherit;
+      font-size: 13px;
+      letter-spacing: 1px;
+      border: 1px solid #7dd3fc;
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.45);
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .play:hover { transform: scale(1.05); filter: brightness(1.12); box-shadow: 0 0 24px rgba(0, 229, 255, 0.8); }
+    .play:active { transform: scale(0.98); }
+
+    .locked {
+      opacity: 0.62;
+      animation: none;
+      border-color: #334155;
+      border-top-color: #475569;
+      background: rgba(15, 23, 42, 0.55);
+    }
+    .locked .card-num { color: #64748b; border-color: #334155; background: rgba(15, 23, 42, 0.6); }
+    .lock { font-size: 50px; margin-bottom: 12px; filter: grayscale(0.7) drop-shadow(0 6px 6px rgba(0,0,0,0.7)); }
+    .locked .name { color: #64748b; }
+    .badge {
+      font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #94a3b8;
+      border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; background: rgba(30, 41, 59, 0.6);
+    }
+
+    /* MODALES GENERALES FUTURISTAS */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 15, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .modal-card {
+      background: linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.94));
+      border: 1px solid #00e5ff;
+      border-top: 3px solid #00e5ff;
+      border-radius: 14px;
+      padding: 25px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 92vh;
+      overflow-y: auto;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(0, 229, 255, 0.35), inset 0 0 20px rgba(2, 132, 199, 0.15);
+      animation: popIn 0.22s ease-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-card h2 { color: #00e5ff; font-size: 22px; margin-bottom: 6px; text-shadow: 0 0 12px rgba(0, 229, 255, 0.6); letter-spacing: 1.5px; }
+    .modal-sub { color: #94a3b8; font-size: 13px; margin-bottom: 18px; }
+
+    .modal-btn {
+      width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid transparent;
+      font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s;
+    }
+    .modal-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+    .btn-continuar { background: linear-gradient(180deg, #00e5ff, #0284c7); color: #04070d; font-weight: 900; box-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
+    .btn-nueva { background: linear-gradient(180deg, #475569, #334155); color: #f8fafc; border-color: #94a3b8; }
+    .btn-cancelar { background: rgba(15, 23, 42, 0.8); border-color: #334155; color: #94a3b8; }
+    .alerta-error { color: #fca5a5; font-size: 12px; margin-top: 12px; display: none; font-weight: bold; background: rgba(127, 29, 29, 0.35); padding: 9px; border-radius: 6px; border: 1px solid #ef4444; }
+
+    /* =======================================================
+       TIENDA DE ESPÍRITUS CON VISOR HOLOGRÁFICO (SCI-FI)
+       ======================================================= */
+    .spirit-shop-modal {
+      max-width: 960px;
+      text-align: left;
+    }
+
+    .shop-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+
+    .shop-balance-pill {
+      background: rgba(2, 6, 15, 0.85);
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.25);
+    }
+
+    .spirit-shop-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 780px) {
+      .spirit-shop-layout { grid-template-columns: 1fr; }
+    }
+
+    /* CÁMARA VISOR HOLOGRÁFICO */
+    .holo-viewer-panel {
+      background: radial-gradient(circle at 50% 42%, rgba(2, 132, 199, 0.25), rgba(4, 7, 13, 0.95) 75%);
+      border: 1px solid #00e5ff;
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 30px rgba(0, 229, 255, 0.18);
+    }
+
+    .holo-stage {
+      position: relative;
+      width: 210px;
+      height: 210px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px 0;
+    }
+
+    .holo-ring-outer {
+      position: absolute;
+      width: 196px; height: 196px;
+      border-radius: 50%;
+      border: 2px dashed rgba(0, 229, 255, 0.65);
+      animation: spinSlow 14s linear infinite;
+    }
+
+    .holo-ring-inner {
+      position: absolute;
+      width: 156px; height: 156px;
+      border-radius: 50%;
+      border: 2px solid rgba(148, 163, 184, 0.45);
+      border-top-color: #00e5ff;
+      border-bottom-color: #00e5ff;
+      animation: spinSlowReverse 8s linear infinite;
+    }
+
+    .holo-pedestal {
+      position: absolute;
+      bottom: 12px;
+      width: 130px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(0, 229, 255, 0.75) 0%, rgba(2, 132, 199, 0.15) 65%, transparent 100%);
+      box-shadow: 0 0 25px #00e5ff;
+      animation: pulsePedestal 2.2s ease-in-out infinite;
+    }
+
+    @keyframes pulsePedestal {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.12); opacity: 1; }
+    }
+
+    .holo-beam {
+      position: absolute;
+      bottom: 22px;
+      width: 110px;
+      height: 150px;
+      background: linear-gradient(to top, rgba(0, 229, 255, 0.25), transparent);
+      clip-path: polygon(15% 100%, 85% 100%, 100% 0, 0 0);
+      pointer-events: none;
+    }
+
+    .holo-avatar {
+      font-size: 84px;
+      z-index: 3;
+      filter: drop-shadow(0 0 22px var(--spirit-glow, #00e5ff));
+      animation: holoFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes holoFloat {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-12px) scale(1.06); }
+    }
+
+    .holo-rarity-tag {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid #00e5ff;
+      color: #00e5ff;
+      text-transform: uppercase;
+    }
+
+    .holo-name {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .holo-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      text-align: center;
+      margin: 6px 0 12px;
+      line-height: 1.4;
+    }
+
+    .holo-stats {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .stat-cell {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #334155;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+    }
+    .stat-label { color: #64748b; display: block; margin-bottom: 2px; }
+    .stat-val { color: #00e5ff; font-weight: bold; font-size: 12px; }
+
+    .stat-bar-track {
+      width: 100%;
+      height: 5px;
+      background: rgba(2, 6, 15, 0.9);
+      border-radius: 3px;
+      margin-top: 5px;
+      overflow: hidden;
+      border: 1px solid rgba(71, 85, 105, 0.5);
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0284c7, #00e5ff);
+      box-shadow: 0 0 8px #00e5ff;
+      transition: width 0.35s ease;
+    }
+
+    .shop-controls-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .shop-search-input {
+      flex: 1;
+      min-width: 140px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #00e5ff;
+      background: rgba(4, 7, 13, 0.9);
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .shop-filter-select {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background: rgba(15, 23, 42, 0.95);
+      color: #00e5ff;
+      font-family: inherit;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .preset-users-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .preset-chip {
+      background: rgba(2, 132, 199, 0.2);
+      border: 1px solid #38bdf8;
+      color: #7dd3fc;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .preset-chip:hover {
+      background: #00e5ff;
+      color: #04070d;
+      font-weight: bold;
+    }
+
+    /* CATÁLOGO DERECHO DE ESPÍRITUS CAROS */
+    .spirit-catalog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 440px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .spirit-row-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .spirit-row-card:hover {
+      border-color: #38bdf8;
+      background: rgba(30, 41, 59, 0.9);
+    }
+
+    .spirit-row-card.selected {
+      border-color: #00e5ff;
+      background: linear-gradient(90deg, rgba(2, 132, 199, 0.28), rgba(15, 23, 42, 0.95));
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.3);
+    }
+
+    .spirit-row-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spirit-row-icon {
+      font-size: 34px;
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(4, 7, 13, 0.8);
+      border: 1px solid #475569;
+      border-radius: 8px;
+    }
+
+    .spirit-price-badge {
+      font-size: 12px;
+      font-weight: 900;
+      padding: 5px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .price-expensive {
+      background: rgba(255, 215, 0, 0.14);
+      border: 1px solid #ffd700;
+      color: #ffd700;
+    }
+
+    .price-owned {
+      background: rgba(0, 229, 255, 0.16);
+      border: 1px solid #00e5ff;
+      color: #00e5ff;
+    }
+
+    /* RULETA ANIMADA INTERACTIVA */
+    .roulette-wrapper { position: relative; width: 300px; height: 300px; margin: 15px auto; }
+    #roulette-canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 30px rgba(0, 229, 255, 0.55); }
+    .roulette-pointer {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 24px solid #00e5ff; z-index: 10;
+      filter: drop-shadow(0 0 8px #00e5ff);
+    }
+    .btn-spin { background: linear-gradient(180deg, #00e5ff, #0284c7); color: #04070d; font-size: 15px; font-weight: 900; border: 1px solid #7dd3fc; box-shadow: 0 0 18px rgba(0, 229, 255, 0.5); }
+    .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
+    #roulette-result { font-size: 14px; font-weight: bold; color: #ffd700; min-height: 24px; margin-top: 8px; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); }
+
+    /* LISTAS Y ELEMENTOS DE MODALES SECUNDARIOS */
+    .item-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 15px 0;
+    }
+
+    .item-box {
+      background: rgba(4, 7, 13, 0.85);
+      border: 1px solid #00e5ff;
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.2);
+    }
+
+    .mini-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #7dd3fc;
+      font-family: inherit;
+      font-weight: bold;
+      font-size: 11px;
+      cursor: pointer;
+      background: linear-gradient(180deg, #00e5ff, #0284c7);
+      color: #04070d;
+      margin-top: 4px;
+    }
+
+    .list-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(4, 7, 13, 0.8);
+      border: 1px solid #334155;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .neon-input {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 6px;
+      border: 1px solid #00e5ff;
+      background: #04070d;
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    /* NOTIFICACIÓN TOAST FLOTANTE */
+    #toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid #00e5ff;
+      color: #f8fafc;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 13px;
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.6);
+      z-index: 300;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      text-align: center;
+    }
+    #toast-msg.show { transform: translateX(-50%) translateY(0); }
+
+    .game-screen-sim {
+      background: #04070d;
+      border: 1px solid #00e5ff;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.15);
+    }
+  </style>
 </head>
-<body class="flex items-center justify-center p-4 sm:p-6 relative">
 
-    <!-- Canvas animado con red de nodos, líneas de circuito y hexágonos translúcidos -->
-    <canvas id="tech-canvas"></canvas>
+<body>
 
-    <!-- Contenedor principal centrado -->
-    <main class="relative z-10 w-full max-w-[410px]">
-        <div class="login-glass-card relative px-7 py-9 sm:px-9 sm:py-10 text-white">
-            
-            <!-- Icono de escudo con candado en la esquina superior derecha -->
-            <div class="absolute top-4 right-4 text-gray-400 opacity-75 hover:opacity-100 transition-opacity" title="Acceso Protegido">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    <rect x="9" y="10" width="6" height="5" rx="1"></rect>
-                    <path d="M10 10V8a2 2 0 1 1 4 0v2"></path>
-                </svg>
-            </div>
+  <!-- CAPAS DE FONDO FUTURISTA EN MOVIMIENTO -->
+  <canvas id="bg-futuristic"></canvas>
+  <div class="cyber-grid-overlay"></div>
+  <div class="hud-scanner-line"></div>
+  <div class="hud-ring hud-ring-1"></div>
+  <div class="hud-ring hud-ring-2"></div>
 
-            <!-- Título en mayúsculas -->
-            <h1 class="text-center text-2xl sm:text-[26px] font-bold tracking-wider uppercase mb-7 text-white">
-                INICIAR SESIÓN
-            </h1>
+  <header>
+    <div class="system-tag">// CYBER-ARCADE OS v4.2 • NÚCLEO ACTIVO //</div>
+    <h1>PIXEL GAMES</h1>
+    <div class="subtitle">SELECCIONA MÓDULO DE SIMULACIÓN</div>
+    <div class="user-bar">
+      <div class="user-tag" id="user-display">👤 Usuario: CyberNova_01</div>
+      <div class="coins-tag" id="coins-display" onclick="abrirTiendaEspiritus()" title="Abrir Tienda de Espíritus">🪙 150.000 Pixelmonedas</div>
+      <button class="hud-btn btn-tienda-espiritus" onclick="abrirTiendaEspiritus()">👻 ESPÍRITUS (150)</button>
+      <button class="hud-btn btn-ruleta" onclick="abrirRuleta()">🎡 PIXELRULETA</button>
+      <a href="guarderia.html" class="hud-btn btn-guarderia" style="text-decoration: none;">🏡 GUARDERÍA</a>
+      <button class="hud-btn" onclick="abrirModalLogros()">🏆 LOGROS</button>
+      <button class="hud-btn" onclick="abrirModalAmigos()">👥 AMIGOS</button>
+      <a href="index.html" class="hud-btn btn-cambiar-usuario" style="text-decoration: none;">🔄 SESIÓN</a>
+      
+      <div class="search-box">
+        <input type="number" id="input-buscar-juego" class="search-input" min="1" max="100" placeholder="Nº (1-100)..." onkeypress="if(event.key === 'Enter') buscarJuego();">
+        <button class="btn-buscar" onclick="buscarJuego()">🔍 IR</button>
+      </div>
+    </div>
+  </header>
 
-            <!-- Notificación visual de estado (oculta por defecto) -->
-            <div id="status-box" class="hidden mb-5 p-3 rounded-lg border text-xs sm:text-sm flex items-center gap-2.5 toast-animate">
-                <span id="status-icon"></span>
-                <span id="status-text" class="font-medium"></span>
-            </div>
-
-            <!-- Formulario de Inicio de Sesión -->
-            <form id="login-form" class="space-y-5" novalidate>
-                
-                <!-- Campo: Usuario o Correo Electrónico -->
-                <div>
-                    <label for="username" class="flex items-center gap-2 text-sm font-medium text-gray-200 mb-2">
-                        <!-- Icono de usuario en verde -->
-                        <svg class="w-4 h-4 fill-[#7cb855] shrink-0" viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
-                        <span>Usuario o Correo Electrónico</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        name="username"
-                        class="custom-input w-full px-3.5 py-3 text-sm" 
-                        placeholder="ejemplo@correo.com"
-                        autocomplete="username"
-                        required
-                    >
-                </div>
-
-                <!-- Campo: Contraseña -->
-                <div>
-                    <label for="password" class="flex items-center gap-2 text-sm font-medium text-gray-200 mb-2">
-                        <!-- Icono de candado en verde -->
-                        <svg class="w-4 h-4 fill-[#7cb855] shrink-0" viewBox="0 0 24 24">
-                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-                        </svg>
-                        <span>Contraseña</span>
-                    </label>
-                    <div class="relative flex items-center">
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password"
-                            class="custom-input w-full pl-3.5 pr-11 py-3 text-sm tracking-widest" 
-                            placeholder="••••••••••••"
-                            value="••••••••••••"
-                            autocomplete="current-password"
-                            required
-                        >
-                        <!-- Botón interactivo del ojo para mostrar/ocultar contraseña -->
-                        <button 
-                            type="button" 
-                            id="toggle-password" 
-                            class="absolute right-3 p-1.5 text-gray-400 hover:text-white focus:outline-none transition-colors"
-                            aria-label="Mostrar u ocultar contraseña"
-                            title="Mostrar/Ocultar contraseña"
-                        >
-                            <!-- SVG inicial: ojo tachado -->
-                            <svg id="eye-icon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                <line x1="1" y1="1" x2="23" y2="23"></line>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Botón de envío -->
-                <div class="pt-2">
-                    <button 
-                        type="submit" 
-                        class="btn-login w-full py-3.5 text-white font-bold text-sm sm:text-base tracking-wide uppercase cursor-pointer"
-                    >
-                        INICIAR SESIÓN
-                    </button>
-                </div>
-
-                <!-- Enlaces inferiores centrados en verde claro -->
-                <div class="pt-2 flex flex-col items-center space-y-2.5 text-xs sm:text-[13px]">
-                    <a href="#recuperar" id="forgot-link" class="text-[#8ab87f] hover:text-[#b6e8aa] hover:underline transition-colors">
-                        ¿Olvidaste tu contraseña?
-                    </a>
-                    <a href="#registro" id="register-link" class="text-[#8ab87f] hover:text-[#b6e8aa] hover:underline transition-colors">
-                        Crear una cuenta
-                    </a>
-                </div>
-            </form>
+  <main class="grid" id="games">
+    <!-- TARJETA DESTACADA WAHC2.0 -->
+    <article class="card-featured">
+      <div>
+        <span class="featured-badge">★ SIMULACIÓN DESTACADA ★</span>
+        <h2 class="featured-title">WAHC2.0</h2>
+        <p class="featured-desc">Sobrevive juntando madera y manteniendo tu fuego encendido. ¡Resiste la aventura en la oscuridad cibernética!</p>
+        <div class="featured-emojis">
+          <span class="emoji-pill" title="Bosque" onclick="mostrarToast('🌲 Escaneando sector forestal... (+5 Madera)')">🌲</span>
+          <span class="emoji-pill" title="Madera" onclick="mostrarToast('🪵 Recursos de biomasa almacenados')">🪵</span>
+          <span class="emoji-pill" title="Hacha" onclick="mostrarToast('🪓 Herramienta de corte calibrada')">🪓</span>
+          <span class="emoji-pill" title="Zombie" onclick="mostrarToast('🧟 Alerta: Entidades hostiles detectadas')">🧟</span>
+          <span class="emoji-pill" title="Refugio" onclick="mostrarToast('🏕️ Escudo térmico del refugio al 100%')">🏕️</span>
         </div>
-    </main>
+      </div>
+      <div>
+        <a href="menudegame.html" class="play" style="font-size: 15px; padding: 14px 28px;">▶ ENTRAR AL JUEGO</a>
+      </div>
+    </article>
+  </main>
 
-    <script>
-        /**
-         * 1. INTERACTIVIDAD DEL FORMULARIO Y MOSTRAR/OCULTAR CONTRASEÑA
-         */
-        document.addEventListener('DOMContentLoaded', () => {
-            const togglePasswordBtn = document.getElementById('toggle-password');
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eye-icon');
-            const loginForm = document.getElementById('login-form');
-            const usernameInput = document.getElementById('username');
-            const statusBox = document.getElementById('status-box');
-            const statusText = document.getElementById('status-text');
-            const statusIcon = document.getElementById('status-icon');
-            const forgotLink = document.getElementById('forgot-link');
-            const registerLink = document.getElementById('register-link');
+  <!-- =======================================================
+       MODAL TIENDA DE ESPÍRITUS CON VISOR HOLOGRÁFICO
+       ======================================================= -->
+  <div class="modal-overlay" id="modal-tienda" onclick="if(event.target===this) cerrarModal('modal-tienda')">
+    <div class="modal-card spirit-shop-modal">
+      <div class="shop-header-bar">
+        <div>
+          <h2 style="margin-bottom: 2px;">👻 LABORATORIO & TIENDA DE 150 ESPÍRITUS</h2>
+          <span style="color: #94a3b8; font-size: 12px;">Inspecciona las 150 entidades en el visor holográfico y adquiere compañeros de élite</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <div class="shop-balance-pill" id="shop-balance-display">🪙 150.000 Pixelmonedas</div>
+        </div>
+      </div>
 
-            // Alternar visibilidad de la contraseña
-            togglePasswordBtn.addEventListener('click', () => {
-                const isHidden = passwordInput.type === 'password';
-                passwordInput.type = isHidden ? 'text' : 'password';
+      <div class="spirit-shop-layout">
+        <!-- VISOR HOLOGRÁFICO INTERACTIVO -->
+        <div class="holo-viewer-panel">
+          <span class="holo-rarity-tag" id="visor-rareza">#001 • COMÚN CYBER</span>
+          
+          <div class="holo-stage">
+            <div class="holo-ring-outer"></div>
+            <div class="holo-ring-inner"></div>
+            <div class="holo-beam"></div>
+            <div class="holo-avatar" id="visor-icono">👻</div>
+            <div class="holo-pedestal"></div>
+          </div>
 
-                // Ajustar espaciado de letras según si está oculta o visible
-                if (isHidden) {
-                    passwordInput.classList.remove('tracking-widest');
-                    eyeIcon.innerHTML = `
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    `;
-                } else {
-                    passwordInput.classList.add('tracking-widest');
-                    eyeIcon.innerHTML = `
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                    `;
-                }
-            });
+          <div class="holo-name" id="visor-nombre">Espectro Crio-01</div>
+          <div class="holo-desc" id="visor-desc">Entidad digital forjada en servidores cuánticos de alta frecuencia.</div>
 
-            // Función auxiliar para mostrar mensajes visuales en la tarjeta (sin alert())
-            function showMessage(message, type = 'success') {
-                statusBox.classList.remove('hidden', 'bg-emerald-950/90', 'border-emerald-500', 'text-emerald-200', 'bg-red-950/90', 'border-red-500', 'text-red-200');
-                
-                if (type === 'success') {
-                    statusBox.classList.add('bg-emerald-950/90', 'border-emerald-500', 'text-emerald-200');
-                    statusIcon.innerHTML = `<svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-                } else {
-                    statusBox.classList.add('bg-red-950/90', 'border-red-500', 'text-red-200');
-                    statusIcon.innerHTML = `<svg class="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-                }
-                
-                statusText.textContent = message;
-            }
+          <div class="holo-stats">
+            <div class="stat-cell">
+              <span class="stat-label">PODER CUÁNTICO</span>
+              <span class="stat-val" id="visor-poder">8.400 MW</span>
+              <div class="stat-bar-track"><div class="stat-bar-fill" id="bar-poder" style="width: 25%;"></div></div>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">VELOCIDAD FASE</span>
+              <span class="stat-val" id="visor-vel">MACH 4.2</span>
+              <div class="stat-bar-track"><div class="stat-bar-fill" id="bar-vel" style="width: 30%;"></div></div>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">ESCUDO ETÉREO</span>
+              <span class="stat-val" id="visor-sinc">96.8%</span>
+              <div class="stat-bar-track"><div class="stat-bar-fill" id="bar-escudo" style="width: 35%;"></div></div>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-label">COSTE ADQUISICIÓN</span>
+              <span class="stat-val" id="visor-precio" style="color: #ffd700;">15.000 🪙</span>
+            </div>
+          </div>
 
-            // Validación y mensaje de confirmación al enviar el formulario
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const userVal = usernameInput.value.trim();
-                const passVal = passwordInput.value.trim();
+          <button class="modal-btn btn-continuar" id="visor-action-btn" style="margin-top: 0;" onclick="ejecutarAccionVisor()">
+            🛒 ADQUIRIR ESPÍRITU (15.000 🪙)
+          </button>
+        </div>
 
-                if (!userVal) {
-                    showMessage('Por favor, ingresa tu usuario o correo electrónico.', 'error');
-                    usernameInput.focus();
-                    return;
-                }
+        <!-- CATÁLOGO DERECHO DE 150 ESPÍRITUS CON PRECIOS CAROS -->
+        <div>
+          <div class="shop-controls-bar">
+            <input type="text" id="shop-search-input" class="shop-search-input" placeholder="Buscar por nombre o # (1-150)..." oninput="renderizarListaEspiritus()">
+            <select id="shop-filter-select" class="shop-filter-select" onchange="renderizarListaEspiritus()">
+              <option value="ALL">Todos (150)</option>
+              <option value="OWNED">En Propiedad</option>
+              <option value="AVAILABLE">Disponibles</option>
+              <option value="Común Cyber">Común Cyber</option>
+              <option value="Raro Titanio">Raro Titanio</option>
+              <option value="Épico Cobalto">Épico Cobalto</option>
+              <option value="Legendario Cuántico">Legendario Cuántico</option>
+              <option value="Mítico Singularidad">Mítico Singularidad</option>
+              <option value="Celestial Omega">Celestial Omega</option>
+            </select>
+          </div>
+          <div style="font-size: 11px; color: #94a3b8; margin-bottom: 8px; display: flex; justify-content: space-between;">
+            <span>SELECCIONA UNA ENTIDAD PARA PROYECTAR:</span>
+            <span id="shop-count-label" style="color: #00e5ff; font-weight: bold;">Mostrando 150 / 150</span>
+          </div>
+          <div class="spirit-catalog-list" id="spirit-catalog-list"></div>
+        </div>
+      </div>
 
-                if (!passVal) {
-                    showMessage('Por favor, ingresa tu contraseña.', 'error');
-                    passwordInput.focus();
-                    return;
-                }
+      <button class="modal-btn btn-cancelar" style="margin-top: 16px;" onclick="cerrarModal('modal-tienda')">Cerrar Laboratorio</button>
+    </div>
+  </div>
 
-                // Deshabilitar el botón temporalmente y mostrar estado de redirección
-                const submitBtn = loginForm.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.classList.add('opacity-75', 'cursor-wait');
-                    submitBtn.textContent = 'REDIRIGIENDO...';
-                }
+  <!-- MODAL PIXELRULETA -->
+  <div class="modal-overlay" id="modal-ruleta" onclick="if(event.target===this) cerrarModal('modal-ruleta')">
+    <div class="modal-card" style="max-width: 440px;">
+      <h2>🎡 PIXELRULETA (25 PREMIOS)</h2>
+      <p style="color: #94a3b8; font-size: 12px;">¡Gira el rotor cuántico y acumula Pixelmonedas al instante!</p>
 
-                showMessage(`¡Acceso concedido, ${userVal}! Redirigiendo a juegos.html...`, 'success');
+      <div class="roulette-wrapper">
+        <div class="roulette-pointer"></div>
+        <canvas id="roulette-canvas" width="320" height="320"></canvas>
+      </div>
 
-                // Redirigir automáticamente a juegos.html tras mostrar brevemente la confirmación
-                setTimeout(() => {
-                    window.location.href = 'juegos.html';
+      <div id="roulette-result"></div>
 
-                    // Aviso visual de respaldo si el entorno aislado de vista previa no dispone de juegos.html
-                    setTimeout(() => {
-                        showMessage('Redirección ejecutada hacia "juegos.html" (vista previa aislada: archivo destino no encontrado).', 'success');
-                        if (submitBtn) {
-                            submitBtn.disabled = false;
-                            submitBtn.classList.remove('opacity-75', 'cursor-wait');
-                            submitBtn.textContent = 'INICIAR SESIÓN';
-                        }
-                    }, 900);
-                }, 1000);
-            });
+      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA!</button>
+      <button class="modal-btn btn-cancelar" onclick="cerrarModal('modal-ruleta')">Volver</button>
+    </div>
+  </div>
 
-            // Interacción demostrativa para los enlaces inferiores
-            forgotLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                showMessage('Se ha enviado un enlace de recuperación de clave a tu correo.', 'success');
-            });
+  <!-- MODAL PARTIDA -->
+  <div class="modal-overlay" id="modal-partida" onclick="if(event.target===this) cerrarModal('modal-partida')">
+    <div class="modal-card" style="max-width: 460px;">
+      <h2 id="modal-titulo-juego">NOMBRE JUEGO</h2>
+      <p id="modal-archivo-juego" style="color: #00e5ff; font-size: 12px; margin-bottom: 4px;"></p>
+      <p class="modal-sub">Selecciona protocolo de inicio de sesión:</p>
+      <button class="modal-btn btn-continuar" onclick="continuarPartida()">▶️ CONTINUAR PARTIDA</button>
+      <button class="modal-btn btn-nueva" onclick="nuevaPartida()">➕ NUEVA PARTIDA</button>
+      <div class="alerta-error" id="alerta-sin-partida">❌ No existe registro guardado previo. Inicia una Nueva Partida primero.</div>
+      <button class="modal-btn btn-cancelar" onclick="cerrarModal('modal-partida')">Cancelar</button>
+    </div>
+  </div>
 
-            registerLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                showMessage('Módulo de registro de nueva cuenta activado.', 'success');
-            });
+  <!-- MODAL LOGROS -->
+  <div class="modal-overlay" id="modal-logros" onclick="if(event.target===this) cerrarModal('modal-logros')">
+    <div class="modal-card">
+      <h2>🏆 REGISTRO DE LOGROS</h2>
+      <p class="modal-sub">Hitos desbloqueados en tu perfil Cyber-Tech.</p>
+      <div id="logros-lista"></div>
+      <button class="modal-btn btn-cancelar" onclick="cerrarModal('modal-logros')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- MODAL AMIGOS -->
+  <div class="modal-overlay" id="modal-amigos" onclick="if(event.target===this) cerrarModal('modal-amigos')">
+    <div class="modal-card">
+      <h2>👥 RED DE AMIGOS</h2>
+      <p class="modal-sub">Conecta con otros operadores del sistema Pixel.</p>
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <input type="text" id="input-nuevo-amigo" class="neon-input" style="margin-bottom: 0;" placeholder="ID del jugador...">
+        <button class="play" onclick="agregarAmigo()" style="padding: 0 16px;">+ AÑADIR</button>
+      </div>
+      <div id="amigos-lista"></div>
+      <button class="modal-btn btn-cancelar" onclick="cerrarModal('modal-amigos')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- NOTIFICACIÓN TOAST -->
+  <div id="toast-msg"></div>
+
+  <script>
+    // ==========================================
+    // 0. FONDO FUTURISTA ANIMADO (NODOS AZULES Y GRISES)
+    // ==========================================
+    (function initFuturisticBg() {
+      const canvas = document.getElementById('bg-futuristic');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h, particles = [];
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      const count = Math.min(75, Math.floor((w * h) / 18000));
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.7,
+          vy: (Math.random() - 0.5) * 0.7,
+          size: Math.random() * 2.2 + 1,
+          isCyan: Math.random() > 0.35
         });
+      }
 
-        /**
-         * 2. FONDO TECNOLÓGICO ANIMADO (CANVAS):
-         * Hexágonos translúcidos, líneas de circuito impreso y red de nodos brillantes
-         */
-        window.onload = function () {
-            const canvas = document.getElementById('tech-canvas');
-            const ctx = canvas.getContext('2d');
-            let width, height;
-            let nodes = [];
-            let circuits = [];
+      function loop() {
+        ctx.clearRect(0, 0, w, h);
 
-            function initCanvas() {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
 
-                // Generar nodos brillantes conectados
-                const nodeCount = Math.min(Math.floor((width * height) / 16000), 85);
-                nodes = [];
-                for (let i = 0; i < nodeCount; i++) {
-                    nodes.push({
-                        x: Math.random() * width,
-                        y: Math.random() * height,
-                        vx: (Math.random() - 0.5) * 0.35,
-                        vy: (Math.random() - 0.5) * 0.35,
-                        radius: Math.random() * 1.8 + 1,
-                        pulse: Math.random() * Math.PI * 2
-                    });
-                }
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
 
-                // Generar líneas de circuito decorativas en los laterales
-                circuits = [
-                    // Circuito superior izquierdo
-                    [
-                        { x: 0, y: height * 0.32 },
-                        { x: width * 0.14, y: height * 0.32 },
-                        { x: width * 0.18, y: height * 0.38 },
-                        { x: width * 0.32, y: height * 0.38 }
-                    ],
-                    [
-                        { x: 0, y: height * 0.36 },
-                        { x: width * 0.11, y: height * 0.36 },
-                        { x: width * 0.16, y: height * 0.43 },
-                        { x: width * 0.28, y: height * 0.43 }
-                    ],
-                    // Circuito superior derecho/central
-                    [
-                        { x: width * 0.56, y: 0 },
-                        { x: width * 0.56, y: height * 0.15 },
-                        { x: width * 0.52, y: height * 0.20 }
-                    ],
-                    // Circuito inferior derecho
-                    [
-                        { x: width, y: height * 0.68 },
-                        { x: width * 0.85, y: height * 0.68 },
-                        { x: width * 0.80, y: height * 0.62 },
-                        { x: width * 0.68, y: height * 0.62 }
-                    ]
-                ];
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.isCyan ? 'rgba(0, 229, 255, 0.75)' : 'rgba(148, 163, 184, 0.6)';
+          ctx.fill();
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 135) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              const alpha = (1 - dist / 135) * 0.25;
+              ctx.strokeStyle = p.isCyan ? `rgba(0, 229, 255, ${alpha})` : `rgba(148, 163, 184, ${alpha})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
             }
+          }
+        }
+        requestAnimationFrame(loop);
+      }
+      loop();
+    })();
 
-            window.addEventListener('resize', initCanvas);
-            initCanvas();
+    // ==========================================
+    // 1. GESTIÓN DE SESIÓN Y DATOS DE USUARIO
+    // ==========================================
+    let usuarioActivo = localStorage.getItem('pixelgames_session');
+    if (!usuarioActivo || usuarioActivo === 'polmega_95') {
+      usuarioActivo = 'CyberNova_01';
+      localStorage.setItem('pixelgames_session', usuarioActivo);
+    }
 
-            // Dibujar un hexágono individual con relleno sutil y borde fino
-            function drawHexagon(cx, cy, r, fillAlpha = 0.04, strokeAlpha = 0.14) {
-                ctx.beginPath();
-                for (let i = 0; i < 6; i++) {
-                    const angle = (Math.PI / 3) * i - Math.PI / 6;
-                    const x = cx + r * Math.cos(angle);
-                    const y = cy + r * Math.sin(angle);
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.closePath();
-                ctx.fillStyle = `rgba(45, 130, 68, ${fillAlpha})`;
-                ctx.fill();
-                ctx.strokeStyle = `rgba(95, 195, 115, ${strokeAlpha})`;
-                ctx.lineWidth = 1;
-                ctx.stroke();
-            }
+    function obtenerUsuarios() {
+      return JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
+    }
 
-            // Dibujar clústeres de hexágonos en esquinas superior derecha e inferior izquierda
-            function drawHexagonClusters() {
-                const r = Math.max(28, Math.min(width, height) * 0.042);
-                const dx = r * Math.sqrt(3);
-                const dy = r * 1.5;
+    function guardarUsuarios(data) {
+      localStorage.setItem('pixelgames_users', JSON.stringify(data));
+    }
 
-                // Clúster superior derecho
-                const topRightBaseX = width * 0.84;
-                const topRightBaseY = height * 0.12;
-                const trOffsets = [
-                    [0, 0, 0.07], [1, 0, 0.04], [-1, 0, 0.05], [-2, 0, 0.03],
-                    [0.5, 1, 0.06], [-0.5, 1, 0.08], [-1.5, 1, 0.04],
-                    [0, 2, 0.05], [1, 2, 0.03]
-                ];
-                trOffsets.forEach(([ox, oy, alpha]) => {
-                    drawHexagon(topRightBaseX + ox * dx, topRightBaseY + oy * dy, r, alpha, alpha * 2.2);
-                });
+    const usuariosInit = obtenerUsuarios();
+    if (!usuariosInit[usuarioActivo]) {
+      usuariosInit[usuarioActivo] = {
+        coins: 150000,
+        espiritusComprados: ['espiritu_001'],
+        espirituEquipado: 'espiritu_001',
+        logrosObtenidos: ['bienvenida', 'millonario'],
+        logrosReclamados: [],
+        amigos: ['Aether_X', 'Vortex_77', 'NeonPilot', 'Krono_Z'],
+        ruletaUsada: false
+      };
+      guardarUsuarios(usuariosInit);
+    }
 
-                // Clúster inferior izquierdo
-                const botLeftBaseX = width * 0.12;
-                const botLeftBaseY = height * 0.72;
-                const blOffsets = [
-                    [0, 0, 0.06], [1, 0, 0.04], [-1, 0, 0.05],
-                    [0.5, 1, 0.08], [-0.5, 1, 0.05], [1.5, 1, 0.03],
-                    [0, 2, 0.07], [1, 2, 0.05], [-1, 2, 0.04]
-                ];
-                blOffsets.forEach(([ox, oy, alpha]) => {
-                    drawHexagon(botLeftBaseX + ox * dx, botLeftBaseY + oy * dy, r, alpha, alpha * 2.2);
-                });
-            }
+    // ==========================================
+    // 2. GENERADOR DE 150 ESPÍRITUS CAROS Y VISOR HOLOGRÁFICO
+    // ==========================================
+    const catalogoEspiritus = (function generar150Espiritus() {
+      const prefijos = [
+        'Espectro', 'Titán', 'Fantasma', 'Centinela', 'Orbe',
+        'Dragón', 'Entidad', 'Núcleo', 'Valkiria', 'Sombra',
+        'Fénix', 'Coloso', 'Vórtice', 'Arcángel', 'Gólem'
+      ];
+      const sufijos = [
+        'Crio', 'de Cobalto', 'Cuántico', 'Gris', 'de Plasma',
+        'de Titanio', 'Singularidad', 'Cian', 'Nebular', 'Omega'
+      ];
+      const iconos = [
+        '👻', '🤖', '💠', '🐉', '🛸', '👁️‍🗨️', '⚡', '🔮', '🦾', '🌌',
+        '❄️', '🔷', '🛰️', '🛡️', '☄️', '🧬', '👾', '🦅', '💠', '🌀'
+      ];
+      const nivelesRareza = [
+        { nombre: 'Común Cyber', glow: '#94a3b8' },
+        { nombre: 'Raro Titanio', glow: '#cbd5e1' },
+        { nombre: 'Épico Cobalto', glow: '#38bdf8' },
+        { nombre: 'Legendario Cuántico', glow: '#00e5ff' },
+        { nombre: 'Mítico Singularidad', glow: '#0284c7' },
+        { nombre: 'Celestial Omega', glow: '#e0f2fe' }
+      ];
 
-            // Dibujar líneas de circuito impreso con pequeños nodos terminales
-            function drawCircuits() {
-                circuits.forEach(path => {
-                    if (path.length < 2) return;
-                    ctx.beginPath();
-                    ctx.moveTo(path[0].x, path[0].y);
-                    for (let i = 1; i < path.length; i++) {
-                        ctx.lineTo(path[i].x, path[i].y);
-                    }
-                    ctx.strokeStyle = 'rgba(77, 168, 95, 0.18)';
-                    ctx.lineWidth = 1.2;
-                    ctx.stroke();
+      const lista = [];
+      for (let i = 1; i <= 150; i++) {
+        const numStr = String(i).padStart(3, '0');
+        const pref = prefijos[(i - 1) % prefijos.length];
+        const suf = sufijos[Math.floor((i - 1) / 3) % sufijos.length];
+        const icono = iconos[(i * 7) % iconos.length];
+        const tierIdx = Math.min(5, Math.floor((i - 1) / 25));
+        const tier = nivelesRareza[tierIdx];
 
-                    // Nodo circular al final de la pista
-                    const last = path[path.length - 1];
-                    ctx.beginPath();
-                    ctx.arc(last.x, last.y, 2.8, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(124, 215, 130, 0.45)';
-                    ctx.fill();
-                });
-            }
+        const precioBase = 15000 + Math.pow(i - 1, 2) * 112 + (i - 1) * 1200;
+        const precio = Math.round(precioBase / 500) * 500;
 
-            // Bucle principal de animación
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
+        const pctPoder = Math.min(100, Math.round(15 + (i / 150) * 85));
+        const pctVel = Math.min(100, Math.round(18 + ((i * 1.1) / 150) * 82));
+        const pctEscudo = Math.min(100, Math.round(20 + ((i * 1.05) / 150) * 80));
 
-                drawHexagonClusters();
-                drawCircuits();
+        lista.push({
+          id: `espiritu_${numStr}`,
+          numero: i,
+          numStr: `#${numStr}`,
+          nombre: `${pref} ${suf}-${numStr}`,
+          icono: icono,
+          rareza: tier.nombre,
+          glow: tier.glow,
+          precio: precio,
+          poder: i === 150 ? '∞ INFINITO' : `${(i * 6200 + 2200).toLocaleString('es-ES')} MW`,
+          vel: i >= 140 ? 'HIPERESPACIO' : `MACH ${(3.5 + i * 0.18).toFixed(1)}`,
+          escudo: `${Math.min(100, 91.5 + i * 0.056).toFixed(1)}%`,
+          pctPoder,
+          pctVel,
+          pctEscudo,
+          desc: `Unidad espectral #${numStr} de clase ${tier.nombre}. Sincronizada con los reactores cian y blindaje gris orbital de PIXEL GAMES.`
+        });
+      }
+      return lista;
+    })();
 
-                // Actualizar y dibujar red de nodos brillantes
-                for (let i = 0; i < nodes.length; i++) {
-                    const n1 = nodes[i];
-                    n1.x += n1.vx;
-                    n1.y += n1.vy;
-                    n1.pulse += 0.03;
+    let espirituSeleccionadoVisor = catalogoEspiritus[0];
 
-                    // Rebote suave en los bordes
-                    if (n1.x < 0 || n1.x > width) n1.vx *= -1;
-                    if (n1.y < 0 || n1.y > height) n1.vy *= -1;
+    function actualizarHUDUsuario() {
+      const u = obtenerUsuarios()[usuarioActivo] || {};
+      const saldo = u.coins || 0;
+      const equipadoObj = catalogoEspiritus.find(e => e.id === u.espirituEquipado);
+      const badgeCompanero = equipadoObj
+        ? `<span class="equipped-companion-hud" title="Compañero activo: ${equipadoObj.nombre}">${equipadoObj.icono}</span>`
+        : '';
 
-                    // Brillo pulsante del nodo
-                    const glow = 0.45 + Math.sin(n1.pulse) * 0.25;
-                    ctx.beginPath();
-                    ctx.arc(n1.x, n1.y, n1.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(130, 235, 145, ${glow})`;
-                    ctx.fill();
+      document.getElementById('user-display').innerHTML = `👤 Usuario: ${usuarioActivo} ${badgeCompanero}`;
+      document.getElementById('coins-display').innerText = `🪙 ${saldo.toLocaleString('es-ES')} Pixelmonedas`;
+      const shopBalance = document.getElementById('shop-balance-display');
+      if (shopBalance) shopBalance.innerText = `🪙 ${saldo.toLocaleString('es-ES')} Pixelmonedas`;
+    }
+    actualizarHUDUsuario();
 
-                    // Conectar nodos cercanos con líneas finas
-                    for (let j = i + 1; j < nodes.length; j++) {
-                        const n2 = nodes[j];
-                        const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
-                        const maxDist = 145;
+    function mostrarToast(texto) {
+      const toast = document.getElementById('toast-msg');
+      if (!toast) return;
+      toast.innerText = texto;
+      toast.classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3200);
+    }
 
-                        if (dist < maxDist) {
-                            const lineAlpha = 0.22 * (1 - dist / maxDist);
-                            ctx.beginPath();
-                            ctx.moveTo(n1.x, n1.y);
-                            ctx.lineTo(n2.x, n2.y);
-                            ctx.strokeStyle = `rgba(92, 196, 108, ${lineAlpha})`;
-                            ctx.lineWidth = 0.85;
-                            ctx.stroke();
-                        }
-                    }
-                }
+    function cerrarModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
 
-                requestAnimationFrame(animate);
-            }
+    function abrirTiendaEspiritus() {
+      actualizarHUDUsuario();
+      renderizarListaEspiritus();
+      actualizarVisorEspiritu(espirituSeleccionadoVisor);
+      document.getElementById('modal-tienda').style.display = 'flex';
+    }
 
-            animate();
+    function renderizarListaEspiritus() {
+      const listaEl = document.getElementById('spirit-catalog-list');
+      const query = (document.getElementById('shop-search-input')?.value || '').trim().toLowerCase();
+      const filtro = document.getElementById('shop-filter-select')?.value || 'ALL';
+      const u = obtenerUsuarios()[usuarioActivo] || { espiritusComprados: [], espirituEquipado: null };
+      const comprados = u.espiritusComprados || [];
+
+      const filtrados = catalogoEspiritus.filter(esp => {
+        const coincideTexto = esp.nombre.toLowerCase().includes(query) ||
+                              esp.numStr.toLowerCase().includes(query) ||
+                              String(esp.numero) === query;
+        if (!coincideTexto) return false;
+        if (filtro === 'OWNED') return comprados.includes(esp.id);
+        if (filtro === 'AVAILABLE') return !comprados.includes(esp.id);
+        if (filtro !== 'ALL') return esp.rareza === filtro;
+        return true;
+      });
+
+      const countLabel = document.getElementById('shop-count-label');
+      if (countLabel) countLabel.innerText = `Mostrando ${filtrados.length} / 150`;
+
+      listaEl.innerHTML = '';
+      if (filtrados.length === 0) {
+        listaEl.innerHTML = '<div style="text-align:center; color:#64748b; padding:25px;">No hay espíritus que coincidan con la búsqueda.</div>';
+        return;
+      }
+
+      filtrados.forEach(esp => {
+        const esPropiedad = comprados.includes(esp.id);
+        const esEquipado = u.espirituEquipado === esp.id;
+        const seleccionado = espirituSeleccionadoVisor && espirituSeleccionadoVisor.id === esp.id;
+
+        const row = document.createElement('div');
+        row.className = `spirit-row-card ${seleccionado ? 'selected' : ''}`;
+        row.onclick = () => {
+          espirituSeleccionadoVisor = esp;
+          actualizarVisorEspiritu(esp);
+          renderizarListaEspiritus();
         };
-    </script>
+
+        let badgeHtml = `<span class="spirit-price-badge price-expensive">${esp.precio.toLocaleString('es-ES')} 🪙</span>`;
+        if (esEquipado) {
+          badgeHtml = `<span class="spirit-price-badge price-owned">★ EQUIPADO</span>`;
+        } else if (esPropiedad) {
+          badgeHtml = `<span class="spirit-price-badge price-owned">✔ EN PROPIEDAD</span>`;
+        }
+
+        row.innerHTML = `
+          <div class="spirit-row-left">
+            <div class="spirit-row-icon">${esp.icono}</div>
+            <div>
+              <div style="font-weight:bold; color:#f8fafc; font-size:13px;">${esp.numStr} ${esp.nombre}</div>
+              <div style="font-size:11px; color:${esp.glow};">${esp.rareza}</div>
+            </div>
+          </div>
+          ${badgeHtml}
+        `;
+        listaEl.appendChild(row);
+      });
+    }
+
+    function actualizarVisorEspiritu(esp) {
+      if (!esp) return;
+      const u = obtenerUsuarios()[usuarioActivo] || { espiritusComprados: [], espirituEquipado: null };
+      const esPropiedad = (u.espiritusComprados || []).includes(esp.id);
+      const esEquipado = u.espirituEquipado === esp.id;
+
+      document.getElementById('visor-rareza').innerText = `${esp.numStr} • ${esp.rareza.toUpperCase()}`;
+      document.getElementById('visor-rareza').style.borderColor = esp.glow;
+      document.getElementById('visor-rareza').style.color = esp.glow;
+
+      const avatarEl = document.getElementById('visor-icono');
+      avatarEl.innerText = esp.icono;
+      avatarEl.style.setProperty('--spirit-glow', esp.glow);
+
+      document.getElementById('visor-nombre').innerText = esp.nombre;
+      document.getElementById('visor-desc').innerText = esp.desc;
+      document.getElementById('visor-poder').innerText = esp.poder;
+      document.getElementById('visor-vel').innerText = esp.vel;
+      document.getElementById('visor-sinc').innerText = esp.escudo;
+      document.getElementById('visor-precio').innerText = `${esp.precio.toLocaleString('es-ES')} 🪙`;
+
+      document.getElementById('bar-poder').style.width = `${esp.pctPoder}%`;
+      document.getElementById('bar-vel').style.width = `${esp.pctVel}%`;
+      document.getElementById('bar-escudo').style.width = `${esp.pctEscudo}%`;
+
+      const btn = document.getElementById('visor-action-btn');
+      if (esEquipado) {
+        btn.innerText = '🔌 DESEQUIPAR ESPÍRITU';
+        btn.className = 'modal-btn btn-nueva';
+      } else if (esPropiedad) {
+        btn.innerText = '⚡ EQUIPAR EN PERFIL';
+        btn.className = 'modal-btn btn-continuar';
+      } else {
+        btn.innerText = `🛒 ADQUIRIR ESPÍRITU (${esp.precio.toLocaleString('es-ES')} 🪙)`;
+        btn.className = 'modal-btn btn-continuar';
+      }
+    }
+
+    function ejecutarAccionVisor() {
+      const esp = espirituSeleccionadoVisor;
+      if (!esp) return;
+      const allUsers = obtenerUsuarios();
+      const u = allUsers[usuarioActivo];
+      if (!u.espiritusComprados) u.espiritusComprados = [];
+
+      if (u.espirituEquipado === esp.id) {
+        u.espirituEquipado = null;
+        guardarUsuarios(allUsers);
+        actualizarHUDUsuario();
+        actualizarVisorEspiritu(esp);
+        renderizarListaEspiritus();
+        mostrarToast(`🔌 ${esp.nombre} desvinculado del visor`);
+        return;
+      }
+
+      if (u.espiritusComprados.includes(esp.id)) {
+        u.espirituEquipado = esp.id;
+        guardarUsuarios(allUsers);
+        actualizarHUDUsuario();
+        actualizarVisorEspiritu(esp);
+        renderizarListaEspiritus();
+        mostrarToast(`⚡ ${esp.nombre} equipado como compañero activo`);
+        return;
+      }
+
+      if ((u.coins || 0) < esp.precio) {
+        const faltan = esp.precio - (u.coins || 0);
+        mostrarToast(`❌ Saldo insuficiente. Faltan ${faltan.toLocaleString('es-ES')} Pixelmonedas`);
+        return;
+      }
+
+      u.coins -= esp.precio;
+      u.espiritusComprados.push(esp.id);
+      u.espirituEquipado = esp.id;
+      guardarUsuarios(allUsers);
+      actualizarHUDUsuario();
+      actualizarVisorEspiritu(esp);
+      renderizarListaEspiritus();
+      mostrarToast(`🎉 ¡Has adquirido y equipado a ${esp.nombre}!`);
+    }
+
+    // ==========================================
+    // 3. CATÁLOGO DE LOS 17 JUEGOS REALES DEL ZIP
+    // ==========================================
+    const games = [
+      { id: 1, name: "money up", icon: "🪙", file: "juego1.html" },
+      { id: 2, name: "extrem 1", icon: "🌲", file: "juego2.html" },
+      { id: 3, name: "Football Legends", icon: "⚽", file: "juego3.html" },
+      { id: 4, name: "Pixel AI", icon: "🤖", file: "juego4.html" },
+      { id: 5, name: "Ultra Labyrinths", icon: "🧩", file: "juego5.html" },
+      { id: 6, name: "Dreamer up", icon: "🌙", file: "juego6.html" },
+      { id: 7, name: "tic tac toe", icon: "🔴", file: "juego7.html" },
+      { id: 8, name: "color snake", icon: "💎", file: "juego8.html" },
+      { id: 9, name: "gems mine", icon: "🍎", file: "juego9.html" },
+      { id: 10, name: "tadtic board", icon: "⚽", file: "juego10.html" },
+      { id: 11, name: "chess 3D", icon: "♟️", file: "juego11.html" },
+      { id: 12, name: "Galaxy Defender", icon: "👾", file: "juego12.html" },
+      { id: 13, name: "Pixel Chat", icon: "💬", file: "juego13.html" },
+      { id: 14, name: "Pixel Critic", icon: "⭐", file: "juego14.html" },
+      { id: 15, name: "boss slayer D2", icon: "⚡", file: "juego15.html" },
+      { id: 16, name: "Project X", icon: "❓", file: "juego16.html" },
+      { id: 17, name: "sliting puzle", icon: "🧩", file: "juego17.html" }
+    ];
+
+    const gamesMap = new Map(games.map(g => [g.id, g]));
+    const container = document.getElementById("games");
+
+    for (let i = 1; i <= 100; i++) {
+      const gameData = gamesMap.get(i);
+      const card = document.createElement("article");
+      card.id = `game-card-${i}`;
+      const numStr = `#${String(i).padStart(3, '0')}`;
+
+      if (gameData) {
+        card.className = "card available";
+        card.innerHTML = `
+          <span class="card-num">${numStr}</span>
+          <div class="icon">${gameData.icon}</div>
+          <div class="name">${gameData.name}</div>
+          <button class="play" onclick="clickJuego(${gameData.id})">▶ JUGAR</button>
+        `;
+      } else {
+        card.className = "card locked";
+        card.innerHTML = `
+          <span class="card-num">${numStr}</span>
+          <div class="lock">🔒</div>
+          <div class="name">Módulo ${i}</div>
+          <div class="badge">BLOQUEADO</div>
+        `;
+      }
+      container.appendChild(card);
+    }
+
+    let juegoSeleccionado = null;
+    function clickJuego(id) {
+      const g = gamesMap.get(id);
+      if (!g) return;
+      juegoSeleccionado = g;
+      document.getElementById('modal-titulo-juego').innerText = g.name.toUpperCase();
+      document.getElementById('modal-archivo-juego').innerText = `Archivo vinculado: ${g.file}`;
+      document.getElementById('alerta-sin-partida').style.display = 'none';
+      document.getElementById('modal-partida').style.display = 'flex';
+    }
+
+    function nuevaPartida() {
+      if (!juegoSeleccionado) return;
+      const destino = `${juegoSeleccionado.file}?mode=new`;
+      try {
+        if (window.location.protocol === 'blob:' || window.location.protocol === 'about:' || window.location.href.includes('srcdoc')) {
+          cerrarModal('modal-partida');
+          mostrarToast(`🚀 En carpeta local abrirá: ${destino}`);
+          return;
+        }
+        window.location.href = destino;
+      } catch (e) {
+        cerrarModal('modal-partida');
+        mostrarToast(`🚀 Archivo destino: ${destino}`);
+      }
+    }
+
+    function continuarPartida() {
+      if (!juegoSeleccionado) return;
+      const guardado = localStorage.getItem(`pixelgames_save_${usuarioActivo}_${juegoSeleccionado.id}`);
+      if (!guardado) {
+        document.getElementById('alerta-sin-partida').style.display = 'block';
+        return;
+      }
+      const destino = `${juegoSeleccionado.file}?mode=continue`;
+      try {
+        if (window.location.protocol === 'blob:' || window.location.protocol === 'about:' || window.location.href.includes('srcdoc')) {
+          cerrarModal('modal-partida');
+          mostrarToast(`▶️ En carpeta local abrirá: ${destino}`);
+          return;
+        }
+        window.location.href = destino;
+      } catch (e) {
+        cerrarModal('modal-partida');
+        mostrarToast(`▶️ Archivo destino: ${destino}`);
+      }
+    }
+
+    function buscarJuego() {
+      const num = parseInt(document.getElementById('input-buscar-juego').value);
+      if (isNaN(num) || num < 1 || num > 100) {
+        mostrarToast('⚠️ Introduce un número entre 1 y 100');
+        return;
+      }
+      const card = document.getElementById(`game-card-${num}`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('highlight');
+        setTimeout(() => card.classList.remove('highlight'), 3500);
+      }
+    }
+
+    // ==========================================
+    // 4. PIXELRULETA ANIMADA
+    // ==========================================
+    const premiosRuleta = [1000, 5000, 2000, 10000, 500, 3000, 15000, 2500, 8000, 1000, 20000, 4000, 6000, 1000, 50000, 3000, 7500, 1200, 9000, 4500, 25000, 1500, 3500, 7000, 100000];
+    let currentAngle = 0;
+    let isSpinning = false;
+
+    function dibujarRuleta(angulo) {
+      const canvas = document.getElementById('roulette-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const numSlices = premiosRuleta.length;
+      const sliceAngle = (Math.PI * 2) / numSlices;
+      const palette = ['#0284c7', '#1e293b', '#00e5ff', '#334155', '#0f172a'];
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < numSlices; i++) {
+        const start = angulo + i * sliceAngle;
+        const end = start + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(160, 160);
+        ctx.arc(160, 160, 155, start, end);
+        ctx.closePath();
+
+        ctx.fillStyle = palette[i % palette.length];
+        ctx.fill();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#04070d';
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(160, 160);
+        ctx.rotate(start + sliceAngle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = (i % palette.length === 2) ? "#04070d" : "#f8fafc";
+        ctx.font = "bold 9px monospace";
+        ctx.fillText("+" + premiosRuleta[i], 145, 4);
+        ctx.restore();
+      }
+
+      ctx.beginPath();
+      ctx.arc(160, 160, 25, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    function abrirRuleta() {
+      document.getElementById('modal-ruleta').style.display = 'flex';
+      dibujarRuleta(currentAngle);
+    }
+
+    function girarRuleta() {
+      if (isSpinning) return;
+      isSpinning = true;
+
+      const btn = document.getElementById('btn-spin-action');
+      const resText = document.getElementById('roulette-result');
+      btn.disabled = true;
+      resText.innerText = "¡GIRANDO ROTOR CUÁNTICO!";
+
+      const totalSpinTime = 4000;
+      const startTime = performance.now();
+      const extraRounds = Math.floor(Math.random() * 5 + 6) * Math.PI * 2;
+      const targetRewardIdx = Math.floor(Math.random() * premiosRuleta.length);
+      const sliceAngle = (Math.PI * 2) / premiosRuleta.length;
+
+      const finalAngleOffset = (Math.PI * 2) - (targetRewardIdx * sliceAngle + sliceAngle / 2) - (Math.PI / 2);
+      const startAngle = currentAngle;
+      const totalRotation = extraRounds + (finalAngleOffset - (startAngle % (Math.PI * 2)));
+
+      function animate(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / totalSpinTime, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+
+        currentAngle = startAngle + totalRotation * easeOut;
+        dibujarRuleta(currentAngle);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          isSpinning = false;
+          btn.disabled = false;
+          const premio = premiosRuleta[targetRewardIdx];
+          resText.innerText = `¡PREMIO: +${premio.toLocaleString('es-ES')} PIXELMONEDAS! 🪙`;
+
+          const allUsers = obtenerUsuarios();
+          if (allUsers[usuarioActivo]) {
+            allUsers[usuarioActivo].coins = (allUsers[usuarioActivo].coins || 0) + premio;
+            guardarUsuarios(allUsers);
+          }
+          actualizarHUDUsuario();
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // ==========================================
+    // 5. LOGROS Y AMIGOS
+    // ==========================================
+    function abrirModalLogros() {
+      const u = obtenerUsuarios()[usuarioActivo] || { espiritusComprados: [], coins: 0 };
+      const countEsp = (u.espiritusComprados || []).length;
+      const lista = document.getElementById('logros-lista');
+
+      const logros = [
+        { titulo: 'Operador Conectado', desc: 'Inicia sesión en Cyber-Arcade OS', ok: true },
+        { titulo: 'Coleccionista Espectral', desc: `Posee al menos 3 espíritus (${countEsp}/3)`, ok: countEsp >= 3 },
+        { titulo: 'Magnate Cuántico', desc: 'Acumula 250.000 Pixelmonedas', ok: (u.coins || 0) >= 250000 }
+      ];
+
+      lista.innerHTML = logros.map(l => `
+        <div class="list-row">
+          <div>
+            <div style="font-weight:bold; color:${l.ok ? '#00e5ff' : '#94a3b8'};">${l.titulo}</div>
+            <div style="font-size:11px; color:#64748b;">${l.desc}</div>
+          </div>
+          <span style="font-weight:bold; color:${l.ok ? '#00e5ff' : '#475569'};">${l.ok ? '✔ COMPLETADO' : '🔒 BLOQUEADO'}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('modal-logros').style.display = 'flex';
+    }
+
+    function abrirModalAmigos() {
+      const u = obtenerUsuarios()[usuarioActivo] || { amigos: [] };
+      const lista = document.getElementById('amigos-lista');
+      lista.innerHTML = (u.amigos || []).map(am => `
+        <div class="list-row">
+          <span>🟢 <strong>${am}</strong></span>
+          <span style="font-size:11px; color:#00e5ff;">EN LÍNEA</span>
+        </div>
+      `).join('');
+      document.getElementById('modal-amigos').style.display = 'flex';
+    }
+
+    function agregarAmigo() {
+      const input = document.getElementById('input-nuevo-amigo');
+      const nombre = input.value.trim();
+      if (!nombre) return;
+      const allUsers = obtenerUsuarios();
+      if (!allUsers[usuarioActivo].amigos.includes(nombre)) {
+        allUsers[usuarioActivo].amigos.push(nombre);
+        guardarUsuarios(allUsers);
+        input.value = '';
+        abrirModalAmigos();
+        mostrarToast(`👥 ${nombre} vinculado a tu red`);
+      }
+    }
+  </script>
 </body>
 </html>
