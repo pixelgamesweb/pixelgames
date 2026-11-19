@@ -1202,11 +1202,45 @@
     // ==========================================
     // 1. GESTIÓN DE SESIÓN Y DATOS DE USUARIO
     // ==========================================
-    let usuarioActivo = localStorage.getItem('pixelgames_session');
-    if (!usuarioActivo || usuarioActivo === 'polmega_95') {
-      usuarioActivo = 'CyberNova_01';
-      localStorage.setItem('pixelgames_session', usuarioActivo);
+    function detectarUsuarioSesion() {
+      // 1. Revisar si viene por parámetro en la URL (?user=... o ?usuario=...)
+      const params = new URLSearchParams(window.location.search);
+      const userUrl = params.get('user') || params.get('usuario') || params.get('username');
+      if (userUrl && userUrl.trim() !== '') {
+        localStorage.setItem('pixelgames_session', userUrl.trim());
+        return userUrl.trim();
+      }
+
+      // 2. Revisar claves habituales de sesión guardadas por index.html
+      const posiblesClaves = [
+        'pixelgames_session',
+        'usuarioActivo',
+        'currentUser',
+        'username',
+        'usuario',
+        'user'
+      ];
+      for (const clave of posiblesClaves) {
+        const valor = localStorage.getItem(clave) || sessionStorage.getItem(clave);
+        if (valor && valor.trim() !== '' && valor !== 'polmega_95' && valor !== 'Invitado') {
+          try {
+            const parsed = JSON.parse(valor);
+            if (typeof parsed === 'string' && parsed.trim()) return parsed.trim();
+            if (parsed && (parsed.username || parsed.nombre || parsed.user)) {
+              return (parsed.username || parsed.nombre || parsed.user).trim();
+            }
+          } catch (e) {
+            return valor.trim();
+          }
+        }
+      }
+
+      // 3. Si no hay sesión previa, usar Invitado o CyberNova_01
+      return 'Invitado';
     }
+
+    let usuarioActivo = detectarUsuarioSesion();
+    localStorage.setItem('pixelgames_session', usuarioActivo);
 
     function obtenerUsuarios() {
       return JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
@@ -1216,19 +1250,41 @@
       localStorage.setItem('pixelgames_users', JSON.stringify(data));
     }
 
-    const usuariosInit = obtenerUsuarios();
-    if (!usuariosInit[usuarioActivo]) {
-      usuariosInit[usuarioActivo] = {
-        coins: 150000,
-        espiritusComprados: ['espiritu_001'],
-        espirituEquipado: 'espiritu_001',
-        logrosObtenidos: ['bienvenida', 'millonario'],
-        logrosReclamados: [],
-        amigos: ['Aether_X', 'Vortex_77', 'NeonPilot', 'Krono_Z'],
-        ruletaUsada: false
-      };
-      guardarUsuarios(usuariosInit);
+    function asegurarPerfilUsuario(nombre) {
+      const usuarios = obtenerUsuarios();
+      if (!usuarios[nombre]) {
+        usuarios[nombre] = {
+          coins: 150000,
+          espiritusComprados: ['espiritu_001'],
+          espirituEquipado: 'espiritu_001',
+          logrosObtenidos: ['bienvenida', 'millonario'],
+          logrosReclamados: [],
+          amigos: ['Aether_X', 'Vortex_77', 'NeonPilot', 'Krono_Z'],
+          ruletaUsada: false
+        };
+        guardarUsuarios(usuarios);
+      }
     }
+    asegurarPerfilUsuario(usuarioActivo);
+
+    // Escuchar cambios si se inicia sesión en otra pestaña o vuelve de index.html
+    window.addEventListener('storage', () => {
+      const actualizado = detectarUsuarioSesion();
+      if (actualizado !== usuarioActivo) {
+        usuarioActivo = actualizado;
+        asegurarPerfilUsuario(usuarioActivo);
+        actualizarHUDUsuario();
+      }
+    });
+
+    window.addEventListener('focus', () => {
+      const actualizado = detectarUsuarioSesion();
+      if (actualizado !== usuarioActivo) {
+        usuarioActivo = actualizado;
+        asegurarPerfilUsuario(usuarioActivo);
+        actualizarHUDUsuario();
+      }
+    });
 
     // ==========================================
     // 2. GENERADOR DE 150 ESPÍRITUS CAROS Y VISOR HOLOGRÁFICO
