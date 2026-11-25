@@ -134,7 +134,6 @@
                 <!-- Campo: Usuario o Correo Electrónico -->
                 <div>
                     <label for="username" class="flex items-center gap-2 text-sm font-medium text-gray-200 mb-2">
-                        <!-- Icono de usuario en verde -->
                         <svg class="w-4 h-4 fill-[#7cb855] shrink-0" viewBox="0 0 24 24">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                         </svg>
@@ -154,7 +153,6 @@
                 <!-- Campo: Contraseña -->
                 <div>
                     <label for="password" class="flex items-center gap-2 text-sm font-medium text-gray-200 mb-2">
-                        <!-- Icono de candado en verde -->
                         <svg class="w-4 h-4 fill-[#7cb855] shrink-0" viewBox="0 0 24 24">
                             <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
                         </svg>
@@ -179,7 +177,6 @@
                             aria-label="Mostrar u ocultar contraseña"
                             title="Mostrar/Ocultar contraseña"
                         >
-                            <!-- SVG inicial: ojo tachado -->
                             <svg id="eye-icon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                                 <line x1="1" y1="1" x2="23" y2="23"></line>
@@ -232,7 +229,6 @@
                 const isHidden = passwordInput.type === 'password';
                 passwordInput.type = isHidden ? 'text' : 'password';
 
-                // Ajustar espaciado de letras según si está oculta o visible
                 if (isHidden) {
                     passwordInput.classList.remove('tracking-widest');
                     eyeIcon.innerHTML = `
@@ -248,7 +244,7 @@
                 }
             });
 
-            // Función auxiliar para mostrar mensajes visuales en la tarjeta (sin alert())
+            // Función auxiliar para mostrar mensajes visuales en la tarjeta
             function showMessage(message, type = 'success') {
                 statusBox.classList.remove('hidden', 'bg-emerald-950/90', 'border-emerald-500', 'text-emerald-200', 'bg-red-950/90', 'border-red-500', 'text-red-200');
                 
@@ -263,7 +259,7 @@
                 statusText.textContent = message;
             }
 
-            // Validación y mensaje de confirmación al enviar el formulario
+            // Validación y redirección pasando el usuario correctamente
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const userVal = usernameInput.value.trim();
@@ -281,34 +277,38 @@
                     return;
                 }
 
-                // Deshabilitar el botón temporalmente y mostrar estado de redirección
                 const submitBtn = loginForm.querySelector('button[type="submit"]');
                 if (submitBtn) {
                     submitBtn.disabled = true;
                     submitBtn.classList.add('opacity-75', 'cursor-wait');
                     submitBtn.textContent = 'REDIRIGIENDO...';
                 }
-localStorage.setItem('pixelgames_session', userVal);
-localStorage.setItem('pixelgames_usuario', userVal);
+
+                // Guardar sesión en almacenamiento local y de sesión
+                try {
+                    localStorage.setItem('pixelgames_session', userVal);
+                    localStorage.setItem('pixelgames_usuario', userVal);
+                    sessionStorage.setItem('pixelgames_session', userVal);
+                } catch (err) {}
+
                 showMessage(`¡Acceso concedido, ${userVal}! Redirigiendo a juegos.html...`, 'success');
 
-                // Redirigir automáticamente a juegos.html tras mostrar brevemente la confirmación
+                // Redirigir enviando el usuario también por parámetro URL (?user=...)
+                const destinoUrl = 'juegos.html?user=' + encodeURIComponent(userVal);
                 setTimeout(() => {
-                    window.location.href = 'juegos.html';
+                    window.location.href = destinoUrl;
 
-                    // Aviso visual de respaldo si el entorno aislado de vista previa no dispone de juegos.html
                     setTimeout(() => {
-                        showMessage('Redirección ejecutada hacia "juegos.html" (vista previa aislada: archivo destino no encontrado).', 'success');
+                        showMessage(`Redirección ejecutada hacia "${destinoUrl}" (vista previa aislada).`, 'success');
                         if (submitBtn) {
                             submitBtn.disabled = false;
                             submitBtn.classList.remove('opacity-75', 'cursor-wait');
                             submitBtn.textContent = 'INICIAR SESIÓN';
                         }
                     }, 900);
-                }, 1000);
+                }, 800);
             });
 
-            // Interacción demostrativa para los enlaces inferiores
             forgotLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showMessage('Se ha enviado un enlace de recuperación de clave a tu correo.', 'success');
@@ -321,8 +321,7 @@ localStorage.setItem('pixelgames_usuario', userVal);
         });
 
         /**
-         * 2. FONDO TECNOLÓGICO ANIMADO (CANVAS):
-         * Hexágonos translúcidos, líneas de circuito impreso y red de nodos brillantes
+         * 2. FONDO TECNOLÓGICO ANIMADO (CANVAS)
          */
         window.onload = function () {
             const canvas = document.getElementById('tech-canvas');
@@ -335,7 +334,6 @@ localStorage.setItem('pixelgames_usuario', userVal);
                 width = canvas.width = window.innerWidth;
                 height = canvas.height = window.innerHeight;
 
-                // Generar nodos brillantes conectados
                 const nodeCount = Math.min(Math.floor((width * height) / 16000), 85);
                 nodes = [];
                 for (let i = 0; i < nodeCount; i++) {
@@ -349,9 +347,7 @@ localStorage.setItem('pixelgames_usuario', userVal);
                     });
                 }
 
-                // Generar líneas de circuito decorativas en los laterales
                 circuits = [
-                    // Circuito superior izquierdo
                     [
                         { x: 0, y: height * 0.32 },
                         { x: width * 0.14, y: height * 0.32 },
@@ -364,13 +360,11 @@ localStorage.setItem('pixelgames_usuario', userVal);
                         { x: width * 0.16, y: height * 0.43 },
                         { x: width * 0.28, y: height * 0.43 }
                     ],
-                    // Circuito superior derecho/central
                     [
                         { x: width * 0.56, y: 0 },
                         { x: width * 0.56, y: height * 0.15 },
                         { x: width * 0.52, y: height * 0.20 }
                     ],
-                    // Circuito inferior derecho
                     [
                         { x: width, y: height * 0.68 },
                         { x: width * 0.85, y: height * 0.68 },
@@ -383,7 +377,6 @@ localStorage.setItem('pixelgames_usuario', userVal);
             window.addEventListener('resize', initCanvas);
             initCanvas();
 
-            // Dibujar un hexágono individual con relleno sutil y borde fino
             function drawHexagon(cx, cy, r, fillAlpha = 0.04, strokeAlpha = 0.14) {
                 ctx.beginPath();
                 for (let i = 0; i < 6; i++) {
@@ -401,13 +394,11 @@ localStorage.setItem('pixelgames_usuario', userVal);
                 ctx.stroke();
             }
 
-            // Dibujar clústeres de hexágonos en esquinas superior derecha e inferior izquierda
             function drawHexagonClusters() {
                 const r = Math.max(28, Math.min(width, height) * 0.042);
                 const dx = r * Math.sqrt(3);
                 const dy = r * 1.5;
 
-                // Clúster superior derecho
                 const topRightBaseX = width * 0.84;
                 const topRightBaseY = height * 0.12;
                 const trOffsets = [
@@ -419,7 +410,6 @@ localStorage.setItem('pixelgames_usuario', userVal);
                     drawHexagon(topRightBaseX + ox * dx, topRightBaseY + oy * dy, r, alpha, alpha * 2.2);
                 });
 
-                // Clúster inferior izquierdo
                 const botLeftBaseX = width * 0.12;
                 const botLeftBaseY = height * 0.72;
                 const blOffsets = [
@@ -432,7 +422,6 @@ localStorage.setItem('pixelgames_usuario', userVal);
                 });
             }
 
-            // Dibujar líneas de circuito impreso con pequeños nodos terminales
             function drawCircuits() {
                 circuits.forEach(path => {
                     if (path.length < 2) return;
@@ -445,7 +434,6 @@ localStorage.setItem('pixelgames_usuario', userVal);
                     ctx.lineWidth = 1.2;
                     ctx.stroke();
 
-                    // Nodo circular al final de la pista
                     const last = path[path.length - 1];
                     ctx.beginPath();
                     ctx.arc(last.x, last.y, 2.8, 0, Math.PI * 2);
@@ -454,32 +442,27 @@ localStorage.setItem('pixelgames_usuario', userVal);
                 });
             }
 
-            // Bucle principal de animación
             function animate() {
                 ctx.clearRect(0, 0, width, height);
 
                 drawHexagonClusters();
                 drawCircuits();
 
-                // Actualizar y dibujar red de nodos brillantes
                 for (let i = 0; i < nodes.length; i++) {
                     const n1 = nodes[i];
                     n1.x += n1.vx;
                     n1.y += n1.vy;
                     n1.pulse += 0.03;
 
-                    // Rebote suave en los bordes
                     if (n1.x < 0 || n1.x > width) n1.vx *= -1;
                     if (n1.y < 0 || n1.y > height) n1.vy *= -1;
 
-                    // Brillo pulsante del nodo
                     const glow = 0.45 + Math.sin(n1.pulse) * 0.25;
                     ctx.beginPath();
                     ctx.arc(n1.x, n1.y, n1.radius, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(130, 235, 145, ${glow})`;
                     ctx.fill();
 
-                    // Conectar nodos cercanos con líneas finas
                     for (let j = i + 1; j < nodes.length; j++) {
                         const n2 = nodes[j];
                         const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
