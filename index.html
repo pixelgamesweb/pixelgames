@@ -288,7 +288,8 @@
                     submitBtn.classList.add('opacity-75', 'cursor-wait');
                     submitBtn.textContent = 'REDIRIGIENDO...';
                 }
-
+localStorage.setItem('pixelgames_session', userVal);
+localStorage.setItem('pixelgames_usuario', userVal);
                 showMessage(`¡Acceso concedido, ${userVal}! Redirigiendo a juegos.html...`, 'success');
 
                 // Redirigir automáticamente a juegos.html tras mostrar brevemente la confirmación
