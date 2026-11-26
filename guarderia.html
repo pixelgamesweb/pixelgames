@@ -861,12 +861,16 @@
             renderAllTabs();
           }, (err) => {
             console.error('Error escuchando mercado global:', err);
+            netBadge.innerText = '🔴 ERROR FIRESTORE: ' + (err.code || 'Sin permisos');
+            netBadge.style.borderColor = '#ef4444';
+            netBadge.style.color = '#fca5a5';
           });
         });
       } catch (e) {
-        netBadge.innerText = '🟠 MODO LOCAL (Configura Firebase)';
-        netBadge.style.borderColor = '#f59e0b';
-        netBadge.style.color = '#fbbf24';
+        console.error('Error Firebase:', e);
+        netBadge.innerText = '🔴 ERROR: ' + (e.code || e.message || 'Fallo conexión');
+        netBadge.style.borderColor = '#ef4444';
+        netBadge.style.color = '#fca5a5';
         renderAllTabs();
       }
     }
