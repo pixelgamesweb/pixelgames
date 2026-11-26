@@ -525,8 +525,19 @@
       width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 24px solid #00e5ff; z-index: 10;
       filter: drop-shadow(0 0 8px #00e5ff);
     }
+    .roulette-cost-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: rgba(255, 215, 0, 0.12);
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      font-size: 12px;
+      font-weight: bold;
+    }
     .btn-spin { background: linear-gradient(180deg, #00e5ff, #0284c7); color: #04070d; font-size: 15px; font-weight: 900; border: 1px solid #7dd3fc; box-shadow: 0 0 18px rgba(0, 229, 255, 0.5); }
-    .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     #roulette-result { font-size: 14px; font-weight: bold; color: #ffd700; min-height: 24px; margin-top: 8px; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); }
 
     .list-row {
@@ -592,8 +603,8 @@
     <h1>PIXEL GAMES</h1>
     <div class="subtitle">SELECCIONA MÓDULO DE SIMULACIÓN</div>
     <div class="user-bar">
-      <div class="user-tag" id="user-display">👤 Usuario: CyberNova_01</div>
-      <div class="coins-tag" id="coins-display">🪙 150.000 Pixelmonedas</div>
+      <div class="user-tag" id="user-display">👤 Usuario: Invitado</div>
+      <div class="coins-tag" id="coins-display">🪙 5.000 Pixelmonedas</div>
       <button class="hud-btn btn-tienda-espiritus" onclick="abrirPaginaEspiritus()">👻 ESPÍRITUS (150)</button>
       <button class="hud-btn btn-ruleta" onclick="abrirRuleta()">🎡 PIXELRULETA</button>
       <a href="guarderia.html" class="hud-btn btn-guarderia">🏡 GUARDERÍA</a>
@@ -633,7 +644,8 @@
   <div class="modal-overlay" id="modal-ruleta" onclick="if(event.target===this) cerrarModal('modal-ruleta')">
     <div class="modal-card" style="max-width: 440px;">
       <h2>🎡 PIXELRULETA (25 PREMIOS)</h2>
-      <p style="color: #94a3b8; font-size: 12px;">¡Gira el rotor cuántico y acumula Pixelmonedas al instante!</p>
+      <p style="color: #94a3b8; font-size: 12px;">¡Gira el rotor cuántico y multiplica tus Pixelmonedas!</p>
+      <div class="roulette-cost-badge" id="roulette-balance-badge">Coste por giro: 1.000 🪙 • Saldo: 5.000 🪙</div>
 
       <div class="roulette-wrapper">
         <div class="roulette-pointer"></div>
@@ -642,7 +654,7 @@
 
       <div id="roulette-result"></div>
 
-      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA!</button>
+      <button class="modal-btn btn-spin" id="btn-spin-action" onclick="girarRuleta()">¡GIRAR RULETA! (1.000 🪙)</button>
       <button class="modal-btn btn-cancelar" onclick="cerrarModal('modal-ruleta')">Volver</button>
     </div>
   </div>
@@ -756,6 +768,9 @@
     // ==========================================
     // 1. GESTIÓN DE SESIÓN Y DATOS DE USUARIO
     // ==========================================
+    const COINS_INICIALES_NUEVO_USUARIO = 5000;
+    const COSTE_GIRO_RULETA = 1000;
+
     function detectarUsuarioSesion() {
       const params = new URLSearchParams(window.location.search);
       const userUrl = params.get('user') || params.get('usuario') || params.get('username');
@@ -802,15 +817,6 @@
       localStorage.setItem('pixelgames_session', usuarioActivo);
     } catch (e) {}
 
-    function cerrarSesionUsuario() {
-      try {
-        localStorage.removeItem('pixelgames_session');
-        localStorage.removeItem('pixelgames_usuario');
-        sessionStorage.removeItem('pixelgames_session');
-      } catch (e) {}
-      window.location.href = 'index.html';
-    }
-
     function obtenerUsuarios() {
       try {
         return JSON.parse(localStorage.getItem('pixelgames_users') || '{}');
@@ -825,22 +831,71 @@
       } catch (e) {}
     }
 
+    // Guarda explícitamente el estado y saldo actual del usuario en localStorage
+    function guardarEstadoActualUsuario() {
+      if (!usuarioActivo) return;
+      const usuarios = obtenerUsuarios();
+      if (!usuarios[usuarioActivo]) {
+        asegurarPerfilUsuario(usuarioActivo);
+        return;
+      }
+      usuarios[usuarioActivo].ultimoGuardado = Date.now();
+      guardarUsuarios(usuarios);
+    }
+
+    // Si es la 1ª vez que este usuario inicia sesión (no existe en 'pixelgames_users'),
+    // se crea con exactamente 5.000 Pixelmonedas. Si ya existía, conserva su saldo guardado.
     function asegurarPerfilUsuario(nombre) {
       const usuarios = obtenerUsuarios();
-      if (!usuarios[nombre]) {
+      if (!Object.prototype.hasOwnProperty.call(usuarios, nombre)) {
         usuarios[nombre] = {
-          coins: 150000,
+          coins: COINS_INICIALES_NUEVO_USUARIO,
           espiritusComprados: ['espiritu_001'],
           espirituEquipado: 'espiritu_001',
-          logrosObtenidos: ['bienvenida', 'millonario'],
+          logrosObtenidos: ['bienvenida'],
           logrosReclamados: [],
           amigos: ['Aether_X', 'Vortex_77', 'NeonPilot', 'Krono_Z'],
-          ruletaUsada: false
+          ruletaUsada: false,
+          ultimoGuardado: Date.now()
         };
+        guardarUsuarios(usuarios);
+      } else if (typeof usuarios[nombre].coins !== 'number' || isNaN(usuarios[nombre].coins)) {
+        usuarios[nombre].coins = COINS_INICIALES_NUEVO_USUARIO;
         guardarUsuarios(usuarios);
       }
     }
     asegurarPerfilUsuario(usuarioActivo);
+
+    // Guardar automáticamente al salir de la página o cerrar pestaña
+    window.addEventListener('beforeunload', guardarEstadoActualUsuario);
+    window.addEventListener('pagehide', guardarEstadoActualUsuario);
+
+    // Al pulsar SESIÓN: guarda explícitamente el saldo y datos del usuario antes de salir
+    function cerrarSesionUsuario() {
+      guardarEstadoActualUsuario();
+      try {
+        localStorage.removeItem('pixelgames_session');
+        localStorage.removeItem('pixelgames_usuario');
+        sessionStorage.removeItem('pixelgames_session');
+      } catch (e) {}
+      navegarSeguro('index.html', '🔄 Sesión cerrada y guardada. En entorno local abriría: index.html');
+    }
+
+    function navegarSeguro(destino, mensajePreview) {
+      try {
+        if (
+          window.location.protocol === 'blob:' ||
+          window.location.protocol === 'about:' ||
+          window.location.href.includes('srcdoc')
+        ) {
+          mostrarToast(mensajePreview || `🚀 En carpeta local abriría: ${destino}`);
+          return;
+        }
+        window.location.href = destino;
+      } catch (e) {
+        mostrarToast(mensajePreview || `🚀 Archivo destino: ${destino}`);
+      }
+    }
 
     window.addEventListener('storage', () => {
       const actualizado = detectarUsuarioSesion();
@@ -877,7 +932,7 @@
 
     function actualizarHUDUsuario() {
       const u = obtenerUsuarios()[usuarioActivo] || {};
-      const saldo = u.coins || 0;
+      const saldo = typeof u.coins === 'number' ? u.coins : COINS_INICIALES_NUEVO_USUARIO;
       const iconoEquipado = obtenerIconoEspirituPorId(u.espirituEquipado);
       const badgeCompanero = iconoEquipado
         ? `<span class="equipped-companion-hud" title="Espíritu activo">${iconoEquipado}</span>`
@@ -885,12 +940,18 @@
 
       document.getElementById('user-display').innerHTML = `👤 Usuario: ${usuarioActivo} ${badgeCompanero}`;
       document.getElementById('coins-display').innerText = `🪙 ${saldo.toLocaleString('es-ES')} Pixelmonedas`;
+
+      const rouletteBadge = document.getElementById('roulette-balance-badge');
+      if (rouletteBadge) {
+        rouletteBadge.innerText = `Coste por giro: ${COSTE_GIRO_RULETA.toLocaleString('es-ES')} 🪙 • Saldo: ${saldo.toLocaleString('es-ES')} 🪙`;
+      }
     }
     actualizarHUDUsuario();
 
     function abrirPaginaEspiritus() {
+      guardarEstadoActualUsuario();
       const destino = 'espiritus.html?user=' + encodeURIComponent(usuarioActivo);
-      window.location.href = destino;
+      navegarSeguro(destino, `👻 Saldo guardado (${usuarioActivo}). En carpeta local abriría: ${destino}`);
     }
 
     function mostrarToast(texto) {
@@ -961,7 +1022,6 @@
       container.appendChild(card);
     }
 
-    // Devuelve todas las posibles claves de localStorage donde un juego guarda partida
     function obtenerClavesGuardadoJuego(juego) {
       const baseFile = juego.file.replace('.html', '');
       return [
@@ -977,9 +1037,17 @@
       ];
     }
 
-    // Comprueba si el juego tiene una partida guardada en localStorage
     function tienePartidaGuardada(juego) {
       try {
+        const usuarios = obtenerUsuarios();
+        if (
+          usuarios[usuarioActivo] &&
+          usuarios[usuarioActivo].progreso &&
+          usuarios[usuarioActivo].progreso[juego.file]
+        ) {
+          return true;
+        }
+
         const claves = obtenerClavesGuardadoJuego(juego);
         for (const k of claves) {
           const val = localStorage.getItem(k);
@@ -987,7 +1055,7 @@
             return true;
           }
         }
-        // También revisar cualquier clave dinámica en localStorage que contenga el id o archivo del juego
+
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           if (!key) continue;
@@ -1005,9 +1073,18 @@
       return false;
     }
 
-    // Borra por completo todos los datos guardados de ese juego en localStorage
     function borrarPartidaGuardada(juego) {
       try {
+        const usuarios = obtenerUsuarios();
+        if (
+          usuarios[usuarioActivo] &&
+          usuarios[usuarioActivo].progreso &&
+          usuarios[usuarioActivo].progreso[juego.file]
+        ) {
+          delete usuarios[usuarioActivo].progreso[juego.file];
+          guardarUsuarios(usuarios);
+        }
+
         const claves = obtenerClavesGuardadoJuego(juego);
         claves.forEach(k => localStorage.removeItem(k));
 
@@ -1026,6 +1103,7 @@
           }
         }
         aBorrar.forEach(k => localStorage.removeItem(k));
+        localStorage.removeItem(`pixelgames_action_${juego.file}`);
       } catch (e) {}
     }
 
@@ -1042,21 +1120,12 @@
 
     function nuevaPartida() {
       if (!juegoSeleccionado) return;
-      // Borra todo lo guardado en localStorage de este juego para empezar desde cero
+      guardarEstadoActualUsuario();
       borrarPartidaGuardada(juegoSeleccionado);
 
       const destino = `${juegoSeleccionado.file}?mode=new&user=${encodeURIComponent(usuarioActivo)}`;
-      try {
-        if (window.location.protocol === 'blob:' || window.location.protocol === 'about:' || window.location.href.includes('srcdoc')) {
-          cerrarModal('modal-partida');
-          mostrarToast(`🗑️ Datos anteriores borrados. En carpeta local abrirá: ${destino}`);
-          return;
-        }
-        window.location.href = destino;
-      } catch (e) {
-        cerrarModal('modal-partida');
-        mostrarToast(`🚀 Archivo destino: ${destino}`);
-      }
+      cerrarModal('modal-partida');
+      navegarSeguro(destino, `🗑️ Datos anteriores borrados. En carpeta local abriría: ${destino}`);
     }
 
     function continuarPartida() {
@@ -1066,18 +1135,14 @@
         return;
       }
 
-      const destino = `${juegoSeleccionado.file}?mode=continue&user=${encodeURIComponent(usuarioActivo)}`;
+      guardarEstadoActualUsuario();
       try {
-        if (window.location.protocol === 'blob:' || window.location.protocol === 'about:' || window.location.href.includes('srcdoc')) {
-          cerrarModal('modal-partida');
-          mostrarToast(`▶️ Cargando partida guardada en: ${destino}`);
-          return;
-        }
-        window.location.href = destino;
-      } catch (e) {
-        cerrarModal('modal-partida');
-        mostrarToast(`▶️ Archivo destino: ${destino}`);
-      }
+        localStorage.setItem(`pixelgames_action_${juegoSeleccionado.file}`, 'load');
+      } catch (e) {}
+
+      const destino = `${juegoSeleccionado.file}?mode=continue&user=${encodeURIComponent(usuarioActivo)}`;
+      cerrarModal('modal-partida');
+      navegarSeguro(destino, `▶️ Cargando partida guardada en: ${destino}`);
     }
 
     function buscarJuego() {
@@ -1095,7 +1160,7 @@
     }
 
     // ==========================================
-    // 4. PIXELRULETA ANIMADA
+    // 4. PIXELRULETA ANIMADA (1.000 PIXELMONEDAS POR GIRO)
     // ==========================================
     const premiosRuleta = [1000, 5000, 2000, 10000, 500, 3000, 15000, 2500, 8000, 1000, 20000, 4000, 6000, 1000, 50000, 3000, 7500, 1200, 9000, 4500, 25000, 1500, 3500, 7000, 100000];
     let currentAngle = 0;
@@ -1146,18 +1211,39 @@
     }
 
     function abrirRuleta() {
+      actualizarHUDUsuario();
+      document.getElementById('roulette-result').innerText = '';
       document.getElementById('modal-ruleta').style.display = 'flex';
       dibujarRuleta(currentAngle);
     }
 
     function girarRuleta() {
       if (isSpinning) return;
-      isSpinning = true;
 
+      const allUsers = obtenerUsuarios();
+      const u = allUsers[usuarioActivo];
+      const saldoActual = u && typeof u.coins === 'number' ? u.coins : 0;
+
+      if (saldoActual < COSTE_GIRO_RULETA) {
+        const resText = document.getElementById('roulette-result');
+        resText.style.color = '#fca5a5';
+        resText.innerText = `❌ Necesitas ${COSTE_GIRO_RULETA.toLocaleString('es-ES')} Pixelmonedas para girar.`;
+        mostrarToast(`❌ Saldo insuficiente (tienes ${saldoActual.toLocaleString('es-ES')} 🪙)`);
+        return;
+      }
+
+      // Descontar 1.000 Pixelmonedas antes de girar y guardar en localStorage
+      u.coins = saldoActual - COSTE_GIRO_RULETA;
+      u.ultimoGuardado = Date.now();
+      guardarUsuarios(allUsers);
+      actualizarHUDUsuario();
+
+      isSpinning = true;
       const btn = document.getElementById('btn-spin-action');
       const resText = document.getElementById('roulette-result');
       btn.disabled = true;
-      resText.innerText = "¡GIRANDO ROTOR CUÁNTICO!";
+      resText.style.color = '#00e5ff';
+      resText.innerText = `-${COSTE_GIRO_RULETA.toLocaleString('es-ES')} 🪙 • ¡GIRANDO ROTOR CUÁNTICO!`;
 
       const totalSpinTime = 4000;
       const startTime = performance.now();
@@ -1183,12 +1269,14 @@
           isSpinning = false;
           btn.disabled = false;
           const premio = premiosRuleta[targetRewardIdx];
+          resText.style.color = '#ffd700';
           resText.innerText = `¡PREMIO: +${premio.toLocaleString('es-ES')} PIXELMONEDAS! 🪙`;
 
-          const allUsers = obtenerUsuarios();
-          if (allUsers[usuarioActivo]) {
-            allUsers[usuarioActivo].coins = (allUsers[usuarioActivo].coins || 0) + premio;
-            guardarUsuarios(allUsers);
+          const usersActualizados = obtenerUsuarios();
+          if (usersActualizados[usuarioActivo]) {
+            usersActualizados[usuarioActivo].coins = (usersActualizados[usuarioActivo].coins || 0) + premio;
+            usersActualizados[usuarioActivo].ultimoGuardado = Date.now();
+            guardarUsuarios(usersActualizados);
           }
           actualizarHUDUsuario();
         }
@@ -1207,7 +1295,7 @@
       const logros = [
         { titulo: 'Operador Conectado', desc: 'Inicia sesión en Cyber-Arcade OS', ok: true },
         { titulo: 'Coleccionista Espectral', desc: `Posee al menos 3 espíritus (${countEsp}/3)`, ok: countEsp >= 3 },
-        { titulo: 'Magnate Cuántico', desc: 'Acumula 250.000 Pixelmonedas', ok: (u.coins || 0) >= 250000 }
+        { titulo: 'Magnate Cuántico', desc: 'Acumula 25.000 Pixelmonedas', ok: (u.coins || 0) >= 25000 }
       ];
 
       lista.innerHTML = logros.map(l => `
